@@ -64,16 +64,17 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 3. It **flies side-on** toward where it is going, banking gently, wings beating as two pairs, and leaves sparks where it has been.
 4. On arrival it settles and **turns back** to face front.
 
-**How Wisp moves between nearby elements** (form fields, list items, steps: a hop, not a flight):
+**Where Wisp appears: the sign-up form only.** It lives in the gutter to the **left** of the form, turned toward it. The demo is `src/design/nix/wisp-form.tsx`.
 
-1. It sits in the **gutter** beside the active element, facing slightly toward it: never over it, never larger than a row.
-2. When focus moves it **waits a beat** (about 90 ms), so it follows the person rather than leading them.
-3. It **gathers** (a small squash), then **hops**: a short arc bowed out, away from the content, eyes on where it is going, wings beating fast, a few sparks left behind. **No turn**: the move is attention, not travel.
-4. It **settles** with a slight overshoot back into its idle bob. A hop takes 320–620 ms, depending on distance.
-5. If focus moves again mid-hop it **retargets from where it is**; moves never queue.
-6. Under reduced motion it does not travel: it fades out and reappears beside the new element.
+| Moment | What Wisp does |
+|---|---|
+| Resting beside a field | Faces the form at about 28°, with an idle bob. Never over a field, never taller than a row |
+| Focus moves to another field | Waits a beat (about 90 ms), gathers, then **hops** in a short arc bowed out to the left, eyes on where it is going, wings beating fast, a few sparks left behind. **No turn.** It settles with a slight overshoot. 320–620 ms by distance. A new focus mid-hop retargets from where it is; moves never queue |
+| Typing | Turns **further into the field** (about 50°, a little more as the text grows), and its **eyes follow the text** |
+| The password field | Once it has landed beside the field, it **turns its back** (right round to 180°, continuously) and stays turned while the password is typed. It turns back to face the form when focus leaves |
+| Reduced motion | No travel and no easing: it reappears beside the new field, already facing the right way |
 
-Anything farther than a hop, such as another region of the page, is travel and uses the turn-and-fly above. The demo is `src/design/nix/wisp-form.tsx`.
+Wisp never reacts to what is typed: nothing for a valid or an invalid entry.
 
 The flight demo plays this across a stage and back. Every frame is a pure function of one loop clock: position, yaw (the head a beat ahead), wing beats and each spark. Under reduced motion it shows one still frame with the trail.
 

@@ -5,107 +5,84 @@ import * as React from "react";
 import { flameTip, WispTurn } from "./wisp-turn";
 
 /**
- * Wisp beside a form: how it moves between fields. A hop, not a flight — it keeps facing the form
- * (no turn) and travels a short arc in the gutter.
+ * Wisp on the sign-up form — the one place it appears. It lives in the gutter to the left of the
+ * form, turned toward it.
  *
- *   wait      a beat after focus moves, so it follows the person rather than leading them
- *   gather    a small squash before it lifts
- *   hop       an arc bowed out, away from the form; eyes on where it is going; wings beat fast;
- *             a few sparks left behind
- *   settle    a slight overshoot, then back into the idle bob, head turned toward the field
+ *   between fields   a hop, not a flight: it waits a beat after focus moves, gathers, arcs out
+ *                    through the gutter (away from the form) with its eyes on where it is going,
+ *                    and settles beside the new field. No turn. Moves retarget, never queue.
+ *   while typing     it turns further into the field and its eyes follow the text as it grows.
+ *   the password     once it lands beside the password field it turns its back — right round,
+ *                    continuously — and faces the form again when focus leaves.
  *
- * It is never over a field and never larger than a field row. If focus moves again mid-hop it
- * retargets from where it is; moves never queue. Under reduced motion it does not travel: it
- * fades out and reappears beside the new field.
+ * Its turn and gaze ease toward their targets frame by frame (the head a little quicker than the
+ * body), so every change of attention is a turn, not a cut. Under reduced motion it does not
+ * travel or ease: it reappears beside the new field and faces the right way at once.
  */
 
 const FIELDS = [
-  { id: "name", label: "Your name", kind: "input", placeholder: "Asha Rao" },
-  { id: "email", label: "Email", kind: "input", placeholder: "asha@school.org" },
-  { id: "team", label: "Team name", kind: "input", placeholder: "Year 8 Science" },
-  { id: "teach", label: "What will you teach?", kind: "area", placeholder: "Forces, cells, …" },
-  { id: "password", label: "Password", kind: "input", placeholder: "••••••••" },
+  { id: "name", label: "Your name", type: "text", auto: "name", demo: "Asha Rao" },
+  { id: "email", label: "Email", type: "email", auto: "email", demo: "asha@school.org" },
+  { id: "password", label: "Password", type: "password", auto: "new-password", demo: "sparkle42" },
+  {
+    id: "team",
+    label: "Team name",
+    type: "text",
+    auto: "organization",
+    demo: "Year 8 Science",
+    hint: "A school, a class, a household — or just you.",
+  },
 ] as const;
 
-/** Wisp's box on the page, in px, and where its centre sits within it. */
 const SIZE = { w: 46, h: 62 };
 const VIEW = "-10 20 220 280";
+const GUTTER_X = 10;
 const DELAY = 90;
-const REST_YAW = -18;
+/** How Wisp holds itself: turned toward the form, further while you type, away for a password. */
+const YAW = { attend: 28, typing: 50, away: 180 };
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const inOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
 type Hop = { from: number; to: number; t0: number; dur: number };
 type Spark = { x: number; y: number; born: number; r: number };
+type Pose = { yaw: number; head: number; lookX: number; t: number };
 
-/** Where Wisp is along a hop at time `now`: position, squash, and how far through it is. */
 function along(h: Hop, now: number) {
   const p = clamp((now - h.t0) / h.dur, 0, 1);
   const d = h.to - h.from;
-  // arrive slightly past the mark, then settle back onto it
   const settle = p > 0.72 ? 0.05 * Math.sin((Math.PI * (p - 0.72)) / 0.28) : 0;
   const y = h.from + d * (inOut(p) + settle);
-  const bow = 12 * Math.min(1, Math.abs(d) / 120) * Math.sin(Math.PI * p);
+  // bowed out to the left, away from the form
+  const bow = -12 * Math.min(1, Math.abs(d) / 120) * Math.sin(Math.PI * p);
   const gather = p > 0 && p < 0.14 ? Math.sin((Math.PI * p) / 0.14) : 0;
   return { p, y, bow, gather, dir: Math.sign(d) };
 }
 
-/** Everything about Wisp at time `now`: a pure function of the hop, the gutter and the clock. */
-function frameAt(h: Hop, now: number, gutter: number, still: boolean) {
-  const a = still ? { p: 1, y: h.to, bow: 0, gather: 0, dir: 0 } : along(h, now);
-  const moving = a.p > 0 && a.p < 1;
-  const arc = Math.sin(Math.PI * a.p);
-  const bob = still ? 0 : 2 * Math.sin(now / 600) * (1 - arc);
-  const amp = moving ? 1 : 0.35;
-  const yaw = moving ? REST_YAW + 8 * arc : REST_YAW;
-  return {
-    moving,
-    x: gutter + a.bow,
-    y: a.y - SIZE.h * 0.42 + bob,
-    sx: 1 + 0.07 * a.gather - 0.03 * arc,
-    sy: 1 - 0.08 * a.gather + 0.05 * arc,
-    yaw,
-    look: moving ? 5 * a.dir * arc : 0,
-    flapU: -12 * amp * Math.sin((now / 500) * Math.PI * 2),
-    flapL: 16 * amp * Math.sin((now / 250) * Math.PI * 2 + 1),
-  };
-}
-
 export function WispForm() {
   const uid = React.useId().replace(/:/g, "");
-  const box = React.useRef<HTMLDivElement>(null);
   const rows = React.useRef<(HTMLDivElement | null)[]>([]);
   const hop = React.useRef<Hop>({ from: 0, to: 0, t0: 0, dur: 1 });
+  const pose = React.useRef<Pose>({ yaw: YAW.attend, head: YAW.attend, lookX: 1, t: 0 });
   const sparks = React.useRef<Spark[]>([]);
   const lastSpark = React.useRef(0);
+  const typingUntil = React.useRef(0);
+  const [values, setValues] = React.useState<Record<string, string>>({});
   const [active, setActive] = React.useState(0);
   const [auto, setAuto] = React.useState(true);
   const [reduce, setReduce] = React.useState(false);
   const [now, setNow] = React.useState(0);
-  const [gutter, setGutter] = React.useState(0);
-  const gutterRef = React.useRef(0);
-  gutterRef.current = gutter;
 
   const targetY = React.useCallback((i: number) => {
     const el = rows.current[i];
-    if (!el) return 0;
-    // the input's own box, measured from the same container the rows are
-    const input = (el.querySelector("input, textarea") as HTMLElement | null) ?? el;
-    return input.offsetTop + input.offsetHeight / 2;
+    const input = (el?.querySelector("input") as HTMLElement | null) ?? el;
+    return input ? input.offsetTop + input.offsetHeight / 2 : 0;
   }, []);
 
   React.useEffect(() => {
     setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    const measure = () => {
-      const form = box.current?.querySelector("form");
-      if (form) setGutter(form.offsetLeft + form.offsetWidth + 14);
-    };
-    measure();
     const y = targetY(0);
     hop.current = { from: y, to: y, t0: 0, dur: 1 };
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
   }, [targetY]);
 
   // a new field: start a hop from wherever Wisp is right now
@@ -113,33 +90,83 @@ export function WispForm() {
     const t = performance.now();
     const cur = along(hop.current, t).y;
     const to = targetY(active);
-    const d = Math.abs(to - cur);
-    hop.current = { from: cur, to, t0: t + DELAY, dur: clamp(320 + d * 0.9, 320, 620) };
+    hop.current = {
+      from: cur,
+      to,
+      t0: t + DELAY,
+      dur: clamp(320 + Math.abs(to - cur) * 0.9, 320, 620),
+    };
   }, [active, targetY]);
 
-  // autoplay through the fields until someone uses the form
+  // the demo: move to each field, type into it, move on — until someone uses the form
   React.useEffect(() => {
     if (!auto) return;
-    const id = window.setInterval(() => setActive((i) => (i + 1) % FIELDS.length), 1500);
-    return () => window.clearInterval(id);
+    let cancelled = false;
+    const timers: number[] = [];
+    const wait = (ms: number) => new Promise<void>((r) => timers.push(window.setTimeout(r, ms)));
+    (async () => {
+      for (let round = 0; !cancelled; round++) {
+        setValues({});
+        for (let i = 0; i < FIELDS.length && !cancelled; i++) {
+          setActive(i);
+          await wait(800);
+          const text = FIELDS[i].demo;
+          for (let k = 1; k <= text.length && !cancelled; k++) {
+            setValues((v) => ({ ...v, [FIELDS[i].id]: text.slice(0, k) }));
+            typingUntil.current = performance.now() + 700;
+            await wait(90);
+          }
+          await wait(900);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      timers.forEach((t) => window.clearTimeout(t));
+    };
   }, [auto]);
 
+  const field = FIELDS[active];
+  const target = React.useCallback(
+    (t: number) => {
+      const h = hop.current;
+      const landed = t >= h.t0 + h.dur;
+      if (field.id === "password" && landed) return { yaw: YAW.away, lookX: 0 };
+      if (t < typingUntil.current) {
+        const len = (values[field.id] ?? "").length;
+        return { yaw: YAW.typing + Math.min(16, len * 0.8), lookX: 2 + Math.min(4, len * 0.2) };
+      }
+      return { yaw: YAW.attend, lookX: 1 };
+    },
+    [field.id, values],
+  );
+  const targetRef = React.useRef(target);
+  targetRef.current = target;
+
   React.useEffect(() => {
-    if (reduce) return;
     let frame = 0;
     const tick = (t: number) => {
-      // leave a few sparks along a hop, from the flame's tip
-      const f = frameAt(hop.current, t, gutterRef.current, false);
-      if (f.moving && t - lastSpark.current > 70) {
-        lastSpark.current = t;
-        const [fx, fy] = flameTip(f.yaw);
-        const k = SIZE.w / 220;
-        sparks.current.push({
-          x: f.x + (fx + 10) * k,
-          y: f.y + (fy - 20) * k,
-          born: t,
-          r: [2.2, 1.6, 2][sparks.current.length % 3],
-        });
+      const p = pose.current;
+      const dt = p.t ? Math.min(64, t - p.t) : 16;
+      const goal = targetRef.current(t);
+      const ease = (tau: number) => (reduce ? 1 : 1 - Math.exp(-dt / tau));
+      p.head += (goal.yaw - p.head) * ease(110);
+      p.yaw += (goal.yaw - p.yaw) * ease(170);
+      p.lookX += (goal.lookX - p.lookX) * ease(120);
+      p.t = t;
+      if (!reduce) {
+        const a = along(hop.current, t);
+        if (a.p > 0 && a.p < 1 && t - lastSpark.current > 70) {
+          lastSpark.current = t;
+          const [fx, fy] = flameTip(p.yaw);
+          const k = SIZE.w / 220;
+          sparks.current.push({
+            x: GUTTER_X + a.bow + (fx + 10) * k,
+            y: a.y - SIZE.h * 0.42 + (fy - 20) * k,
+            born: t,
+            r: [2.2, 1.6, 2][sparks.current.length % 3],
+          });
+        }
       }
       sparks.current = sparks.current.filter((sp) => t - sp.born < 650);
       setNow(t);
@@ -149,14 +176,32 @@ export function WispForm() {
     return () => cancelAnimationFrame(frame);
   }, [reduce]);
 
-  const { x, y, sx, sy, yaw, look, flapU, flapL } = frameAt(hop.current, now, gutter, reduce);
+  const a = reduce
+    ? { p: 1, y: hop.current.to, bow: 0, gather: 0, dir: 0 }
+    : along(hop.current, now);
+  const moving = a.p > 0 && a.p < 1;
+  const arc = Math.sin(Math.PI * a.p);
+  const bob = reduce ? 0 : 2 * Math.sin(now / 600) * (1 - arc);
+  const amp = moving ? 1 : 0.35;
+  const typing = now < typingUntil.current;
+  const x = GUTTER_X + a.bow;
+  const y = a.y - SIZE.h * 0.42 + bob;
+  const p = pose.current;
+
+  const use = (i: number) => {
+    setAuto(false);
+    setActive(i);
+  };
 
   return (
-    <div ref={box} className="relative flex gap-4">
+    <div className="relative flex max-w-[30rem] gap-0">
+      <div className="w-[72px] shrink-0" aria-hidden />
       <form
-        className="flex w-full max-w-[22rem] flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-4"
+        className="flex w-full flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-5"
         onSubmit={(e) => e.preventDefault()}
+        aria-label="Create your account"
       >
+        <h3 className="material-heading m-0 text-base text-foreground">Create your account</h3>
         {FIELDS.map((f, i) => (
           <div
             key={f.id}
@@ -168,40 +213,39 @@ export function WispForm() {
             <label htmlFor={`${uid}-${f.id}`} className="instrument text-xs text-muted-foreground">
               {f.label}
             </label>
-            {f.kind === "area" ? (
-              <textarea
-                id={`${uid}-${f.id}`}
-                rows={3}
-                placeholder={f.placeholder}
-                onFocus={() => {
-                  setAuto(false);
-                  setActive(i);
-                }}
-                className="rounded-[var(--radius-control)] border border-border bg-canvas px-3 py-2 text-sm text-foreground data-[on=true]:border-primary"
-                data-on={active === i}
-              />
-            ) : (
-              <input
-                id={`${uid}-${f.id}`}
-                placeholder={f.placeholder}
-                onFocus={() => {
-                  setAuto(false);
-                  setActive(i);
-                }}
-                className="h-10 rounded-[var(--radius-control)] border border-border bg-canvas px-3 text-sm text-foreground data-[on=true]:border-primary"
-                data-on={active === i}
-              />
-            )}
+            <input
+              id={`${uid}-${f.id}`}
+              type={f.type}
+              autoComplete={f.auto}
+              value={values[f.id] ?? ""}
+              onFocus={() => use(i)}
+              onChange={(e) => {
+                setAuto(false);
+                setValues((v) => ({ ...v, [f.id]: e.target.value }));
+                typingUntil.current = performance.now() + 800;
+              }}
+              data-on={active === i}
+              className="h-10 rounded-[var(--radius-control)] border border-border bg-canvas px-3 text-sm text-foreground data-[on=true]:border-primary"
+            />
+            {"hint" in f && <span className="text-xs text-muted-foreground">{f.hint}</span>}
           </div>
         ))}
-        <button
-          type="button"
-          className="filter-seg self-start"
-          aria-pressed={auto}
-          onClick={() => setAuto((v) => !v)}
-        >
-          {auto ? "Pause the demo" : "Play the demo"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            className="h-10 rounded-[var(--radius-control)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+          >
+            Create account
+          </button>
+          <button
+            type="button"
+            className="filter-seg"
+            aria-pressed={auto}
+            onClick={() => setAuto((v) => !v)}
+          >
+            {auto ? "Pause the demo" : "Play the demo"}
+          </button>
+        </div>
       </form>
 
       <svg
@@ -230,6 +274,7 @@ export function WispForm() {
         key={reduce ? active : "live"}
         className={reduce ? "wisp-appear" : undefined}
         aria-hidden
+        data-yaw={Math.round(p.yaw)}
         style={{
           position: "absolute",
           left: 0,
@@ -237,16 +282,17 @@ export function WispForm() {
           width: SIZE.w,
           height: SIZE.h,
           transformOrigin: "50% 100%",
-          transform: `translate(${x}px, ${y}px) scale(${sx}, ${sy})`,
+          transform: `translate(${x}px, ${y}px) scale(${1 + 0.07 * a.gather - 0.03 * arc}, ${1 - 0.08 * a.gather + 0.05 * arc})`,
         }}
       >
         <svg viewBox={VIEW} className="h-full w-full overflow-visible">
           <WispTurn
-            yaw={yaw}
-            headYaw={yaw - 6}
-            flapU={flapU}
-            flapL={flapL}
-            look={look}
+            yaw={p.yaw}
+            headYaw={p.head}
+            flapU={-12 * amp * Math.sin((now / 500) * Math.PI * 2)}
+            flapL={16 * amp * Math.sin((now / 250) * Math.PI * 2 + 1)}
+            look={moving ? 5 * a.dir * arc : typing ? 2 : 0}
+            lookX={p.lookX}
             uid={`${uid}-w`}
           />
         </svg>

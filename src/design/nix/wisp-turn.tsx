@@ -3,8 +3,8 @@ import * as React from "react";
 import { C } from "./theme";
 
 /**
- * Wisp as a 2.5D puppet: one drawing that can face any way from left profile (−90°) through
- * front (0°) to right profile (90°), continuously — no swaps, no mirror flip.
+ * Wisp as a 2.5D puppet: one drawing that can face any way — left profile (−90°), front (0°),
+ * right profile (90°), and on round to its back (180°) — continuously, no swaps, no mirror flip.
  *
  * Every part has a place on a simple body in depth. Each frame projects it for the yaw:
  *   screen x = 100 + lateral · cos(yaw) + forward · sin(yaw)
@@ -237,7 +237,7 @@ function Antennae({ yaw }: { yaw: number }) {
   );
 }
 
-function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
+function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?: number }) {
   // the eyes and cheeks sit on the head's sphere; the mouth rides the centre line
   const eyes = [-1, 1].map((s) => {
     const phi = s * Math.asin(19 / 36);
@@ -259,6 +259,8 @@ function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
   const my = clamp(yaw, -68, 68);
   const mx = 100 + 38 * Math.sin(rad(my));
   const mk = Math.max(Math.cos(rad(yaw)), 0.5);
+  // facing away (past profile), the mouth is out of sight
+  const mo = smooth(0.02, 0.25, Math.cos(rad(yaw)));
   return (
     <g>
       {cheeks.map((c, i) => (
@@ -276,11 +278,12 @@ function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
         <g
           key={i}
           opacity={e.o}
-          transform={`translate(${e.x} ${108 + look}) scale(${1.15 * Math.max(e.k, 0.05)} 1.15)`}
+          transform={`translate(${e.x + 0.6 * lookX * e.k} ${108 + look}) scale(${1.15 * Math.max(e.k, 0.05)} 1.15)`}
         >
           <ellipse cx={0} cy={0} rx={7} ry={8.8} fill={EYE} />
-          <circle cx={-2.3} cy={-3.2} r={2.5} fill="#fff" />
-          <circle cx={2.4} cy={3} r={1.1} fill="#fff" />
+          {/* the catchlights shift further than the eye: a glance */}
+          <circle cx={-2.3 + 0.5 * lookX} cy={-3.2} r={2.5} fill="#fff" />
+          <circle cx={2.4 + 0.5 * lookX} cy={3} r={1.1} fill="#fff" />
           <path
             d="M-7 -15 Q0 -20 7 -15"
             stroke={C.primary}
@@ -296,6 +299,7 @@ function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
         strokeWidth={2.6}
         fill="none"
         strokeLinecap="round"
+        opacity={mo}
       />
     </g>
   );
@@ -306,6 +310,8 @@ function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
 export type TurnProps = {
   /** Where the eyes look up (−) or down (+), in head units: a glance, not a turn. */
   look?: number;
+  /** Where the eyes look left (−) or right (+), in head units. */
+  lookX?: number;
   /** −90 (facing left) … 0 (front) … 90 (facing right). */
   yaw: number;
   /** The head's own yaw, to let it lead the body. Defaults to `yaw`. */
@@ -316,7 +322,15 @@ export type TurnProps = {
   uid: string;
 };
 
-export function WispTurn({ yaw, headYaw = yaw, flapU = 0, flapL = 0, look = 0, uid }: TurnProps) {
+export function WispTurn({
+  yaw,
+  headYaw = yaw,
+  flapU = 0,
+  flapL = 0,
+  look = 0,
+  lookX = 0,
+  uid,
+}: TurnProps) {
   const s = Math.sin(rad(yaw));
   const body = 1 - 0.08 * Math.abs(s);
   const fw = 1 - 0.25 * Math.abs(s);
@@ -369,7 +383,7 @@ export function WispTurn({ yaw, headYaw = yaw, flapU = 0, flapL = 0, look = 0, u
       <g transform={HEAD_FIT}>
         <Antennae yaw={headYaw} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
-        <Face yaw={headYaw} look={look} />
+        <Face yaw={headYaw} look={look} lookX={lookX} />
       </g>
       {front.map((p) => p.el)}
     </g>

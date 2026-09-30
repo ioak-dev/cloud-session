@@ -136,12 +136,13 @@ export function NixBenchView() {
         <WispFlight />
       </div>
 
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — beside a form</h2>
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — on the sign-up form</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Between fields it hops rather than flies: it keeps facing the form, waits a beat after focus
-        moves, gathers, arcs out through the gutter with its eyes on where it is going, and settles
-        beside the new field. Click into a field, or let the demo play. Under reduced motion it
-        reappears rather than travels.
+        The one place Wisp appears. It waits in the gutter to the left, turned toward the form.
+        Between fields it hops rather than flies; while you type it turns into the field and its
+        eyes follow the text; at the password it turns its back until you leave the field. Click
+        into a field and type, or let the demo play. Under reduced motion it reappears rather than
+        travels.
       </p>
       <div className="mt-3">
         <WispForm />
