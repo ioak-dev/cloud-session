@@ -59,15 +59,18 @@ export const WISP: Body = {
     elbowR: [124, 178],
     wristR: [128, 194],
     torso: [100, 200],
-    tail: [100, 204],
+    tail: [100, 188],
     wingL: [90, 156],
     wingR: [110, 156],
     hindL: [90, 170],
     hindR: [110, 170],
   },
   headFit: "translate(100 146) scale(1.12) translate(-100 -150)",
+  /* the pack sized to a short, rounded body */
+  packFit: "translate(100 150) scale(0.8 0.7) translate(-100 -150)",
+  /* A short body, rounded below: the flame continues it rather than hanging from a point. */
   torso:
-    "M84 150 Q100 146 116 150 Q124 156 122 172 Q118 194 104 208 Q100 212 96 208 Q82 194 78 172 Q76 156 84 150 Z",
+    "M84 150 Q100 146 116 150 Q124 156 122 172 Q121 186 112 192 Q100 197 88 192 Q79 186 78 172 Q76 156 84 150 Z",
   headVB: "34 -6 132 132",
   w: { upper: 9, fore: 8.5, thigh: 0, shin: 0, hand: 6.2, cloth: 0.9 },
   neck: { x: 94, y: 134, w: 12, h: 20 },
@@ -85,11 +88,11 @@ function Antennae({ mood }: Ctx) {
         const bx = 100 + 3 * s;
         const by = 58;
         const x = 100 + 21 * s;
-        const y = 24;
+        const y = 32;
         return (
           <Antenna key={side} side={side} base={[bx, by]} mood={mood}>
             <path
-              d={`M${bx} ${by} C${bx + 4 * s} 42 ${100 + 20 * s} 42 ${100 + 24 * s} 32 C${100 + 26 * s} 26 ${100 + 24 * s} 22 ${x} ${y}`}
+              d={`M${bx} ${by} C${bx + 4 * s} 46 ${100 + 18 * s} 46 ${100 + 22 * s} 38 C${100 + 24 * s} 34 ${100 + 23 * s} 31 ${x} ${y}`}
               stroke={C.thin}
               strokeWidth={2.8}
               fill="none"
@@ -192,36 +195,39 @@ function Wings() {
 
 /* ——— the flame: its light, with rings that are part of its body ——— */
 
+/**
+ * The flame is the lower body turning into light. It starts up inside the body in the body's own
+ * colour, so where the two overlap there is no seam at any angle of sway, and only below the body
+ * does it turn to glow and then amber. No edge line: a line would show where it is still body.
+ */
 function Flame({ uid, mood }: Ctx) {
   const g = `${uid}-wispflame`;
   return (
     <g data-joint="tail" style={pivot("tail", WISP.j)}>
       <defs>
-        {/* glow at the root, deepening to amber at the tip: its colour, not a reflection */}
-        <linearGradient id={g} x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0%" stopColor={pal.glow} />
-          <stop offset="70%" stopColor={pal.glow} />
-          <stop offset="100%" stopColor="#ffb547" />
+        <linearGradient id={g} gradientUnits="userSpaceOnUse" x1="100" y1="170" x2="106" y2="270">
+          <stop offset="0" stopColor={C.mid} />
+          <stop offset="0.24" stopColor={C.mid} />
+          <stop offset="0.4" stopColor={pal.glow} />
+          <stop offset="0.8" stopColor={pal.glow} />
+          <stop offset="1" stopColor="#ffb547" />
         </linearGradient>
       </defs>
       <circle
         data-joint="glow"
         cx={104}
-        cy={232}
-        r={40}
+        cy={236}
+        r={38}
         fill={pal.glow}
         opacity={0.35 * bright(mood)}
       />
       <path
-        d="M80 186 Q100 198 120 186 C130 206 126 234 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C78 234 74 206 80 186 Z"
+        d="M84 170 C84 164 116 164 116 170 C126 200 126 232 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C76 234 74 202 84 170 Z"
         fill={`url(#${g})`}
-        stroke={AMBER}
-        strokeWidth={HAIR}
-        strokeLinejoin="round"
       />
       {/* two rings, as on a firefly's lantern: fixed anatomy */}
       <path
-        d="M82 206 Q101 214 122 204 M86 224 Q101 231 116 221"
+        d="M84 214 Q102 222 122 212 M88 231 Q102 237 116 228"
         stroke={AMBER}
         strokeWidth={2.2}
         fill="none"
@@ -237,7 +243,7 @@ export const WISP_MAIN: Candidate = {
   frame: WISP,
   legs: false,
   outline: false,
-  hands: "mitten",
+  hands: "wisp",
   trail: [104, 264],
   label: "Wisp",
   signature: "A floating firefly: a droplet head, a flame of light for a body, sparks left behind",

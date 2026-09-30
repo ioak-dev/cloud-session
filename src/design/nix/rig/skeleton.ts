@@ -72,6 +72,8 @@ export type Body = {
   hemFit?: string;
   /** Places the read pose's book between the hands. */
   handsFit?: string;
+  /** Fits the backpack to a body shorter or narrower than chibi's. */
+  packFit?: string;
   /** Torso outline in chibi space. */
   torso: string;
   /** Head-and-hair crop for expressions and the favicon. */

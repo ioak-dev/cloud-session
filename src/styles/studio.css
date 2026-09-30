@@ -268,3 +268,28 @@ svg[data-still="true"] .spark-still {
     display: inline;
   }
 }
+
+/* Wisp's wings in flight (wisp-views.tsx): the upper pair strokes, the lower beats twice as fast. */
+@keyframes wisp-flap-upper {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+
+@keyframes wisp-flap-lower {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-20deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="wisp-flap"] {
+    animation: none !important;
+  }
+}

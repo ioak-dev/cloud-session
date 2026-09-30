@@ -78,6 +78,34 @@ function Mitten({ el, wr, at, r, color }: { el: P; wr: P; at: P; r: number; colo
   );
 }
 
+/**
+ * A wispy forearm: it tapers from the elbow like a tendril of smoke and ends in a soft round tip of
+ * the same colour — no fingers, no thumb. One shape, so it reads as a limb at any size.
+ */
+function Tendril({ a, b, w, tip, color }: { a: P; b: P; w: number; tip: number; color: string }) {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len;
+  const ny = dx / len;
+  const w0 = w / 2;
+  const w1 = tip * 0.55;
+  const d = [
+    `M${a[0] + nx * w0} ${a[1] + ny * w0}`,
+    `L${b[0] + nx * w1} ${b[1] + ny * w1}`,
+    `L${b[0] - nx * w1} ${b[1] - ny * w1}`,
+    `L${a[0] - nx * w0} ${a[1] - ny * w0}`,
+    "Z",
+  ].join(" ");
+  return (
+    <g fill={color}>
+      <circle cx={a[0]} cy={a[1]} r={w0} />
+      <path d={d} />
+      <circle cx={b[0]} cy={b[1]} r={tip * 0.95} />
+    </g>
+  );
+}
+
 function ClothOn({ a, b, cloth, ink }: { a: P; b: P; cloth: Cloth; ink: string }) {
   if (!cloth) return null;
   return (
@@ -172,9 +200,13 @@ export function NixFigure({
         <Seg a={sh} b={el} w={f.w.upper} color={pal.limb} ink={bodyLine} />
         <ClothOn a={sh} b={el} cloth={scaled(o.upper)} ink={ink} />
         <g data-joint={`elbow${s}`} style={pivot(`elbow${s}`, j)}>
-          <Seg a={el} b={wr} w={f.w.fore} color={pal.limb} ink={bodyLine} />
+          {c.hands === "wisp" ? (
+            <Tendril a={el} b={hand} w={f.w.fore} tip={f.w.hand} color={pal.limb} />
+          ) : (
+            <Seg a={el} b={wr} w={f.w.fore} color={pal.limb} ink={bodyLine} />
+          )}
           <ClothOn a={el} b={wr} cloth={scaled(o.fore)} ink={ink} />
-          {c.hands === "mitten" ? (
+          {c.hands === "wisp" ? null : c.hands === "mitten" ? (
             <Mitten el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} />
           ) : (
             <circle
@@ -217,8 +249,13 @@ export function NixFigure({
       <g data-joint="root" style={pivot("root", j)}>
         <g data-joint="torso" style={pivot("torso", j)}>
           <g transform={f.torsoFit}>
+            {/* the pack sits against the back, so wings and a tail are drawn over it */}
+            {on.has("backpack") && (
+              <g transform={f.packFit}>
+                <Backpack pal={pal} part="back" />
+              </g>
+            )}
             {c.behind?.(ctx)}
-            {on.has("backpack") && <Backpack pal={pal} part="back" />}
           </g>
           <g data-joint="head" style={pivot("head", j)}>
             <g transform={f.headFit}>
@@ -256,7 +293,11 @@ export function NixFigure({
           <g transform={f.hemFit}>{o.hem}</g>
           <g transform={f.torsoFit}>
             {o.collar}
-            {on.has("backpack") && <Backpack pal={pal} part="straps" />}
+            {on.has("backpack") && (
+              <g transform={f.packFit}>
+                <Backpack pal={pal} part="straps" />
+              </g>
+            )}
             {c.pendant?.(ctx)}
           </g>
           {pose === "read" && (

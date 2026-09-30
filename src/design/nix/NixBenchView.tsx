@@ -16,6 +16,7 @@ import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
+import { WispFlight, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -102,6 +103,28 @@ export function NixBenchView() {
           </div>
         ))}
       </dl>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — front, side, back</h2>
+      <div className="mt-2 grid grid-cols-3 gap-4 sm:max-w-[40rem]">
+        <Tile title="Front">
+          <NixFigure c={WISP_MAIN} still className="h-56 w-full" />
+        </Tile>
+        <Tile title="Side">
+          <WispView view="side" className="h-56 w-full" />
+        </Tile>
+        <Tile title="Back">
+          <WispView view="back" className="h-56 w-full" />
+        </Tile>
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — in flight</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Across the stage and back, seen from the side: it turns at each end, its wings beat as two
+        pairs, and it leaves sparks where it has been. Under reduced motion, one still frame.
+      </p>
+      <div className="mt-3">
+        <WispFlight />
+      </div>
 
       {(
         [

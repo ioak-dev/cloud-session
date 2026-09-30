@@ -28,8 +28,9 @@ export type Candidate = {
   /** `false`: the body, limbs, hands and neck are drawn with no outline, told apart by colour.
    *  Clothes keep their detail lines. */
   outline?: false;
-  /** `mitten`: a rounded hand with a thumb on the inside, instead of a ball. */
-  hands?: "mitten";
+  /** `mitten`: a rounded hand with a thumb on the inside. `wisp`: the forearm tapers like a
+   *  tendril and ends in a soft round tip of the same colour. Default: a ball. */
+  hands?: "mitten" | "wisp";
   label: string;
   signature: string;
   pitch: string;

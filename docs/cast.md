@@ -48,11 +48,14 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 | Head | Its colour runs from a light heart to the primary at the rim; the rim is the edge. No outline |
 | Highlights | None. No white reflection lines on the head or flame: nothing that depends on where light comes from, so nothing that has to move, fade or flicker when it animates. A shine, if wanted later, is an effect or prop |
 | Antennae | Grow from behind the head (drawn before it), in `C.thin`, each tipped with a spark |
-| Body, arms, hands | No outline; parts are told apart by colour: the body in `C.mid`, the arms in the primary, the hands in the deep shade |
-| Hands | Mittens: a soft oval along the forearm with a thumb on the side toward the body (`hands: "mitten"` in the rig) |
+| Body, arms | No outline; parts are told apart by colour: the body in `C.mid`, the arms in the primary |
+| Hands | Wispy: the forearm tapers like a tendril of smoke and ends in a soft round tip of the same colour. No fingers, no thumb (`hands: "wisp"` in the rig) |
 | Wings | Two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
-| Flame | Its glow deepening to amber at the tip: its colour, not lighting. It carries **two rings**, like a firefly’s lantern: fixed anatomy |
-| Edges | Only the translucent parts and the flame keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
+| Body and flame | One body turning into light. The body is short and rounded below. The flame starts up inside it in the body’s own colour, so there is no seam at any angle of sway. It pivots where they meet and turns to glow, then amber, below the body. It carries **two rings**, like a firefly’s lantern: fixed anatomy. No edge line on the flame |
+| Edges | Only the translucent parts (wings) and the antenna tips keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
+| Props | A backpack sits behind the wings and flame, fitted to the short body (`packFit`) |
+
+**Views and flight** are in `src/design/nix/wisp-views.tsx`: a side view (facing right) and a back view, drawn in the rig’s space to the same rules, and a flight across a stage and back. In the flight, Wisp is seen from the side, turns at each end, beats its wings as two pairs, and leaves sparks where it has been. It is declared keyframes on one clock: the path, the turn, and each spark’s moment. Under reduced motion it shows one still frame with the trail.
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
