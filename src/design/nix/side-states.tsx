@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Mood } from "./rig/face";
-import { lift, rot, squash, type Hands, type Motion } from "./rig/motion";
+import { jump, lift, pop, rot, sag, squash, type Hands, type Motion } from "./rig/motion";
 import type { Pose } from "./rig/poses";
 import { C } from "./theme";
 
@@ -68,11 +68,27 @@ function act(mood: Mood, duration: number, tracks: Tracks = {}, hands: Hands[] =
 }
 
 /** A small breath so no act is ever dead still. */
-const breathe = (k = 1): Tracks => ({ torso: lift(0, -1.2 * k, 0), shadow: squash([1, 1], [0.97, 1], [1, 1]) });
-const hop = (h: number, n = 1): Tracks => ({
-  root: lift(...Array.from({ length: n }, () => [0, -h]).flat(), 0),
-  shadow: squash(...Array.from({ length: n }, () => [[1, 1], [0.8, 1]] as [number, number][]).flat(), [1, 1]),
-});
+const BREATHS = new WeakSet<object>();
+const breathe = (k = 1): Tracks => {
+  const torso = lift(0, -1.2 * k, 0);
+  BREATHS.add(torso);
+  return { torso, shadow: squash([1, 1], [0.97, 1], [1, 1]) };
+};
+
+/**
+ * Where an act only breathes, the state's own beat takes the torso instead: a correct answer pops
+ * (squash, stretch, overshoot), an incorrect one sags and lifts again. Acts that move the torso
+ * themselves, or hop, keep their own motion.
+ */
+function beat(v: Variant): Variant {
+  const tracks = v.act.motion.tracks;
+  if (!tracks.torso || !BREATHS.has(tracks.torso) || tracks.root) return v;
+  const torso = v.state === "correct" ? pop().torso : v.state === "incorrect" ? sag().torso : undefined;
+  if (!torso) return v;
+  return { ...v, act: { ...v.act, motion: { ...v.act.motion, tracks: { ...tracks, torso } } } };
+}
+/** A hop with a crouch before it, a stretch on the way up, a squash on landing and a rebound. */
+const hop = (h: number, n = 1): Tracks => jump(h * 3, { n });
 
 const fx = (cls: string, children: ReactNode, extra = "") => <g className={`fx ${cls} ${extra}`}>{children}</g>;
 
@@ -567,4 +583,4 @@ export const PRACTICE: Sheet[] = [
   { id: "side-chick", variants: chick },
   { id: "side-juno", variants: juno },
   { id: "side-lulu", variants: lulu },
-];
+].map((s) => ({ ...s, variants: s.variants.map(beat) }));

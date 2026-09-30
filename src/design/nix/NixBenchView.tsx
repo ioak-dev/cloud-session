@@ -25,7 +25,6 @@ import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { PRACTICE, STATES, type Variant } from "./side-states";
 import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
-import { NEW_CONCEPTS } from "./side-new";
 import { PUFF_FAMILY } from "./side-puff";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -80,13 +79,12 @@ const ALL: Candidate[] = [
   ...PIP_FAMILY,
   ...REFERENCE,
   ...CAST,
-  ...NEW_CONCEPTS,
   ...ANIMAL_REFERENCE,
 ];
 
 /** Every character with eyes of its own. */
 /** Every candidate has eyes and a mouth of its own. */
-const EYED = [...CAST, ...NEW_CONCEPTS];
+const EYED = CAST;
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -463,7 +461,6 @@ export function NixBenchView() {
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates", CAST],
-          ["New concepts — for the sixth place", NEW_CONCEPTS],
           ["Reference — other animals", ANIMAL_REFERENCE],
         ] as const
       ).map(([title, group]) => (
