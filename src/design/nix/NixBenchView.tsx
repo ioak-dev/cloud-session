@@ -65,8 +65,9 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The animals</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Four animals from the Nix bench. They share one joint set, the same poses, expressions and
-        wardrobe, so they are compared on design alone.
+        The cast so far: the firefly is the main character; the otter, red panda and chameleon are
+        side characters, with three side slots still open. They share one joint set, the same
+        poses, expressions and wardrobe, so they are compared on design alone.
       </p>
 
       <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">

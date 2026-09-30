@@ -1,10 +1,10 @@
 ---
 name: character-design
 description: >-
-  Design and revise the Sparkles animal characters in the cloud-session studio:
-  otter, red panda, firefly, and chameleon, from the /design/nix bench.
-  Use when drawing, rigging, recolouring, or posing one of those characters, or
-  judging a character against the product rules. Read docs/brief.md and
+  Design and revise the Sparkles characters in the cloud-session studio: one main
+  character (the firefly) and six side characters (otter, red panda, chameleon,
+  and three open slots). Use when drawing, rigging, recolouring, or posing a
+  character, adding a side character, or judging one against the product rules. Read docs/brief.md and
   docs/cast.md first.
 ---
 
@@ -12,9 +12,17 @@ description: >-
 
 This repo designs characters for Sparkles. It does not change the Sparkles repo.
 
-The cast is the four animals in `docs/cast.md` and `src/design/nix/candidates.tsx`. Do not bring back the koala, the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
+The cast is one main character and six side characters, in `docs/cast.md` and `src/design/nix/candidates.tsx`. The firefly is the main character. The otter, red panda and chameleon are side characters; three side slots are open. Do not bring back the koala, the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
 
 Read `docs/brief.md` for audience, use case, and the bounds.
+
+## Main and side
+
+- The main character is the face of the product. Keep its silhouette, palette and signature fixed; vary only pose, expression and authored wardrobe.
+- A side character has its own stable identity and is never the larger presence when it shares a surface with the main character.
+- Each character must read apart from the others by silhouette alone, at small size. Do not reuse the firefly’s glow-yellow as a body field, and do not use a status hue.
+- Fill an open side slot only when the user names the animal. Add it as a new entry in `candidates.tsx`, on the shared rig, and record it in `docs/cast.md`.
+- Roles in the product are undecided; do not assign them unprompted.
 
 ## Where to work
 
@@ -40,4 +48,4 @@ Run the studio with `npm start` (`node studio.mjs`) and look at the drawing on b
 
 ## Done
 
-A change is done when the studio shows it, both grounds, and `docs/cast.md` still names the same four animals unless the user changed the cast. `npm run typecheck` passes.
+A change is done when the studio shows it, both grounds, and `docs/cast.md` still matches the drawn cast unless the user changed it. `npm run typecheck` passes.
