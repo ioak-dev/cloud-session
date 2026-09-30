@@ -44,9 +44,22 @@ function ChickHead({ mood }: Ctx) {
         <path d="M100 82 C100 64 106 56 113 57" {...line(C.primary, 6)} />
         <path d="M101 82 C106 70 114 68 121 72" {...line(C.primary, 5)} />
       </g>
-      <Puffs at={fluff} fill={C.hi} />
-      <circle cx={100} cy={126} r={50} fill={C.hi} />
+      {/* cheek fluff that sticks out at the sides */}
+      {sides.map(([side, s]) => (
+        <path
+          key={side}
+          d={`M${100 + s * 44} 118 l${s * 14} -2 l${-s * 8} 8 l${s * 12} 4 l${-s * 12} 6 Z`}
+          fill={C.hi}
+        />
+      ))}
+      {/* two tones: its own shade to the lower right, the fluff over it */}
+      <Puffs at={fluff} fill={C.mid} />
+      <circle cx={101.5} cy={127.5} r={50} fill={C.mid} />
+      <Puffs at={fluff.map(([x, y, r]) => [x - 1.5, y - 1.5, r - 0.6] as const)} fill={C.hi} />
+      <circle cx={99} cy={125} r={48.5} fill={C.hi} />
       <ellipse cx={100} cy={140} rx={37} ry={30} fill={C.soft} />
+      {/* a few feather marks */}
+      <path d="M62 112 l4 4 l4 -4 M136 104 l4 4 l4 -4 M66 132 l3 3 l3 -3 M130 126 l3 3 l3 -3" stroke={C.mid} strokeWidth={1.8} fill="none" strokeLinecap="round" />
     </g>
   );
 }
@@ -60,6 +73,8 @@ function ChickShell() {
         fill={SHELL}
       />
       <path d="M54 186 C60 208 80 220 100 220 C120 220 140 208 146 186 C136 206 118 212 100 212 C82 212 64 206 54 186 Z" fill={SHELL_SHADE} />
+      {/* a hairline crack, in the shell's own shade */}
+      <path d="M112 166 l-3 8 l5 5 l-4 7" stroke={SHELL_SHADE} strokeWidth={1.6} fill="none" strokeLinecap="round" />
       {[
         [78, 190, 3],
         [118, 196, 2.6],
@@ -168,9 +183,10 @@ export const PUFF_FAMILY: Candidate[] = [
     arms: false,
     outline: false,
     label: "Chick",
+    attitude: { mood: "curious", tilt: 8 },
     signature: "A ball of fluff with a feathery tuft, standing in the bottom of its eggshell — it fluffs up",
     pitch:
-      "From Puff: one soft ball of fluff with a paler face and front, a tuft of three feathers, standing in the bottom half of the eggshell it hatched from on thin legs, its wings resting on the rim. Its ability is Fluff up: it shakes itself and fluffs every feather out into a perfect round ball, twice its size — cosy, proud or pleased with itself — then smooths back down. Big round eyes with the shine set high, a round beak that opens to cheep, and a tuft that droops when it is worried.",
+      "Brand new to everything: earnest, eager, easily overwhelmed and proud of every small thing — at rest it gazes up at you, head on one side, wide-eyed. From Puff: one soft ball of fluff with a paler face and front, a tuft of three feathers, standing in the bottom half of the eggshell it hatched from on thin legs, its wings resting on the rim. Its ability is Fluff up: it shakes itself and fluffs every feather out into a perfect round ball, twice its size — cosy, proud or pleased with itself — then smooths back down. Big round eyes with the shine set high, a round beak that opens to cheep, and a tuft that droops when it is worried.",
     risk: "A chick is a baby; it must never make hatching or growing up a reward.",
     pal: palChick,
     body: C.hi,

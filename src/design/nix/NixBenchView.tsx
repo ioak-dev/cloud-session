@@ -22,7 +22,6 @@ import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
-import { JELLY_FAMILY } from "./side-jelly";
 import { PUFF_FAMILY } from "./side-puff";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -48,14 +47,13 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
   (id) => FIREFLIES.get(id)!,
 );
 const byId = (list: Candidate[], id: string) => list.find((x) => x.id === id)!;
-const ANIMAL_POOL = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...CANDIDATES];
+const ANIMAL_POOL = [...SIDE_CANDIDATES, ...PUFF_FAMILY, ...CANDIDATES];
 
 /** The side candidates still in the running, with the confirmed chameleon first. */
 const CAST: Candidate[] = [
   byId(CANDIDATES, "chameleon"),
   byId(ANIMAL_POOL, "side-octopus"),
   byId(ANIMAL_POOL, "side-bat"),
-  byId(ANIMAL_POOL, "side-jellyfish"),
   byId(ANIMAL_POOL, "side-chick"),
   byId(SIDE_HUMANS, "side-juno"),
   byId(SIDE_HUMANS, "side-lulu"),

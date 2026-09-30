@@ -81,18 +81,6 @@ export const SIDE_ABILITIES: Ability[] = [
     ),
   },
   {
-    id: "side-jellyfish",
-    name: "See-through",
-    line: "It goes clear — fading until you can see right through its bell — and comes back.",
-    mood: "happy",
-    fade: 0.4,
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.4} strokeLinecap="round" fill="none">
-        <path d="M34 70 q-6 10 0 20 M166 70 q6 10 0 20 M26 60 q-10 18 0 36 M174 60 q10 18 0 36" />
-      </g>
-    ),
-  },
-  {
     id: "side-chick",
     name: "Fluff up",
     line: "Shakes itself and fluffs every feather out into a round ball, twice its size, then smooths back down.",

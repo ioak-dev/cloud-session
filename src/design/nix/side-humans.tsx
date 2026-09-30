@@ -18,7 +18,7 @@ import {
 } from "./rig/eyes";
 import type { Palette } from "./rig/palette";
 import { CHIBI, type Body } from "./rig/skeleton";
-import { curve, dMouth, sides, Taper, wave } from "./side-candidates";
+import { CHUNKY, curve, dMouth, sides, Taper, wave } from "./side-candidates";
 import { C } from "./theme";
 
 /**
@@ -90,20 +90,31 @@ const CURL_FRINGE = [
   [142, 90, 9],
 ] as const;
 
+const JUNO_PUFF = [
+  [100, 30, 26],
+  [78, 38, 18],
+  [122, 38, 18],
+  [88, 18, 16],
+  [112, 18, 16],
+] as const;
+
 function JunoBack() {
   return (
-    <g fill={JUNO_HAIR}>
-      <ellipse cx={100} cy={94} rx={52} ry={48} />
-      {/* the high puff of curls */}
-      {[
-        [100, 30, 26],
-        [78, 38, 18],
-        [122, 38, 18],
-        [88, 18, 16],
-        [112, 18, 16],
-      ].map(([x, y, r]) => (
-        <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
-      ))}
+    <g>
+      <g fill={JUNO_HAIR}>
+        <ellipse cx={100} cy={94} rx={52} ry={48} />
+        {JUNO_PUFF.map(([x, y, r]) => (
+          <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
+        ))}
+      </g>
+      {/* the curls catch the light in little loops */}
+      <path
+        d="M86 22 q5 -5 9 0 M104 16 q5 -5 9 0 M92 38 q5 -5 9 0 M110 34 q5 -5 9 0 M74 42 q4 -4 8 0 M120 44 q4 -4 8 0"
+        stroke="#6e4a3a"
+        strokeWidth={2.2}
+        fill="none"
+        strokeLinecap="round"
+      />
     </g>
   );
 }
@@ -113,7 +124,21 @@ function JunoHead() {
     <g>
       <circle cx={58} cy={110} r={7} fill={JUNO_SKIN} />
       <circle cx={142} cy={110} r={7} fill={JUNO_SKIN} />
-      <ellipse cx={100} cy={104} rx={42} ry={40} fill={JUNO_SKIN} />
+      {/* two tones: her skin's own shade to the lower right, and the fringe's shadow on her brow */}
+      <ellipse cx={101.5} cy={105.5} rx={42} ry={40} fill="#6e4127" />
+      <ellipse cx={99.5} cy={103} rx={40.5} ry={38.5} fill={JUNO_SKIN} />
+      <ellipse cx={100} cy={80} rx={34} ry={9} fill="#6e4127" opacity={0.7} />
+      {/* freckles, lighter than her skin */}
+      {[
+        [72, 122],
+        [77, 126],
+        [68, 127],
+        [128, 122],
+        [123, 126],
+        [132, 127],
+      ].map(([x, y]) => (
+        <circle key={`${x}${y}`} cx={x} cy={y} r={1.3} fill="#b07a58" />
+      ))}
       <g fill={JUNO_HAIR}>
         {CURL_FRINGE.map(([x, y, r]) => (
           <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
@@ -246,7 +271,13 @@ const junoMouth: MouthKit = ({ mood, y }) => {
  * they are made of: each has a gag face per mood (a smug scheming look, a blank shock). */
 
 const BIG_HEAD = "translate(100 150) scale(1.14) translate(-100 -150)";
-export const BIG: Body = { ...CHIBI, id: "big-head", headFit: BIG_HEAD, neck: { x: 94, y: 138, w: 12, h: 18 } };
+export const BIG: Body = {
+  ...CHIBI,
+  id: "big-head",
+  headFit: BIG_HEAD,
+  neck: { x: 94, y: 138, w: 12, h: 18 },
+  w: CHUNKY,
+};
 
 /* Lulu: caramel hair with a side pony; her eyes go huge and shiny when she wants something. */
 const LULU_SKIN = "#f7dcca";
@@ -256,6 +287,8 @@ const palLulu = human(LULU_SKIN, "#e6bca6", LULU_HAIR, "#e0a868");
 function LuluBack() {
   return (
     <g>
+      {/* two strands that never lie down */}
+      <path d="M100 50 C96 36 104 30 110 34 M102 50 C104 40 114 38 118 44" stroke={LULU_HAIR} strokeWidth={4} fill="none" strokeLinecap="round" />
       <Taper
         segs={[
           [
@@ -270,7 +303,9 @@ function LuluBack() {
         fill={LULU_HAIR}
       />
       <path d="M52 128 C46 70 70 46 100 46 C130 46 154 70 148 128 Q140 136 130 132 L70 132 Q60 136 52 128 Z" fill={LULU_HAIR} />
-      <circle cx={58} cy={74} r={6} fill={C.accent} />
+      {/* the side pony's tie: a little bow */}
+      <path d="M58 74 l-9 -6 l0 12 Z M58 74 l9 -6 l0 12 Z" fill={C.accent} />
+      <circle cx={58} cy={74} r={3.2} fill={C.accentDeep} />
     </g>
   );
 }
@@ -278,12 +313,17 @@ function LuluBack() {
 function LuluHead() {
   return (
     <g>
-      <ellipse cx={100} cy={108} rx={42} ry={40} fill={LULU_SKIN} />
+      {/* two tones: her skin's shade to the lower right, and the fringe's shadow on her brow */}
+      <ellipse cx={101.5} cy={109.5} rx={42} ry={40} fill="#e6bca6" />
+      <ellipse cx={99.5} cy={107} rx={40.5} ry={38.5} fill={LULU_SKIN} />
+      <path d="M62 96 L70 100 L78 90 L88 100 L98 88 L108 100 L118 90 L128 102 L136 94 L140 100 Q100 110 62 96 Z" fill="#e6bca6" />
       {/* a choppy fringe */}
       <path
         d="M58 98 C56 62 78 50 100 50 C122 50 144 62 142 98 L136 84 L128 92 L118 80 L108 90 L98 78 L88 90 L78 80 L70 92 L64 84 Z"
         fill={LULU_HAIR}
       />
+      {/* the shine across her crown */}
+      <path d="M70 66 Q84 56 100 56 M108 56 Q118 57 126 62" stroke="#e8b27a" strokeWidth={4} fill="none" strokeLinecap="round" />
     </g>
   );
 }
@@ -369,13 +409,14 @@ export const SIDE_HUMANS: Candidate[] = [
   {
     id: "side-juno",
     kind: "human",
-    frame: CHIBI,
+    frame: { ...CHIBI, id: "juno", w: CHUNKY },
+    attitude: { mood: "happy", tilt: -6, hands: { L: [80, 198], R: [120, 198], outL: true, outR: true } },
     outline: false,
     hands: "mitten",
     label: "Juno",
     signature: "A high puff of curls, a headband and hoops — she cartwheels",
     pitch:
-      "Inspired by Zari's brightness: quick, warm, all motion. A girl with a high puff of curls, a curly fringe and a headband in the accent. Her ability is Cartwheel: she arrives, and leaves, with a cartwheel. Big round eyes almost filled by a warm brown iris, and thick brows that do a lot of the talking.",
+      "A big-hearted show-off: first to try, first to cheer someone else on, never quite still — at rest she stands hands on hips with a grin, head tipped. Refined: curl texture in her puff, freckles, her skin in two tones and the fringe's shadow on her brow. Inspired by Zari's brightness: quick, warm, all motion. A girl with a high puff of curls, a curly fringe and a headband in the accent. Her ability is Cartwheel: she arrives, and leaves, with a cartwheel. Big round eyes almost filled by a warm brown iris, and thick brows that do a lot of the talking.",
     risk: "Energy must not make the product loud: one cartwheel, never a celebration that grows. Too close to Zari if she wears Zari's colours or hair.",
     pal: palJuno,
     body: C.clothes,
@@ -389,12 +430,13 @@ export const SIDE_HUMANS: Candidate[] = [
     id: "side-lulu",
     kind: "human",
     frame: BIG,
+    attitude: { mood: "thinking", tilt: 7, hands: { L: [97, 198], R: [103, 198], outL: false, outR: false } },
     outline: false,
     hands: "mitten",
     label: "Lulu",
     signature: "A tiny girl with a big head, caramel hair in a side pony — her eyes go huge and shiny",
     pitch:
-      "Anya-spirited: a tiny girl with a big head and the most rubbery face in the cast — a smug scheming look, a gritted fright, a grin that takes her chin. Caramel hair with a choppy fringe and a side pony tied in the accent. Her ability is Puppy eyes, from the face she is made of: when she wants something, her eyes swell huge, glossy and brimming, and no one can say no. Huge round eyes with a violet iris that shrinks to a dot when she is startled.",
+      "A small schemer with a big face: smug when she is plotting, huge-eyed when she wants something, never as sneaky as she thinks — at rest she wears the smug look, hands clasped sweetly in front. Refined: a shine across her hair, two strands that won't lie down, a bow on her side pony, the fringe's shadow. Anya-spirited: a tiny girl with a big head and the most rubbery face in the cast — a smug scheming look, a gritted fright, a grin that takes her chin. Caramel hair with a choppy fringe and a side pony tied in the accent. Her ability is Puppy eyes, from the face she is made of: when she wants something, her eyes swell huge, glossy and brimming, and no one can say no. Huge round eyes with a violet iris that shrinks to a dot when she is startled.",
     risk: "Must stay clear of Anya's design: no pink hair, no cone clips, no green eyes, no uniform. Puppy eyes must never be aimed at the learner to get something from them, and never on an incorrect answer.",
     pal: palLulu,
     body: C.clothes,

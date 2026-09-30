@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 
 import { arcUp, chevron, line, OpenMouth, Orb, TONGUE_PINK, type EyeKit, type MouthKit } from "./rig/eyes";
 import type { FaceStyle, Mood } from "./rig/face";
+import type { Hands } from "./rig/motion";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
 import { WHITE, type Palette } from "./rig/palette";
 import type { PropId } from "./rig/props";
-import { pivot, type Body } from "./rig/skeleton";
+import { CHIBI, pivot, type Body } from "./rig/skeleton";
 
 /**
  * The animal candidates from Sparkles' /design/nix bench: otter, red panda, firefly, chameleon.
@@ -44,6 +45,9 @@ export type Candidate = {
   outfit: OutfitId;
   outfits: OutfitId[];
   props?: PropId[];
+  /** Who it is at rest: the expression it wears when nothing is happening, the way it holds its
+   *  head, and how it stands. A character is never neutral. */
+  attitude?: { mood?: Mood; tilt?: number; hands?: Hands };
   /** Behind the head, riding its joint: long hair, a bun. */
   headBack?: (c: Ctx) => ReactNode;
   /** Behind the torso: a tail, wings. */
@@ -65,6 +69,9 @@ const MAGENTA = "#d93f8e";
 const PLUM = "#7c5cc4";
 const TEAL = "#2aa3a0";
 const CHARCOAL = "#3b3752";
+
+/** Chunkier limbs and hands for the side candidates: rounder, softer, more huggable. */
+const CHUNKY = { upper: 13.5, fore: 12.5, thigh: 15, shin: 14, hand: 8.6, cloth: 1.15 };
 
 const ANIMAL_OUTFITS: OutfitId[] = ["bare", "dungarees", "hoodie", "raincoat", "winter", "party"];
 
@@ -179,42 +186,39 @@ const PANDA_EAR = "M52 84 C42 60 50 40 66 36 C80 46 84 62 78 74 Z";
 const PANDA_EAR_IN = "M59 76 C55 62 59 50 66 46 C73 54 75 64 72 72 Z";
 
 function PandaHead({ pal }: Ctx) {
+  const HEAD =
+    "M56 96 C56 64 76 54 100 54 C124 54 144 64 144 96 L154 106 L144 111 L152 121 L139 124 C130 136 116 140 100 140 C84 140 70 136 61 124 L48 121 L56 111 L46 106 Z";
   return (
     <g>
       {(["earL", "earR"] as const).map((j) => (
         <g key={j} data-joint={j} style={pivot(j)}>
           <g transform={j === "earR" ? "translate(200 0) scale(-1 1)" : undefined}>
-            <path
-              d={PANDA_EAR}
-              fill={pal.skin}
-            />
+            <path d={PANDA_EAR} fill={pal.skinShade} />
+            <path d={PANDA_EAR} fill={pal.skin} transform="translate(1.5 1.5) scale(0.97)" />
             <path d={PANDA_EAR_IN} fill={PANDA_CREAM} />
+            {/* the fluff that fills a red panda's ear */}
+            <path d="M62 72 l2 -8 M66 72 l3 -9 M70 72 l2 -6" stroke="#ffffff" strokeWidth={1.6} strokeLinecap="round" />
           </g>
         </g>
       ))}
-      <path
-        d="M56 96 C56 64 76 54 100 54 C124 54 144 64 144 96 L154 106 L144 111 L152 121 L139 124 C130 136 116 140 100 140 C84 140 70 136 61 124 L48 121 L56 111 L46 106 Z"
-        fill={pal.skin}
-      />
-      <path
-        d="M50 112 L58 110 L52 120 L62 122 C66 128 72 132 78 134 C70 122 70 110 64 104 Z"
-        fill={PANDA_CREAM}
-      />
-      <path
-        d="M150 112 L142 110 L148 120 L138 122 C134 128 128 132 122 134 C130 122 130 110 136 104 Z"
-        fill={PANDA_CREAM}
-      />
-      <path
-        d="M76 114 C78 102 90 100 100 104 C110 100 122 102 124 114 C124 128 112 136 100 136 C88 136 76 128 76 114 Z"
-        fill={PANDA_CREAM}
-      />
-      <path
-        d="M81 104 Q78 116 83 128 M119 104 Q122 116 117 128"
-        stroke={pal.skinShade}
-        strokeWidth={5}
-        fill="none"
-        strokeLinecap="round"
-      />
+      <path d={HEAD} fill={pal.skinShade} />
+      <path d={HEAD} fill={pal.skin} transform="translate(-2 -2.5) scale(0.99)" />
+      {/* the darker mask round the eyes */}
+      <ellipse cx={82} cy={100} rx={13} ry={11} fill="#a8481f" />
+      <ellipse cx={118} cy={100} rx={13} ry={11} fill="#a8481f" />
+      <path d="M50 112 L58 110 L52 120 L62 122 C66 128 72 132 78 134 C70 122 70 110 64 104 Z" fill={PANDA_CREAM} />
+      <path d="M150 112 L142 110 L148 120 L138 122 C134 128 128 132 122 134 C130 122 130 110 136 104 Z" fill={PANDA_CREAM} />
+      <path d="M76 114 C78 102 90 100 100 104 C110 100 122 102 124 114 C124 128 112 136 100 136 C88 136 76 128 76 114 Z" fill={PANDA_CREAM} />
+      <path d="M81 108 Q78 118 83 128 M119 108 Q122 118 117 128" stroke={pal.skinShade} strokeWidth={5} fill="none" strokeLinecap="round" />
+      {/* whisker dots on the muzzle */}
+      {[
+        [88, 120],
+        [85, 125],
+        [112, 120],
+        [115, 125],
+      ].map(([x, y]) => (
+        <circle key={`${x}${y}`} cx={x} cy={y} r={1.2} fill="#d9c2aa" />
+      ))}
     </g>
   );
 }
@@ -233,8 +237,13 @@ function PandaTail({ pal, uid }: Ctx) {
         <path d={d} />
       </clipPath>
       <path d={d} fill={pal.skin} />
-      <g clipPath={`url(#${id})`} stroke="#ecb48a" strokeWidth={8}>
-        <path d="M122 226 L134 186 M146 222 L152 184 M178 200 L154 180 M186 172 L156 166 M180 144 L152 152" />
+      <g clipPath={`url(#${id})`}>
+        <g stroke="#ecb48a" strokeWidth={8}>
+          <path d="M122 226 L134 186 M146 222 L152 184 M178 200 L154 180 M186 172 L156 166 M180 144 L152 152" />
+        </g>
+        {/* its own shade along the underside, and a dark tip */}
+        <path d="M100 206 C130 224 174 208 178 168 C170 196 140 212 104 200 Z" fill={pal.skinShade} opacity={0.55} />
+        <ellipse cx={150} cy={134} rx={12} ry={10} fill="#5a2a14" />
       </g>
     </g>
   );
@@ -256,7 +265,7 @@ const pandaEyes: EyeKit = ({ mood, s, x, y, look, id, pal }) => {
     />
   );
   const open = (k = 1, top = 0, tilt = 0, extra = false) => (
-    <Orb id={id} x={x} y={y} rx={6.8 * k} ry={7.4 * k} s={s} fill={PANDA_EYE} lid={{ top, tilt, color: pal.skin }}>
+    <Orb id={id} x={x} y={y} rx={6.8 * k} ry={7.4 * k} s={s} fill={PANDA_EYE} lid={{ top, tilt, color: "#a8481f" }}>
       <circle cx={x + dx} cy={y + dy} r={5.2 * k} fill="#6a3a22" />
       <circle cx={x + dx} cy={y + dy} r={3.4 * k} fill={PANDA_EYE} />
       <circle cx={x - 2.4 + dx} cy={y - 2.6 + dy} r={2.4 * k} fill={WHITE} />
@@ -463,38 +472,44 @@ const palCham: Palette = {
 function ChamHead({ pal }: Ctx) {
   return (
     <g>
-      <path
-        d="M66 76 C66 44 98 26 128 34 C122 48 130 62 138 76 Z"
-        fill={pal.skin}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M84 50 L92 70 M100 40 L106 68 M116 38 L120 66"
-        stroke={pal.skinShade}
-        strokeWidth={3}
-        strokeLinecap="round"
-      />
-      <ellipse
-        cx={100}
-        cy={104}
-        rx={46}
-        ry={37}
-        fill={pal.skin}
-      />
-      <path d="M62 116 C74 136 126 136 138 116 C128 130 72 130 62 116 Z" fill={CHAM_BELLY} />
+      {/* the casque: a darker ridge, the crest scalloped along its top, three stripes */}
+      <path d="M64 78 C62 44 98 24 130 32 C124 48 132 62 140 78 Z" fill={pal.skinShade} />
+      <path d="M68 76 C68 46 98 30 126 36 C120 50 128 62 134 76 Z" fill={pal.skin} />
+      {[
+        [80, 46],
+        [92, 38],
+        [105, 33],
+        [118, 32],
+      ].map(([x, y]) => (
+        <circle key={x} cx={x} cy={y} r={4.2} fill={pal.skin} />
+      ))}
+      <path d="M86 50 L93 70 M101 42 L106 68 M116 40 L120 66" stroke={pal.skinShade} strokeWidth={3.4} strokeLinecap="round" />
+      {/* the head in two tones: its own shade, lower and to the right, reads as form */}
+      <ellipse cx={100} cy={105} rx={47} ry={37} fill={pal.skinShade} />
+      <ellipse cx={98} cy={102} rx={45} ry={34} fill={pal.skin} />
+      <path d="M60 116 C74 138 126 138 140 116 C128 131 72 131 60 116 Z" fill={CHAM_BELLY} />
+      <path d="M76 126 l3 3 M88 130 l2 3 M100 131 l0 3 M112 130 l-2 3 M124 126 l-3 3" stroke="#a99be8" strokeWidth={1.6} strokeLinecap="round" />
       {[78, 122].map((x) => (
         <g key={x}>
+          <circle cx={x + 1.5} cy={99.5} r={15.5} fill={pal.skinShade} />
           <circle cx={x} cy={98} r={15} fill={pal.skin} />
-          <circle cx={x} cy={98} r={11.5} fill="none" stroke={pal.skinShade} strokeWidth={2} />
+          <path d={`M${x - 11} ${92} A13 13 0 0 1 ${x + 4} ${85}`} stroke={pal.hairHi} strokeWidth={2.2} fill="none" strokeLinecap="round" />
         </g>
       ))}
+      {/* a chameleon's rosettes: little clusters of a paler tone */}
       {[
-        [66, 120],
-        [134, 120],
+        [64, 112],
+        [136, 112],
         [100, 76],
       ].map(([x, y]) => (
-        <circle key={`${x}-${y}`} cx={x} cy={y} r={3} fill={pal.skinShade} />
+        <g key={`${x}-${y}`} fill={pal.hairHi}>
+          <circle cx={x} cy={y} r={2.6} />
+          <circle cx={x + 4} cy={y + 3} r={1.8} />
+          <circle cx={x - 3.4} cy={y + 3.6} r={1.5} />
+        </g>
       ))}
+      <circle cx={95} cy={112} r={1.4} fill={pal.skinShade} />
+      <circle cx={105} cy={112} r={1.4} fill={pal.skinShade} />
     </g>
   );
 }
@@ -585,7 +600,8 @@ function ChamTail({ pal }: Ctx) {
   const d = "M106 204 C138 210 164 232 154 256 C146 272 120 266 124 250 C127 239 142 240 142 250";
   return (
     <g data-joint="tail" style={pivot("tail")}>
-      <path d={d} stroke={pal.skin} strokeWidth={12} fill="none" strokeLinecap="round" />
+      <path d={d} stroke={pal.skinShade} strokeWidth={13} fill="none" strokeLinecap="round" />
+      <path d={d} stroke={pal.skin} strokeWidth={9} fill="none" strokeLinecap="round" transform="translate(-1 -1.5)" />
       <path
         d="M130 212 l4 6 M146 226 l6 3 M156 244 l6 0"
         stroke={pal.skinShade}
@@ -639,9 +655,12 @@ export const CANDIDATES: Candidate[] = [
     kind: "animal",
     label: "Red panda",
     outline: false,
+    frame: { ...CHIBI, id: "red-panda", w: CHUNKY },
+    hands: "mitten",
+    attitude: { mood: "happy", tilt: 5, hands: { L: [92, 178], R: [108, 178], outL: false, outR: false } },
     signature: "A huge ringed tail, tear-mark cheeks and dark legs — it rears up tall",
     pitch:
-      "The strongest silhouette of the animals: the tail alone identifies it at 48px, and the cream face markings make every expression read. Its ability is Stand tall — a red panda's own startle: it rears up on its hind legs with its arms thrown wide and its tail fluffed, to look as big as it can. A surprise, and a delight, made of its own body. Dark glossy eyes, and cream brow marks that lift and knit; a split lip under its dark nose.",
+      "Gentle, cosy and easily startled — it would rather be curled up in its own tail, and at rest it holds its paws up at its chest, the way red pandas do, with a small contented smile. The strongest silhouette of the animals: the tail alone identifies it at 48px, and the cream face markings make every expression read. Its ability is Stand tall — a red panda's own startle: it rears up on its hind legs with its arms thrown wide and its tail fluffed, to look as big as it can. A surprise, and a delight, made of its own body. Dark glossy eyes, and cream brow marks that lift and knit; a split lip under its dark nose.",
     risk: "Its rust fur sits between the destructive and warning hues; as a large field it may read as a status (§9.4.3). A Firefox and Turning Red association exists.",
     pal: palPanda,
     body: palPanda.skin,
@@ -703,9 +722,12 @@ export const CANDIDATES: Candidate[] = [
     id: "chameleon",
     kind: "animal",
     label: "Chameleon",
-    signature: "Turret eyes and a curled spiral tail",
+    frame: { ...CHIBI, id: "chameleon", w: CHUNKY },
+    hands: "mitten",
+    attitude: { tilt: 6, hands: { L: [98, 160], R: [124, 206], outL: false } },
+    signature: "Turret eyes and a curled spiral tail — it changes colour",
     pitch:
-      "The funniest face on the bench — turret eyes that swivel independently are a gag in every expression. A chameleon changes to fit where it is, which is the wardrobe idea made into a character. Violet by default.",
+      "Shy, thoughtful and easily flustered — it blushes, literally, and would rather blend in than stand out; at rest its two eyes look two ways at once, one at you and one at something it has just noticed, and one hand rests at its chin while it thinks. The funniest face on the bench: turret eyes that swivel independently are a gag in every expression. Its ability is its colour. Refined: a two-tone head and casque with a scalloped crest, turret eyes with their own shading, rosettes, a scaled belly and jaw, nostrils.",
     risk: "Confirmed side character. Colour change is its ability and is semantic on purpose — green for correct, a gentle hue for not yet — always paired with words or a status mark (docs/cast.md). A reptile is less huggable, like the firefly.",
     pal: palCham,
     body: palCham.skin,
@@ -725,6 +747,11 @@ export const CANDIDATES: Candidate[] = [
     outfits: ANIMAL_OUTFITS,
     behind: (c) => <ChamTail {...c} />,
     head: (c) => <ChamHead {...c} />,
-    belly: () => <path d="M92 156 L108 156 L110 214 L90 214 Z" fill={CHAM_BELLY} />,
+    belly: () => (
+      <g>
+        <path d="M92 156 L108 156 L110 214 L90 214 Z" fill={CHAM_BELLY} />
+        <path d="M93 168 l7 4 l7 -4 M92 182 l8 4 l8 -4 M91 196 l9 4 l9 -4" stroke="#a99be8" strokeWidth={1.6} fill="none" strokeLinecap="round" />
+      </g>
+    ),
   },
 ];

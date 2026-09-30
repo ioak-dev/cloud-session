@@ -14,7 +14,6 @@ Every character has **one special feature or ability that no other character in 
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
 | Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) with its own ink, to show where to look |
 | Fruit bat *(proposed)* | Upside-down: hangs by its feet from anything and sees it the other way round |
-| Jellyfish *(proposed)* | See-through: it goes clear, fading until you can see through its bell, and comes back |
 | Chick *(proposed)* | Fluff up: fluffs every feather out into a round ball, twice its size |
 | Juno *(proposed)* | Cartwheel: arrives, and leaves, with a cartwheel |
 | Lulu *(proposed)* | Puppy eyes: her eyes swell huge, glossy and brimming |
@@ -136,7 +135,7 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | Stand tall *(proposed)* | Candidate, competing |
-| 2–6 | Octopus, fruit bat, jellyfish, chick, Juno, Lulu (and the red panda) | See below | **Candidates**, not decided |
+| 2–6 | Octopus, fruit bat, chick, Juno, Lulu (and the red panda) | See below | **Candidates**, not decided |
 
 ### Rules for every side character
 
@@ -145,22 +144,35 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 - **The ability comes from the character itself** — its body and its nature — never a prop or an outside object.
 - **Legible small and on both grounds.** Check the recognition sheet (silhouettes at 96, 48 and 32px, the head at 32, 24 and 16px) on the light and the dark ground.
 
+### What makes a side character loved
+
+Duolingo's cast is loved for something the drawings here were missing: each of them is *somebody* before they do anything. Our candidates had abilities, their own faces and clean shapes, but at rest they stood like mannequins — the same idle stance, arms down, a neutral face, dead level — and they were drawn in flat single tones. The missing quality is **character**: a temperament you can read from across the room, and a finish that makes the shapes feel solid and soft enough to hug. Every side character now has, and every new one must have:
+
+1. **A temperament in one line.** A want and a flaw, not a job: “busy, clever and a little scatterbrained”. It is written first in the character's pitch.
+2. **An attitude at rest** (`attitude` in `candidates.tsx`, applied by the rig in the idle pose): its own resting expression, a habitual head tilt, and a stance of its own. Nobody stands neutral and dead level. Lily slouches; Duo leans in.
+3. **Asymmetry and one imperfection.** An arm that is always up, a head that tips, two strands that won't lie down, a hairline crack in a shell. Perfect symmetry reads as a logo; a small flaw reads as a friend.
+4. **Form, in two tones.** Each main part is drawn in its own shade first, then its colour over it, offset up and to the left, so a crescent of shade sits lower right. Hair casts a shadow on the brow; hair and fluff catch a shine. Still no outlines, and no black: the shade is a tone of the part's own colour.
+5. **Chunky, soft shapes.** Thicker limbs and bigger hands and feet (`CHUNKY`): rounder reads as softer and friendlier at small sizes.
+6. **Species-true detail, a little of it.** The things that make it *that* animal: a flying fox's golden collar and dog's nose, a chameleon's rosettes and scaled belly, the octopus's suckers large to small, the red panda's ear fluff, dark mask and whisker dots. Enough to be precise; never so much it stops reading at 32px.
+7. **Its own face and its own ability** — the rules above still hold.
+
 ### The candidates
 
-Eight characters are in the running for the six places: the chameleon (confirmed) and seven more. Everything else from rounds one to four is removed or kept as reference.
+Seven characters are in the running for the six places: the chameleon (confirmed) and six more.
 
-| Candidate | Where | From | Look | Ability | Eyes | Mouth |
-|---|---|---|---|---|---|---|
-| **Chameleon** | `candidates.tsx` | Nix bench | Casque, turret eyes, curled tail; no outlines | Colour change | Turret eyes that look their own ways | A long lizard mouth; its tongue curls out |
-| **Octopus** | `side-candidates.tsx` | Jelly | Mantle and six curling arms with suckers | Ink | White, with an octopus's bar pupil | Small and puckered |
-| **Fruit bat** | `side-candidates.tsx` | Fuzzy | Fuzz, a ruff, tall ears, wings folded as a cape | Upside-down | Huge and glossy, fur-tuft brows | A “ω” with two fangs |
-| **Jellyfish** | `side-jelly.tsx` | Jelly | A moon jelly: scalloped bell, four rings, frilly oral arms | See-through | Half-moons, flat on top | A tiny cat's “w” |
-| **Chick** | `side-puff.tsx` | Puff | A ball of fluff with a feathery tuft, in the bottom of its eggshell | Fluff up | Big and round, the shine set high | A round beak that opens to cheep |
-| **Juno** | `side-humans.tsx` | After Zari | A girl with a high puff of curls and a headband | Cartwheel | Big round, a warm brown iris, thick mobile brows | Full lips; a wide grin with top teeth |
-| **Lulu** | `side-humans.tsx` | Anya's spirit | A tiny girl with a big head, caramel hair in a side pony | Puppy eyes | Huge, a violet iris that shrinks to a dot when startled; smug flat lids | Gag mouths: “:3”, a chin-wide grin, the smug “heh” |
-| **Red panda** | `candidates.tsx` | Nix bench | Ringed tail, cream tear marks, dark legs; redrawn with no outlines | Stand tall | Dark and glossy; cream brow marks that lift and knit | A split lip under its dark nose |
+| Candidate | Temperament | At rest | Ability | Refined with |
+|---|---|---|---|---|
+| **Chameleon** | Shy, thoughtful, easily flustered: it blushes, literally, and would rather blend in | Its two eyes look two ways at once; a hand at its chest while it thinks; head tipped | Colour change | Two-tone head and casque, a scalloped crest, shaded turret eyes, rosettes, a scaled jaw and belly, nostrils |
+| **Octopus** | Busy, clever, a little scatterbrained: six arms, six things on the go | Happy; one arm always up in a wave it never finishes; mantle tipped | Ink | Two-tone mantle and arms, suckers large to small, a paler underside, more spots |
+| **Fruit bat** | A night owl: dozy and droll by day, awake at the wrong times, sees things differently | Heavy-lidded, head on one side, hands folded | Upside-down | A flying fox's golden collar, a soft muzzle and dog's nose, ridged ears, two-tone wings with thumb claws |
+| **Chick** | Brand new to everything: earnest, eager, easily overwhelmed, proud of every small thing | Gazing up at you, wide-eyed, head on one side | Fluff up | Two-tone fluff, cheek tufts that stick out, feather marks, a crack in its shell |
+| **Juno** | A big-hearted show-off: first to try, first to cheer someone else on | Hands on hips, a grin, head tipped | Cartwheel | Curl texture in her puff, freckles, two-tone skin, the fringe's shadow on her brow |
+| **Lulu** | A small schemer with a big face: smug when plotting, huge-eyed when she wants something, never as sneaky as she thinks | The smug look, hands clasped sweetly in front | Puppy eyes | A shine across her hair, two strands that won't lie down, a bow on her side pony, the fringe's shadow |
+| **Red panda** | Gentle, cosy, easily startled: it would rather be curled up in its tail | Paws up at its chest, a small contented smile | Stand tall | Two-tone head and ears, ear fluff, a darker mask round the eyes, whisker dots, a shaded, dark-tipped tail |
 
-**Removed:** every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
+The eyes and mouth of each are as described in their files and on the studio's eyes-and-mouths sheet.
+
+**Removed:** the jellyfish; every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
 
 **Reference — other animals** (shown in the studio, not candidates): the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
 

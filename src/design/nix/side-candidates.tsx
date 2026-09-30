@@ -175,20 +175,36 @@ function octoArms(s: number): Cubic[][] {
         [m(160), 204],
       ],
     ],
-    [
-      [
-        [m(134), 132],
-        [m(156), 140],
-        [m(172), 164],
-        [m(176), 186],
-      ],
-      [
-        [m(176), 186],
-        [m(180), 202],
-        [m(166), 208],
-        [m(162), 196],
-      ],
-    ],
+    s === 1
+      ? /* the right outer arm is up, curled beside its head: a wave it never quite stops */
+        [
+          [
+            [m(134), 134],
+            [m(160), 130],
+            [m(166), 100],
+            [m(160), 78],
+          ],
+          [
+            [m(160), 78],
+            [m(156), 62],
+            [m(172), 56],
+            [m(174), 68],
+          ],
+        ]
+      : [
+          [
+            [m(134), 132],
+            [m(156), 140],
+            [m(172), 164],
+            [m(176), 186],
+          ],
+          [
+            [m(176), 186],
+            [m(180), 202],
+            [m(166), 208],
+            [m(162), 196],
+          ],
+        ],
   ];
 }
 
@@ -198,11 +214,26 @@ function OctoBehind() {
       {sides.map(([side, s]) =>
         octoArms(s).map((arm, i) => (
           <g key={`${side}${i}`}>
-            <Taper segs={arm} w0={17} w1={5} fill={C.primary} />
-            {/* suckers along the underside of the curl */}
-            {[0.15, 0.5].map((t) => {
-              const [x, y] = bez(arm[1], t);
-              return <circle key={t} cx={x} cy={y} r={2.3} fill={C.soft} />;
+            {/* two tones: the arm's own shade beneath, the arm over it */}
+            <Taper segs={arm} w0={19} w1={6} fill={C.deep} />
+            <g transform="translate(-1.2 -1.2)">
+              <Taper segs={arm} w0={16} w1={4.6} fill={C.primary} />
+            </g>
+            {/* suckers down the arm, large at the root, small at the tip */}
+            {[
+              [0, 0.55, 3],
+              [0, 0.85, 2.7],
+              [1, 0.1, 2.4],
+              [1, 0.4, 2],
+              [1, 0.7, 1.6],
+            ].map(([seg, t, r]) => {
+              const [x, y] = bez(arm[seg], t);
+              return (
+                <g key={`${seg}${t}`}>
+                  <circle cx={x} cy={y} r={r} fill={C.soft} />
+                  <circle cx={x} cy={y} r={r * 0.45} fill={C.hi} />
+                </g>
+              );
             })}
           </g>
         )),
@@ -221,13 +252,19 @@ function OctoHead({ uid }: Ctx) {
           <stop offset="100%" stopColor={C.mid} />
         </linearGradient>
       </defs>
-      <path d={MANTLE} fill={`url(#${g})`} />
+      {/* the mantle in two tones: its shade lower and to the right, reading as a round head */}
+      <path d={MANTLE} fill={C.deep} />
+      <path d={MANTLE} fill={`url(#${g})`} transform="translate(-2.5 -2) scale(0.985)" />
+      <ellipse cx={100} cy={128} rx={36} ry={14} fill={C.mid} opacity={0.55} />
       {/* spots on the crown, a tone of its own colour */}
       {[
         [84, 58, 5],
         [112, 52, 4],
         [124, 72, 3.2],
         [74, 80, 3],
+        [96, 44, 2.6],
+        [134, 90, 2.4],
+        [64, 98, 2],
       ].map(([x, y, r]) => (
         <circle key={`${x}${y}`} cx={x} cy={y} r={r} fill={C.deep} opacity={0.45} />
       ))}
@@ -418,7 +455,10 @@ const penguinEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
 
 /* ——— Fruit bat (from Fuzzy): fuzz, a ruff, big ears; it hangs upside down ——— */
 
-const BAT: Body = { ...CHIBI, id: "bat", j: { ...J, earL: [74, 70], earR: [126, 70] } };
+/** Chunkier limbs and hands for the side candidates: rounder, softer, more huggable. */
+export const CHUNKY = { upper: 13.5, fore: 12.5, thigh: 15, shin: 14, hand: 8.6, cloth: 1.15 };
+
+const BAT: Body = { ...CHIBI, id: "bat", j: { ...J, earL: [74, 70], earR: [126, 70] }, w: CHUNKY };
 const palBat = pal(C.deep, C.primary);
 
 function ring(cx: number, cy: number, rx: number, ry: number, n: number, r: number) {
@@ -441,6 +481,14 @@ function BatHead() {
             d={`M${mirror(s, 68)} 74 C${mirror(s, 60)} 58 ${mirror(s, 58)} 42 ${mirror(s, 60)} 32 C${mirror(s, 72)} 42 ${mirror(s, 82)} 54 ${mirror(s, 84)} 66 Z`}
             fill={C.primary}
           />
+          {/* the ridges inside a bat's ear */}
+          <path
+            d={`M${mirror(s, 66)} 64 Q${mirror(s, 68)} 54 ${mirror(s, 64)} 44 M${mirror(s, 74)} 66 Q${mirror(s, 74)} 58 ${mirror(s, 70)} 50`}
+            stroke={C.hi}
+            strokeWidth={1.8}
+            fill="none"
+            strokeLinecap="round"
+          />
         </g>
       ))}
       {/* fuzz round the head: puffs of its own colour, no rim */}
@@ -456,7 +504,11 @@ function BatHead() {
         d="M88 72 C90 62 96 60 100 68 C104 60 110 62 112 72"
         fill={C.deep}
       />
-      <ellipse cx={100} cy={115} rx={4} ry={2.8} fill={C.deep} />
+      {/* a fruit bat's soft muzzle and a dog's nose, with nostrils */}
+      <ellipse cx={100} cy={118} rx={13} ry={9} fill="#f5e6d6" />
+      <path d="M94 112 Q100 108 106 112 Q106 118 100 120 Q94 118 94 112 Z" fill={C.deep} />
+      <circle cx={97.6} cy={114} r={1.2} fill="#f5e6d6" />
+      <circle cx={102.4} cy={114} r={1.2} fill="#f5e6d6" />
     </g>
   );
 }
@@ -471,6 +523,13 @@ function BatBehind() {
             d={`M${mirror(s, 112)} 160 C${mirror(s, 136)} 150 ${mirror(s, 158)} 150 ${mirror(s, 166)} 158 C${mirror(s, 170)} 180 ${mirror(s, 164)} 200 ${mirror(s, 156)} 214 C${mirror(s, 148)} 206 ${mirror(s, 142)} 210 ${mirror(s, 138)} 218 C${mirror(s, 130)} 210 ${mirror(s, 124)} 212 ${mirror(s, 120)} 218 C${mirror(s, 116)} 212 ${mirror(s, 114)} 210 ${mirror(s, 112)} 206 Z`}
             fill={C.primary}
           />
+          {/* the membrane between the outer fingers, a lighter tone */}
+          <path
+            d={`M${mirror(s, 114)} 162 L${mirror(s, 156)} 212 C${mirror(s, 148)} 206 ${mirror(s, 142)} 210 ${mirror(s, 138)} 216 Z`}
+            fill={C.mid}
+          />
+          {/* the thumb claw at the wrist */}
+          <path d={`M${mirror(s, 164)} 157 q${s * 5} -5 ${s * 2} -9`} stroke="#f5e6d6" strokeWidth={2.4} fill="none" strokeLinecap="round" />
           <path
             d={`M${mirror(s, 114)} 162 L${mirror(s, 156)} 212 M${mirror(s, 114)} 162 L${mirror(s, 138)} 216 M${mirror(s, 114)} 162 L${mirror(s, 120)} 216`}
             stroke={C.deep}
@@ -490,13 +549,15 @@ function BatBehind() {
   );
 }
 
+/** The fruit bat's mantle: a fuzzy golden collar, as flying foxes have, over a fuzzy chest. */
 function BatRuff() {
   return (
     <g>
-      {ring(100, 154, 18, 5, 10, 6).map(([x, y, r], i) => (
-        <circle key={i} cx={x} cy={y} r={r} fill={C.primary} />
+      {ring(100, 156, 22, 7, 12, 7).map(([x, y, r], i) => (
+        <circle key={i} cx={x} cy={y} r={r} fill={C.accentDeep} />
       ))}
-      <ellipse cx={100} cy={154} rx={18} ry={5} fill={C.primary} />
+      <ellipse cx={100} cy={156} rx={22} ry={7} fill={C.accentDeep} />
+      <path d="M92 150 l3 6 l3 -6 M102 150 l3 6 l3 -6" stroke={C.accent} strokeWidth={1.8} fill="none" strokeLinecap="round" />
     </g>
   );
 }
@@ -559,7 +620,8 @@ const batEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
     case "wink":
       return s === 1 ? g(shut(arcUp(x, y, 7, 4.5)), tuft(1, 0)) : g(open(0.12), tuft(3, 0));
     default:
-      return g(open(0.12), tuft(0, 0));
+      /* at rest it is dozy: heavy lids, tufts level — a night owl in daylight */
+      return g(open(0.34), tuft(-1, 0));
   }
 };
 
@@ -639,9 +701,10 @@ export const SIDE_CANDIDATES: Candidate[] = [
     arms: false,
     outline: false,
     label: "Octopus",
-    signature: "A round bell and six curling arms — it draws in ink",
+    attitude: { mood: "happy", tilt: -6 },
+    signature: "A round mantle, six curling arms, one always up — it draws in ink",
     pitch:
-      "From Jelly: the bell and the tendrils, now an octopus's mantle and six thick arms that curl, with suckers under the tips. Its ability is Ink: it draws a mark in the air — an arrow, a circle, an underline — to show where to look. Its eyes have an octopus's bar pupil, which widens, narrows and rounds with the mood.",
+      "Busy, clever and a little scatterbrained: six arms, six things on the go, and one arm always up in a wave it never quite finishes. From Jelly: the bell and the tendrils, now an octopus's mantle and six thick arms that curl, with suckers under the tips. Its ability is Ink: it draws a mark in the air — an arrow, a circle, an underline — to show where to look. Its eyes have an octopus's bar pupil, which widens, narrows and rounds with the mood.",
     risk: "Real octopuses change colour, which is the chameleon's; this one never does. Ink stays a pointer: never a tick, a cross or lettering.",
     pal: palOcto,
     body: C.primary,
@@ -657,9 +720,11 @@ export const SIDE_CANDIDATES: Candidate[] = [
     frame: BAT,
     outline: false,
     label: "Fruit bat",
-    signature: "Fuzz, a ruff, tall ears and wings folded like a cape — it hangs upside down",
+    hands: "mitten",
+    attitude: { tilt: 8, hands: { L: [95, 192], R: [105, 192], outL: false, outR: false } },
+    signature: "Fuzz, a golden collar, tall ears and wings folded like a cape — it hangs upside down",
     pitch:
-      "From Fuzzy: the fuzz and the ruff, and the feathery antennae become a fruit bat's tall ears; the long wings fold into a cape. Its ability is Upside-down: it hangs from anything — a heading, the edge of a card — and sees it the other way round. Huge glossy eyes, and fur tufts for brows.",
+      "A night owl: dozy and droll by day, wide awake at all the wrong times, and it sees things differently — often the other way up. At rest its lids are heavy, its head tips to one side, and its hands are folded in front of it. From Fuzzy: the fuzz and the ruff, and the feathery antennae become a fruit bat's tall ears; the long wings fold into a cape. Its ability is Upside-down: it hangs from anything — a heading, the edge of a card — and sees it the other way round. Huge glossy eyes, and fur tufts for brows. Refined: a flying fox's golden collar, a soft muzzle and a dog's nose, ridged ears, two-tone wings with thumb claws.",
     risk: "Bats can read as spooky; the round cream face carries it. Its wings stay folded, so it is never a second flier beside Wisp.",
     pal: palBat,
     body: C.deep,

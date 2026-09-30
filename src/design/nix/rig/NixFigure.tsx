@@ -136,7 +136,21 @@ export function NixFigure({
   const uid = React.useId().replace(/:/g, "");
   const f = c.frame ?? CHIBI;
   const j = f.j;
-  const p = POSES.find((x) => x.id === pose) ?? POSES[0];
+  const base = POSES.find((x) => x.id === pose) ?? POSES[0];
+  /* At rest, a character stands and looks like itself: its own expression and stance. */
+  const att = c.attitude;
+  const p = React.useMemo(
+    () =>
+      base.id === "idle" && att
+        ? {
+            ...base,
+            mood: att.mood ?? base.mood,
+            hands: att.hands ? base.hands.map(() => att.hands!) : base.hands,
+          }
+        : base,
+    [base, att],
+  );
+  const tilt = att?.tilt ? `rotate(${att.tilt} ${j.head[0]} ${j.head[1]})` : undefined;
   const motion = React.useMemo(() => motionFor(p, f), [p, f]);
   useJointMotion(ref, motion, still, `${c.id}|${outfit ?? ""}|${props.join(",")}`);
 
@@ -258,10 +272,12 @@ export function NixFigure({
             {c.behind?.(ctx)}
           </g>
           <g data-joint="head" style={pivot("head", j)}>
+            <g transform={tilt}>
             <g transform={f.headFit}>
               {o.back}
               {c.headBack?.(ctx)}
               {h?.back}
+            </g>
             </g>
           </g>
         </g>
@@ -308,6 +324,7 @@ export function NixFigure({
           )}
 
           <g data-joint="head" style={pivot("head", j)}>
+            <g transform={tilt}>
             <g transform={f.headFit}>
               {c.head(ctx)}
               {h?.front}
@@ -321,6 +338,7 @@ export function NixFigure({
               <HeadProps on={on} pal={pal} eyeY={c.face.eyeY} eyeGap={c.face.eyeGap} />
               {/* the signature rides over any hat — it is what keeps the character itself */}
               {c.top?.(ctx)}
+            </g>
             </g>
           </g>
 
