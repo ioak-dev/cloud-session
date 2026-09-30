@@ -28,10 +28,10 @@ const OUTFITS: Candidate["outfits"] = [
 ];
 
 /** Every edge that remains is this weight: a hairline at the figure's scale. */
-const HAIR = 1.2;
+export const HAIR = 1.2;
 const AMBER = "var(--char-glow-edge)";
 
-const pal: Palette = palette(C.primary, C.deep, C.mid, C.primary, {
+export const pal: Palette = palette(C.primary, C.deep, C.mid, C.primary, {
   line: C.line,
   eye: "#241a3a",
   glow: "#ffcf4a",
@@ -76,7 +76,7 @@ export const WISP: Body = {
   neck: { x: 94, y: 134, w: 12, h: 20 },
 };
 
-const DROPLET =
+export const DROPLET =
   "M100 44 C110 62 146 72 146 106 C146 130 126 144 100 144 C74 144 54 130 54 106 C54 72 90 62 100 44 Z";
 
 /* ——— head: antennae first, so they grow from behind it ——— */
@@ -142,7 +142,7 @@ const LOWER_SPOTS = [
   [48, 200, 1.3],
 ] as const;
 
-function Wings() {
+export function Wings() {
   return (
     <>
       {sides.map(([side, s]) => (
@@ -200,7 +200,7 @@ function Wings() {
  * colour, so where the two overlap there is no seam at any angle of sway, and only below the body
  * does it turn to glow and then amber. No edge line: a line would show where it is still body.
  */
-function Flame({ uid, mood }: Ctx) {
+export function Flame({ uid, mood }: Ctx) {
   const g = `${uid}-wispflame`;
   return (
     <g data-joint="tail" style={pivot("tail", WISP.j)}>
