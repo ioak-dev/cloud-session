@@ -19,6 +19,7 @@ import { WISP_MAIN } from "./firefly-wisp";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
+import { SIDE_ABILITIES, SIDE_CANDIDATES, type Ability } from "./side-candidates";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -48,6 +49,7 @@ const ALL: Candidate[] = [
   ...SPIRITS_2,
   ...PIP_FAMILY,
   ...REFERENCE,
+  ...SIDE_CANDIDATES,
   ...CANDIDATES,
 ];
 
@@ -57,6 +59,30 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       <span className="instrument text-xs text-muted-foreground">{label}</span>
       {children}
     </div>
+  );
+}
+
+/** A side candidate with its ability previewed: drawn over the figure, or the figure hung from a bar. */
+function AbilityTile({ a }: { a: Ability }) {
+  const c = ALL.find((x) => x.id === a.id)!;
+  const vb = a.viewBox ?? "0 0 200 300";
+  return (
+    <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+      <div className="relative h-56 w-full">
+        <div className={a.mode === "hang" ? "absolute inset-0 rotate-180" : "absolute inset-0"}>
+          <NixFigure c={c} mood={a.mood} viewBox={vb} className="h-full w-full" />
+        </div>
+        <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
+          {a.fx()}
+        </svg>
+      </div>
+      <figcaption className="text-sm">
+        <span className="material-heading text-foreground">
+          {c.label} · {a.name}
+        </span>
+        <span className="material mt-1 block text-muted-foreground">{a.line}</span>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -148,13 +174,30 @@ export function NixBenchView() {
         <WispForm />
       </div>
 
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Side candidates — round one, and their abilities
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Five new species, each from the body plan of a reference drawing: Puff becomes a lamb,
+        Jelly an octopus, Bloom an axolotl, Pip a hamster, Fuzzy a fruit bat. None glows, carries
+        antennae or leaves sparks — those are Wisp's — and none changes colour, which is the
+        chameleon's. Each has one ability, previewed here beside the figure; the red panda is given
+        one to compete.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {SIDE_ABILITIES.map((a) => (
+          <AbilityTile key={a.id} a={a} />
+        ))}
+      </div>
+
       {(
         [
           ["Main character — Wisp", [WISP_MAIN]],
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
-          ["Side candidates (and the original bench firefly)", CANDIDATES],
+          ["Side candidates — round one", SIDE_CANDIDATES],
+          ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
         ] as const
       ).map(([title, group]) => (
         <React.Fragment key={title}>

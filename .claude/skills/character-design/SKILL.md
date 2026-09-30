@@ -36,6 +36,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 - Main-character variants: `src/design/nix/firefly-bodies.tsx` and `firefly-bodies-2.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
+- Side candidates, round one (lamb, octopus, axolotl, hamster, fruit bat) and the ability previews: `src/design/nix/side-candidates.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 

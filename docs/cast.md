@@ -12,6 +12,12 @@ Every character has **one special feature or ability that no other character in 
 |---|---|
 | Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
+| Lamb *(proposed)* | Knit: draws a strand from its own fleece and knits it into a thing |
+| Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) to show where to look |
+| Axolotl *(proposed)* | Mend: puts a broken thing back together |
+| Hamster *(proposed)* | Stash: tucks a thing into its cheek pouches and brings it out later |
+| Fruit bat *(proposed)* | Upside-down: hangs from anything and sees it the other way round |
+| Red panda *(proposed)* | Balance: balances anything on its head and tail |
 
 ## Main character: Wisp (decided)
 
@@ -126,8 +132,24 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 |---|---|---|---|
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
-| — | Red panda | (none yet — the ringed tail is a look, not an ability) | Backup, no preference |
-| 2–6 | — | — | Open: new candidates are to be proposed in this repo |
+| — | Red panda | Balance *(proposed)*: the ringed tail is a look, so it is given an ability to compete | Backup, competing |
+| 2–6 | Lamb, octopus, axolotl, hamster, fruit bat | See round one below | **Proposed**, not decided |
+
+### Round one: side candidates from the reference drawings
+
+`src/design/nix/side-candidates.tsx`. Puff, Jelly, Bloom, Pip and Fuzzy all turned out well, but each carries the firefly’s spirit: antennae, wings, a light of its own, a spark trail. Each is redrawn here as **a different species**, keeping only its body plan, and given one ability. None glows, has antennae or leaves sparks (Wisp’s), and none changes colour (the chameleon’s). Static figures on the shared rig, in the product’s colours, with no black outlines. The studio shows each ability as a preview drawn over the figure (`SIDE_ABILITIES`), never painted into it.
+
+| From | Candidate | Body plan kept | Ability | Watch for |
+|---|---|---|---|---|
+| Puff | **Lamb** | The head of puffs and the cloud body, now fleece; a pale face, floppy ears; it walks | **Knit** — pulls yarn from its fleece and knits a thing | Pale fleece needs its `C.hi` hairline on the light ground; a knitted thing must never accumulate as a reward |
+| Jelly | **Octopus** | The bell, now a mantle; the tendrils, now six curling arms with suckers; it floats | **Ink** — draws an arrow, circle or underline in the air to show where to look | Never a tick or a cross, never lettering: it carries no claim about material. Real octopuses change colour; this one never does |
+| Bloom | **Axolotl** | The petal crown, now three frilled gills a side; the petal skirt, now a finned tail | **Mend** — puts a broken thing back together (axolotls regrow) | Suits the gentle incorrect answer; must never imply the learner broke something |
+| Pip | **Hamster** | The bean that stands, head and body one shape; the glowing bottom becomes a cream tummy | **Stash** — tucks a thing into its cheek pouches, brings it out later | Gold is the accent darkened (`C.accentDeep`), so it is not read as the glow; ears on the bean can read as a bear |
+| Fuzzy | **Fruit bat** | The fuzz and the ruff; the feathery antennae become tall ears; the long wings fold into a cape | **Upside-down** — hangs from a heading or a card edge | Wings stay folded, so it is never a second flier; the round cream face keeps it from reading as spooky |
+
+Silhouettes at small size: Wisp a droplet with a flame; chameleon a casque and a curled tail; lamb a cloud on legs; octopus a dome over curling arms; axolotl a wide head with a gill crown and a tail; hamster a bean with cheek bulges; fruit bat tall ears over a cape; red panda a ringed tail.
+
+With the chameleon, the five make six; the red panda competes for any slot. **Next step:** pick which to keep, then refine each drawing.
 
 ## Cast structure: recommended, not decided
 
