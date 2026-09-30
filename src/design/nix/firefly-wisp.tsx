@@ -21,6 +21,7 @@ const OUTFITS: Candidate["outfits"] = [
 const FACE = "#fbf8ff";
 
 const pal: Palette = palette(C.hi, C.deep, FACE, C.tint, {
+  line: C.line,
   eye: "#241a3a",
   glow: "#ffcf4a",
   top: C.accent,
@@ -89,7 +90,7 @@ function Head({ uid, d = DROPLET }: Ctx & { d?: string }) {
           <stop offset="100%" stopColor={C.soft} />
         </radialGradient>
       </defs>
-      <path d={d} fill={`url(#${g})`} stroke={pal.ink} strokeWidth={2.4} strokeLinejoin="round" />
+      <path d={d} fill={`url(#${g})`} stroke={C.hi} strokeWidth={2.4} strokeLinejoin="round" />
       <path
         d="M70 90 Q76 74 92 64"
         stroke={WHITE}
@@ -113,13 +114,13 @@ function SmokeAntennae({ mood, base = [100, 50] }: Ctx & { base?: readonly [numb
             {/* thin as smoke, each tipped with a spark */}
             <path
               d={`M${bx + 3 * s} ${by} C${bx + 10 * s} ${by - 10} ${bx + 20 * s} ${by - 8} ${bx + 24 * s} ${by - 18} C${bx + 26 * s} ${by - 24} ${bx + 22 * s} ${by - 28} ${x} ${y}`}
-              stroke={pal.ink}
-              strokeWidth={2}
+              stroke={C.thin}
+              strokeWidth={2.8}
               fill="none"
               strokeLinecap="round"
             />
             <circle cx={x} cy={y} r={6.5} fill={pal.glow} opacity={0.35 * bright(mood)} />
-            <circle cx={x} cy={y} r={3} fill={pal.glow} stroke={pal.ink} strokeWidth={1.2} />
+            <circle cx={x} cy={y} r={3} fill={pal.glow} stroke={C.glowEdge} strokeWidth={1.2} />
           </Antenna>
         );
       })}
@@ -152,7 +153,7 @@ function RibbonWings() {
             d={`M${100 + 10 * s} 156 C${100 + 40 * s} 136 ${100 + 66 * s} 146 ${100 + 62 * s} 172 C${100 + 60 * s} 192 ${100 + 44 * s} 204 ${100 + 44 * s} 228 C${100 + 34 * s} 206 ${100 + 32 * s} 180 ${100 + 10 * s} 166 Z`}
             fill={C.tint}
             fillOpacity={0.9}
-            stroke={pal.ink}
+            stroke={C.hi}
             strokeWidth={2}
             strokeLinejoin="round"
           />
@@ -186,7 +187,7 @@ function FlameTail({ uid, mood }: Ctx) {
       <path
         d="M80 186 Q100 198 120 186 C130 206 126 234 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C78 234 74 206 80 186 Z"
         fill={`url(#${g})`}
-        stroke={pal.ink}
+        stroke={C.glowEdge}
         strokeWidth={2.4}
         strokeLinejoin="round"
       />
@@ -224,7 +225,7 @@ function MothWings() {
               transform={`rotate(${24 * s} ${100 + 40 * s} 190)`}
               fill={C.tint}
               fillOpacity={0.92}
-              stroke={pal.ink}
+              stroke={C.hi}
               strokeWidth={2}
             />
             <circle cx={100 + 44 * s} cy={192} r={3.4} fill={C.soft} />
@@ -238,7 +239,7 @@ function MothWings() {
               transform={`rotate(${-22 * s} ${100 + 48 * s} 150)`}
               fill={C.tint}
               fillOpacity={0.92}
-              stroke={pal.ink}
+              stroke={C.hi}
               strokeWidth={2.2}
             />
             {/* a soft eyespot in the product colour */}
@@ -268,7 +269,7 @@ function CurlTail({ uid, mood }: Ctx) {
       <path
         d="M86 196 Q100 206 114 196 C122 214 118 234 104 242 C94 248 94 258 104 260 C86 264 78 248 86 236 C76 224 78 208 86 196 Z"
         fill={`url(#${g})`}
-        stroke={pal.ink}
+        stroke={C.glowEdge}
         strokeWidth={2.4}
         strokeLinejoin="round"
       />
@@ -278,67 +279,6 @@ function CurlTail({ uid, mood }: Ctx) {
         strokeWidth={3}
         fill="none"
         strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
-/* ——— Wisp · Swirl: the point of its head curls over; the body is one S of a flame ——— */
-
-const SWIRL_HEAD =
-  "M102 58 C94 46 102 32 116 34 C124 36 126 44 120 48 C114 50 110 46 114 42 C120 52 128 66 138 80 C144 90 146 98 146 108 C146 132 126 144 100 144 C74 144 54 132 54 108 C54 80 84 72 102 58 Z";
-
-const SWIRL: Body = {
-  ...WISP,
-  id: "wisp-swirl",
-  torso:
-    "M84 150 Q100 144 116 150 C124 170 120 194 108 210 C98 224 106 238 124 244 C104 252 86 240 88 222 C90 206 78 186 80 168 C80 160 80 154 84 150 Z",
-};
-
-function FinWings() {
-  return (
-    <>
-      {sides.map(([side, s]) => (
-        <g key={side}>
-          <g data-joint={`hind${side}`} style={pivot(`hind${side}`, SWIRL.j)}>
-            <path
-              d={`M${100 + 16 * s} 176 C${100 + 30 * s} 176 ${100 + 44 * s} 186 ${100 + 46 * s} 200 C${100 + 34 * s} 198 ${100 + 22 * s} 190 ${100 + 16 * s} 184 Z`}
-              fill={C.tint}
-              fillOpacity={0.92}
-              stroke={pal.ink}
-              strokeWidth={2}
-              strokeLinejoin="round"
-            />
-          </g>
-          <g data-joint={`wing${side}`} style={pivot(`wing${side}`, SWIRL.j)}>
-            {/* fins, swept back like a flame's licks */}
-            <path
-              d={`M${100 + 14 * s} 154 C${100 + 32 * s} 140 ${100 + 56 * s} 132 ${100 + 70 * s} 130 C${100 + 62 * s} 148 ${100 + 40 * s} 164 ${100 + 16 * s} 168 Z`}
-              fill={C.tint}
-              fillOpacity={0.92}
-              stroke={pal.ink}
-              strokeWidth={2.2}
-              strokeLinejoin="round"
-            />
-          </g>
-        </g>
-      ))}
-    </>
-  );
-}
-
-function SwirlGlow({ uid }: Ctx) {
-  const g = `${uid}-swirlglow`;
-  return (
-    <g>
-      <FlameGrad id={g} dir={[0, 0, 1, 1]} />
-      {/* the end of the S is the light, and it shows over any outfit */}
-      <path
-        d="M104 214 C100 226 108 238 124 244 C104 252 86 240 88 222 C89 216 92 210 96 206 Q100 212 104 214 Z"
-        fill={`url(#${g})`}
-        stroke={pal.ink}
-        strokeWidth={2.2}
-        strokeLinejoin="round"
       />
     </g>
   );
@@ -392,38 +332,5 @@ export const WISP_FAMILY: Candidate[] = [
     ),
     head: (c) => <Head {...c} />,
     top: (c) => <SmokeAntennae {...c} />,
-  },
-  {
-    id: "firefly-wisp-swirl",
-    kind: "animal",
-    frame: SWIRL,
-    legs: false,
-    label: "Wisp · Swirl",
-    signature:
-      "A head whose point curls over like a licked flame, and a body that is one S of fire",
-    pitch:
-      "The most flame-like: the tip of the droplet curls over like the lick of a flame, the body is a single S that ends in light, and swept-back fins stand in for wings. It has the most movement standing still — a character drawn as one stroke.",
-    risk: "Reads as a flame or a genie before a firefly; the curl sits where hats go.",
-    pal,
-    body: C.soft,
-    face: face(),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => (
-      <g>
-        <FinWings />
-        <circle
-          data-joint="glow"
-          cx={104}
-          cy={228}
-          r={34}
-          fill={pal.glow}
-          opacity={0.35 * bright(c.mood)}
-        />
-      </g>
-    ),
-    head: (c) => <Head {...c} d={SWIRL_HEAD} />,
-    top: (c) => <SmokeAntennae {...c} base={[104, 54]} />,
-    pendant: (c) => <SwirlGlow {...c} />,
   },
 ];

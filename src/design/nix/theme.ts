@@ -19,6 +19,12 @@ export const C = {
   /** Clothes and small trims. */
   accent: "var(--char-accent)",
   accentDeep: "var(--char-accent-deep)",
+  /** Outlines where one is needed: a translucent dark, read as a deeper shade of what it is on. */
+  line: "var(--char-line)",
+  /** Thin parts drawn as a line (antennae): the body colour on light, lighter on dark. */
+  thin: "var(--char-thin)",
+  /** The edge of the glow: its own deeper amber, never a black line. */
+  glowEdge: "var(--char-glow-edge)",
 } as const;
 
 export type Scheme = { id: string; label: string; primary: string; accent: string };

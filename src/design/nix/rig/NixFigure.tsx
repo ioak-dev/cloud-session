@@ -77,7 +77,8 @@ export function NixFigure({
   useJointMotion(ref, motion, still, `${c.id}|${outfit ?? ""}|${props.join(",")}`);
 
   const pal = c.pal;
-  const ink = pal.ink;
+  /** Outlines; the face keeps `pal.ink` for its features. */
+  const ink = pal.line ?? pal.ink;
   const o = outfitParts(outfit ?? c.outfit, pal, f.torso);
   const on = new Set<PropId>([...(c.props ?? []), ...props, ...(o.brings ?? [])]);
   const h = c.kind === "animal" ? null : Hair({ id: hair ?? c.hair ?? "bob", pal });
@@ -166,7 +167,7 @@ export function NixFigure({
         cy={282}
         rx={42}
         ry={6}
-        fill={ink}
+        fill={pal.ink}
         opacity={0.12}
       />
       <g data-joint="root" style={pivot("root", j)}>

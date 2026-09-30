@@ -33,7 +33,7 @@ export function HeadProps({
   eyeY: number;
   eyeGap: number;
 }): ReactNode {
-  const ink = pal.ink;
+  const ink = pal.line ?? pal.line ?? pal.ink;
   return (
     <g>
       {on.has("glasses") && (
@@ -158,7 +158,7 @@ export function Backpack({ pal, part }: { pal: Palette; part: "back" | "straps" 
           height={60}
           rx={14}
           fill={pal.accent}
-          stroke={pal.ink}
+          stroke={pal.line ?? pal.ink}
           strokeWidth={2.5}
         />
         <rect
@@ -168,13 +168,13 @@ export function Backpack({ pal, part }: { pal: Palette; part: "back" | "straps" 
           height={18}
           rx={7}
           fill={pal.accent}
-          stroke={pal.ink}
+          stroke={pal.line ?? pal.ink}
           strokeWidth={2}
         />
       </g>
     );
   return (
-    <g stroke={pal.ink} strokeWidth={2} fill={pal.accent}>
+    <g stroke={pal.line ?? pal.ink} strokeWidth={2} fill={pal.accent}>
       <path d="M84 151 L88 151 L92 200 L87 200 Z" strokeLinejoin="round" />
       <path d="M116 151 L112 151 L108 200 L113 200 Z" strokeLinejoin="round" />
     </g>
@@ -187,20 +187,20 @@ export function Book({ pal }: { pal: Palette }) {
       <path
         d="M78 178 L100 184 L122 178 L122 204 L100 210 L78 204 Z"
         fill={pal.accent}
-        stroke={pal.ink}
+        stroke={pal.line ?? pal.ink}
         strokeWidth={2.4}
         strokeLinejoin="round"
       />
       <path
         d="M81 176 L100 182 L100 206 L81 200 Z M119 176 L100 182 L100 206 L119 200 Z"
         fill={WHITE}
-        stroke={pal.ink}
+        stroke={pal.line ?? pal.ink}
         strokeWidth={1.6}
         strokeLinejoin="round"
       />
       <path
         d="M85 184 L96 187 M85 190 L96 193 M104 187 L115 184 M104 193 L115 190"
-        stroke={pal.ink}
+        stroke={pal.line ?? pal.ink}
         strokeOpacity={0.3}
         strokeWidth={1.4}
       />

@@ -44,11 +44,16 @@
   /* Character colours: the header sets primary and accent; the rest follow. */
   --char-primary: var(--primary);
   --char-accent: var(--accent);
-  --char-deep: color-mix(in oklab, var(--char-primary) 66%, black);
+  --char-deep: color-mix(in oklab, var(--char-primary) 78%, black);
   --char-soft: color-mix(in oklab, var(--char-primary) 38%, white);
   --char-tint: color-mix(in oklab, var(--char-primary) 12%, white);
   --char-hi: color-mix(in oklab, var(--char-primary) 55%, white);
   --char-accent-deep: color-mix(in oklab, var(--char-accent) 72%, black);
+  /* No black outlines. Where an edge is needed it is a translucent dark, so it reads as a deeper
+     shade of whatever it lies on; thin parts (antennae) use a tone that holds on either ground. */
+  --char-line: oklch(0.2 0.04 262 / 0.3);
+  --char-thin: var(--char-primary);
+  --char-glow-edge: #e3a41b;
 
   --guide-ink: oklch(0.249 0.022 354);
   --guide-body: oklch(0.373 0.112 278);
@@ -83,6 +88,7 @@
     --accent: oklch(0.840 0.160 88);
     --accent-deep: oklch(0.800 0.150 80);
     --read-w: 370;
+    --char-thin: var(--char-hi);
     color-scheme: dark;
   }
 }
@@ -100,6 +106,7 @@
   --accent: oklch(0.840 0.160 88);
   --accent-deep: oklch(0.800 0.150 80);
   --read-w: 370;
+  --char-thin: var(--char-hi);
   color-scheme: dark;
 }
 

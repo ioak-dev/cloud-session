@@ -25,6 +25,7 @@ const NO_NECK = { x: 100, y: 150, w: 0, h: 0 };
 const FACE = "#fff4e8";
 
 const pal: Palette = palette(C.deep, C.deep, FACE, "#efd8c6", {
+  line: C.line,
   eye: "#241a2e",
   glow: "#ffd84a",
   top: C.accent,
@@ -96,7 +97,7 @@ function BeanTop({
   return (
     <g>
       <path d={`${d} Z`} fill={C.primary} />
-      <path d={d} fill="none" stroke={pal.ink} strokeWidth={2.6} strokeLinecap="round" />
+      <path d={d} fill="none" stroke={C.line} strokeWidth={2.6} strokeLinecap="round" />
       <path d={shine} stroke={C.hi} strokeWidth={4} fill="none" strokeLinecap="round" />
       <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={FACE} />
     </g>
@@ -109,7 +110,13 @@ function BottomGlow({ uid, d = BEAN_GLOW }: Ctx & { d?: string }) {
   return (
     <g>
       <GlowGrad id={g} glow={pal.glow} rim="#f5a623" />
-      <path d={d} fill={`url(#${g})`} stroke={pal.ink} strokeWidth={2.4} strokeLinejoin="round" />
+      <path
+        d={d}
+        fill={`url(#${g})`}
+        stroke={C.glowEdge}
+        strokeWidth={2.4}
+        strokeLinejoin="round"
+      />
       <path
         d="M72 238 Q80 244 90 246"
         stroke={WHITE}
@@ -153,8 +160,8 @@ function SpringAntennae({ mood }: Ctx) {
       ).map(([side, d, [x, y]]) => (
         <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 56]} mood={mood}>
           {/* a coiled spring: boing */}
-          <path d={d} stroke={pal.ink} strokeWidth={2.6} fill="none" strokeLinecap="round" />
-          <circle cx={x} cy={y} r={4.5} fill={C.deep} stroke={pal.ink} strokeWidth={1.8} />
+          <path d={d} stroke={C.thin} strokeWidth={3} fill="none" strokeLinecap="round" />
+          <circle cx={x} cy={y} r={4.5} fill={C.thin} />
         </Antenna>
       ))}
     </g>
@@ -182,7 +189,7 @@ function PipWings() {
             transform={`rotate(${34 * s} ${100 + 52 * s} 124)`}
             fill={C.tint}
             fillOpacity={0.92}
-            stroke={pal.ink}
+            stroke={C.hi}
             strokeWidth={2.2}
           />
         </g>
@@ -208,12 +215,12 @@ function CaseWings() {
                 ry={32}
                 fill={C.tint}
                 fillOpacity={0.88}
-                stroke={pal.ink}
+                stroke={C.hi}
                 strokeWidth={2}
               />
               <path
                 d={`M${100 + 62 * s} 132 Q${100 + 66 * s} 160 ${100 + 62 * s} 188`}
-                stroke={pal.ink}
+                stroke={C.hi}
                 strokeOpacity={0.22}
                 strokeWidth={1.4}
                 fill="none"
@@ -230,7 +237,7 @@ function CaseWings() {
                 rx={17}
                 ry={40}
                 fill={C.deep}
-                stroke={pal.ink}
+                stroke={C.line}
                 strokeWidth={2.4}
               />
               <path
@@ -315,7 +322,7 @@ function PlumpWings() {
               transform={`rotate(${-28 * s} ${100 + 58 * s} 170)`}
               fill={C.tint}
               fillOpacity={0.9}
-              stroke={pal.ink}
+              stroke={C.hi}
               strokeWidth={2}
             />
           </g>
@@ -328,12 +335,12 @@ function PlumpWings() {
               transform={`rotate(${34 * s} ${100 + 62 * s} 116)`}
               fill={C.tint}
               fillOpacity={0.9}
-              stroke={pal.ink}
+              stroke={C.hi}
               strokeWidth={2.2}
             />
             <path
               d={`M${100 + 50 * s} 130 Q${100 + 64 * s} 116 ${100 + 74 * s} 98`}
-              stroke={pal.ink}
+              stroke={C.hi}
               strokeOpacity={0.22}
               strokeWidth={1.4}
               fill="none"
@@ -357,141 +364,12 @@ function GlowAntennae({ uid, mood }: Ctx) {
         ] as const
       ).map(([side, d, [x, y]]) => (
         <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 74]} mood={mood}>
-          <path d={d} stroke={pal.ink} strokeWidth={2.8} fill="none" strokeLinecap="round" />
+          <path d={d} stroke={C.thin} strokeWidth={3} fill="none" strokeLinecap="round" />
           <circle cx={x} cy={y} r={10} fill={pal.glow} opacity={0.3 * bright(mood)} />
-          <circle cx={x} cy={y} r={5.5} fill={`url(#${g})`} stroke={pal.ink} strokeWidth={1.8} />
+          <circle cx={x} cy={y} r={5.5} fill={`url(#${g})`} stroke={C.glowEdge} strokeWidth={1.8} />
         </Antenna>
       ))}
     </g>
-  );
-}
-
-/* ——— Pip · Cap: a firefly's head shield worn as a cap; wing cases closed down the back ——— */
-
-function CapTop() {
-  return (
-    <g>
-      <BeanTop />
-      {/* the pronotum: on a real firefly, the shield over its head */}
-      <path
-        d="M59 84 C67 63 84 52 100 52 C116 52 133 63 141 84 C128 78 114 75 100 75 C86 75 72 78 59 84 Z"
-        fill={C.deep}
-        stroke={pal.ink}
-        strokeWidth={2.4}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M62 84 C76 78 88 76 100 76 C112 76 124 78 138 84"
-        stroke={C.accent}
-        strokeWidth={3}
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M76 66 Q86 58 98 57"
-        stroke={C.hi}
-        strokeWidth={3}
-        fill="none"
-        strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
-function BeadAntennae({ mood }: Ctx) {
-  return (
-    <g>
-      {(
-        [
-          [
-            "L",
-            "M90 56 L82 30",
-            [
-              [88, 48],
-              [85, 39],
-            ],
-            [81, 27],
-          ],
-          [
-            "R",
-            "M110 56 L118 30",
-            [
-              [112, 48],
-              [115, 39],
-            ],
-            [119, 27],
-          ],
-        ] as const
-      ).map(([side, d, beads, [x, y]]) => (
-        <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 56]} mood={mood}>
-          <path d={d} stroke={pal.ink} strokeWidth={3} strokeLinecap="round" />
-          {beads.map(([bx, by]) => (
-            <circle
-              key={by}
-              cx={bx}
-              cy={by}
-              r={2.8}
-              fill={C.deep}
-              stroke={pal.ink}
-              strokeWidth={1}
-            />
-          ))}
-          <ellipse
-            cx={x}
-            cy={y}
-            rx={4.5}
-            ry={5.5}
-            fill={C.deep}
-            stroke={pal.ink}
-            strokeWidth={1.6}
-          />
-        </Antenna>
-      ))}
-    </g>
-  );
-}
-
-function ClosedCases() {
-  return (
-    <>
-      {sides.map(([side, s]) => (
-        <g key={side}>
-          {/* flying-wing tips, peeking out under the closed cases, fluttering */}
-          <g
-            data-joint={`hind${side}`}
-            style={pivot(`hind${side}`, { ...PIP.j, hindL: [58, 236], hindR: [142, 236] })}
-          >
-            <ellipse
-              cx={100 + 50 * s}
-              cy={252}
-              rx={8}
-              ry={15}
-              transform={`rotate(${34 * s} ${100 + 50 * s} 252)`}
-              fill={C.tint}
-              fillOpacity={0.9}
-              stroke={pal.ink}
-              strokeWidth={2}
-            />
-          </g>
-          {/* the closed wing cases: a split cape down the back, cream-edged; they don't flap */}
-          <path
-            d={`M${100 + 30 * s} 94 C${100 + 60 * s} 104 ${100 + 68 * s} 160 ${100 + 64 * s} 212 C${100 + 62 * s} 234 ${100 + 52 * s} 244 ${100 + 40 * s} 246 C${100 + 46 * s} 204 ${100 + 44 * s} 140 ${100 + 30 * s} 94 Z`}
-            fill={C.deep}
-            stroke={pal.ink}
-            strokeWidth={2.4}
-            strokeLinejoin="round"
-          />
-          <path
-            d={`M${100 + 38 * s} 106 C${100 + 58 * s} 126 ${100 + 62 * s} 180 ${100 + 58 * s} 222`}
-            stroke="#fff3de"
-            strokeOpacity={0.8}
-            strokeWidth={2.2}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </g>
-      ))}
-    </>
   );
 }
 
@@ -568,30 +446,5 @@ export const PIP_FAMILY: Candidate[] = [
     head: () => <BeanTop d={PLUMP_TOP} faceAt={[100, 116, 38, 30]} shine="M68 100 Q76 86 90 80" />,
     top: (c) => <GlowAntennae {...c} />,
     pendant: (c) => <BottomGlow {...c} d={PLUMP_GLOW} />,
-  },
-  {
-    id: "firefly-pip-cap",
-    kind: "animal",
-    frame: PIP,
-    label: "Pip · Cap",
-    signature: "A firefly's head shield worn as a cap, and wing cases closed down its back",
-    pitch:
-      "The most insect-literate Pip: the shield that covers a real firefly's head becomes a cap with an accent rim, beaded antennae rise through it, and the wing cases fold closed down the back like a split cape — with the tips of the flying wings fluttering out below. At rest it looks like a firefly that has landed.",
-    risk: "The cap competes with hats in the wardrobe; closed cases hide the wings, so it reads less as a flyer.",
-    pal,
-    body: C.primary,
-    face: face(),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => (
-      <g>
-        <ClosedCases />
-        <Halo {...c} />
-      </g>
-    ),
-    head: () => <CapTop />,
-    top: (c) => <BeadAntennae {...c} />,
-    belly: () => RINGS(206),
-    pendant: (c) => <BottomGlow {...c} />,
   },
 ];

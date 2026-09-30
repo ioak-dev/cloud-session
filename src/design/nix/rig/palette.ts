@@ -4,7 +4,11 @@
  * outline is what carries the 3:1 edge against either canvas.
  */
 export type Palette = {
+  /** Eyes, mouth, brows: the face's features. */
   ink: string;
+  /** Outlines of the body, limbs, clothes and props. Falls back to `ink`; a character drawn
+   *  without black outlines sets a tonal line here. */
+  line?: string;
   /** Face and, for a human, every bare limb. */
   skin: string;
   skinShade: string;

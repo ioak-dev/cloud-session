@@ -21,7 +21,21 @@ The firefly is the natural fit for the main character, because Sparkles’ guide
 
 A character has no colours of its own. Every firefly draws with the product’s **primary** and **accent** (`src/design/nix/theme.ts`), and in Sparkles those are the product’s own tokens. The studio header switches the scheme for every character at once. *Sparkles* uses the product tokens, and a custom pair can be picked. Deeper and lighter shades are derived from the primary in `studio.css`. **The glow is the one fixed colour**, because it is the firefly’s ability. Never make per-character colourways.
 
-The product’s current accent is a yellow close to the glow. Clothes drawn in it sit near the light, so check the glow still stands apart once real clothes are on.
+The product’s current accent is a yellow close to the glow. In the Sparkles scheme, clothes drawn in it sit right against the light and the two blur, so the glow stops standing apart. Deciding what clothes are drawn in (the accent, a deep primary, or a neutral) is still open.
+
+### Outlines
+
+**Decision: no black outlines.** Shapes are told apart by colour and tone, the way Duolingo’s characters are: flat shapes, no black line around them. A black line also disappears on the dark ground, which is what made the antennae vanish. Where an edge is needed, it is a shade of the part’s own colour, never black:
+
+| Where | Edge |
+|---|---|
+| The body and limbs, and clothes on them | A translucent dark (`C.line`) that reads as a deeper shade of whatever it lies on; soft on either ground |
+| Pale parts that meet a pale ground: wings, Wisp’s head | A mid shade of the product colour (`C.hi`) |
+| The glow | Its own deeper amber (`C.glowEdge`) |
+| Thin parts drawn as a line: antennae | No outline; the line is drawn in `C.thin`, the body colour on light and a lighter shade on dark |
+| Eyes, mouth, brows | Stay dark ink: they sit on the cream face, which is the same on both grounds |
+
+In the rig, `Palette.line` is the outline colour for the body, limbs, clothes and props; `Palette.ink` is kept for the face’s features. The reference drawings and bench animals still use black outlines.
 
 ### The choice: Pip or Wisp
 
@@ -34,7 +48,6 @@ One of these two families becomes the main character. Each variant is independen
 | Pip | The original: stubby wings, coiled-spring antennae |
 | Wing cases | Wing cases lifted up and out over clear flying wings; rings above the glow |
 | Plump | A rounder egg with a bigger face; glowing antenna tips; two pairs of clear wings |
-| Cap | A firefly’s head shield worn as a cap; beaded antennae; wing cases closed down the back, flying-wing tips peeking out below |
 
 **Wisp** (`src/design/nix/firefly-wisp.tsx`): floats, with no legs; a droplet head and a body that ends in a flame of light. It is drawn in lightened product colours so it still reads as pale.
 
@@ -42,7 +55,6 @@ One of these two families becomes the main character. Each variant is independen
 |---|---|
 | Wisp | The original: ribbon wings, a long flame |
 | Moth | Two pairs of round wings with eyespots; a short flame curled like a comma |
-| Swirl | The head’s point curls over like a licked flame; the body is one S that ends in light; swept fins |
 
 **Wings move as two pairs.** Where a character has upper and lower wings, the upper pair rides `wingL`/`wingR` and the lower pair `hindL`/`hindR`. The upper pair strokes slowly; the lower pair beats twice to each stroke, half a beat behind. The two pairs are never one piece.
 
@@ -57,7 +69,7 @@ Kept as inspiration for the main character or a side character, not as candidate
 | Cube | `firefly-bodies-2.tsx` | Everything square; a lit window in the chest |
 | Hood | `firefly-bodies-2.tsx` | A cone of a cloak, a floppy hood, light from inside the cloak |
 
-Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio; Pip’s per-character colourways; the Pip × Wisp hybrids (Droplet, Flame-top, Comet).
+Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio; Pip’s per-character colourways; the Pip × Wisp hybrids (Droplet, Flame-top, Comet); Pip · Cap; Wisp · Swirl.
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
 

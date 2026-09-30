@@ -19,8 +19,8 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-pip.tsx` | The Pip family: Pip, Wing cases, Plump, Cap |
-| `src/design/nix/firefly-wisp.tsx` | The Wisp family: Wisp, Moth, Swirl |
+| `src/design/nix/firefly-pip.tsx` | The Pip family: Pip, Wing cases, Plump |
+| `src/design/nix/firefly-wisp.tsx` | The Wisp family: Wisp, Moth |
 | `src/design/nix/theme.ts` | The colour tokens every firefly draws with, and the header's schemes |
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |

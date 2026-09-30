@@ -69,7 +69,13 @@ function Shirt({
 }) {
   return (
     <g>
-      <path d={d} fill={color} stroke={pal.ink} strokeWidth={2.5} strokeLinejoin="round" />
+      <path
+        d={d}
+        fill={color}
+        stroke={pal.line ?? pal.ink}
+        strokeWidth={2.5}
+        strokeLinejoin="round"
+      />
       {children}
     </g>
   );
@@ -93,13 +99,13 @@ function Skirt({
       <path
         d={`M80 198 L120 198 L${120 + flare} ${bottom} Q100 ${bottom + 7} ${80 - flare} ${bottom} Z`}
         fill={color}
-        stroke={pal.ink}
+        stroke={pal.line ?? pal.ink}
         strokeWidth={2.5}
         strokeLinejoin="round"
       />
       <path
         d={`M92 204 L88 ${bottom + 2} M108 204 L112 ${bottom + 2}`}
-        stroke={pal.ink}
+        stroke={pal.line ?? pal.ink}
         strokeOpacity={0.25}
         strokeWidth={2}
       />
@@ -144,7 +150,7 @@ export function Star({
 }
 
 export function outfitParts(id: OutfitId, pal: Palette, torso: string): OutfitParts {
-  const ink = pal.ink;
+  const ink = pal.line ?? pal.line ?? pal.ink;
   switch (id) {
     case "bare":
       return { upper: null, fore: null, thigh: null, shin: null, shoe: null };
@@ -362,7 +368,7 @@ export function outfitParts(id: OutfitId, pal: Palette, torso: string): OutfitPa
         fore: { from: 0, to: 0.86, w: 16, color: pal.top },
         thigh: { from: 0, to: 1, w: 16, color: pal.bottom },
         shin: { from: 0, to: 1, w: 15, color: pal.bottom },
-        shoe: pal.ink,
+        shoe: pal.line ?? pal.ink,
         boots: pal.shoe,
         brings: ["beanie"],
       };
