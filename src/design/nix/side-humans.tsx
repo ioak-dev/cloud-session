@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
-import type { Candidate } from "./candidates";
+import type { Candidate, Ctx } from "./candidates";
 import { palette } from "./firefly-variants";
 import {
+  arcDown,
   arcUp,
   chevron,
   EYE_WHITE,
@@ -17,7 +18,7 @@ import {
 } from "./rig/eyes";
 import type { Palette } from "./rig/palette";
 import { CHIBI, type Body } from "./rig/skeleton";
-import { dMouth, sides, Taper, wave } from "./side-candidates";
+import { curve, dMouth, sides, Taper, wave } from "./side-candidates";
 import { C } from "./theme";
 
 /**
@@ -203,95 +204,6 @@ const junoEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
   }
 };
 
-/* ——— Wren — deadpan (Lily-inspired), a girl ——— */
-
-const WREN_SKIN = "#f2d6c4";
-const WREN_SHADE = "#e0b9a3";
-const palWren = human(WREN_SKIN, WREN_SHADE, C.deep, C.primary);
-
-function WrenBack() {
-  return (
-    <path
-      d="M48 146 L48 96 C48 58 72 44 100 44 C128 44 152 58 152 96 L152 146 Q126 150 100 148 Q74 150 48 146 Z"
-      fill={C.deep}
-    />
-  );
-}
-
-function WrenHead() {
-  return (
-    <g>
-      <ellipse cx={100} cy={106} rx={40} ry={40} fill={WREN_SKIN} />
-      {/* the blunt fringe, down to the brows, and the straight side locks */}
-      <path d="M58 88 C58 62 78 52 100 52 C122 52 142 62 142 88 Z" fill={C.deep} />
-      <path d="M56 84 L70 84 L68 146 Q61 148 54 146 Z" fill={C.deep} />
-      <path d="M144 84 L130 84 L132 146 Q139 148 146 146 Z" fill={C.deep} />
-      <rect x={120} y={80} width={14} height={5} rx={2.5} fill={C.accent} transform="rotate(-18 127 82)" />
-    </g>
-  );
-}
-
-/** Wren: a heavy, flat top lid at rest — deadpan — over a small blue iris, a faint line under each
- *  eye, and thin straight brows. Her expressions are small, so a wide-open eye is her big one. */
-const wrenEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
-  const ink = p.ink;
-  const [dx, dy] = look;
-  const brow = (raise: number, tilt: number) => {
-    const by = y - 15 - raise;
-    return (
-      <path
-        d={`M${x - 7} ${by} L${x + 7} ${by}`}
-        {...line(C.deep, 2.4)}
-        transform={turnAt(s, tilt, x, by)}
-      />
-    );
-  };
-  const open = (top: number, tilt = 0, bottom = 0, k = 1) => (
-    <g>
-      <Orb
-        id={id}
-        x={x}
-        y={y}
-        rx={8}
-        ry={8.5 * k}
-        s={s}
-        fill={EYE_WHITE}
-        lid={{ top, tilt, bottom, color: WREN_SKIN }}
-        edge={{ color: ink, width: 1.8 }}
-      >
-        <circle cx={x + dx} cy={y + 1 + dy} r={4} fill={C.primary} />
-        <circle cx={x + dx} cy={y + 1 + dy} r={1.8} fill={ink} />
-        <circle cx={x - 1.4 + dx} cy={y - 0.6 + dy} r={1.2} fill={EYE_WHITE} />
-      </Orb>
-      {top === 0 && (
-        <path d={`M${x - 8} ${y - 1} A8 ${8.5 * k} 0 0 1 ${x + 8} ${y - 1}`} {...line(ink, 2.6)} />
-      )}
-      <path d={`M${x - 5} ${y + 11} Q${x} ${y + 12.5} ${x + 5} ${y + 11}`} {...line(WREN_SHADE, 1.4)} />
-    </g>
-  );
-  const flat = <path d={`M${x - 7} ${y} L${x + 7} ${y}`} {...line(ink, 3)} />;
-  switch (mood) {
-    case "happy":
-      return g2(open(0.4, 0, 0.35), brow(1, 0));
-    case "delighted":
-      return g2(open(0.06, 0, 0, 1.06), brow(5, 0));
-    case "curious":
-      return g2(open(0.3), s === 1 ? brow(6, -8) : brow(0, 0));
-    case "thinking":
-      return g2(open(0.5), s === -1 ? brow(2, 6) : brow(0, -4));
-    case "focused":
-      return g2(open(0.58), brow(-2, -8));
-    case "worried":
-      return g2(open(0.28, 12), brow(1, 14));
-    case "oops":
-      return g2(flat, brow(1, 10));
-    case "wink":
-      return s === 1 ? g2(flat, brow(-1, 0)) : g2(open(0.45), brow(1, 0));
-    default:
-      return g2(open(0.45), brow(0, 0));
-  }
-};
-
 /* ——— Mouths ——— */
 
 const JUNO_LIP = "#6b3024";
@@ -325,32 +237,6 @@ const junoMouth: MouthKit = ({ mood, y }) => {
       return <OpenMouth d={dMouth(y, 8, 6, 103)} fill={MOUTH_IN} teeth={[95, y - 1, 16, 3]} />;
     default:
       return smile();
-  }
-};
-
-/** Wren: a small mouth, set a little off-centre; mostly a flat line, and a smirk. A real open
- *  smile is rare, which is what makes it count. */
-const wrenMouth: MouthKit = ({ mood, y, pal: p }) => {
-  const ink = p.ink;
-  switch (mood) {
-    case "happy":
-      return <path d={`M96 ${y + 1} Q102 ${y + 3} 107 ${y - 1.5}`} {...line(ink, 2.2)} />;
-    case "delighted":
-      return <OpenMouth d={dMouth(y, 6, 6, 101)} fill={MOUTH_IN} tongue={[101, y + 8, 3.4, 2.2]} />;
-    case "curious":
-      return <ellipse cx={102} cy={y + 1.5} rx={2.2} ry={2.6} fill={ink} />;
-    case "thinking":
-      return <path d={`M98 ${y + 2} L107 ${y}`} {...line(ink, 2.2)} />;
-    case "focused":
-      return <path d={`M99 ${y + 1} L105 ${y + 1}`} {...line(ink, 2.2)} />;
-    case "worried":
-      return <path d={wave(y + 1.5, 5, 1.8, 102)} {...line(ink, 2.2)} />;
-    case "oops":
-      return g2(<path d={`M97 ${y + 1} L107 ${y + 1}`} {...line(ink, 2.2)} />, <ellipse cx={104} cy={y + 3.5} rx={2.2} ry={2.4} fill={TONGUE_PINK} />);
-    case "wink":
-      return <path d={`M96 ${y + 1} Q102 ${y + 2.5} 108 ${y - 2}`} {...line(ink, 2.2)} />;
-    default:
-      return <path d={`M98 ${y + 1} L107 ${y + 1}`} {...line(ink, 2.2)} />;
   }
 };
 
@@ -586,6 +472,442 @@ const mimiMouth: MouthKit = ({ mood, y, pal: p }) => {
   }
 };
 
+/* Pia: a round bob, a blunt fringe and one cowlick that won't lie flat; she plays statues. */
+const PIA_SKIN = "#f5d6c0";
+const PIA_HAIR = "#6b4a3a";
+const palPia = human(PIA_SKIN, "#e3b9a0", PIA_HAIR, "#8a6450");
+
+function PiaBack() {
+  return (
+    <path
+      d="M52 134 C44 72 70 46 100 46 C130 46 156 72 148 134 Q124 142 100 140 Q76 142 52 134 Z"
+      fill={PIA_HAIR}
+    />
+  );
+}
+
+function PiaHead({ mood }: Ctx) {
+  /* the cowlick springs up when she is delighted and flops when she is worried */
+  const lick = mood === "worried" || mood === "oops" ? 70 : mood === "delighted" ? -18 : 0;
+  return (
+    <g>
+      <ellipse cx={100} cy={108} rx={42} ry={40} fill={PIA_SKIN} />
+      <path d="M58 94 C58 62 78 52 100 52 C122 52 142 62 142 94 Z" fill={PIA_HAIR} />
+      <g transform={`rotate(${lick} 104 54)`}>
+        <path d="M104 54 C98 36 112 26 120 32 C126 38 118 44 112 40" {...line(PIA_HAIR, 6)} />
+      </g>
+    </g>
+  );
+}
+
+/** Pia: huge round eyes with a two-tone honey iris and a square shine; a heavy, flat lash line.
+ *  Startled, they go to hollow rings. */
+const piaEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const brow = (raise: number, tilt: number) => {
+    const by = y - 17 - raise;
+    return <path d={`M${x - 6} ${by + 1.5} Q${x} ${by - 2.5} ${x + 6} ${by + 1.5}`} {...line(PIA_HAIR, 2.6)} transform={turnAt(s, tilt, x, by)} />;
+  };
+  const open = (k = 1, top = 0, tilt = 0, extra = false) => {
+    const [rx, ry] = [9.6 * k, 10.8 * k];
+    return (
+      <g>
+        <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={EYE_WHITE} lid={{ top, tilt, color: PIA_SKIN }} edge={{ color: ink, width: 2 }}>
+          <circle cx={x + dx} cy={y + 1 + dy} r={7 * k} fill="#b86e22" />
+          <ellipse cx={x + dx} cy={y + 5 + dy} rx={5 * k} ry={3.2 * k} fill="#e8b35a" />
+          <circle cx={x + dx} cy={y + 1 + dy} r={3.2 * k} fill={ink} />
+          <rect x={x - 5 + dx} y={y - 5 + dy} width={3.6} height={4.2} rx={1} fill={EYE_WHITE} />
+          {extra && <circle cx={x + 3 + dx} cy={y + 3 + dy} r={1.4} fill={EYE_WHITE} />}
+        </Orb>
+        {top === 0 && <path d={`M${x - rx} ${y - 1} A${rx} ${ry} 0 0 1 ${x + rx} ${y - 1}`} {...line(ink, 3.4)} />}
+      </g>
+    );
+  };
+  const ring = (r: number) => (
+    <g>
+      <ellipse cx={x} cy={y} rx={9.6} ry={10.8} fill={EYE_WHITE} />
+      <circle cx={x} cy={y + 1} r={r} {...line(ink, 2.2)} />
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g2(<path d={arcUp(x, y, 8, 5)} {...line(ink, 3.4)} />, brow(3, 0));
+    case "delighted":
+      return g2(open(1.1, 0, 0, true), brow(7, 0));
+    case "curious":
+      return g2(open(1.04), s === 1 ? brow(7, -10) : brow(0, 3));
+    case "thinking":
+      return g2(open(1, 0.36, 0), s === -1 ? brow(5, 10) : brow(-1, -6));
+    case "focused":
+      return g2(open(1, 0.4, -8), brow(-3, -14));
+    case "worried":
+      return g2(ring(4), brow(4, 18));
+    case "oops":
+      return g2(ring(2.4), brow(3, 14));
+    case "wink":
+      return s === 1 ? g2(<path d={arcUp(x, y, 8, 5)} {...line(ink, 3.4)} />, brow(0, 0)) : g2(open(), brow(3, 0));
+    default:
+      return g2(open(), brow(0, 0));
+  }
+};
+
+/** Pia: a small mouth with one snaggletooth, which shows whenever she smiles; frozen, she grits
+ *  her teeth. */
+const piaMouth: MouthKit = ({ mood, y, pal: p }) => {
+  const ink = p.ink;
+  const fang = (x: number, top: number) => <path d={`M${x - 2} ${top} L${x + 2} ${top} L${x} ${top + 3.6} Z`} fill={EYE_WHITE} />;
+  switch (mood) {
+    case "happy":
+      return g2(<OpenMouth d={dMouth(y, 9, 7)} fill={MOUTH_IN} tongue={[100, y + 10, 4.5, 3]} />, fang(105, y + 0.2));
+    case "delighted":
+      return g2(<OpenMouth d={dMouth(y - 2, 12, 11)} fill={MOUTH_IN} tongue={[100, y + 13, 6, 3.6]} />, fang(106, y - 1.4));
+    case "curious":
+      return <ellipse cx={100} cy={y + 2} rx={2.8} ry={3.4} fill={ink} />;
+    case "thinking":
+      return <path d={`M99 ${y + 1} L109 ${y}`} {...line(ink, 2.4)} />;
+    case "focused":
+      return (
+        <g>
+          <rect x={90} y={y - 2} width={20} height={7} rx={3} fill={MOUTH_IN} />
+          <rect x={91.5} y={y - 0.8} width={17} height={4.6} rx={1.6} fill={EYE_WHITE} />
+          <path d={`M91.5 ${y + 1.5} L108.5 ${y + 1.5}`} {...line(MOUTH_IN, 1)} />
+        </g>
+      );
+    case "worried":
+      return <path d={wave(y + 2, 6, 2.6)} {...line(ink, 2.4)} />;
+    case "oops":
+      return g2(<path d={`M92 ${y + 1} L108 ${y + 1}`} {...line(ink, 2.4)} />, fang(104, y + 1.4));
+    case "wink":
+      return g2(<path d={`M92 ${y} Q100 ${y + 6} 109 ${y - 2}`} {...line(ink, 2.4)} />, fang(104, y + 2.6));
+    default:
+      return g2(<path d={curve(y, 6, 4)} {...line(ink, 2.4)} />, fang(104, y + 1.8));
+  }
+};
+
+/* Nell: long auburn twin tails and a swept fringe; she twirls. */
+const NELL_SKIN = "#f8e0d0";
+const NELL_HAIR = "#b8563a";
+const palNell = human(NELL_SKIN, "#ecc0aa", NELL_HAIR, "#d27a5a");
+
+function NellBack() {
+  return (
+    <g>
+      {sides.map(([side, s]) => (
+        <g key={side}>
+          <Taper
+            segs={[
+              [
+                [100 + s * 40, 62],
+                [100 + s * 64, 78],
+                [100 + s * 70, 120],
+                [100 + s * 62, 170],
+              ],
+            ]}
+            w0={28}
+            w1={12}
+            fill={NELL_HAIR}
+          />
+          <circle cx={100 + s * 40} cy={62} r={6.5} fill={C.accent} />
+        </g>
+      ))}
+      <ellipse cx={100} cy={100} rx={48} ry={50} fill={NELL_HAIR} />
+    </g>
+  );
+}
+
+function NellHead() {
+  return (
+    <g>
+      <ellipse cx={100} cy={108} rx={42} ry={40} fill={NELL_SKIN} />
+      <path
+        d="M58 102 C54 60 80 48 104 50 C128 52 146 66 142 100 C136 84 126 74 112 72 C98 80 80 88 60 106 Z"
+        fill={NELL_HAIR}
+      />
+    </g>
+  );
+}
+
+/** Nell: huge, tall eyes with a blue iris, a big oval shine and three lashes. Worried, they well up;
+ *  flustered, they spin into swirls. */
+const nellEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const brow = (raise: number, tilt: number) => {
+    const by = y - 18 - raise;
+    return <path d={`M${x - 7} ${by + 2} Q${x} ${by - 2} ${x + 7} ${by + 1}`} {...line(NELL_HAIR, 2)} transform={turnAt(s, tilt, x, by)} />;
+  };
+  const lashes = (bx: number, by: number) => (
+    <path d={`M${bx} ${by} l${s * 4} -2.4 M${bx - s * 1.2} ${by - 2.6} l${s * 3.4} -3.6 M${bx - s * 3.6} ${by - 4.6} l${s * 2} -3.8`} {...line(ink, 1.8)} />
+  );
+  const open = (k = 1, top = 0, tilt = 0, teary = false) => {
+    const [rx, ry] = [9.4 * k, 11.8 * k];
+    return (
+      <g>
+        <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={EYE_WHITE} lid={{ top, tilt, color: NELL_SKIN }} edge={{ color: ink, width: 1.8 }}>
+          <ellipse cx={x + dx} cy={y + 1.5 + dy} rx={7 * k} ry={8.4 * k} fill={C.primary} />
+          <ellipse cx={x + dx} cy={y + 1.5 + dy} rx={3.4 * k} ry={4.2 * k} fill={ink} />
+          <ellipse cx={x - 2.8 + dx} cy={y - 3 + dy} rx={2.8} ry={3.6} fill={EYE_WHITE} />
+          <circle cx={x + 3 + dx} cy={y + 4.6 + dy} r={1.3} fill={EYE_WHITE} />
+          {teary && <ellipse cx={x} cy={y + 7} rx={rx} ry={5.5} fill={C.tint} opacity={0.75} />}
+          {teary && <path d={`M${x - 5} ${y + 5} Q${x} ${y + 3} ${x + 5} ${y + 5}`} {...line(EYE_WHITE, 1.6)} />}
+        </Orb>
+        {top === 0 && <path d={`M${x - rx} ${y - 1} A${rx} ${ry} 0 0 1 ${x + rx} ${y - 1}`} {...line(ink, 2.8)} />}
+        {lashes(x + s * (rx - 1), top === 0 ? y - ry * 0.55 : y - ry + 2 * ry * top)}
+      </g>
+    );
+  };
+  const swirl = <path d={`M${x} ${y} a1.8 1.8 0 1 1 3.6 0 a3.6 3.6 0 1 1 -7.2 0 a5.4 5.4 0 1 1 10.8 0`} {...line(ink, 2)} />;
+  switch (mood) {
+    case "happy":
+      return g2(g2(<path d={arcUp(x, y, 8, 5)} {...line(ink, 3.2)} />, lashes(x + s * 7.5, y + 1)), brow(3, 0));
+    case "delighted":
+      return g2(open(1.1), brow(7, 0));
+    case "curious":
+      return g2(open(1.02), s === 1 ? brow(7, -10) : brow(0, 3));
+    case "thinking":
+      return g2(open(1, 0.3), s === -1 ? brow(5, 10) : brow(-1, -6));
+    case "focused":
+      return g2(open(1, 0.4, -8), brow(-3, -12));
+    case "worried":
+      return g2(open(1.04, 0.06, 12, true), brow(3, 18));
+    case "oops":
+      return g2(swirl, brow(3, 14));
+    case "wink":
+      return s === 1 ? g2(g2(<path d={arcUp(x, y, 8, 5)} {...line(ink, 3.2)} />, lashes(x + s * 7.5, y + 1)), brow(0, 0)) : g2(open(), brow(3, 0));
+    default:
+      return g2(open(), brow(0, 0));
+  }
+};
+
+/** Nell: a gap-toothed grin — two front teeth with a gap — whenever she smiles open. */
+const nellMouth: MouthKit = ({ mood, y, pal: p }) => {
+  const ink = p.ink;
+  const teeth = (top: number) => (
+    <g fill={EYE_WHITE}>
+      <rect x={94.6} y={top} width={4.6} height={4} rx={1} />
+      <rect x={100.8} y={top} width={4.6} height={4} rx={1} />
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g2(<OpenMouth d={dMouth(y, 10, 8)} fill={MOUTH_IN} tongue={[100, y + 11, 5, 3]} />, teeth(y));
+    case "delighted":
+      return g2(<OpenMouth d={dMouth(y - 2, 13, 12)} fill={MOUTH_IN} tongue={[100, y + 15, 6.5, 4]} />, teeth(y - 1.6));
+    case "curious":
+      return <ellipse cx={100} cy={y + 2} rx={2.6} ry={3.4} fill={ink} />;
+    case "thinking":
+      return <path d={`M104 ${y - 2.5} q3.4 1.6 0 3 q3.4 1.6 0 3`} {...line(ink, 2.2)} />;
+    case "focused":
+      return <path d={`M95 ${y + 1} L105 ${y + 1}`} {...line(ink, 2.4)} />;
+    case "worried":
+      return <OpenMouth d={`M93 ${y + 4} Q100 ${y - 3} 107 ${y + 4} Q100 ${y + 2} 93 ${y + 4} Z`} fill={MOUTH_IN} />;
+    case "oops":
+      return g2(<path d={wave(y + 1, 8, 3)} {...line(ink, 2.4)} />, <ellipse cx={103} cy={y + 5} rx={2.6} ry={2.6} fill={TONGUE_PINK} />);
+    case "wink":
+      return g2(<OpenMouth d={dMouth(y, 9, 6, 102)} fill={MOUTH_IN} />, teeth(y));
+    default:
+      return <path d={curve(y, 6, 4.4)} {...line(ink, 2.4)} />;
+  }
+};
+
+/* Koko: a short lilac-grey bob with a scalloped fringe and a big bow; she gets the hiccups. */
+const KOKO_SKIN = "#eebf9c";
+const KOKO_HAIR = "#8e7aac";
+const palKoko = human(KOKO_SKIN, "#dca482", KOKO_HAIR, "#aa98c6");
+
+function KokoBack() {
+  return <ellipse cx={100} cy={98} rx={48} ry={47} fill={KOKO_HAIR} />;
+}
+
+function KokoHead() {
+  return (
+    <g>
+      <ellipse cx={100} cy={108} rx={42} ry={40} fill={KOKO_SKIN} />
+      <path
+        d="M58 98 C56 60 80 50 100 50 C120 50 144 60 142 98 L136 84 Q128 96 120 82 Q110 96 100 80 Q90 96 80 82 Q72 96 64 84 Z"
+        fill={KOKO_HAIR}
+      />
+      {/* the bow */}
+      <g fill={C.accent}>
+        <ellipse cx={116} cy={52} rx={13} ry={8} transform="rotate(-24 116 52)" />
+        <ellipse cx={140} cy={46} rx={13} ry={8} transform="rotate(20 140 46)" />
+        <circle cx={128} cy={50} r={5.5} />
+      </g>
+    </g>
+  );
+}
+
+/** Koko: big black pupils on white with three shines, and round dot brows that bob up and down.
+ *  A hiccup makes one eye squeeze shut and the other pop. */
+const kokoEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const dot = (raise: number, drift = 0) => <ellipse cx={x - s * drift} cy={y - 16 - raise} rx={3.2} ry={2.4} fill={KOKO_HAIR} />;
+  const open = (k = 1, pupil = 6.4, top = 0, tilt = 0, extra = false) => (
+    <g>
+      <Orb id={id} x={x} y={y} rx={9 * k} ry={10 * k} s={s} fill={EYE_WHITE} lid={{ top, tilt, color: KOKO_SKIN }} edge={{ color: ink, width: 1.4 }}>
+        <circle cx={x + dx} cy={y + 1 + dy} r={pupil} fill={ink} />
+        <circle cx={x - pupil * 0.4 + dx} cy={y - pupil * 0.35 + dy} r={pupil * 0.36} fill={EYE_WHITE} />
+        <circle cx={x + pupil * 0.45 + dx} cy={y + pupil * 0.45 + dy} r={pupil * 0.18} fill={EYE_WHITE} />
+        <circle cx={x + pupil * 0.3 + dx} cy={y - pupil * 0.55 + dy} r={pupil * 0.14} fill={EYE_WHITE} />
+        {extra && <circle cx={x - pupil * 0.5 + dx} cy={y + pupil * 0.5 + dy} r={pupil * 0.14} fill={EYE_WHITE} />}
+      </Orb>
+      {top === 0 && <path d={`M${x - 9 * k} ${y - 1} A${9 * k} ${10 * k} 0 0 1 ${x + 9 * k} ${y - 1}`} {...line(ink, 2)} />}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g2(<path d={arcUp(x, y, 7.5, 5)} {...line(ink, 3.4)} />, dot(3));
+    case "delighted":
+      return g2(open(1.14, 7.4, 0, 0, true), dot(7));
+    case "curious":
+      return g2(open(1, 5), dot(s === 1 ? 7 : 0));
+    case "thinking":
+      return g2(open(1, 5.6, 0.4), dot(s === -1 ? 5 : -1));
+    case "focused":
+      return g2(open(1, 5.8, 0.44, -8), dot(-2, 2));
+    case "worried":
+      return g2(open(1.06, 3.2), dot(3, -2.4));
+    case "oops":
+      return s === -1
+        ? g2(<path d={chevron(x, y, s, 6, 5.5)} {...line(ink, 3.4)} />, dot(1))
+        : g2(open(1.12, 3.6), dot(8));
+    case "wink":
+      return s === 1 ? g2(<path d={arcUp(x, y, 7.5, 5)} {...line(ink, 3.4)} />, dot(1)) : g2(open(), dot(3));
+    default:
+      return g2(open(), dot(0));
+  }
+};
+
+/** Koko: a tiny “u” with the tip of her tongue showing at rest; a round “o” for a hiccup. */
+const kokoMouth: MouthKit = ({ mood, y, pal: p }) => {
+  const ink = p.ink;
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={`M91 ${y} Q100 ${y + 14} 109 ${y} Z`} fill={MOUTH_IN} tongue={[100, y + 8, 4.4, 2.8]} />;
+    case "delighted":
+      return <OpenMouth d={`M88 ${y - 2} Q100 ${y + 20} 112 ${y - 2} Z`} fill={MOUTH_IN} tongue={[100, y + 11, 6, 3.8]} />;
+    case "curious":
+      return <ellipse cx={100} cy={y + 2} rx={2.4} ry={3} fill={ink} />;
+    case "thinking":
+      return <path d={`M103 ${y - 2.5} q3.2 1.6 0 3 q3.2 1.6 0 3`} {...line(ink, 2.2)} />;
+    case "focused":
+      return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(ink, 2.6)} />;
+    case "worried":
+      return <path d={wave(y + 2, 4.6, 2)} {...line(ink, 2.2)} />;
+    case "oops":
+      return <OpenMouth d={`M96 ${y + 2} a4 4.4 0 1 0 8 0 a4 4.4 0 1 0 -8 0 Z`} fill={MOUTH_IN} />;
+    case "wink":
+      return <path d={`M93 ${y} Q96.5 ${y + 3.5} 100 ${y} Q103.5 ${y + 3.5} 107 ${y}`} {...line(ink, 2.4)} />;
+    default:
+      return g2(
+        <OpenMouth d={`M95 ${y} Q100 ${y + 8} 105 ${y} Z`} fill={MOUTH_IN} />,
+        <ellipse cx={100} cy={y + 3.6} rx={2.2} ry={1.6} fill={TONGUE_PINK} />,
+      );
+  }
+};
+
+/* Tami: two long braids with ribbons, a middle parting; she daydreams. After Juno's line: a normal
+   head, not the big one. */
+const TAMI_SKIN = "#b07350";
+const TAMI_HAIR = "#5b3a2a";
+const TAMI_LIP = "#7e3f30";
+const palTami = human(TAMI_SKIN, "#955e3e", TAMI_HAIR, "#7a5040");
+
+function TamiBack() {
+  return <ellipse cx={100} cy={98} rx={48} ry={48} fill={TAMI_HAIR} />;
+}
+
+function TamiHead() {
+  return (
+    <g>
+      <ellipse cx={100} cy={106} rx={42} ry={40} fill={TAMI_SKIN} />
+      <path d="M58 100 C56 60 80 50 100 50 C120 50 144 60 142 100 C132 78 116 68 100 68 C84 68 68 78 58 100 Z" fill={TAMI_HAIR} />
+      <path d="M100 52 L100 68" {...line("#7a5040", 1.6)} />
+      {/* two braids falling in front of the shoulders, ribbons at the ends */}
+      {sides.map(([side, s]) => (
+        <g key={side}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <ellipse key={i} cx={100 + s * (46 - i * 0.6)} cy={112 + i * 14} rx={8.4 - i * 0.4} ry={9} fill={TAMI_HAIR} />
+          ))}
+          <path d={`M${100 + s * 44} 180 l${-s * 8} 8 M${100 + s * 44} 180 l${s * 8} 8`} {...line(C.accent, 4.4)} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/** Tami: soft, dreamy eyes under a gently lowered lid, a hazel iris, a top lash line and two long
+ *  lower lashes; she gazes up and away when she drifts off. Soft, full brows. */
+const tamiEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const brow = (raise: number, tilt: number) => {
+    const by = y - 16 - raise;
+    return <path d={`M${x - 8} ${by + 2} Q${x - 1} ${by - 3} ${x + 8} ${by}`} {...line(TAMI_HAIR, 3.6)} transform={turnAt(s, tilt, x, by)} />;
+  };
+  const lower = <path d={`M${x + s * 5} ${y + 8.4} l${s * 2.6} 2.6 M${x + s * 7.6} ${y + 6} l${s * 3} 1.6`} {...line(ink, 1.6)} />;
+  const open = (top = 0.24, tilt = 0, k = 1) => (
+    <g>
+      <Orb id={id} x={x} y={y} rx={9 * k} ry={9.4 * k} s={s} fill={EYE_WHITE} lid={{ top, tilt, color: TAMI_SKIN }} edge={{ color: ink, width: 1.8 }}>
+        <circle cx={x + dx} cy={y + 1 + dy} r={6.4 * k} fill="#8a6a3a" />
+        <circle cx={x + dx} cy={y + 1 + dy} r={2.8 * k} fill={ink} />
+        <circle cx={x - 2 + dx} cy={y - 1.6 + dy} r={2.2} fill={EYE_WHITE} />
+      </Orb>
+      {top === 0 && <path d={`M${x - 9 * k} ${y - 1} A${9 * k} ${9.4 * k} 0 0 1 ${x + 9 * k} ${y - 1} l${s * 3} -2.4`} {...line(ink, 2.8)} />}
+      {lower}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g2(g2(<path d={arcUp(x, y, 7.5, 4.4)} {...line(ink, 3)} />, lower), brow(2, 0));
+    case "delighted":
+      return g2(open(0, 0, 1.1), brow(6, 0));
+    case "curious":
+      return g2(open(0.06), s === 1 ? brow(6, -8) : brow(0, 3));
+    case "thinking":
+      return g2(open(0.18), brow(3, 6));
+    case "focused":
+      return g2(open(0.44, -6), brow(-2, -10));
+    case "worried":
+      return g2(open(0.14, 12), brow(1, 16));
+    case "oops":
+      return g2(<path d={arcDown(x, y, 7, 3)} {...line(ink, 3)} />, brow(2, 12));
+    case "wink":
+      return s === 1 ? g2(<path d={arcUp(x, y, 7.5, 4.4)} {...line(ink, 3)} />, brow(0, 0)) : g2(open(), brow(2, 0));
+    default:
+      return g2(open(), brow(0, 0));
+  }
+};
+
+/** Tami: soft full lips; a small open “o” when she is miles away. */
+const tamiMouth: MouthKit = ({ mood, y }) => {
+  const lips = (dx = 0, rot = 0) => (
+    <path d={`M${91 + dx} ${y} Q${100 + dx} ${y + 8} ${109 + dx} ${y} Q${100 + dx} ${y + 3} ${91 + dx} ${y} Z`} fill={TAMI_LIP} transform={`rotate(${rot} ${100 + dx} ${y})`} />
+  );
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={dMouth(y, 9, 7)} fill={MOUTH_IN} teeth={[89, y - 1, 22, 3.2]} tongue={[100, y + 10, 4.4, 2.8]} />;
+    case "delighted":
+      return <OpenMouth d={dMouth(y - 1, 11, 10)} fill={MOUTH_IN} teeth={[87, y - 2, 26, 3.6]} tongue={[100, y + 13, 5.6, 3.4]} />;
+    case "curious":
+      return g2(<ellipse cx={100} cy={y + 2} rx={4} ry={4.6} fill={TAMI_LIP} />, <ellipse cx={100} cy={y + 2} rx={2} ry={2.6} fill={MOUTH_IN} />);
+    case "thinking":
+      return g2(<ellipse cx={103} cy={y + 2} rx={3.4} ry={3.8} fill={TAMI_LIP} />, <ellipse cx={103} cy={y + 2} rx={1.7} ry={2.2} fill={MOUTH_IN} />);
+    case "focused":
+      return <ellipse cx={100} cy={y + 1} rx={6.4} ry={2.2} fill={TAMI_LIP} />;
+    case "worried":
+      return <path d={wave(y + 2, 6, 2.6)} {...line(TAMI_LIP, 3.2)} />;
+    case "oops":
+      return g2(lips(), <ellipse cx={103} cy={y + 5.6} rx={2.4} ry={2.4} fill={TONGUE_PINK} />);
+    case "wink":
+      return lips(3, -8);
+    default:
+      return lips();
+  }
+};
+
 /* ——— The people ——— */
 
 export const SIDE_HUMANS: Candidate[] = [
@@ -607,25 +929,6 @@ export const SIDE_HUMANS: Candidate[] = [
     outfits: OUTFITS,
     headBack: () => <JunoBack />,
     head: () => <JunoHead />,
-  },
-  {
-    id: "side-wren",
-    kind: "human",
-    frame: CHIBI,
-    outline: false,
-    hands: "mitten",
-    label: "Wren",
-    signature: "A blunt bob in the product's colour, a heavy fringe, a flat gaze — she naps anywhere",
-    pitch:
-      "Inspired by Lily's deadpan: a girl with a blunt bob in the product's deep blue, a fringe down to her brows and a hair clip in the accent. Her ability is Nap: she can doze off anywhere — standing up, mid-sentence — and wakes with a start; she is the one for a long wait. Her lids sit heavy and flat at rest, and her small mouth sits off-centre, so a wide-open eye and a real smile are her big reactions.",
-    risk: "Deadpan must never read as disappointed at an incorrect answer; her gentle face is the soft one, not the flat one.",
-    pal: palWren,
-    body: C.clothes,
-    face: face({ eyeY: 108, eyeGap: 16, mouthY: 128, lid: WREN_SKIN, kit: wrenEyes, mouthKit: wrenMouth }),
-    outfit: "hoodie",
-    outfits: OUTFITS,
-    headBack: () => <WrenBack />,
-    head: () => <WrenHead />,
   },
   {
     id: "side-lulu",
@@ -664,5 +967,81 @@ export const SIDE_HUMANS: Candidate[] = [
     outfits: OUTFITS,
     headBack: () => <MimiBack />,
     head: () => <MimiHead />,
+  },
+  {
+    id: "side-pia",
+    kind: "human",
+    frame: BIG,
+    outline: false,
+    hands: "mitten",
+    label: "Pia",
+    signature: "A tiny girl with a round bob and one cowlick that won't lie flat — she plays statues",
+    pitch:
+      "Lulu's line: a tiny girl with a big head, a round cocoa bob, a blunt fringe and a single cowlick that springs up when she is delighted and flops when she is worried. Her ability is Statue: she freezes mid-move, like the game, and holds it until it is her turn — the one for waiting. Huge eyes with a two-tone honey iris and a square shine that go to hollow rings when she is startled; a small mouth with one snaggletooth, gritted when she is frozen.",
+    risk: "Freezing must read as a game, never as fear.",
+    pal: palPia,
+    body: C.clothes,
+    face: face({ eyeY: 110, eyeGap: 18, mouthY: 131, lid: PIA_SKIN, kit: piaEyes, mouthKit: piaMouth }),
+    outfit: "dungarees",
+    outfits: OUTFITS,
+    headBack: () => <PiaBack />,
+    head: (c) => <PiaHead {...c} />,
+  },
+  {
+    id: "side-nell",
+    kind: "human",
+    frame: BIG,
+    outline: false,
+    hands: "mitten",
+    label: "Nell",
+    signature: "A tiny girl with long auburn twin tails and a swept fringe — she twirls",
+    pitch:
+      "Lulu's line: a tiny girl with a big head and long auburn twin tails tied in the accent, a fringe swept to one side. Her ability is Twirl: she spins on the spot, twin tails flying. Huge, tall eyes with a blue iris, a big oval shine and three lashes; they well up when she is worried and spin into swirls when she is flustered. A gap-toothed grin.",
+    risk: "Welling up must stay gentle and brief: never on an incorrect answer.",
+    pal: palNell,
+    body: C.clothes,
+    face: face({ eyeY: 110, eyeGap: 18, mouthY: 131, lid: NELL_SKIN, kit: nellEyes, mouthKit: nellMouth }),
+    outfit: "dress",
+    outfits: OUTFITS,
+    headBack: () => <NellBack />,
+    head: () => <NellHead />,
+  },
+  {
+    id: "side-koko",
+    kind: "human",
+    frame: BIG,
+    outline: false,
+    hands: "mitten",
+    label: "Koko",
+    signature: "A tiny girl with a lilac-grey bob, a scalloped fringe and a big bow — she gets the hiccups",
+    pitch:
+      "Lulu's line: a tiny girl with a big head, a short lilac-grey bob with a scalloped fringe and a big bow in the accent. Her ability is Hiccup: she gets the hiccups and hops a little with each one — one eye squeezes shut and the other pops. Big black pupils on white with three shines, and round dot brows that bob; a tiny mouth with the tip of her tongue showing.",
+    risk: "Hiccups are a gag: never tied to a wrong answer or a score.",
+    pal: palKoko,
+    body: C.clothes,
+    face: face({ eyeY: 110, eyeGap: 18, mouthY: 131, lid: KOKO_SKIN, kit: kokoEyes, mouthKit: kokoMouth }),
+    outfit: "hoodie",
+    outfits: OUTFITS,
+    headBack: () => <KokoBack />,
+    head: () => <KokoHead />,
+  },
+  {
+    id: "side-tami",
+    kind: "human",
+    frame: CHIBI,
+    outline: false,
+    hands: "mitten",
+    label: "Tami",
+    signature: "Two long braids with ribbons and a middle parting — she daydreams",
+    pitch:
+      "Juno's line, with a normal head: a girl with two long braids falling in front of her shoulders, ribbons in the accent, and a middle parting. Her ability is Daydream: she drifts off, eyes up and away, and a small cloud of a thought appears — then she is back. Soft dreamy eyes under a gently lowered lid, a hazel iris and long lower lashes; soft full lips that fall into a small “o” when she is miles away.",
+    risk: "Daydreaming must not read as not paying attention to the learner.",
+    pal: palTami,
+    body: C.clothes,
+    face: face({ eyeY: 106, eyeGap: 18, mouthY: 128, lid: TAMI_SKIN, kit: tamiEyes, mouthKit: tamiMouth }),
+    outfit: "raincoat",
+    outfits: OUTFITS,
+    headBack: () => <TamiBack />,
+    head: () => <TamiHead />,
   },
 ];

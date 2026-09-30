@@ -59,41 +59,6 @@ export const SIDE_ABILITIES: Ability[] = [
     ),
   },
   {
-    id: "side-cloud",
-    name: "Rain",
-    line: "A small shower that waters what is below, so things grow. Never on an incorrect answer.",
-    mood: "happy",
-    fx: () => (
-      <g fill={C.hi}>
-        {[
-          [70, 196],
-          [92, 214],
-          [114, 198],
-          [132, 220],
-          [80, 238],
-          [106, 246],
-          [124, 262],
-        ].map(([x, y]) => (
-          <path key={`${x}${y}`} d={`M${x} ${y} q-4 7 -4 10 a4 4 0 0 0 8 0 q0 -3 -4 -10 Z`} />
-        ))}
-      </g>
-    ),
-  },
-  {
-    id: "side-flower",
-    name: "Sprout",
-    line: "Plants a seed, and it grows.",
-    mood: "curious",
-    fx: () => (
-      <g>
-        <ellipse cx={164} cy={274} rx={22} ry={7} fill={C.deep} opacity={0.35} />
-        <path d="M164 272 C164 258 162 250 166 238" stroke={C.deep} strokeWidth={3} fill="none" strokeLinecap="round" />
-        <ellipse cx={156} cy={246} rx={9} ry={4.5} transform="rotate(-30 156 246)" fill={C.primary} />
-        <ellipse cx={174} cy={238} rx={9} ry={4.5} transform="rotate(30 174 238)" fill={C.mid} />
-      </g>
-    ),
-  },
-  {
     id: "side-juno",
     name: "Cartwheel",
     line: "Arrives, and leaves, with a cartwheel.",
@@ -127,104 +92,18 @@ export const SIDE_ABILITIES: Ability[] = [
     ),
   },
   {
-    id: "side-squid",
-    name: "Jet",
-    line: "Squeezes and shoots off, mantle first, in a rush of water: the fastest in the cast.",
-    turn: 35,
-    scale: 0.85,
-    mood: "delighted",
-    fx: () => (
-      <g fill={C.hi}>
-        {[
-          [40, 250, 6],
-          [28, 272, 4.5],
-          [54, 276, 3.5],
-          [22, 240, 3],
-          [46, 292, 2.6],
-        ].map(([x, y, r]) => (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
-        ))}
-        <path d="M60 230 l-26 18 M70 244 l-24 20" stroke={C.hi} strokeWidth={3} strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    id: "side-mushroom",
-    name: "Umbrella",
-    line: "Its cap keeps off the rain and shelters whatever stands under it.",
-    mood: "happy",
-    fx: () => (
-      <g fill={C.hi}>
-        {[
-          [60, 2],
-          [96, -6],
-          [134, 4],
-          [168, 60],
-          [30, 58],
-        ].map(([x, y]) => (
-          <path key={`${x}${y}`} d={`M${x} ${y} q-4 7 -4 10 a4 4 0 0 0 8 0 q0 -3 -4 -10 Z`} />
-        ))}
-        <path d="M24 100 l-5 -5 M24 100 l0 -7 M176 100 l5 -5 M176 100 l0 -7" stroke={C.hi} strokeWidth={2.2} strokeLinecap="round" />
-      </g>
-    ),
-    viewBox: "0 -20 200 320",
-  },
-  {
-    id: "side-poodle",
-    name: "Fetch",
-    line: "Runs off and brings the thing back.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        <path d="M150 116 h22 M146 128 h28 M152 140 h18" stroke={C.hi} strokeWidth={3} strokeLinecap="round" />
-        <circle cx={100} cy={128} r={9} fill={C.accent} />
-        <path d="M92 124 Q100 130 108 124" stroke={C.accentDeep} strokeWidth={1.8} fill="none" />
-      </g>
-    ),
-  },
-  {
-    id: "side-pufferfish",
-    name: "Puff up",
-    line: "Gulps and swells into a spiky ball, then lets it out again: surprise, made visible.",
-    mood: "curious",
-    fx: () => (
-      <g fill={C.primary}>
-        {Array.from({ length: 22 }, (_, i) => {
-          const r = (i / 22) * Math.PI * 2;
-          const [ox, oy] = [Math.cos(r), Math.sin(r)];
-          const [cx, cy] = [100 + ox * 52, 112 + oy * 52];
-          return (
-            <path
-              key={i}
-              d={`M${cx - oy * 5} ${cy + ox * 5} L${cx + ox * 12} ${cy + oy * 12} L${cx + oy * 5} ${cy - ox * 5} Z`}
-            />
-          );
-        })}
-      </g>
-    ),
-  },
-  {
     id: "side-chick",
     name: "Shell",
-    line: "When it is shy, it ducks down into its eggshell, and pops out again.",
+    line: "When it is shy, it ducks down into its eggshell until only its eyes show, and pops out again.",
     mood: "worried",
     fx: () => (
-      <path
-        d="M50 100 L58 110 L66 100 L74 110 L82 100 L90 110 L98 100 L106 110 L114 100 L122 110 L130 100 L138 110 L146 100 L151 104 C150 60 128 40 100 40 C72 40 50 60 50 100 Z"
-        fill="#efd8c6"
-        transform="rotate(-10 100 80)"
-      />
-    ),
-  },
-  {
-    id: "side-wren",
-    name: "Nap",
-    line: "Dozes off anywhere — standing up, mid-sentence — and wakes with a start. For a long wait.",
-    mood: "focused",
-    fx: () => (
       <g>
-        <circle cx={124} cy={120} r={8} fill={C.tint} opacity={0.85} />
-        <circle cx={122} cy={117} r={2} fill="#ffffff" />
+        <path
+          d="M46 132 L56 122 L66 132 L76 122 L86 132 L96 122 L106 132 L116 122 L126 132 L136 122 L146 132 L154 126 C158 190 132 222 100 222 C68 222 42 190 46 132 Z"
+          fill="#f6e7d6"
+        />
+        <circle cx={78} cy={176} r={3} fill={C.hi} />
+        <circle cx={120} cy={186} r={2.6} fill={C.hi} />
       </g>
     ),
   },
@@ -257,6 +136,61 @@ export const SIDE_ABILITIES: Ability[] = [
         ].map(([x, y]) => (
           <ellipse key={`${x}${y}`} cx={x} cy={y} rx={4} ry={2.6} />
         ))}
+      </g>
+    ),
+  },
+  {
+    id: "side-pia",
+    name: "Statue",
+    line: "Freezes mid-move, like the game, and holds it until it is her turn: the one for waiting.",
+    mood: "focused",
+    turn: 6,
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
+        <path d="M34 40 v-16 h16 M166 40 v-16 h-16 M34 268 v16 h16 M166 268 v16 h-16" />
+      </g>
+    ),
+  },
+  {
+    id: "side-nell",
+    name: "Twirl",
+    line: "Spins on the spot, twin tails flying.",
+    mood: "delighted",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
+        <path d="M40 226 A60 14 0 0 0 160 226" />
+        <path d="M52 238 A48 11 0 0 0 148 238" strokeDasharray="3 7" />
+        <path d="M20 96 q-8 10 -2 22 M180 96 q8 10 2 22" />
+      </g>
+    ),
+  },
+  {
+    id: "side-koko",
+    name: "Hiccup",
+    line: "Gets the hiccups, and hops a little with each one.",
+    mood: "oops",
+    viewBox: "0 14 200 300",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
+        <path d="M78 300 l-6 8 M100 302 v10 M122 300 l6 8" />
+        <path d="M150 58 l8 -8 M156 72 l11 -2" />
+      </g>
+    ),
+  },
+  {
+    id: "side-tami",
+    name: "Daydream",
+    line: "Drifts off, eyes up and away, and a small cloud of a thought appears — then she is back.",
+    mood: "thinking",
+    viewBox: "0 -20 200 320",
+    fx: () => (
+      <g fill={C.hi}>
+        <circle cx={140} cy={46} r={4} />
+        <circle cx={150} cy={30} r={6} />
+        <circle cx={166} cy={6} r={14} />
+        <circle cx={182} cy={0} r={11} />
+        <circle cx={152} cy={-2} r={10} />
+        <circle cx={170} cy={-12} r={12} />
       </g>
     ),
   },

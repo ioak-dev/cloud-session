@@ -191,11 +191,12 @@ export function NixBenchView() {
         Side candidates and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Every side candidate with its ability — what it naturally does, not a prop it holds. The
-        jelly family (octopus, jellyfish, squid, mushroom) and the puff family (cloud, poodle,
-        pufferfish, chick) come from those two body plans; the people are two after Duolingo's Zari
-        and Lily, and two in the spirit of Anya. None glows, carries antennae or leaves sparks, and
-        none changes colour but the chameleon. The red panda is given an ability to compete.
+        Every side candidate with its ability — what it naturally does, not a prop it holds.
+        Animals from the reference body plans (the octopus and jellyfish from Jelly, the chick from
+        Puff, the penguin from Pip, the fruit bat from Fuzzy), and girls after Juno and, most, after
+        Lulu: a tiny girl with a big head and a rubbery face. None glows, carries antennae or leaves
+        sparks, and none changes colour but the chameleon. The red panda is given an ability to
+        compete.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {SIDE_ABILITIES.map((a) => (
@@ -244,8 +245,7 @@ export function NixBenchView() {
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates — animals", SIDE_CANDIDATES],
-          ["Side candidates — the jelly family", JELLY_FAMILY],
-          ["Side candidates — the puff family", PUFF_FAMILY],
+          ["Side candidates — from Jelly and Puff", [...JELLY_FAMILY, ...PUFF_FAMILY]],
           ["Side candidates — people", SIDE_HUMANS],
           ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
         ] as const
