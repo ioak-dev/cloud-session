@@ -20,6 +20,9 @@ import type { Pose } from "./rig/poses";
  * - squash and stretch: it gathers before it pops, stretches in surprise, squashes as it lands;
  * - its light: it hides its glow, hiccups it, and lets it flare.
  *
+ * The glow flares to about half, never to a solid disc: it stays a halo round the
+ * flame, not a ball.
+ *
  * An act is declared keyframes on one clock (`rig/motion`), and its face changes on that same
  * clock: the expression is read from the act's own animation time, not a second timer. Stilled
  * or under reduced motion, the figure holds the act's first frame and its `rest` face.
@@ -125,7 +128,7 @@ export const WISP_ACTS: WispAct[] = [
         wingR: buzz(0.26, 0.58, 24, 10),
         hindL: buzz(0.26, 0.58, 18, 14),
         hindR: buzz(0.26, 0.58, -18, 14),
-        glow: fadeAt([0, 0.45], [0.25, 0.45], [0.32, 1], [0.55, 0.9], [0.72, 0.55], [1, 0.45]),
+        glow: fadeAt([0, 0.45], [0.25, 0.45], [0.32, 0.55], [0.55, 0.5], [0.72, 0.55], [1, 0.45]),
         antTipR: rotAt([0, 0], [0.26, 0], [0.32, -32], [0.38, 18], [0.44, -9], [0.5, 4], [0.64, -18], [0.7, 10], [0.76, -4], [1, 0]),
         antTipL: rotAt([0, 0], [0.26, 0], [0.32, 20], [0.38, -12], [0.44, 5], [0.5, 0], [0.64, 12], [0.7, -6], [1, 0]),
         tail: rotAt([0, 0], [0.25, 0], [0.33, 14], [0.4, -8], [0.5, 4], [0.64, -10], [0.72, 5], [1, 0]),
@@ -216,7 +219,7 @@ export const WISP_ACTS: WispAct[] = [
         return {
           root: keys([0, {}], ...up, [1, {}]),
           torso: keys([0, {}], ...shape, [1, {}]),
-          glow: fadeAt([0, 0.4], [0.28, 0.4], [0.3, 1], [0.38, 0.4], [0.5, 0.4], [0.52, 1], [0.6, 0.4], [0.72, 0.4], [0.74, 1], [0.84, 0.5], [1, 0.4]),
+          glow: fadeAt([0, 0.4], [0.28, 0.4], [0.3, 0.55], [0.38, 0.4], [0.5, 0.4], [0.52, 0.55], [0.6, 0.4], [0.72, 0.4], [0.74, 0.55], [0.84, 0.5], [1, 0.4]),
           tail: rotAt([0, 0], [0.28, 0], [0.31, 16], [0.38, 0], [0.5, 0], [0.53, -14], [0.6, 0], [0.72, 0], [0.75, 20], [0.8, -8], [0.86, 0], [1, 0]),
           antTipL: rotAt([0, 0], [0.28, 0], [0.31, 18], [0.38, 0], [0.5, 0], [0.53, 16], [0.6, 0], [0.72, 0], [0.75, 24], [0.8, -10], [0.86, 0], [1, 0]),
           antTipR: rotAt([0, 0], [0.28, 0], [0.31, -22], [0.38, 6], [0.44, 0], [0.5, 0], [0.53, -20], [0.6, 0], [0.72, 0], [0.75, -30], [0.8, 14], [0.86, -5], [0.92, 0], [1, 0]),
@@ -264,7 +267,7 @@ export const WISP_ACTS: WispAct[] = [
           [0.8, {}],
           [1, {}],
         ),
-        glow: fadeAt([0, 0.5], [0.18, 0.5], [0.28, 0.03], [0.56, 0.03], [0.6, 1], [0.8, 0.9], [1, 0.5]),
+        glow: fadeAt([0, 0.5], [0.18, 0.5], [0.28, 0.03], [0.56, 0.03], [0.6, 0.55], [0.8, 0.5], [1, 0.5]),
         root: keys([0, {}], [0.26, { y: 4 }], [0.56, { y: 4, e: EASE.snap }], [0.62, { y: -18 }], [0.74, { y: -12, e: EASE.fall }], [0.84, { y: 1 }], [0.9, {}], [1, {}]),
         torso: keys(
           [0, { r: 4 }],
