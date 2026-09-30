@@ -37,7 +37,7 @@ The reference shape for the work in this repo is Duolingo’s: one main characte
 
 ### What this studio keeps
 
-The drawings here are the five animals from Sparkles’ `/design/nix` bench: otter, red panda, firefly, koala, chameleon. See `docs/cast.md`.
+The drawings here are the four animals from Sparkles’ `/design/nix` bench: otter, red panda, firefly, chameleon. See `docs/cast.md`.
 
 The 52 characters that appear beside practice items are not in this studio, and they are not the cast. The human candidates from that same bench — the girls and the young teacher — are not here either, and neither is the later Mabel experiment.
 
@@ -67,4 +67,4 @@ These are the product’s rules. A drawing that breaks one of them cannot move b
 
 ## Where the drawings are
 
-`src/design/nix/candidates.tsx` draws the five animals. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.
+`src/design/nix/candidates.tsx` draws the four animals. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.

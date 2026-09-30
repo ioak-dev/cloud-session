@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The animal cast from Sparkles' `/design/nix` bench: otter, red panda, firefly, koala, chameleon.
+ * The animal cast from Sparkles' `/design/nix` bench: otter, red panda, firefly, chameleon.
  * One rig, one set of poses, expressions and outfits.
  */
 import * as React from "react";
@@ -65,7 +65,7 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The animals</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Five animals from the Nix bench. They share one joint set, the same poses, expressions and
+        Four animals from the Nix bench. They share one joint set, the same poses, expressions and
         wardrobe, so they are compared on design alone.
       </p>
 

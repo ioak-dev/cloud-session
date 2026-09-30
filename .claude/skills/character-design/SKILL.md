@@ -2,7 +2,7 @@
 name: character-design
 description: >-
   Design and revise the Sparkles animal characters in the cloud-session studio:
-  otter, red panda, firefly, koala, and chameleon, from the /design/nix bench.
+  otter, red panda, firefly, and chameleon, from the /design/nix bench.
   Use when drawing, rigging, recolouring, or posing one of those characters, or
   judging a character against the product rules. Read docs/brief.md and
   docs/cast.md first.
@@ -12,7 +12,7 @@ description: >-
 
 This repo designs characters for Sparkles. It does not change the Sparkles repo.
 
-The cast is the five animals in `docs/cast.md` and `src/design/nix/candidates.tsx`. Do not bring back the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
+The cast is the four animals in `docs/cast.md` and `src/design/nix/candidates.tsx`. Do not bring back the koala, the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
 
 Read `docs/brief.md` for audience, use case, and the bounds.
 
@@ -40,4 +40,4 @@ Run the studio with `npm start` (`node studio.mjs`) and look at the drawing on b
 
 ## Done
 
-A change is done when the studio shows it, both grounds, and `docs/cast.md` still names the same five animals unless the user changed the cast. `npm run typecheck` passes.
+A change is done when the studio shows it, both grounds, and `docs/cast.md` still names the same four animals unless the user changed the cast. `npm run typecheck` passes.

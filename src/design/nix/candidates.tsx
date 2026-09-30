@@ -8,9 +8,8 @@ import type { PropId } from "./rig/props";
 import { pivot, type Body } from "./rig/skeleton";
 
 /**
- * The animal candidates from Sparkles' /design/nix bench: otter, red panda, firefly, koala,
- * chameleon. One rig, one expression set, one wardrobe kit. Each carries the signature its species
- * gives it.
+ * The animal candidates from Sparkles' /design/nix bench: otter, red panda, firefly, chameleon.
+ * One rig, one expression set, one wardrobe kit. Each carries the signature its species gives it.
  */
 export type Ctx = { pal: Palette; uid: string };
 
@@ -347,75 +346,6 @@ function FlyBehind({ pal }: Ctx) {
   );
 }
 
-/* ——— Koala ——— */
-
-const KOALA_FLUFF = "#eceef2";
-const palKoala: Palette = {
-  ink: INK,
-  skin: "#9aa1ad",
-  skinShade: "#6f7683",
-  limb: "#9aa1ad",
-  paw: "#5b606b",
-  hair: "#5b606b",
-  hairHi: "#c3c8d0",
-  eye: INK,
-  blush: "#f0a0a8",
-  top: "#e0609b",
-  topAlt: CREAM,
-  bottom: "#34304d",
-  shoe: "#34304d",
-  accent: PLUM,
-  glow: GLOW,
-};
-
-function KoalaHead({ pal }: Ctx) {
-  return (
-    <g>
-      {(
-        [
-          ["earL", 50],
-          ["earR", 150],
-        ] as const
-      ).map(([j, x]) => (
-        <g key={j} data-joint={j} style={pivot(j)}>
-          <circle cx={x} cy={74} r={23} fill={pal.skin} stroke={pal.ink} strokeWidth={2.5} />
-          <circle cx={x + (x < 100 ? 2 : -2)} cy={76} r={14} fill={KOALA_FLUFF} />
-          <path
-            d={`M${x - 6} 70 l-5 -4 M${x} 68 l0 -6 M${x + 6} 70 l5 -4`}
-            stroke={pal.skin}
-            strokeWidth={2.4}
-            strokeLinecap="round"
-          />
-        </g>
-      ))}
-      <ellipse
-        cx={100}
-        cy={102}
-        rx={46}
-        ry={40}
-        fill={pal.skin}
-        stroke={pal.ink}
-        strokeWidth={2.5}
-      />
-      <ellipse cx={100} cy={126} rx={22} ry={11} fill={KOALA_FLUFF} opacity={0.7} />
-    </g>
-  );
-}
-
-function KoalaNose({ pal }: Ctx) {
-  return (
-    <g>
-      <path
-        d="M88 100 C88 88 112 88 112 100 L111 115 C110 124 90 124 89 115 Z"
-        fill="#3a3440"
-        stroke={pal.ink}
-        strokeWidth={2}
-      />
-      <ellipse cx={95} cy={98} rx={3} ry={5} fill={WHITE} opacity={0.35} />
-    </g>
-  );
-}
-
 /* ——— Chameleon ——— */
 
 const CHAM_BELLY = "#cbc1f6";
@@ -504,7 +434,7 @@ export const CANDIDATES: Candidate[] = [
     signature: "A glowing pebble worn round the neck — the spark it keeps",
     pitch:
       "Sea otters keep a favourite stone and carry it everywhere; this one's stone glows. Hands that hold things, playful by nature, and almost unused in education. Clothes sit on it naturally.",
-    risk: "Brown-on-brown is the weakest silhouette of the five until the tail is visible; it leans on the pebble and the whiskers to be told from a generic bear or mouse.",
+    risk: "Brown-on-brown is the weakest silhouette of the four until the tail is visible; it leans on the pebble and the whiskers to be told from a generic bear or mouse.",
     pal: palOtter,
     body: palOtter.skin,
     face: {
@@ -595,31 +525,6 @@ export const CANDIDATES: Candidate[] = [
         fill="none"
       />
     ),
-  },
-  {
-    id: "koala",
-    kind: "animal",
-    label: "Koala",
-    signature: "Huge fluffy ears and a big glossy nose",
-    pitch:
-      "The most huggable of the animals, with an outline no one mistakes: two giant round ears. Calm and kind — a guide that never rushes a learner. Clothes sit on it well, and the fluffy ear tufts give free secondary motion.",
-    risk: "Koalas read sleepy; the guide has to feel awake. Grey fur is low-contrast against a dark ground, and the big nose dominates small expressions.",
-    pal: palKoala,
-    body: palKoala.skin,
-    face: {
-      eyes: "bead",
-      eyeY: 100,
-      eyeGap: 23,
-      mouthY: 129,
-      nose: "none",
-      brows: false,
-      lid: palKoala.skin,
-    },
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    head: (c) => <KoalaHead {...c} />,
-    top: (c) => <KoalaNose {...c} />,
-    belly: () => <ellipse cx={100} cy={188} rx={15} ry={22} fill={KOALA_FLUFF} />,
   },
   {
     id: "chameleon",
