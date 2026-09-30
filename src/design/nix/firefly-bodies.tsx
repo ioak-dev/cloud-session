@@ -33,7 +33,7 @@ const palPip = palette("#e27fa0", "#c95f84", "#fff1e6", "#f0d2c2", {
   blush: "#ff8fae",
 });
 
-const PIP: Body = {
+export const PIP: Body = {
   id: "pip",
   j: {
     ...J,
@@ -145,7 +145,7 @@ function PipBehind({ pal, mood }: Ctx) {
   );
 }
 
-function PipGlow({ pal, uid }: Ctx) {
+export function PipGlow({ pal, uid }: Ctx) {
   const g = `${uid}-pipglow`;
   return (
     <g>

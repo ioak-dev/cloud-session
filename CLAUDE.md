@@ -19,6 +19,7 @@ npm start
 
 | Path | Owns |
 |---|---|
+| `src/design/nix/firefly-pip.tsx` | Pip refined (Dusk, Sea, Mauve) and Pip × Wisp hybrids (Droplet, Flame-top, Comet) |
 | `src/design/nix/firefly-bodies.tsx` | Pip, Wisp (shortlist) and Chonk (reference), each on its own body |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (shortlist, chibi frame); shared antenna, glow and palette helpers |

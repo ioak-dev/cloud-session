@@ -11,6 +11,7 @@ import { FilterSegment, FilterSet } from "@/components/ui/filter-segment";
 import { CANDIDATES, type Candidate } from "./candidates";
 import { FIREFLY_BODIES } from "./firefly-bodies";
 import { FIREFLY_BODIES_2 } from "./firefly-bodies-2";
+import { FIREFLY_PIP } from "./firefly-pip";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -36,7 +37,9 @@ const byIds = (ids: string[]) => ids.map((id) => FIREFLIES.get(id)!);
 /** The main-character shortlist, and the drawings kept only as inspiration. */
 const SHORTLIST = byIds(["firefly-pip", "firefly-wisp", "firefly-fuzzy"]);
 const REFERENCE = byIds(["firefly-chonk", "firefly-cube", "firefly-hood"]);
-const ALL: Candidate[] = [...SHORTLIST, ...REFERENCE, ...CANDIDATES];
+const PIP_REFINED = FIREFLY_PIP.filter((c) => c.id.startsWith("firefly-pip-"));
+const PIP_WISP = FIREFLY_PIP.filter((c) => c.id.startsWith("firefly-pipwisp-"));
+const ALL: Candidate[] = [...PIP_REFINED, ...PIP_WISP, ...SHORTLIST, ...REFERENCE, ...CANDIDATES];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -95,6 +98,8 @@ export function NixBenchView() {
 
       {(
         [
+          ["Pip refined — firefly wings, three colourways", PIP_REFINED],
+          ["Pip × Wisp — three hybrids", PIP_WISP],
           ["Main character — shortlist", SHORTLIST],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates (and the original bench firefly)", CANDIDATES],

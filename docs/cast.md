@@ -31,6 +31,26 @@ The firefly is the natural fit for the main character, because Sparkles’ guide
 - **Wisp** has the most distinctive silhouette, and floating suits a guide that appears across the product. It has no legs, though, so trousers, shoes and dungarees are lost. Its pale body is the weakest at 16px and on the light ground, and it can read as a ghost or a candle flame.
 - **Fuzzy** reads most clearly as a firefly and is the most huggable. It is also the most generic (a child in a bug suit). Its glow tail hides behind a leg from the front, so the signature is weakest, and the fuzz edge is busy at small sizes.
 
+### Pip refinement round
+
+In `src/design/nix/firefly-pip.tsx`. Pip leads the shortlist, so it gets two branches, three variants each.
+
+**Pip refined:** firefly wings, three colourways. Hard wing cases are lifted up and out as a firefly holds them in flight, with a cream edge stripe. Clear flying wings spread below them, and rings above the glow read as an abdomen.
+
+| Colourway | Body | Wing cases | Clothes |
+|---|---|---|---|
+| Dusk | Indigo | Deep indigo | Coral |
+| Sea | Sea blue | Deep teal-blue | Coral |
+| Mauve | Dusty rose (Pip’s pink, grown up) | Plum | Navy |
+
+**Pip × Wisp hybrids:** all keep Pip’s legs, so the whole wardrobe works.
+
+| Hybrid | What it takes from Wisp | Where the light is |
+|---|---|---|
+| Droplet | The droplet head, on Pip’s bean body; ribbon wings; smoke antennae | Pip’s glowing bottom |
+| Flame-top | One bean whose top rises to Wisp’s point; smoke antennae; firefly wings | Pip’s glowing bottom |
+| Comet | The droplet head, the ribbon wings, and Wisp’s flame as a comet tail | The tail, which no outfit covers |
+
 ### Reference
 
 Kept as inspiration for the main character or a side character, not as candidates. If one inspires a side character, redraw it as a different species with its own ability.
