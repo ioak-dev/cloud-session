@@ -21,6 +21,7 @@ import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { SIDE_CANDIDATES } from "./side-candidates";
+import { LULU_LINE } from "./side-girls";
 import { SIDE_HUMANS } from "./side-humans";
 import { JELLY_FAMILY } from "./side-jelly";
 import { PUFF_FAMILY } from "./side-puff";
@@ -57,11 +58,12 @@ const ALL: Candidate[] = [
   ...JELLY_FAMILY,
   ...PUFF_FAMILY,
   ...SIDE_HUMANS,
+  ...LULU_LINE,
   ...CANDIDATES,
 ];
 
 /** Every character with eyes of its own. */
-const EYED = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...SIDE_HUMANS, CANDIDATES.find((x) => x.id === "chameleon")!];
+const EYED = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...SIDE_HUMANS, ...LULU_LINE, CANDIDATES.find((x) => x.id === "chameleon")!];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -83,7 +85,7 @@ function AbilityTile({ a }: { a: Ability }) {
           className="absolute inset-0"
           style={a.turn || a.scale ? { transform: `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` } : undefined}
         >
-          <NixFigure c={c} mood={a.mood} viewBox={vb} className="h-full w-full" />
+          <NixFigure c={c} mood={a.mood} pose={a.pose} viewBox={vb} className="h-full w-full" />
         </div>
         <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
           {a.fx()}
@@ -247,6 +249,7 @@ export function NixBenchView() {
           ["Side candidates — animals", SIDE_CANDIDATES],
           ["Side candidates — from Jelly and Puff", [...JELLY_FAMILY, ...PUFF_FAMILY]],
           ["Side candidates — people", SIDE_HUMANS],
+          ["Side candidates — more of Lulu's line", LULU_LINE],
           ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
         ] as const
       ).map(([title, group]) => (

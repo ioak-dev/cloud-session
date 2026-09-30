@@ -30,14 +30,14 @@ import { C } from "./theme";
  * kit, and every character has its own eye and mouth kits.
  */
 
-const g2 = (a: ReactNode, b: ReactNode) => (
+export const g2 = (a: ReactNode, b: ReactNode) => (
   <g>
     {a}
     {b}
   </g>
 );
 
-const OUTFITS: Candidate["outfits"] = [
+export const OUTFITS: Candidate["outfits"] = [
   "dungarees",
   "hoodie",
   "raincoat",
@@ -47,7 +47,7 @@ const OUTFITS: Candidate["outfits"] = [
   "party",
 ];
 
-function human(skin: string, shade: string, hair: string, hairHi: string): Palette {
+export function human(skin: string, shade: string, hair: string, hairHi: string): Palette {
   return palette(skin, skin, skin, shade, {
     line: "none",
     hair,
@@ -62,7 +62,7 @@ function human(skin: string, shade: string, hair: string, hairHi: string): Palet
   });
 }
 
-const face = (over: Partial<Candidate["face"]> & { lid: string }): Candidate["face"] => ({
+export const face = (over: Partial<Candidate["face"]> & { lid: string }): Candidate["face"] => ({
   eyes: "anime",
   eyeY: 106,
   eyeGap: 17,
@@ -207,7 +207,7 @@ const junoEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
 /* ——— Mouths ——— */
 
 const JUNO_LIP = "#6b3024";
-const MOUTH_IN = "#3a1d24";
+export const MOUTH_IN = "#3a1d24";
 
 /** Juno: full lips; she grins wide, with her top teeth showing. */
 const junoMouth: MouthKit = ({ mood, y }) => {
@@ -246,7 +246,7 @@ const junoMouth: MouthKit = ({ mood, y }) => {
  * they are made of: each has a gag face per mood (a smug scheming look, a blank shock). */
 
 const BIG_HEAD = "translate(100 150) scale(1.14) translate(-100 -150)";
-const BIG: Body = { ...CHIBI, id: "big-head", headFit: BIG_HEAD, neck: { x: 94, y: 138, w: 12, h: 18 } };
+export const BIG: Body = { ...CHIBI, id: "big-head", headFit: BIG_HEAD, neck: { x: 94, y: 138, w: 12, h: 18 } };
 
 /* Lulu: caramel hair with a side pony; she peeks over things. */
 const LULU_SKIN = "#f7dcca";

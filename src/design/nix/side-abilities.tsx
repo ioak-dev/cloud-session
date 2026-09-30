@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Mood } from "./rig/face";
+import type { PoseId } from "./rig/poses";
 
 import { C } from "./theme";
 
@@ -14,6 +15,8 @@ export type Ability = {
   name: string;
   line: string;
   mood?: Mood;
+  /** A pose from the rig, when the ability is a gesture. */
+  pose?: PoseId;
   /** Turns the figure (degrees) and scales it, for a cartwheel, a slide, hanging. */
   turn?: number;
   scale?: number;
@@ -191,6 +194,67 @@ export const SIDE_ABILITIES: Ability[] = [
         <circle cx={182} cy={0} r={11} />
         <circle cx={152} cy={-2} r={10} />
         <circle cx={170} cy={-12} r={12} />
+      </g>
+    ),
+  },
+  {
+    id: "side-suki",
+    name: "Whistle",
+    line: "Purses her lips and whistles a little tune, eyes shut, content.",
+    mood: "curious",
+    fx: () => (
+      <g fill={C.hi} stroke={C.hi} strokeWidth={2.4} strokeLinecap="round">
+        <ellipse cx={140} cy={128} rx={5} ry={4} stroke="none" />
+        <path d="M144.6 127 V106 q6 2 8 8" fill="none" />
+        <ellipse cx={162} cy={108} rx={4.4} ry={3.6} stroke="none" />
+        <path d="M166 107 V90" fill="none" />
+      </g>
+    ),
+  },
+  {
+    id: "side-rue",
+    name: "Pout",
+    line: "Puffs out both cheeks and side-eyes you until she gets her way.",
+    mood: "focused",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={2.4} strokeLinecap="round" fill="none">
+        <path d="M40 112 l-8 -3 M40 124 l-9 1 M160 112 l8 -3 M160 124 l9 1" />
+      </g>
+    ),
+  },
+  {
+    id: "side-momo",
+    name: "Giggle",
+    line: "Gets the giggles and can't stop — eyes squeezed shut, a tear of laughter.",
+    mood: "happy",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
+        <path d="M28 96 q-6 6 0 12 M22 90 q-9 11 0 24 M172 96 q6 6 0 12 M178 90 q9 11 0 24" />
+      </g>
+    ),
+  },
+  {
+    id: "side-tess",
+    name: "Salute",
+    line: "Snaps to attention with a salute: ready, reporting for duty.",
+    mood: "wink",
+    pose: "wave",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
+        <path d="M168 60 l10 -6 M172 74 l12 -1 M166 46 l6 -9" />
+      </g>
+    ),
+  },
+  {
+    id: "side-bibi",
+    name: "Skip",
+    line: "Skips along instead of walking, ponytail bouncing.",
+    mood: "happy",
+    turn: -8,
+    viewBox: "0 14 200 300",
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
+        <path d="M30 300 q14 -26 28 0 M66 304 q14 -20 28 0" strokeDasharray="3 6" />
       </g>
     ),
   },
