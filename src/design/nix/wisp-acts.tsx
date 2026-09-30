@@ -5,7 +5,7 @@ import * as React from "react";
 import type { Candidate } from "./candidates";
 import { STALK_IDLE, ALIVE_IDLE } from "./wisp-warm";
 import type { Mood } from "./rig/face";
-import { DROP, fadeAt, handsAt, keys, rotAt, SNAP, SUDDEN, type Hands, type Key, type Track } from "./rig/motion";
+import { EASE, fadeAt, handsAt, keys, rotAt, type Hands, type Key, type Track } from "./rig/motion";
 import { NixFigure } from "./rig/NixFigure";
 import type { Pose } from "./rig/poses";
 
@@ -97,10 +97,10 @@ export const WISP_ACTS: WispAct[] = [
         root: keys(
           [0, {}],
           [0.2, {}],
-          [0.25, { y: 4, e: SUDDEN }],
+          [0.25, { y: 4, e: EASE.snap }],
           [0.33, { y: -30 }],
-          [0.55, { y: -27, e: DROP }],
-          [0.63, { y: 3, e: SNAP }],
+          [0.55, { y: -27, e: EASE.fall }],
+          [0.63, { y: 3, e: EASE.overshoot }],
           [0.7, { y: -3 }],
           [0.78, {}],
           [1, {}],
@@ -108,11 +108,11 @@ export const WISP_ACTS: WispAct[] = [
         torso: keys(
           [0, {}],
           [0.2, {}],
-          [0.25, { sx: 1.14, sy: 0.84, e: SUDDEN }],
+          [0.25, { sx: 1.14, sy: 0.84, e: EASE.snap }],
           [0.31, { sx: 0.88, sy: 1.18 }],
           [0.4, { r: -3 }],
           [0.55, { r: 2 }],
-          [0.63, { sx: 1.14, sy: 0.86, e: SNAP }],
+          [0.63, { sx: 1.14, sy: 0.86, e: EASE.overshoot }],
           [0.7, { sx: 0.96, sy: 1.05, r: -3 }],
           [0.78, { r: 3 }],
           [0.86, { r: -2 }],
@@ -163,7 +163,7 @@ export const WISP_ACTS: WispAct[] = [
           [0.28, { r: 24, y: 6, x: 4 }],
           [0.46, { r: 26, y: 6, x: 5 }],
           [0.5, { r: 26, y: 6, x: 5 }],
-          [0.58, { r: 26, y: 6, x: 5, e: SNAP }],
+          [0.58, { r: 26, y: 6, x: 5, e: EASE.overshoot }],
           [0.64, { r: -6, y: -3, sx: 0.96, sy: 1.05 }],
           [0.7, { r: 3 }],
           [0.76, { r: 0 }],
@@ -206,9 +206,9 @@ export const WISP_ACTS: WispAct[] = [
       (() => {
         /* three hiccups, off the beat: a sudden jolt up with a stretch, a squash as it drops back */
         const HICS: [number, number][] = [[0.28, 12], [0.5, 9], [0.72, 16]];
-        const up = HICS.flatMap(([at, h]): [number, Key][] => [[at, { e: SUDDEN }], [at + 0.025, { y: -h }], [at + 0.09, {}]]);
+        const up = HICS.flatMap(([at, h]): [number, Key][] => [[at, { e: EASE.snap }], [at + 0.025, { y: -h }], [at + 0.09, {}]]);
         const shape = HICS.flatMap(([at]): [number, Key][] => [
-          [at, { e: SUDDEN }],
+          [at, { e: EASE.snap }],
           [at + 0.025, { sx: 0.9, sy: 1.12 }],
           [at + 0.09, { sx: 1.04, sy: 0.97 }],
           [at + 0.13, {}],
@@ -258,18 +258,18 @@ export const WISP_ACTS: WispAct[] = [
           [0, {}],
           [0.18, {}],
           [0.28, { sx: 0.62, sy: 0.55 }],
-          [0.56, { sx: 0.62, sy: 0.55, e: SNAP }],
+          [0.56, { sx: 0.62, sy: 0.55, e: EASE.overshoot }],
           [0.62, { sx: 1.2, sy: 1.22 }],
           [0.72, { sx: 0.96, sy: 0.95 }],
           [0.8, {}],
           [1, {}],
         ),
         glow: fadeAt([0, 0.5], [0.18, 0.5], [0.28, 0.03], [0.56, 0.03], [0.6, 1], [0.8, 0.9], [1, 0.5]),
-        root: keys([0, {}], [0.26, { y: 4 }], [0.56, { y: 4, e: SUDDEN }], [0.62, { y: -18 }], [0.74, { y: -12, e: DROP }], [0.84, { y: 1 }], [0.9, {}], [1, {}]),
+        root: keys([0, {}], [0.26, { y: 4 }], [0.56, { y: 4, e: EASE.snap }], [0.62, { y: -18 }], [0.74, { y: -12, e: EASE.fall }], [0.84, { y: 1 }], [0.9, {}], [1, {}]),
         torso: keys(
           [0, { r: 4 }],
           [0.26, { r: 0, sx: 1.06, sy: 0.92 }],
-          [0.56, { r: 0, sx: 1.06, sy: 0.92, e: SUDDEN }],
+          [0.56, { r: 0, sx: 1.06, sy: 0.92, e: EASE.snap }],
           [0.62, { sx: 0.92, sy: 1.12 }],
           [0.72, {}],
           [0.84, { sx: 1.05, sy: 0.95 }],
@@ -322,12 +322,12 @@ export const WISP_ACTS: WispAct[] = [
           [0.42, { y: 18, r: -4 }],
           [0.46, { y: 17, r: 4 }],
           [0.5, { y: 18, r: 0 }],
-          [0.8, { y: 18, e: SNAP }],
+          [0.8, { y: 18, e: EASE.overshoot }],
           [0.87, { y: -4, r: -4 }],
           [0.93, { y: 1, r: 2 }],
           [1, {}],
         ),
-        torso: keys([0, {}], [0.2, { sx: 1.06, sy: 0.94 }], [0.34, { sx: 1.06, sy: 0.94 }], [0.38, { sx: 1.08, sy: 0.92, y: -1 }], [0.42, { sx: 1.06, sy: 0.94 }], [0.46, { sx: 1.08, sy: 0.92, y: -1 }], [0.5, { sx: 1.06, sy: 0.94 }], [0.8, { sx: 1.06, sy: 0.94, e: SNAP }], [0.87, { sx: 0.94, sy: 1.08 }], [0.94, {}], [1, {}]),
+        torso: keys([0, {}], [0.2, { sx: 1.06, sy: 0.94 }], [0.34, { sx: 1.06, sy: 0.94 }], [0.38, { sx: 1.08, sy: 0.92, y: -1 }], [0.42, { sx: 1.06, sy: 0.94 }], [0.46, { sx: 1.08, sy: 0.92, y: -1 }], [0.5, { sx: 1.06, sy: 0.94 }], [0.8, { sx: 1.06, sy: 0.94, e: EASE.overshoot }], [0.87, { sx: 0.94, sy: 1.08 }], [0.94, {}], [1, {}]),
         antL: rotAt([0, 0], [0.2, -34], [0.8, -34], [0.87, 10], [0.93, -4], [1, 0]),
         antR: rotAt([0, 0], [0.2, 34], [0.8, 34], [0.87, -10], [0.93, 4], [1, 0]),
         antTipR: rotAt([0, 0], [0.87, 0], [0.9, -24], [0.95, 10], [1, 0]),

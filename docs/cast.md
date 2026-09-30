@@ -115,7 +115,7 @@ The eye style is between **Bean and Gumdrop**; the user will decide later. Honey
 | What was missing | What the warmer does now |
 |---|---|
 | It floated level and centred | It leans; it sinks and peeks round an edge; it is never dead level at rest |
-| One slow, even beat (a 1.4px bob over 4 s, every move eased the same) | Holds, then something sudden: snaps, drops and overshoots (`keys` with per-segment easing, `SNAP`, `SUDDEN`, `DROP` in `rig/motion.ts`) |
+| One slow, even beat (a 1.4px bob over 4 s, every move eased the same) | Holds, then something sudden: snaps, drops and overshoots (`keys` with per-segment easing from `EASE` in `rig/motion.ts`) |
 | It always looked straight at you | Its eyes wander — a side-glance, a look up — and snap back; it gets caught looking |
 | It never changed shape | It gathers into a squash before it pops, stretches in surprise, squashes as it lands |
 | Its light only dimmed and brightened with the mood | It plays with it: tucks its flame in and goes dark, hiccups flashes of it, flares |

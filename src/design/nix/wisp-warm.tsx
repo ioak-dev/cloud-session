@@ -5,7 +5,7 @@ import { Antenna, bright } from "./firefly-variants";
 import { DROPLET, Flame, HAIR, pal as WISP_PAL, WISP, WISP_MAIN, Wings } from "./firefly-wisp";
 import { EYE_STYLES, HONEY_EYES } from "./wisp-eyes";
 import { line, OpenMouth, type MouthKit } from "./rig/eyes";
-import { keys, rotAt, SNAP } from "./rig/motion";
+import { EASE, keys, rotAt } from "./rig/motion";
 import type { FaceStyle } from "./rig/face";
 import type { Palette } from "./rig/palette";
 import { pivot, type Body } from "./rig/skeleton";
@@ -409,8 +409,8 @@ export const ALIVE_IDLE: NonNullable<NonNullable<Candidate["attitude"]>["motion"
   torso: keys(
     [0, { r: 4 }],
     [0.34, { r: 6, y: -3.5 }],
-    [0.5, { r: 6, y: -3.5, e: "cubic-bezier(.6,0,.9,.4)" }],
-    [0.56, { r: 2, y: 2, sx: 1.06, sy: 0.94, e: SNAP }],
+    [0.5, { r: 6, y: -3.5, e: EASE.fall }],
+    [0.56, { r: 2, y: 2, sx: 1.06, sy: 0.94, e: EASE.overshoot }],
     [0.64, { r: 5, y: -1.5, sx: 0.98, sy: 1.03 }],
     [0.72, { r: 4 }],
     [1, { r: 4 }],

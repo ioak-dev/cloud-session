@@ -47,10 +47,6 @@ export const keys = (...k: [number, Key][]): Track =>
 /** Opacity with its timing declared: [offset, opacity] pairs. */
 export const fadeAt = (...k: [number, number][]): Track => k.map(([offset, opacity]) => ({ offset, opacity }));
 
-/** Easings for acting: a snap that overshoots, a sudden start, a sudden stop. */
-export const SNAP = "cubic-bezier(.2,1.6,.4,1)";
-export const SUDDEN = "cubic-bezier(.1,.9,.2,1)";
-export const DROP = "cubic-bezier(.6,0,.9,.4)";
 
 /**
  * Hand targets over time: [offset, hands] keys sampled into `n` evenly spaced frames for `arms`,
@@ -94,6 +90,8 @@ export const EASE = {
   anticipate: "cubic-bezier(0.36, 0, 0.66, -0.56)",
   snap: "cubic-bezier(0.2, 0.9, 0.3, 1)",
   settle: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+  /** A fall that picks up speed: slow off the top, fast into the ground. */
+  fall: "cubic-bezier(0.6, 0, 0.9, 0.4)",
 } as const;
 
 /** Scale that keeps volume: stretch one way and the other gives. */
