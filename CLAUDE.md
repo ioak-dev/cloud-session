@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is a firefly, to be chosen between the Pip and Wisp families; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -19,8 +19,9 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-pip.tsx` | The Pip family: Pip, Wing cases, Plump |
-| `src/design/nix/firefly-wisp.tsx` | The Wisp family: Wisp, Moth |
+| `src/design/nix/firefly-wisp.tsx` | Wisp, the main character, and its variants: Moth, True colour, Solid, Curly |
+| `src/design/nix/firefly-spirits.tsx` | New wispy directions drawn from scratch: Puff, Jelly, Bloom |
+| `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |
 | `src/design/nix/theme.ts` | The colour tokens every firefly draws with, and the header's schemes |
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |

@@ -12,6 +12,8 @@ export const C = {
   deep: "var(--char-deep)",
   /** A lighter body, for a character that should read pale (Wisp). */
   soft: "var(--char-soft)",
+  /** A mid-tone of the primary: a body that is clearly coloured on either ground. */
+  mid: "var(--char-mid)",
   /** Near-white tint: wings, highlights on a pale body. */
   tint: "var(--char-tint)",
   /** Highlight strokes on the body. */
@@ -29,9 +31,16 @@ export const C = {
 
 export type Scheme = { id: string; label: string; primary: string; accent: string };
 
-/** `sparkles` uses the product's own tokens; the rest are for trying the cast against others. */
+/** `sparkles` is the product's scheme; the rest are for trying the cast against others. */
 export const SCHEMES: Scheme[] = [
-  { id: "sparkles", label: "Sparkles", primary: "var(--primary)", accent: "var(--accent)" },
+  /* The product's light-mode primary and accent, fixed: a character keeps its colour on both
+     grounds rather than following the lighter dark-mode primary. */
+  {
+    id: "sparkles",
+    label: "Sparkles",
+    primary: "oklch(0.520 0.195 260)",
+    accent: "oklch(0.830 0.150 88)",
+  },
   { id: "indigo", label: "Indigo · coral", primary: "#5b5fc7", accent: "#ff8f7a" },
   { id: "sea", label: "Sea · tangerine", primary: "#2f8fb0", accent: "#ff9a4d" },
   { id: "plum", label: "Plum · pink", primary: "#7a4fa3", accent: "#f06a9a" },

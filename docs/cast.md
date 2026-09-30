@@ -13,13 +13,13 @@ Every character has **one special feature or ability that no other character in 
 | Firefly | Glow and fire sparkles: its tail lights up and sheds sparkles |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
 
-## Main character: firefly (being reworked)
+## Main character: Wisp (decided)
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
 ### Colour
 
-A character has no colours of its own. Every firefly draws with the product’s **primary** and **accent** (`src/design/nix/theme.ts`), and in Sparkles those are the product’s own tokens. The studio header switches the scheme for every character at once. *Sparkles* uses the product tokens, and a custom pair can be picked. Deeper and lighter shades are derived from the primary in `studio.css`. **The glow is the one fixed colour**, because it is the firefly’s ability. Never make per-character colourways.
+A character has no colours of its own. Every firefly draws with the product’s **primary** and **accent** (`src/design/nix/theme.ts`), and in Sparkles those are the product’s own tokens. The studio header switches the scheme for every character at once, and a custom pair can be picked. *Sparkles* is the product’s light-mode primary and accent, fixed, so a character keeps its colour on both grounds instead of following the lighter dark-mode primary. Deeper and lighter shades are derived from the primary in `studio.css`. **The glow is the one fixed colour**, because it is the firefly’s ability. Never make per-character colourways.
 
 The product’s current accent is a yellow close to the glow. In the Sparkles scheme, clothes drawn in it sit right against the light and the two blur, so the glow stops standing apart. Deciding what clothes are drawn in (the accent, a deep primary, or a neutral) is still open.
 
@@ -37,24 +37,25 @@ The product’s current accent is a yellow close to the glow. In the Sparkles sc
 
 In the rig, `Palette.line` is the outline colour for the body, limbs, clothes and props; `Palette.ink` is kept for the face’s features. The reference drawings and bench animals still use black outlines.
 
-### The choice: Pip or Wisp
+### Wisp
 
-One of these two families becomes the main character. Each variant is independent: no hybrids.
-
-**Pip** (`src/design/nix/firefly-pip.tsx`): a bean that stands, with a glowing bottom that shows through any outfit.
+**Wisp is the main character.** It floats with no legs, has a droplet head, and its body ends in a flame of light. Its variants are in `src/design/nix/firefly-wisp.tsx`, with the original as the base:
 
 | Variant | What is different |
 |---|---|
-| Pip | The original: stubby wings, coiled-spring antennae |
-| Wing cases | Wing cases lifted up and out over clear flying wings; rings above the glow |
-| Plump | A rounder egg with a bigger face; glowing antenna tips; two pairs of clear wings |
-
-**Wisp** (`src/design/nix/firefly-wisp.tsx`): floats, with no legs; a droplet head and a body that ends in a flame of light. It is drawn in lightened product colours so it still reads as pale.
-
-| Variant | What is different |
-|---|---|
-| Wisp | The original: ribbon wings, a long flame |
+| Wisp | The original: a near-white spirit with ribbon wings and a long flame. It looks whitish on the dark ground |
 | Moth | Two pairs of round wings with eyespots; a short flame curled like a comma |
+| True colour | Colour-corrected: the head shades from a light centre to the product’s mid-tone, and the body and limbs take the primary. It reads as a colour on both grounds |
+| Solid | Opaque and flat in the primary, with a cream face patch. Only the wings and the glow’s halo are translucent |
+| Curly | True colour, with Pip’s coiled-spring antennae |
+
+**New wispy directions**, drawn from scratch rather than from the droplet, in `src/design/nix/firefly-spirits.tsx`. Each floats and puts its light somewhere of its own:
+
+| Variant | Shape | Where the light is |
+|---|---|---|
+| Puff | A cloud: a head of puffs, a cloud body, a trail of puffs thinning out behind | At its core, in the chest, through any outfit |
+| Jelly | A jellyfish bell with a frilled rim, and tendrils beneath | At the tip of every tendril |
+| Bloom | A bellflower: a crown of petals, a petal skirt, leaf wings | Hanging below the petals like a stamen, a lamp it carries |
 
 **Wings move as two pairs.** Where a character has upper and lower wings, the upper pair rides `wingL`/`wingR` and the lower pair `hindL`/`hindR`. The upper pair strokes slowly; the lower pair beats twice to each stroke, half a beat behind. The two pairs are never one piece.
 
@@ -64,6 +65,7 @@ Kept as inspiration for the main character or a side character, not as candidate
 
 | Variant | File | Idea worth keeping |
 |---|---|---|
+| Pip, Wing cases, Plump | `firefly-pip.tsx` | The bean that stands; a glow at its bottom through any outfit; wing cases over flying wings |
 | Fuzzy | `firefly-variants.tsx` | Fuzz, a ruff and feathery antennae: the most huggable firefly |
 | Chonk | `firefly-bodies.tsx` | A low, wide body in a domed shell; lamps set into the shell |
 | Cube | `firefly-bodies-2.tsx` | Everything square; a lit window in the chest |

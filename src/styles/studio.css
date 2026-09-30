@@ -48,6 +48,7 @@
   --char-soft: color-mix(in oklab, var(--char-primary) 38%, white);
   --char-tint: color-mix(in oklab, var(--char-primary) 12%, white);
   --char-hi: color-mix(in oklab, var(--char-primary) 55%, white);
+  --char-mid: color-mix(in oklab, var(--char-primary) 72%, white);
   --char-accent-deep: color-mix(in oklab, var(--char-accent) 72%, black);
   /* No black outlines. Where an edge is needed it is a translucent dark, so it reads as a deeper
      shade of whatever it lies on; thin parts (antennae) use a tone that holds on either ground. */

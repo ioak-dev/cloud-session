@@ -6,8 +6,8 @@ import { C } from "./theme";
 
 /**
  * Wisp: it floats. A droplet head, no legs, and a body that ends in a flame of light. Every Wisp
- * draws in the product's colours (`theme.ts`) — lightened, so it still reads as a pale spirit —
- * and only the flame is its own.
+ * draws in the product's colours (`theme.ts`); only the flame is its own. Wisp is the chosen main
+ * character.
  */
 
 const OUTFITS: Candidate["outfits"] = [
@@ -30,6 +30,25 @@ const pal: Palette = palette(C.hi, C.deep, FACE, C.tint, {
   accent: C.accent,
   blush: "#ffb3c4",
 });
+
+/** Colour-corrected: limbs in the primary, the body in its mid-tone. */
+const palTrue: Palette = {
+  ...pal,
+  skin: C.mid,
+  skinShade: C.primary,
+  limb: C.primary,
+  paw: C.deep,
+  hair: C.primary,
+};
+/** Solid: opaque primary, a cream face patch. */
+const palSolid: Palette = {
+  ...pal,
+  skin: C.primary,
+  skinShade: C.deep,
+  limb: C.deep,
+  paw: C.deep,
+  hair: C.primary,
+};
 
 const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
   eyes: "anime",
@@ -79,18 +98,61 @@ export const WISP: Body = {
 const DROPLET =
   "M100 44 C110 62 146 72 146 106 C146 130 126 144 100 144 C74 144 54 130 54 106 C54 72 90 62 100 44 Z";
 
-function Head({ uid, d = DROPLET }: Ctx & { d?: string }) {
+/**
+ * `pale`: the original, a near-white spirit. `true`: colour-corrected — the body sits in the
+ * product's mid-tones, so it is a colour on the dark ground rather than a white shape. `solid`:
+ * flat and opaque, with a face patch for the features.
+ */
+type Look = "pale" | "true" | "solid";
+
+function Head({ uid, d = DROPLET, look = "pale" }: Ctx & { d?: string; look?: Look }) {
   const g = `${uid}-wisphead`;
+  if (look === "solid") {
+    return (
+      <g>
+        <path d={d} fill={C.primary} />
+        <path
+          d="M62 112 C62 94 80 86 100 86 C120 86 138 94 138 112 C138 130 120 140 100 140 C80 140 62 130 62 112 Z"
+          fill={FACE}
+        />
+        <path
+          d="M72 88 Q78 74 92 64"
+          stroke={C.hi}
+          strokeWidth={3.4}
+          fill="none"
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  }
+  const stops =
+    look === "true"
+      ? [
+          [0, C.tint],
+          [45, C.soft],
+          [100, C.mid],
+        ]
+      : [
+          [0, FACE],
+          [55, C.tint],
+          [100, C.soft],
+        ];
   return (
     <g>
       <defs>
         <radialGradient id={g} cx="50%" cy="62%" r="62%">
-          <stop offset="0%" stopColor={FACE} />
-          <stop offset="55%" stopColor={C.tint} />
-          <stop offset="100%" stopColor={C.soft} />
+          {stops.map(([o, c]) => (
+            <stop key={o} offset={`${o}%`} stopColor={c as string} />
+          ))}
         </radialGradient>
       </defs>
-      <path d={d} fill={`url(#${g})`} stroke={C.hi} strokeWidth={2.4} strokeLinejoin="round" />
+      <path
+        d={d}
+        fill={`url(#${g})`}
+        stroke={look === "true" ? C.primary : C.hi}
+        strokeWidth={look === "true" ? 2 : 2.4}
+        strokeLinejoin="round"
+      />
       <path
         d="M70 90 Q76 74 92 64"
         stroke={WHITE}
@@ -98,6 +160,34 @@ function Head({ uid, d = DROPLET }: Ctx & { d?: string }) {
         fill="none"
         strokeLinecap="round"
       />
+    </g>
+  );
+}
+
+/** Pip's coiled-spring antennae, rising from the droplet's point. */
+function CurlyAntennae({ mood }: Ctx) {
+  return (
+    <g>
+      {(
+        [
+          [
+            "L",
+            "M96 50 C95 46 90 45 90 41 C90 36 97 36 97 40 C97 44 90 44 88 38 C87 35 88 33 89 32",
+            [89, 31],
+          ],
+          [
+            "R",
+            "M104 50 C105 46 110 45 110 41 C110 36 103 36 103 40 C103 44 110 44 112 38 C113 35 112 33 111 32",
+            [111, 31],
+          ],
+        ] as const
+      ).map(([side, d, [x, y]]) => (
+        <Antenna key={side} side={side} base={[side === "L" ? 96 : 104, 50]} mood={mood}>
+          <path d={d} stroke={C.thin} strokeWidth={3} fill="none" strokeLinecap="round" />
+          <circle cx={x} cy={y} r={6} fill={pal.glow} opacity={0.35 * bright(mood)} />
+          <circle cx={x} cy={y} r={3.6} fill={pal.glow} stroke={C.glowEdge} strokeWidth={1.2} />
+        </Antenna>
+      ))}
     </g>
   );
 }
@@ -143,7 +233,7 @@ function FlameGrad({ id, dir = [0, 0, 0.3, 1] }: { id: string; dir?: number[] })
 
 /* ——— Wisp: the original ——— */
 
-function RibbonWings() {
+function RibbonWings({ opacity = 0.9 }: { opacity?: number }) {
   return (
     <>
       {sides.map(([side, s]) => (
@@ -152,7 +242,7 @@ function RibbonWings() {
           <path
             d={`M${100 + 10 * s} 156 C${100 + 40 * s} 136 ${100 + 66 * s} 146 ${100 + 62 * s} 172 C${100 + 60 * s} 192 ${100 + 44 * s} 204 ${100 + 44 * s} 228 C${100 + 34 * s} 206 ${100 + 32 * s} 180 ${100 + 10 * s} 166 Z`}
             fill={C.tint}
-            fillOpacity={0.9}
+            fillOpacity={opacity}
             stroke={C.hi}
             strokeWidth={2}
             strokeLinejoin="round"
@@ -170,7 +260,7 @@ function RibbonWings() {
   );
 }
 
-function FlameTail({ uid, mood }: Ctx) {
+function FlameTail({ uid, mood, solid = false }: Ctx & { solid?: boolean }) {
   const g = `${uid}-wisptail`;
   return (
     <g data-joint="tail" style={pivot("tail", WISP.j)}>
@@ -186,7 +276,7 @@ function FlameTail({ uid, mood }: Ctx) {
       {/* the body ends in light: a flame that flicks to one side */}
       <path
         d="M80 186 Q100 198 120 186 C130 206 126 234 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C78 234 74 206 80 186 Z"
-        fill={`url(#${g})`}
+        fill={solid ? pal.glow : `url(#${g})`}
         stroke={C.glowEdge}
         strokeWidth={2.4}
         strokeLinejoin="round"
@@ -332,5 +422,77 @@ export const WISP_FAMILY: Candidate[] = [
     ),
     head: (c) => <Head {...c} />,
     top: (c) => <SmokeAntennae {...c} />,
+  },
+  {
+    id: "firefly-wisp-true",
+    kind: "animal",
+    frame: WISP,
+    legs: false,
+    label: "Wisp · True colour",
+    signature: "The original Wisp, colour-corrected to sit in the product's mid-tones",
+    pitch:
+      "The base Wisp with its colour corrected: the head glows from a light centre out to the product's mid-tone, the body and limbs take the primary, and the head edge is the primary itself. On the dark ground it reads as a colour, not a white shape; on the light ground it keeps Wisp's luminous centre.",
+    risk: "Less ghostly than the pale original; the soft gradient needs care at 16px.",
+    pal: palTrue,
+    body: C.mid,
+    face: face({ lid: C.soft }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: (c) => (
+      <g>
+        <RibbonWings opacity={0.8} />
+        <FlameTail {...c} />
+      </g>
+    ),
+    head: (c) => <Head {...c} look="true" />,
+    top: (c) => <SmokeAntennae {...c} />,
+  },
+  {
+    id: "firefly-wisp-solid",
+    kind: "animal",
+    frame: WISP,
+    legs: false,
+    label: "Wisp · Solid",
+    signature: "Opaque, flat Wisp: only the wings and the glow's halo are translucent",
+    pitch:
+      "Everything is a flat, opaque shape in the product's primary — the Duolingo way — with a cream face patch so the eyes read. Only the wings and the glow's halo let the ground through. The flame is a solid yellow. The simplest to reproduce anywhere: an icon, a sticker, a print.",
+    risk: "Loses the lit-from-within feel; the most like a generic mascot.",
+    pal: palSolid,
+    body: C.primary,
+    face: face({ lid: FACE }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: (c) => (
+      <g>
+        <RibbonWings opacity={0.6} />
+        <FlameTail {...c} solid />
+      </g>
+    ),
+    head: (c) => <Head {...c} look="solid" />,
+    top: (c) => <SmokeAntennae {...c} />,
+  },
+  {
+    id: "firefly-wisp-curly",
+    kind: "animal",
+    frame: WISP,
+    legs: false,
+    label: "Wisp · Curly",
+    signature: "True-colour Wisp with Pip's coiled-spring antennae",
+    pitch:
+      "The colour-corrected Wisp wearing Pip's coiled antennae, each tipped with a spark. The springs add bounce to a character that otherwise drifts, and they react to every mood.",
+    risk: "Busier head; the springs compete with hats.",
+    pal: palTrue,
+    body: C.mid,
+    face: face({ lid: C.soft }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: (c) => (
+      <g>
+        <RibbonWings opacity={0.8} />
+        <FlameTail {...c} />
+      </g>
+    ),
+    head: (c) => <Head {...c} look="true" />,
+    top: (c) => <CurlyAntennae {...c} />,
   },
 ];

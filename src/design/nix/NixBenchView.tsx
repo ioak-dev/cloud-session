@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * The cast studio: the two main-character families (Pip, Wisp), reference drawings, then the
- * side candidates.
+ * The cast studio: Wisp (the main character) and its variants, new wispy directions, reference
+ * drawings, then the side candidates.
  * One rig, one set of poses, expressions and outfits.
  */
 import * as React from "react";
@@ -13,6 +13,7 @@ import { CANDIDATES, type Candidate } from "./candidates";
 import { FIREFLY_BODIES } from "./firefly-bodies";
 import { FIREFLY_BODIES_2 } from "./firefly-bodies-2";
 import { PIP_FAMILY } from "./firefly-pip";
+import { SPIRITS } from "./firefly-spirits";
 import { WISP_FAMILY } from "./firefly-wisp";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
@@ -31,14 +32,14 @@ const TESTS = [
   ["Not taken", "No clash with a well-known mascot."],
 ] as const;
 
-/** The two main-character families, then the drawings kept only as inspiration. */
+/** Wisp, the chosen main character; new wispy directions; then the drawings kept as reference. */
 const FIREFLIES = new Map(
   [...FIREFLY_BODIES, ...FIREFLY_BODIES_2, ...FIREFLY_KEPT].map((c) => [c.id, c]),
 );
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
-const ALL: Candidate[] = [...PIP_FAMILY, ...WISP_FAMILY, ...REFERENCE, ...CANDIDATES];
+const ALL: Candidate[] = [...WISP_FAMILY, ...SPIRITS, ...PIP_FAMILY, ...REFERENCE, ...CANDIDATES];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -80,11 +81,10 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The cast</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        The main character is a firefly, and the choice is between two families: Pip and Wisp.
-        Colours come from the scheme in the header, the same for every firefly, as the
-        product&apos;s primary and accent would in Sparkles; only the glow is the firefly&apos;s
-        own. Fuzzy, Chonk, Cube and Hood stay as reference. The bench animals below keep their
-        species colours.
+        The main character is Wisp. Below it are its colour and antenna variants, then new wispy
+        directions drawn from scratch. Colours come from the scheme in the header, the same for
+        every firefly; only the glow is the firefly&apos;s own. Pip and the other fireflies stay as
+        reference. The bench animals keep their species colours.
       </p>
 
       <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
@@ -98,8 +98,9 @@ export function NixBenchView() {
 
       {(
         [
-          ["Main character — Pip", PIP_FAMILY],
           ["Main character — Wisp", WISP_FAMILY],
+          ["Wispy — new directions, drawn from scratch", SPIRITS],
+          ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates (and the original bench firefly)", CANDIDATES],
         ] as const
