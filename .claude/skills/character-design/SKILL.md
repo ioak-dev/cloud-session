@@ -4,7 +4,7 @@ description: >-
   Design and revise the Sparkles character cast in the cloud-session studio: one
   main character (Wisp, a floating firefly that leaves a spark trail, with its
   variants and wispy directions) and six side
-  characters (the chameleon is confirmed; the red panda, octopus, fruit bat, chick, Juno and Lulu are candidates; more
+  characters (the chameleon is confirmed; the red panda, octopus, fruit bat, chick, Juno, Lulu, Sunny and Poppy are candidates; more
   are to be proposed). Use when drawing, rigging, recolouring or posing a
   character, proposing a new one, or judging one against the product rules.
   Read docs/brief.md and docs/cast.md first.
@@ -29,6 +29,8 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 - **Side characters avoid outlines as far as possible**: palette `line: "none"`, parts told apart by colour alone.
 - **Every side character has its own eyes and mouth.** Give it an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) designed for it (`rig/eyes.tsx`) — eye shape, colour, shine, lids, brows; lips, beak or muzzle — that draw every mood. Never reuse another character's kit or fall back to the shared face. Check the studio's eyes-and-mouths sheet.
 - **Every side character is somebody at rest.** Give it a one-line temperament (a want and a flaw), an `attitude` (resting mood, head tilt, stance), one asymmetry or imperfection, two-tone form (its own shade under its colour, never black), chunky limbs (`CHUNKY`) and a little species-true detail. See “What makes a side character loved” in `docs/cast.md`.
+- **People must act.** Brows carry half of every expression; the two eyes may do different things; mouths have business (a bitten lip, a tongue out, a lopsided grin); hair or a detail tells you who she is. See Sunny and Poppy.
+- **An ability preview that changes the face** is drawn in the head's own space (`head` in `side-abilities.tsx`, passed to the rig as `headFx`), so it moves with the head. Never draw a face change as a static overlay.
 - **An ability comes from the character itself** — its body and nature, its spirit — never a prop it holds or an outside object it uses.
 - **Legible small, on both grounds**: check the recognition sheet on light and dark.
 - **Never copy a copyrighted character** (Anya, Duolingo's cast): take the spirit, not the look.
@@ -43,7 +45,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 - Main-character variants: `src/design/nix/firefly-bodies.tsx` and `firefly-bodies-2.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
-- Side candidates: the octopus and fruit bat in `src/design/nix/side-candidates.tsx`, the chick in `side-puff.tsx`, the chameleon and red panda in `candidates.tsx`, people (Juno, Lulu) in `side-humans.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
+- Side candidates: the octopus and fruit bat in `src/design/nix/side-candidates.tsx`, the chick in `side-puff.tsx`, the chameleon and red panda in `candidates.tsx`, people (Juno, Lulu) in `side-humans.tsx` and (Sunny, Poppy) in `side-rapunzel.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 

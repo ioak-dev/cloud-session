@@ -32,6 +32,9 @@ export type FigureProps = {
   className?: string;
   /** Present when the figure is the only carrier on screen; decorative otherwise. */
   label?: string;
+  /** Drawn in the head's own space, after the face, so it moves with the head: an ability's
+   *  preview that is part of the face. */
+  headFx?: React.ReactNode;
 };
 
 function Seg({ a, b, w, color, ink }: { a: P; b: P; w: number; color: string; ink: string }) {
@@ -106,6 +109,25 @@ function Tendril({ a, b, w, tip, color }: { a: P; b: P; w: number; tip: number; 
   );
 }
 
+/**
+ * A chameleon's grip: two fat toes in a V, splayed about the forearm's line — the way a chameleon
+ * holds a branch. One colour, no outline.
+ */
+function Tongs({ el, wr, at, r, color }: { el: P; wr: P; at: P; r: number; color: string }) {
+  const deg = (Math.atan2(wr[1] - el[1], wr[0] - el[0]) * 180) / Math.PI;
+  return (
+    <g fill={color}>
+      {[-34, 34].map((a) => {
+        const t = ((deg + a) * Math.PI) / 180;
+        const cx = at[0] + Math.cos(t) * r * 0.55;
+        const cy = at[1] + Math.sin(t) * r * 0.55;
+        return <ellipse key={a} cx={cx} cy={cy} rx={r * 0.95} ry={r * 0.56} transform={`rotate(${deg + a} ${cx} ${cy})`} />;
+      })}
+      <circle cx={at[0]} cy={at[1]} r={r * 0.62} />
+    </g>
+  );
+}
+
 function ClothOn({ a, b, cloth, ink }: { a: P; b: P; cloth: Cloth; ink: string }) {
   if (!cloth) return null;
   return (
@@ -131,6 +153,7 @@ export function NixFigure({
   silhouette = false,
   className,
   label,
+  headFx,
 }: FigureProps) {
   const ref = React.useRef<SVGSVGElement>(null);
   const uid = React.useId().replace(/:/g, "");
@@ -182,15 +205,22 @@ export function NixFigure({
         <g data-joint={`knee${s}`} style={pivot(`knee${s}`, j)}>
           <Seg a={knee} b={foot} w={f.w.shin} color={pal.limb} ink={bodyLine} />
           <ClothOn a={knee} b={foot} cloth={scaled(o.shin)} ink={ink} />
-          <ellipse
-            cx={fx}
-            cy={fy}
-            rx={10 * Math.max(k, 0.8)}
-            ry={6 * Math.max(k, 0.8)}
-            fill={shoe}
-            stroke={ink}
-            strokeWidth={2.4}
-          />
+          {c.hands === "tong" && !o.shoe ? (
+            <g fill={shoe}>
+              <ellipse cx={fx - 5} cy={fy} rx={7.5} ry={5.5} transform={`rotate(-18 ${fx - 5} ${fy})`} />
+              <ellipse cx={fx + 5} cy={fy} rx={7.5} ry={5.5} transform={`rotate(18 ${fx + 5} ${fy})`} />
+            </g>
+          ) : (
+            <ellipse
+              cx={fx}
+              cy={fy}
+              rx={10 * Math.max(k, 0.8)}
+              ry={6 * Math.max(k, 0.8)}
+              fill={shoe}
+              stroke={ink}
+              strokeWidth={2.4}
+            />
+          )}
           {o.shoe && (
             <path
               d={`M${fx - 8} ${fy + 2} L${fx + 8} ${fy + 2}`}
@@ -220,7 +250,9 @@ export function NixFigure({
             <Seg a={el} b={wr} w={f.w.fore} color={pal.limb} ink={bodyLine} />
           )}
           <ClothOn a={el} b={wr} cloth={scaled(o.fore)} ink={ink} />
-          {c.hands === "wisp" ? null : c.hands === "mitten" ? (
+          {c.hands === "wisp" ? null : c.hands === "tong" ? (
+            <Tongs el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} />
+          ) : c.hands === "mitten" ? (
             <Mitten el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} />
           ) : (
             <circle
@@ -338,6 +370,7 @@ export function NixFigure({
               <HeadProps on={on} pal={pal} eyeY={c.face.eyeY} eyeGap={c.face.eyeGap} />
               {/* the signature rides over any hat — it is what keeps the character itself */}
               {c.top?.(ctx)}
+              {headFx}
             </g>
             </g>
           </g>

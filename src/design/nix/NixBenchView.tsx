@@ -23,6 +23,7 @@ import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
+import { RAPUNZEL_LINE } from "./side-rapunzel";
 import { PUFF_FAMILY } from "./side-puff";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -59,6 +60,7 @@ const CAST: Candidate[] = [
   byId(SIDE_HUMANS, "side-juno"),
   byId(SIDE_HUMANS, "side-lulu"),
   byId(CANDIDATES, "panda"),
+  ...RAPUNZEL_LINE,
 ];
 
 /** Animal drawings kept as reference: the penguin, the otter and the bench's original firefly. */
@@ -112,7 +114,7 @@ function AbilityTile({ a }: { a: Ability }) {
             filter: a.hue ? `hue-rotate(${a.hue}deg)` : undefined,
           }}
         >
-          <NixFigure c={c} mood={a.mood} pose={a.pose} viewBox={vb} className="h-full w-full" />
+          <NixFigure c={c} mood={a.mood} pose={a.pose} viewBox={vb} headFx={a.head?.()} className="h-full w-full" />
         </div>
         {!a.behind && (
           <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
