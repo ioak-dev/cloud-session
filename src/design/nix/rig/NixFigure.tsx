@@ -7,7 +7,7 @@ import { Face, type Mood } from "./face";
 import { Hair, type HairId } from "./hair";
 import { useJointMotion } from "./motion";
 import { outfitParts, type Cloth, type OutfitId } from "./outfit";
-import { motionFor, POSES, type PoseId } from "./poses";
+import { motionFor, POSES, type Pose, type PoseId } from "./poses";
 import { Backpack, Book, HeadProps, type PropId } from "./props";
 import { SparkTrail } from "./sparks";
 import { CHIBI, FIGURE_VB, HEAD_VB, lerp, pivot, type P } from "./skeleton";
@@ -35,6 +35,8 @@ export type FigureProps = {
   /** Drawn in the head's own space, after the face, so it moves with the head: an ability's
    *  preview that is part of the face. */
   headFx?: React.ReactNode;
+  /** A one-off act: its own mood, motion and arms, in place of a catalogue pose. */
+  act?: Pose;
 };
 
 function Seg({ a, b, w, color, ink }: { a: P; b: P; w: number; color: string; ink: string }) {
@@ -154,24 +156,25 @@ export function NixFigure({
   className,
   label,
   headFx,
+  act,
 }: FigureProps) {
   const ref = React.useRef<SVGSVGElement>(null);
   const uid = React.useId().replace(/:/g, "");
   const f = c.frame ?? CHIBI;
   const j = f.j;
-  const base = POSES.find((x) => x.id === pose) ?? POSES[0];
+  const base = act ?? POSES.find((x) => x.id === pose) ?? POSES[0];
   /* At rest, a character stands and looks like itself: its own expression and stance. */
   const att = c.attitude;
   const p = React.useMemo(
     () =>
-      base.id === "idle" && att
+      !act && base.id === "idle" && att
         ? {
             ...base,
             mood: att.mood ?? base.mood,
             hands: att.hands ? base.hands.map(() => att.hands!) : base.hands,
           }
         : base,
-    [base, att],
+    [base, att, act],
   );
   const tilt = att?.tilt ? `rotate(${att.tilt} ${j.head[0]} ${j.head[1]})` : undefined;
   const motion = React.useMemo(() => motionFor(p, f), [p, f]);
