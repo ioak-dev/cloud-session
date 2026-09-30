@@ -269,3 +269,17 @@ svg[data-still="true"] .spark-still {
     display: inline;
   }
 }
+
+/* Wisp beside a form, under reduced motion: it does not travel, it reappears (wisp-form.tsx). */
+.wisp-appear {
+  animation: wisp-appear 160ms ease-out both;
+}
+
+@keyframes wisp-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

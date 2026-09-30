@@ -16,6 +16,7 @@ import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
+import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
@@ -133,6 +134,17 @@ export function NixBenchView() {
       </p>
       <div className="mt-3">
         <WispFlight />
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — beside a form</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Between fields it hops rather than flies: it keeps facing the form, waits a beat after focus
+        moves, gathers, arcs out through the gutter with its eyes on where it is going, and settles
+        beside the new field. Click into a field, or let the demo play. Under reduced motion it
+        reappears rather than travels.
+      </p>
+      <div className="mt-3">
+        <WispForm />
       </div>
 
       {(

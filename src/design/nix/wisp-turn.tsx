@@ -237,7 +237,7 @@ function Antennae({ yaw }: { yaw: number }) {
   );
 }
 
-function Face({ yaw }: { yaw: number }) {
+function Face({ yaw, look = 0 }: { yaw: number; look?: number }) {
   // the eyes and cheeks sit on the head's sphere; the mouth rides the centre line
   const eyes = [-1, 1].map((s) => {
     const phi = s * Math.asin(19 / 36);
@@ -276,7 +276,7 @@ function Face({ yaw }: { yaw: number }) {
         <g
           key={i}
           opacity={e.o}
-          transform={`translate(${e.x} 108) scale(${1.15 * Math.max(e.k, 0.05)} 1.15)`}
+          transform={`translate(${e.x} ${108 + look}) scale(${1.15 * Math.max(e.k, 0.05)} 1.15)`}
         >
           <ellipse cx={0} cy={0} rx={7} ry={8.8} fill={EYE} />
           <circle cx={-2.3} cy={-3.2} r={2.5} fill="#fff" />
@@ -304,6 +304,8 @@ function Face({ yaw }: { yaw: number }) {
 /* ——— the whole figure ——— */
 
 export type TurnProps = {
+  /** Where the eyes look up (−) or down (+), in head units: a glance, not a turn. */
+  look?: number;
   /** −90 (facing left) … 0 (front) … 90 (facing right). */
   yaw: number;
   /** The head's own yaw, to let it lead the body. Defaults to `yaw`. */
@@ -314,7 +316,7 @@ export type TurnProps = {
   uid: string;
 };
 
-export function WispTurn({ yaw, headYaw = yaw, flapU = 0, flapL = 0, uid }: TurnProps) {
+export function WispTurn({ yaw, headYaw = yaw, flapU = 0, flapL = 0, look = 0, uid }: TurnProps) {
   const s = Math.sin(rad(yaw));
   const body = 1 - 0.08 * Math.abs(s);
   const fw = 1 - 0.25 * Math.abs(s);
@@ -367,7 +369,7 @@ export function WispTurn({ yaw, headYaw = yaw, flapU = 0, flapL = 0, uid }: Turn
       <g transform={HEAD_FIT}>
         <Antennae yaw={headYaw} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
-        <Face yaw={headYaw} />
+        <Face yaw={headYaw} look={look} />
       </g>
       {front.map((p) => p.el)}
     </g>

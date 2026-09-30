@@ -64,6 +64,17 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 3. It **flies side-on** toward where it is going, banking gently, wings beating as two pairs, and leaves sparks where it has been.
 4. On arrival it settles and **turns back** to face front.
 
+**How Wisp moves between nearby elements** (form fields, list items, steps: a hop, not a flight):
+
+1. It sits in the **gutter** beside the active element, facing slightly toward it: never over it, never larger than a row.
+2. When focus moves it **waits a beat** (about 90 ms), so it follows the person rather than leading them.
+3. It **gathers** (a small squash), then **hops**: a short arc bowed out, away from the content, eyes on where it is going, wings beating fast, a few sparks left behind. **No turn**: the move is attention, not travel.
+4. It **settles** with a slight overshoot back into its idle bob. A hop takes 320–620 ms, depending on distance.
+5. If focus moves again mid-hop it **retargets from where it is**; moves never queue.
+6. Under reduced motion it does not travel: it fades out and reappears beside the new element.
+
+Anything farther than a hop, such as another region of the page, is travel and uses the turn-and-fly above. The demo is `src/design/nix/wisp-form.tsx`.
+
 The flight demo plays this across a stage and back. Every frame is a pure function of one loop clock: position, yaw (the head a beat ahead), wing beats and each spark. Under reduced motion it shows one still frame with the trail.
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
