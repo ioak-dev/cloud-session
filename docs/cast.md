@@ -39,19 +39,22 @@ In the rig, `Palette.line` is the outline colour for the body, limbs, clothes an
 
 ### Wisp
 
-**Wisp is the main character.** It floats with no legs, has a droplet head, and its body ends in a flame of light. Its variants are in `src/design/nix/firefly-wisp.tsx`, with the original as the base:
+**Wisp is the main character**, in `src/design/nix/firefly-wisp.tsx`. It is the former “True colour” variant. It floats with no legs, has a droplet head, and its body ends in a flame of light. It leaves glowing sparks behind as it flies. The original pale Wisp, Moth, Solid and Curly are dropped.
 
-| Variant | What is different |
+How it is drawn. These rules also apply to anything added to Wisp later:
+
+| Part | Rule |
 |---|---|
-| Wisp | The original: a near-white spirit with ribbon wings and a long flame. It looks whitish on the dark ground |
-| Moth | Two pairs of round wings with eyespots; a short flame curled like a comma |
-| True colour | Colour-corrected: the head shades from a light centre to the product’s mid-tone, and the body and limbs take the primary. It reads as a colour on both grounds |
-| Solid | Opaque and flat in the primary, with a cream face patch. Only the wings and the glow’s halo are translucent |
-| Curly | True colour, with Pip’s coiled-spring antennae |
+| Head | Its colour runs from a light heart to the primary at the rim; the rim is the edge. No outline |
+| Highlights | None. No white reflection lines on the head or flame: nothing that depends on where light comes from, so nothing that has to move, fade or flicker when it animates. A shine, if wanted later, is an effect or prop |
+| Antennae | Grow from behind the head (drawn before it), in `C.thin`, each tipped with a spark |
+| Body, arms, hands | No outline; parts are told apart by colour: the body in `C.mid`, the arms in the primary, the hands in the deep shade |
+| Hands | Mittens: a soft oval along the forearm with a thumb on the side toward the body (`hands: "mitten"` in the rig) |
+| Wings | Two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
+| Flame | Its glow deepening to amber at the tip: its colour, not lighting. It carries **two rings**, like a firefly’s lantern: fixed anatomy |
+| Edges | Only the translucent parts and the flame keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
 
-True colour has **no outline on its head**: the gradient runs from a light centre to the primary at the rim, so the colour itself is the edge.
-
-**New wispy directions**, drawn from scratch rather than from the droplet. Each floats and puts its light somewhere of its own. Round one is in `src/design/nix/firefly-spirits.tsx`:
+**Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
 | Variant | Shape | Where the light is |
 |---|---|---|
@@ -83,7 +86,7 @@ Kept as inspiration for the main character or a side character, not as candidate
 | Cube | `firefly-bodies-2.tsx` | Everything square; a lit window in the chest |
 | Hood | `firefly-bodies-2.tsx` | A cone of a cloak, a floppy hood, light from inside the cloak |
 
-Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio; Pip’s per-character colourways; the Pip × Wisp hybrids (Droplet, Flame-top, Comet); Pip · Cap; Wisp · Swirl.
+Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio; Pip’s per-character colourways; the Pip × Wisp hybrids (Droplet, Flame-top, Comet); Pip · Cap; Wisp · Swirl; the pale Wisp, Wisp · Moth, Wisp · Solid, Wisp · Curly.
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
 

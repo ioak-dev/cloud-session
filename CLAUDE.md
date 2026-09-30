@@ -19,9 +19,9 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-wisp.tsx` | Wisp, the main character, and its variants: Moth, True colour, Solid, Curly |
-| `src/design/nix/firefly-spirits.tsx` | New wispy directions drawn from scratch: Puff, Jelly, Bloom |
-| `src/design/nix/firefly-spirits-2.tsx` | Wispy directions, round two: Comet, Bubble, Dandelion, Star, Crescent |
+| `src/design/nix/firefly-wisp.tsx` | Wisp, the main character (one drawing, `WISP_MAIN`) |
+| `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
+| `src/design/nix/firefly-spirits-2.tsx` | Wispy directions (reference): Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |
 | `src/design/nix/theme.ts` | The colour tokens every firefly draws with, and the header's schemes |
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
