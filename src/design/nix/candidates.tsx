@@ -25,6 +25,11 @@ export type Candidate = {
   arms?: false;
   /** Where its spark trail comes from, in figure space: the sparks it leaves behind as it flies. */
   trail?: readonly [number, number];
+  /** `false`: the body, limbs, hands and neck are drawn with no outline, told apart by colour.
+   *  Clothes keep their detail lines. */
+  outline?: false;
+  /** `mitten`: a rounded hand with a thumb on the inside, instead of a ball. */
+  hands?: "mitten";
   label: string;
   signature: string;
   pitch: string;

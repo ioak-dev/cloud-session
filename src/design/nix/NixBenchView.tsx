@@ -15,7 +15,7 @@ import { FIREFLY_BODIES_2 } from "./firefly-bodies-2";
 import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
-import { WISP_FAMILY } from "./firefly-wisp";
+import { WISP_MAIN } from "./firefly-wisp";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -33,7 +33,7 @@ const TESTS = [
   ["Not taken", "No clash with a well-known mascot."],
 ] as const;
 
-/** Wisp, the chosen main character; new wispy directions; then the drawings kept as reference. */
+/** Wisp, the main character; then the drawings kept as reference. */
 const FIREFLIES = new Map(
   [...FIREFLY_BODIES, ...FIREFLY_BODIES_2, ...FIREFLY_KEPT].map((c) => [c.id, c]),
 );
@@ -41,7 +41,7 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
   (id) => FIREFLIES.get(id)!,
 );
 const ALL: Candidate[] = [
-  ...WISP_FAMILY,
+  WISP_MAIN,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
@@ -89,10 +89,9 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The cast</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        The main character is Wisp. Below it are its colour and antenna variants, then wispy
-        directions drawn from scratch. Every one of them leaves glowing sparks behind as it flies —
-        the one thing kept from the bench firefly. Colours come from the scheme in the header; only
-        the glow is the firefly&apos;s own. Pip and the other fireflies stay as reference.
+        The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
+        flies. Colours come from the scheme in the header; only its flame and sparks are its own.
+        The other wispy directions, Pip and the earlier fireflies stay as reference.
       </p>
 
       <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
@@ -106,9 +105,8 @@ export function NixBenchView() {
 
       {(
         [
-          ["Main character — Wisp", WISP_FAMILY],
-          ["Wispy — new directions, drawn from scratch", SPIRITS],
-          ["Wispy — round two", SPIRITS_2],
+          ["Main character — Wisp", [WISP_MAIN]],
+          ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates (and the original bench firefly)", CANDIDATES],
