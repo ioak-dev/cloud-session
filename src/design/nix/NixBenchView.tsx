@@ -19,7 +19,9 @@ import { WISP_MAIN } from "./firefly-wisp";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
-import { SIDE_ABILITIES, SIDE_CANDIDATES, type Ability } from "./side-candidates";
+import { SIDE_ABILITIES, type Ability } from "./side-abilities";
+import { SIDE_CANDIDATES } from "./side-candidates";
+import { SIDE_HUMANS } from "./side-humans";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -50,8 +52,12 @@ const ALL: Candidate[] = [
   ...PIP_FAMILY,
   ...REFERENCE,
   ...SIDE_CANDIDATES,
+  ...SIDE_HUMANS,
   ...CANDIDATES,
 ];
+
+/** Every character with eyes of its own. */
+const EYED = [...SIDE_CANDIDATES, ...SIDE_HUMANS, CANDIDATES.find((x) => x.id === "chameleon")!];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -69,7 +75,10 @@ function AbilityTile({ a }: { a: Ability }) {
   return (
     <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
       <div className="relative h-56 w-full">
-        <div className={a.mode === "hang" ? "absolute inset-0 rotate-180" : "absolute inset-0"}>
+        <div
+          className="absolute inset-0"
+          style={a.turn || a.scale ? { transform: `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` } : undefined}
+        >
           <NixFigure c={c} mood={a.mood} viewBox={vb} className="h-full w-full" />
         </div>
         <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
@@ -175,19 +184,54 @@ export function NixBenchView() {
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
-        Side candidates — round one, and their abilities
+        Side candidates — round two, and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Five new species, each from the body plan of a reference drawing: Puff becomes a lamb,
-        Jelly an octopus, Bloom an axolotl, Pip a hamster, Fuzzy a fruit bat. None glows, carries
-        antennae or leaves sparks — those are Wisp's — and none changes colour, which is the
-        chameleon's. Each has one ability, previewed here beside the figure; the red panda is given
-        one to compete.
+        Animals from the reference body plans — Puff as a lamb and as a cloud, Jelly as an octopus,
+        Bloom as an axolotl and as a flower, Pip as a penguin, Fuzzy as a fruit bat — and four
+        people: two bright (after Duolingo's Zari), two deadpan (after Lily). None glows, carries
+        antennae or leaves sparks, which are Wisp's, and none changes colour, which is the
+        chameleon's. No outlines. Each has one ability, previewed beside the figure; the red panda
+        is given one to compete.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {SIDE_ABILITIES.map((a) => (
           <AbilityTile key={a.id} a={a} />
         ))}
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes — each character's own</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        No two characters share eyes. Each has its own shape, colour, shine, lids and brows, and
+        draws every expression with them.
+      </p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {EYED.map((x) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {x.label}
+                </th>
+                {MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {(
@@ -196,7 +240,8 @@ export function NixBenchView() {
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
-          ["Side candidates — round one", SIDE_CANDIDATES],
+          ["Side candidates — animals", SIDE_CANDIDATES],
+          ["Side candidates — people", SIDE_HUMANS],
           ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
         ] as const
       ).map(([title, group]) => (

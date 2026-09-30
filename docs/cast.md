@@ -14,9 +14,15 @@ Every character has **one special feature or ability that no other character in 
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
 | Lamb *(proposed)* | Knit: draws a strand from its own fleece and knits it into a thing |
 | Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) to show where to look |
-| Axolotl *(proposed)* | Mend: puts a broken thing back together |
-| Hamster *(proposed)* | Stash: tucks a thing into its cheek pouches and brings it out later |
 | Fruit bat *(proposed)* | Upside-down: hangs from anything and sees it the other way round |
+| Axolotl *(proposed)* | Mend: puts a broken thing back together |
+| Penguin *(proposed)* | Slide: drops onto its belly and slides to where it is going |
+| Cloud *(proposed)* | Rain: a small shower that waters what is below, so things grow |
+| Flower *(proposed)* | Sprout: plants a seed, and it grows |
+| Juno *(proposed)* | Cartwheel: arrives, and leaves, with a cartwheel |
+| Amara *(proposed)* | Telescope: looks at what is coming next |
+| Wren *(proposed)* | Headphones: puts them on and everything goes quiet |
+| Sloane *(proposed)* | Paper plane: folds a note and sends it where it needs to go |
 | Red panda *(proposed)* | Balance: balances anything on its head and tail |
 
 ## Main character: Wisp (decided)
@@ -133,23 +139,39 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | Balance *(proposed)*: the ringed tail is a look, so it is given an ability to compete | Backup, competing |
-| 2–6 | Lamb, octopus, axolotl, hamster, fruit bat | See round one below | **Proposed**, not decided |
+| 2–6 | See round two below | | **Proposed**, not decided |
 
-### Round one: side candidates from the reference drawings
+### Rules for every side character (from round two)
 
-`src/design/nix/side-candidates.tsx`. Puff, Jelly, Bloom, Pip and Fuzzy all turned out well, but each carries the firefly’s spirit: antennae, wings, a light of its own, a spark trail. Each is redrawn here as **a different species**, keeping only its body plan, and given one ability. None glows, has antennae or leaves sparks (Wisp’s), and none changes colour (the chameleon’s). Static figures on the shared rig, in the product’s colours, with no black outlines. The studio shows each ability as a preview drawn over the figure (`SIDE_ABILITIES`), never painted into it.
+- **No outlines, as far as possible.** Parts are told apart by colour and tone alone. A new side character's palette sets `line: "none"`, which the rig's clothes and shoes follow too. The chameleon has had its black outlines removed.
+- **Its own eyes.** Eyes are what a character is read by, so no two characters share a set. Each side character has an eye kit of its own (`rig/eyes.tsx`; `face.kit`): its own shape, colour, shine, lids and brows, drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The shared eyes in `rig/face.tsx` are for the reference drawings only. The studio shows every kit side by side under “Eyes — each character's own”.
 
-| From | Candidate | Body plan kept | Ability | Watch for |
-|---|---|---|---|---|
-| Puff | **Lamb** | The head of puffs and the cloud body, now fleece; a pale face, floppy ears; it walks | **Knit** — pulls yarn from its fleece and knits a thing | Pale fleece needs its `C.hi` hairline on the light ground; a knitted thing must never accumulate as a reward |
-| Jelly | **Octopus** | The bell, now a mantle; the tendrils, now six curling arms with suckers; it floats | **Ink** — draws an arrow, circle or underline in the air to show where to look | Never a tick or a cross, never lettering: it carries no claim about material. Real octopuses change colour; this one never does |
-| Bloom | **Axolotl** | The petal crown, now three frilled gills a side; the petal skirt, now a finned tail | **Mend** — puts a broken thing back together (axolotls regrow) | Suits the gentle incorrect answer; must never imply the learner broke something |
-| Pip | **Hamster** | The bean that stands, head and body one shape; the glowing bottom becomes a cream tummy | **Stash** — tucks a thing into its cheek pouches, brings it out later | Gold is the accent darkened (`C.accentDeep`), so it is not read as the glow; ears on the bean can read as a bear |
-| Fuzzy | **Fruit bat** | The fuzz and the ruff; the feathery antennae become tall ears; the long wings fold into a cape | **Upside-down** — hangs from a heading or a card edge | Wings stay folded, so it is never a second flier; the round cream face keeps it from reading as spooky |
+### Round two: side candidates
 
-Silhouettes at small size: Wisp a droplet with a flame; chameleon a casque and a curled tail; lamb a cloud on legs; octopus a dome over curling arms; axolotl a wide head with a gill crown and a tail; hamster a bean with cheek bulges; fruit bat tall ears over a cape; red panda a ringed tail.
+Animals in `src/design/nix/side-candidates.tsx`, people in `src/design/nix/side-humans.tsx`, abilities previewed in `src/design/nix/side-abilities.tsx`. None glows, has antennae or leaves sparks (Wisp's), and none changes colour (the chameleon's).
 
-With the chameleon, the five make six; the red panda competes for any slot. **Next step:** pick which to keep, then refine each drawing.
+Feedback on round one: the fruit bat and the octopus are kept as they were; the lamb did not hold on the light ground and is redrawn; the axolotl is redrawn; the hamster is replaced by another Pip-based animal; the red panda stays a backup.
+
+| From | Candidate | Body plan | Ability | Eyes | Watch for |
+|---|---|---|---|---|---|
+| Puff | **Lamb** | Fleece of puffs, now in `C.hi` with `C.soft` tops so it holds on white; pale face, floppy ears | Knit | Dark and dreamy under a heavy lid; curled lashes at the outer corner; no brows | A knitted thing never accumulates as a reward |
+| Jelly | **Octopus** *(kept)* | Mantle and six curling arms with suckers; floats | Ink | White eyes with an octopus's bar pupil that widens, narrows, tilts and rounds; the mantle is the lid | Never a tick, a cross or lettering; never changes colour |
+| Fuzzy | **Fruit bat** *(kept)* | Fuzz, a ruff, tall ears, wings folded as a cape | Upside-down | Huge glossy eyes with a crescent shine and a rim of reflected colour; fur tufts for brows | Wings stay folded: never a second flier |
+| Bloom | **Axolotl** *(redrawn)* | Wide head, three feathery gill plumes a side, round low body, broad finned tail | Mend | Small dot eyes, wide apart, that grow, shrink, squash to dashes and spin into swirls; thin brows come and go | Mending never implies the learner broke something |
+| Pip | **Penguin** *(replaces the hamster)* | The standing bean in a dark coat; a white heart of a face and a white belly where Pip glowed; flippers; a beak that opens | Slide | Tall black ovals with a capsule of shine; short thick brows | A common mascot animal; the heart face keeps it its own |
+| Puff | **Cloud** | A cloud, as itself but no spirit: shaded underside, sunlit tops, stubby arms; floats | Rain | Capsule eyes and nothing else: all shape | Never rains on an incorrect answer |
+| Bloom | **Flower** | A face in a crown of petals, a petal skirt; stands | Sprout | Doe eyes with an amber iris, a flicked lash line, thin brows | Never green; sprouting never grows with a count |
+
+**People.** New characters, not the human candidates from the Nix bench. Two are inspired by the spirit of Duolingo's Zari (bright, animated) and two by Lily (deadpan, half-lidded), without their look: each has her own hair and eyes. One of each pair is a girl on the chibi frame, the other a young woman on the adult frame. Hair is drawn per character (`headBack` and `head`), not from the shared hair kit.
+
+| Inspired by | Candidate | Look | Ability | Eyes | Watch for |
+|---|---|---|---|---|---|
+| Zari | **Juno** (girl) | A high puff of curls, a curly fringe, a headband and hoops in the accent | Cartwheel | Big round eyes nearly filled by a warm brown iris; bold lash line; thick, very mobile brows | Energy must not make the product loud |
+| Zari | **Amara** (woman) | Box braids up in a bun, beads in the accent, hoops | Telescope | Almond eyes lifted at the outer corner, a winged liner, a hazel iris; high arched brows | Seeing ahead never claims what the material holds |
+| Lily | **Wren** (girl) | A blunt bob in the product's deep blue, a fringe to the brows, a hair clip | Headphones | A heavy flat lid at rest over a small blue iris; a faint line under each eye; thin straight brows. A wide-open eye is her big reaction | Deadpan must never read as disappointed |
+| Lily | **Sloane** (woman) | Long dark hair with a deep side part and a streak of the primary | Paper plane | Narrow squared eyes with a thick liner, glancing aside at rest; angled brows, one always a little raised | A note is fixed copy beside the figure, never text on the plane |
+
+With the chameleon, six of these make the cast; the red panda competes for any slot. **Next step:** pick which to keep, then refine each drawing and its eyes.
 
 ## Cast structure: recommended, not decided
 

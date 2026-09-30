@@ -3,23 +3,24 @@ import type { ReactNode } from "react";
 import type { Candidate, Ctx } from "./candidates";
 import { palette } from "./firefly-variants";
 import { PIP } from "./firefly-pip";
-import type { Mood } from "./rig/face";
+import { arcUp, chevron, EYE_WHITE, line, Orb, turnAt, type EyeKit } from "./rig/eyes";
 import type { Palette } from "./rig/palette";
 import { CHIBI, J, pivot, type Body, type P } from "./rig/skeleton";
 import { C } from "./theme";
 
 /**
- * Side candidates, round one. Each takes the body plan of one wispy or Pip-line reference drawing —
- * a cloud, a bell with tendrils, a flower crown, a standing bean, a fuzzy ruff — and redraws it as
- * a different species with an ability of its own. None of them glows, carries antennae or leaves a
- * spark trail: those are Wisp's. None changes colour: that is the chameleon's.
+ * Side candidates, round two. Each animal takes the body plan of a reference drawing — a cloud, a
+ * bell with tendrils, a flower crown, a standing bean, a fuzzy ruff — and is redrawn as its own
+ * species with an ability of its own. None of them glows, carries antennae or leaves a spark trail:
+ * those are Wisp's. None changes colour: that is the chameleon's.
  *
- * Static figures only, on the shared rig, in the product's colours. The ability is drawn separately
- * (`SIDE_ABILITIES`), as a preview over the figure, never painted into the character.
+ * No outlines anywhere: parts are told apart by colour alone (`line: "none"`, which clothes follow
+ * too). Every character has its own eyes (`rig/eyes.tsx`), designed for it and drawn for every
+ * mood. Static figures on the shared rig; the abilities are previewed in `side-abilities.tsx`.
  */
 
-const FACE = "#fff4e8";
-const FACE_SHADE = "#efd8c6";
+export const FACE = "#fff4e8";
+export const FACE_SHADE = "#efd8c6";
 const INNER = "#f6c1b0";
 
 const OUTFITS: Candidate["outfits"] = [
@@ -33,7 +34,7 @@ const OUTFITS: Candidate["outfits"] = [
 
 const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
   palette(body, paw, FACE, FACE_SHADE, {
-    line: C.line,
+    line: "none",
     eye: "#1f1a36",
     top: C.clothes,
     bottom: C.clothes,
@@ -53,6 +54,8 @@ const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
   lid: FACE,
   ...over,
 });
+
+const NO_NECK = { x: 100, y: 150, w: 0, h: 0 };
 
 const sides = [
   ["L", -1],
@@ -104,15 +107,12 @@ function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; 
   );
 }
 
-/** Puffs laid edge-first then fill-over, so the cluster has a hairline rim and no inner seams. */
-function Puffs({ at, fill, edge }: { at: readonly (readonly [number, number, number])[]; fill: string; edge: string }) {
+/** A cluster of puffs in one colour: no rim, the overlaps read as one soft mass. */
+function Puffs({ at, fill }: { at: readonly (readonly [number, number, number])[]; fill: string }) {
   return (
-    <g>
+    <g fill={fill}>
       {at.map(([x, y, r]) => (
-        <circle key={`e${x}-${y}`} cx={x} cy={y} r={r} fill={fill} stroke={edge} strokeWidth={1.4} />
-      ))}
-      {at.map(([x, y, r]) => (
-        <circle key={`f${x}-${y}`} cx={x} cy={y} r={r - 0.8} fill={fill} />
+        <circle key={`${x}-${y}`} cx={x} cy={y} r={r} />
       ))}
     </g>
   );
@@ -122,7 +122,16 @@ const mirror = (s: number, x: number) => 100 + (x - 100) * s;
 
 /* ——— Lamb (from Puff): a cloud of fleece; it knits with its own wool ——— */
 
-const LAMB: Body = { ...CHIBI, id: "lamb", j: { ...J, earL: [66, 96], earR: [134, 96] } };
+const LAMB_TORSO =
+  "M82 152 C74 150 70 162 76 168 C66 174 68 190 78 192 C72 204 82 216 92 212 C96 222 106 222 110 212 C120 216 130 204 122 192 C132 190 134 174 124 168 C130 162 126 150 118 152 C112 144 88 144 82 152 Z";
+
+const LAMB: Body = {
+  ...CHIBI,
+  id: "lamb",
+  j: { ...J, earL: [66, 96], earR: [134, 96] },
+  torso: LAMB_TORSO,
+  neck: NO_NECK,
+};
 const palLamb = pal(C.deep, C.deep);
 
 const FLEECE_HEAD = [
@@ -137,9 +146,6 @@ const FLEECE_HEAD = [
   [138, 102, 11],
 ] as const;
 
-const LAMB_TORSO =
-  "M82 152 C74 150 70 162 76 168 C66 174 68 190 78 192 C72 204 82 216 92 212 C96 222 106 222 110 212 C120 216 130 204 122 192 C132 190 134 174 124 168 C130 162 126 150 118 152 C112 144 88 144 82 152 Z";
-
 function LambHead() {
   return (
     <g>
@@ -151,17 +157,25 @@ function LambHead() {
           </g>
         </g>
       ))}
-      <Puffs at={FLEECE_HEAD} fill={C.tint} edge={C.hi} />
+      {/* fleece in a mid tone of the primary, so it holds on the light ground; paler tops */}
+      <Puffs at={FLEECE_HEAD} fill={C.hi} />
+      <Puffs
+        at={[
+          [90, 54, 7],
+          [108, 50, 8],
+          [124, 62, 6],
+          [72, 72, 6],
+        ]}
+        fill={C.soft}
+      />
       <ellipse cx={100} cy={110} rx={33} ry={30} fill={FACE} />
-      {/* the forelock: a curl of fleece over the brow */}
       <Puffs
         at={[
           [92, 84, 9],
           [104, 82, 10],
           [114, 88, 7],
         ]}
-        fill={C.tint}
-        edge={C.hi}
+        fill={C.hi}
       />
       <path d="M96 116 Q100 113 104 116 Q102 120 100 120 Q98 120 96 116 Z" fill={INNER} />
     </g>
@@ -176,12 +190,69 @@ function LambBehind() {
           [124, 204, 9],
           [130, 198, 6],
         ]}
-        fill={C.tint}
-        edge={C.hi}
+        fill={C.hi}
       />
     </g>
   );
 }
+
+/** Lamb: dark, dreamy eyes under a heavy lid, curled lashes at the outer corner. No brows: the lid
+ *  does the brows' work. */
+const LAMB_EYE = "#3b2a2c";
+const lambEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const [dx, dy] = look;
+  const lashes = (by: number) => (
+    <path
+      d={`M${x + s * 6} ${by} q${s * 2.5} 0 ${s * 4} -2 M${x + s * 5} ${by - 2.5} q${s * 2} -1 ${s * 3} -3.5`}
+      {...line(p.ink, 1.6)}
+    />
+  );
+  const open = (top: number, tilt = 0, bottom = 0, k = 1, extra = false) => (
+    <g>
+      <Orb
+        id={id}
+        x={x}
+        y={y}
+        rx={6.6 * k}
+        ry={8 * k}
+        s={s}
+        fill={LAMB_EYE}
+        lid={{ top, tilt, bottom, color: FACE }}
+      >
+        <circle cx={x - 2 + dx} cy={y - 3 + dy} r={2.6 * k} fill={EYE_WHITE} />
+        <circle cx={x + 2.2 + dx} cy={y + 3 + dy} r={1.2} fill={EYE_WHITE} />
+        {extra && <circle cx={x + 2.6 + dx} cy={y - 3.4 + dy} r={1.3} fill={EYE_WHITE} />}
+      </Orb>
+      {lashes(Math.max(y - 3, y - 8 * k + 16 * k * top))}
+    </g>
+  );
+  const shut = (d: string) => (
+    <g>
+      <path d={d} {...line(p.ink, 2.8)} />
+      {lashes(y)}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return open(0.2, 0, 0.42);
+    case "delighted":
+      return shut(arcUp(x, y, 6.5, 4));
+    case "curious":
+      return open(0, 0, 0, 1.12, true);
+    case "thinking":
+      return open(0.42);
+    case "focused":
+      return open(0.5, -6);
+    case "worried":
+      return open(0.2, 14, 0.06, 1, true);
+    case "oops":
+      return shut(`M${x - 6} ${y} Q${x} ${y + 3} ${x + 6} ${y}`);
+    case "wink":
+      return s === 1 ? shut(arcUp(x, y, 6.5, 4)) : open(0.28);
+    default:
+      return open(0.28);
+  }
+};
 
 /* ——— Octopus (from Jelly): a bell with curling arms; it doodles in ink ——— */
 
@@ -289,43 +360,111 @@ function OctoHead({ uid }: Ctx) {
 
 /* ——— Axolotl (from Bloom): a crown of frilled gills; it mends what is broken ——— */
 
+/** Octopus: a white eye with an octopus's bar pupil, which widens, narrows, tilts and rounds with
+ *  the mood; the mantle closes over it as a lid. No brows. */
+const OCTO_PUPIL = "#1d1838";
+const octoEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
+  const [dx, dy] = look;
+  const bar = (w: number, h: number, rot = 0) => (
+    <rect
+      x={x - w / 2 + dx}
+      y={y - h / 2 + dy}
+      width={w}
+      height={h}
+      rx={h / 2}
+      fill={OCTO_PUPIL}
+      transform={`rotate(${rot} ${x + dx} ${y + dy})`}
+    />
+  );
+  const round = (r: number) => (
+    <g>
+      <circle cx={x + dx} cy={y + dy} r={r} fill={OCTO_PUPIL} />
+      <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.35} r={r * 0.3} fill={EYE_WHITE} />
+    </g>
+  );
+  const open = (inner: ReactNode, top = 0, tilt = 0, bottom = 0) => (
+    <Orb
+      id={id}
+      x={x}
+      y={y}
+      rx={9.5}
+      ry={9.5}
+      s={s}
+      fill={EYE_WHITE}
+      lid={{ top, tilt, bottom, color: C.mid }}
+    >
+      {inner}
+    </Orb>
+  );
+  const shut = (d: string) => <path d={d} {...line(C.deep, 3.2)} />;
+  switch (mood) {
+    case "happy":
+      return open(bar(11, 4.5), 0.08, 0, 0.45);
+    case "delighted":
+      return open(round(5.4));
+    case "curious":
+      return open(round(3.8));
+    case "thinking":
+      return open(bar(10, 4, s * -18), 0.34);
+    case "focused":
+      return open(bar(11, 2.6), 0.46, -6);
+    case "worried":
+      return open(round(2.4), 0.14, 16);
+    case "oops":
+      return shut(`M${x - 8} ${y} Q${x - 4} ${y - 4} ${x} ${y} Q${x + 4} ${y + 4} ${x + 8} ${y}`);
+    case "wink":
+      return s === 1 ? shut(arcUp(x, y, 7, 4.5)) : open(bar(11, 4.5), 0.18);
+    default:
+      return open(bar(11, 4.5), 0.18);
+  }
+};
+
+/* ——— Axolotl (from Bloom): a wide head, a crown of feathery gills; it mends things ——— */
+
 const AXO: Body = {
   ...CHIBI,
   id: "axolotl",
-  j: { ...J, earL: [60, 94], earR: [140, 94] },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
+  j: {
+    ...J,
+    earL: [56, 92],
+    earR: [144, 92],
+    shoulderL: [78, 162],
+    elbowL: [70, 182],
+    wristL: [66, 200],
+    shoulderR: [122, 162],
+    elbowR: [130, 182],
+    wristR: [134, 200],
+  },
+  torso:
+    "M80 150 Q100 144 120 150 Q134 160 132 188 Q130 216 100 218 Q70 216 68 188 Q66 160 80 150 Z",
+  neck: NO_NECK,
 };
 const palAxo = pal(C.soft, C.hi);
 
-function Gill({ s, a, len }: { s: number; a: number; len: number }) {
-  const bx = mirror(s, 142);
-  const by = 96;
-  const rad = (a * Math.PI) / 180;
-  const ex = bx + s * Math.cos(rad) * len;
-  const ey = by - Math.sin(rad) * len;
-  const seg: Cubic = [
-    [bx, by],
-    [bx + s * Math.cos(rad) * len * 0.4, by - Math.sin(rad) * len * 0.5],
-    [ex - s * 4, ey + 4],
-    [ex, ey],
-  ];
+/** One gill: a soft plume with three bumps down each side, paler at the tip. */
+function Plume({ s, a }: { s: number; a: number }) {
+  const bx = 100 + s * 44;
+  const by = 92;
+  const r = (a * Math.PI) / 180;
+  const ux = s * Math.cos(r);
+  const uy = -Math.sin(r);
+  const cx = bx + ux * 17;
+  const cy = by + uy * 17;
+  const deg = (Math.atan2(uy, ux) * 180) / Math.PI;
   return (
-    <g>
-      {/* the frill: short feathery strands both sides of each gill */}
-      {[0.35, 0.55, 0.75, 0.92].map((t) => {
-        const [x, y] = bez(seg, t);
-        const k = 9 * (1 - t * 0.4);
-        return (
-          <path
-            key={t}
-            d={`M${x} ${y} l${s * k * 0.6} ${-k} M${x} ${y} l${s * k} ${k * 0.4}`}
-            stroke={C.primary}
-            strokeWidth={3.4}
-            strokeLinecap="round"
+    <g fill={C.primary}>
+      <ellipse cx={cx} cy={cy} rx={17} ry={6.5} transform={`rotate(${deg} ${cx} ${cy})`} />
+      {[-0.5, 0, 0.5].flatMap((t) =>
+        [-1, 1].map((n) => (
+          <circle
+            key={`${t}${n}`}
+            cx={cx + ux * 12 * t - uy * 6 * n}
+            cy={cy + uy * 12 * t + ux * 6 * n}
+            r={3.6}
           />
-        );
-      })}
-      <Taper segs={[seg]} w0={11} w1={6} fill={C.primary} />
+        )),
+      )}
+      <circle cx={bx + ux * 31} cy={by + uy * 31} r={5} fill={C.mid} />
     </g>
   );
 }
@@ -335,20 +474,19 @@ function AxoHead() {
     <g>
       {sides.map(([side, s]) => (
         <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, AXO.j)}>
-          <Gill s={s} a={66} len={48} />
-          <Gill s={s} a={32} len={50} />
-          <Gill s={s} a={0} len={42} />
+          <Plume s={s} a={62} />
+          <Plume s={s} a={24} />
+          <Plume s={s} a={-14} />
         </g>
       ))}
-      <ellipse cx={100} cy={106} rx={50} ry={37} fill={C.soft} />
-      {/* a paler face and chin, so the features read on either ground */}
-      <ellipse cx={100} cy={114} rx={38} ry={24} fill={C.tint} />
+      <ellipse cx={100} cy={104} rx={56} ry={40} fill={C.soft} />
+      <ellipse cx={100} cy={114} rx={42} ry={24} fill={C.tint} />
       {[
-        [84, 78],
-        [100, 74],
-        [116, 78],
+        [82, 76],
+        [100, 72],
+        [118, 76],
       ].map(([x, y]) => (
-        <circle key={x} cx={x} cy={y} r={2.6} fill={C.hi} />
+        <circle key={x} cx={x} cy={y} r={2.8} fill={C.hi} />
       ))}
     </g>
   );
@@ -359,50 +497,437 @@ function AxoBehind() {
     [106, 200],
     [132, 208],
     [150, 236],
-    [168, 252],
+    [170, 250],
   ];
   return (
     <g data-joint="tail" style={pivot("tail", AXO.j)}>
       {/* the fin runs the length of the tail, a paler band round it */}
-      <Taper segs={[tail]} w0={30} w1={6} fill={C.hi} />
-      <Taper segs={[tail]} w0={18} w1={3} fill={C.soft} />
+      <Taper segs={[tail]} w0={36} w1={8} fill={C.hi} />
+      <Taper segs={[tail]} w0={22} w1={4} fill={C.soft} />
     </g>
   );
 }
 
-/* ——— Hamster (from Pip): the standing bean; it stashes things in its cheeks ——— */
+/** Axolotl: small dark dot eyes, wide apart. They grow, shrink, squash to dashes and arcs, and
+ *  spin into swirls; thin brows in the gills' colour come and go. */
+const axoEyes: EyeKit = ({ mood, s, x, y, look, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const dot = (r: number, two = false) => (
+    <g>
+      <circle cx={x + dx} cy={y + dy} r={r} fill={ink} />
+      <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.4} r={r * 0.3} fill={EYE_WHITE} />
+      {two && <circle cx={x + dx + r * 0.4} cy={y + dy + r * 0.35} r={r * 0.16} fill={EYE_WHITE} />}
+    </g>
+  );
+  const brow = (raise: number, tilt: number, wavy = false) => {
+    const by = y - 12 - raise;
+    return (
+      <path
+        d={
+          wavy
+            ? `M${x - 5} ${by} q2.5 -2 5 0 q2.5 2 5 0`
+            : `M${x - 5} ${by + 1} Q${x} ${by - 2} ${x + 5} ${by + 1}`
+        }
+        {...line(C.primary, 2)}
+        transform={turnAt(s, tilt, x, by)}
+      />
+    );
+  };
+  const shut = (d: string, w = 3) => <path d={d} {...line(ink, w)} />;
+  switch (mood) {
+    case "happy":
+      return shut(arcUp(x, y, 5, 3));
+    case "delighted":
+      return (
+        <g>
+          {shut(arcUp(x, y, 5.5, 3.5))}
+          <path
+            d={`M${x + s * 8} ${y - 7} l${s * 3} -3 M${x + s * 10} ${y - 1} l${s * 4} -0.5`}
+            {...line(C.primary, 1.8)}
+          />
+        </g>
+      );
+    case "curious":
+      return (
+        <g>
+          {dot(6, true)}
+          {s === 1 && brow(4, -10)}
+        </g>
+      );
+    case "thinking":
+      return (
+        <g>
+          {dot(4.6)}
+          {s === -1 && brow(3, 12)}
+        </g>
+      );
+    case "focused":
+      return shut(`M${x - 5} ${y} L${x + 5} ${y}`, 3.6);
+    case "worried":
+      return (
+        <g>
+          {dot(3.6)}
+          {brow(1, 16, true)}
+        </g>
+      );
+    case "oops":
+      return shut(`M${x} ${y} a1.5 1.5 0 1 1 3 0 a3 3 0 1 1 -6 0 a4.5 4.5 0 1 1 9 0`, 1.8);
+    case "wink":
+      return s === 1 ? shut(arcUp(x, y, 5, 3)) : dot(4.6);
+    default:
+      return dot(4.6);
+  }
+};
 
-const palHam = pal(C.accentDeep, INNER);
+/* ——— Penguin (from Pip): the standing bean in a dark coat; it slides ——— */
+
+const PENG_FACE = "#f7f9ff";
+const palPeng = pal(C.deep, C.accent);
 const BEAN =
   "M54 160 C54 126 54 98 60 82 C68 62 84 52 100 52 C116 52 132 62 140 82 C146 98 146 126 146 160 Z";
 
-function HamHead() {
+function PengHead() {
   return (
     <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, PIP.j)}>
-          <circle cx={mirror(s, 68)} cy={66} r={12} fill={C.accentDeep} />
-          <circle cx={mirror(s, 68)} cy={67} r={6.5} fill={INNER} />
-        </g>
-      ))}
-      <path d={BEAN} fill={C.accentDeep} />
-      {/* the pale muzzle, and the cheek pouches that bulge past the bean */}
-      <ellipse cx={100} cy={116} rx={34} ry={26} fill={FACE} />
-      {sides.map(([side, s]) => (
-        <ellipse key={side} cx={mirror(s, 66)} cy={124} rx={15} ry={13} fill={FACE} />
-      ))}
+      <path d={BEAN} fill={C.deep} />
+      {/* the white face: a heart, as a penguin chick's mask */}
       <path
-        d="M92 70 Q100 62 108 70"
-        stroke={FACE}
-        strokeOpacity={0.55}
-        strokeWidth={4}
-        fill="none"
-        strokeLinecap="round"
+        d="M100 84 C88 66 58 70 60 100 C62 124 82 138 100 138 C118 138 138 124 140 100 C142 70 112 66 100 84 Z"
+        fill={PENG_FACE}
       />
-      <path d="M96 114 Q100 111 104 114 Q102 118 100 118 Q98 118 96 114 Z" fill={INNER} />
     </g>
   );
 }
+
+function PengBehind() {
+  return (
+    <g>
+      {sides.map(([side, s]) => (
+        <g key={side} data-joint={`wing${side}`} style={pivot(`wing${side}`, PIP.j)}>
+          <Taper
+            segs={[
+              [
+                [100 + s * 40, 158],
+                [100 + s * 54, 170],
+                [100 + s * 64, 190],
+                [100 + s * 62, 212],
+              ],
+            ]}
+            w0={18}
+            w1={8}
+            fill={C.deep}
+          />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/** The beak is the penguin's mouth: it opens for the bright moods. */
+function Beak({ mood }: Ctx) {
+  const open =
+    mood === "happy" ||
+    mood === "delighted" ||
+    mood === "oops" ||
+    mood === "curious" ||
+    mood === "wink";
+  return open ? (
+    <g>
+      <path d="M92 117 L108 117 L100 132 Z" fill={palPeng.ink} />
+      <path d="M90 115 Q100 109 110 115 L100 121 Z" fill={C.accent} />
+      <path d="M94 127 Q100 125 106 127 L100 134 Z" fill={C.accent} />
+    </g>
+  ) : (
+    <path d="M90 115 Q100 109 110 115 L100 128 Z" fill={C.accent} />
+  );
+}
+
+/** Penguin: tall black ovals with a capsule of shine, on the white mask; short thick brows in the
+ *  coat's colour. */
+const penguinEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const brow = (raise: number, tilt: number) => {
+    const by = y - 14 - raise;
+    return (
+      <path
+        d={`M${x - 4.5} ${by} L${x + 4.5} ${by}`}
+        {...line(C.deep, 4.2)}
+        transform={turnAt(s, tilt, x, by)}
+      />
+    );
+  };
+  const open = (k = 1, top = 0, tilt = 0, extra = false) => (
+    <Orb
+      id={id}
+      x={x}
+      y={y}
+      rx={5.2 * k}
+      ry={8 * k}
+      s={s}
+      fill={ink}
+      lid={{ top, tilt, color: PENG_FACE }}
+    >
+      <rect x={x - 3 + dx} y={y - 6 * k + dy} width={2.2} height={5 * k} rx={1.1} fill={EYE_WHITE} />
+      {extra && <circle cx={x + 2 + dx} cy={y + 4 + dy} r={1.1} fill={EYE_WHITE} />}
+    </Orb>
+  );
+  const shut = (d: string) => <path d={d} {...line(ink, 3.4)} />;
+  const g = (a: ReactNode, b: ReactNode) => (
+    <g>
+      {a}
+      {b}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g(shut(arcUp(x, y, 5.5, 3.5)), brow(3, 0));
+    case "delighted":
+      return g(open(1.2, 0, 0, true), brow(7, 0));
+    case "curious":
+      return g(open(1.1), s === 1 ? brow(6, -10) : brow(0, 4));
+    case "thinking":
+      return g(open(0.95, 0.3), s === -1 ? brow(5, 10) : brow(-1, -6));
+    case "focused":
+      return g(open(1, 0.45, -6), brow(-2, -14));
+    case "worried":
+      return g(open(0.85, 0.08, 12, true), brow(2, 18));
+    case "oops":
+      return g(<ellipse cx={x} cy={y + 1} rx={6} ry={2.2} fill={ink} />, brow(2, 16));
+    case "wink":
+      return s === 1 ? g(shut(arcUp(x, y, 5.5, 3.5)), brow(1, 0)) : g(open(), brow(3, 0));
+    default:
+      return g(open(), brow(0, 0));
+  }
+};
+
+/* ——— Cloud (from Puff): a small cloud that floats; it rains ——— */
+
+const CLOUD: Body = {
+  ...CHIBI,
+  id: "cloud",
+  j: {
+    ...J,
+    shoulderL: [60, 138],
+    elbowL: [48, 150],
+    wristL: [42, 162],
+    shoulderR: [140, 138],
+    elbowR: [152, 150],
+    wristR: [158, 162],
+  },
+  torso: "M84 150 Q100 146 116 150 Q118 160 100 162 Q82 160 84 150 Z",
+  neck: NO_NECK,
+  w: { ...CHIBI.w, upper: 9, fore: 8.5, hand: 6.5 },
+};
+const palCloud = pal(C.hi, C.hi);
+
+function CloudHead() {
+  return (
+    <g>
+      {/* the shaded underside, then the cloud, then its sunlit tops */}
+      <Puffs
+        at={[
+          [74, 142, 22],
+          [100, 148, 24],
+          [126, 142, 22],
+        ]}
+        fill={C.hi}
+      />
+      <Puffs
+        at={[
+          [100, 82, 34],
+          [68, 96, 26],
+          [132, 96, 26],
+          [50, 120, 20],
+          [150, 120, 20],
+          [76, 128, 26],
+          [124, 128, 26],
+          [100, 126, 32],
+        ]}
+        fill={C.soft}
+      />
+      <Puffs
+        at={[
+          [90, 62, 11],
+          [66, 84, 7],
+          [122, 72, 8],
+        ]}
+        fill={C.tint}
+      />
+    </g>
+  );
+}
+
+/** Cloud: capsule eyes, nothing else. It is all shape: arcs, bars, tilts and heights. */
+const cloudEyes: EyeKit = ({ mood, s, x, y, look, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const cap = (h0: number, rot = 0, w = 6.4) => {
+    const h = h0 * 1.3;
+    return (
+    <g transform={`rotate(${rot} ${x + dx} ${y + dy})`}>
+      <rect x={x + dx - w / 2} y={y + dy - h / 2} width={w} height={h} rx={w / 2} fill={ink} />
+      <circle cx={x + dx} cy={y + dy - h / 2 + 3} r={1.5} fill={EYE_WHITE} />
+    </g>
+  );
+  };
+  const shut = (d: string, w = 3.4) => <path d={d} {...line(ink, w)} />;
+  switch (mood) {
+    case "happy":
+      return shut(arcUp(x, y, 7, 4.2), 4);
+    case "delighted":
+      return (
+        <g>
+          {cap(16, s * 8, 7.4)}
+          <path
+            d={`M${x + s * 9} ${y - 10} l${s * 3} -3 M${x + s * 11} ${y - 3} l${s * 4} -1`}
+            {...line(C.primary, 2)}
+          />
+        </g>
+      );
+    case "curious":
+      return cap(s === 1 ? 16 : 11);
+    case "thinking":
+      return cap(9);
+    case "focused":
+      return <rect x={x - 7.5} y={y - 2.8} width={15} height={5.6} rx={2.8} fill={ink} />;
+    case "worried":
+      return cap(11, -s * 16);
+    case "oops":
+      return shut(chevron(x, y, s, 4.5, 5), 3.2);
+    case "wink":
+      return s === 1 ? shut(arcUp(x, y, 5.5, 3.4)) : cap(13);
+    default:
+      return cap(13);
+  }
+};
+
+/* ——— Flower (from Bloom): a crown of petals and a petal skirt; it makes things sprout ——— */
+
+const FLOWER: Body = {
+  ...CHIBI,
+  id: "flower",
+  torso:
+    "M86 150 Q100 146 114 150 C122 160 128 182 134 206 C126 202 120 210 112 206 C106 212 94 212 88 206 C80 210 74 202 66 206 C72 182 78 160 86 150 Z",
+  neck: NO_NECK,
+};
+const palFlower = pal(C.deep, C.deep);
+
+function FlowerHead() {
+  return (
+    <g>
+      {Array.from({ length: 10 }, (_, i) => (
+        <ellipse
+          key={`o${i}`}
+          cx={100}
+          cy={52}
+          rx={14}
+          ry={22}
+          transform={`rotate(${i * 36} 100 104)`}
+          fill={C.primary}
+        />
+      ))}
+      {Array.from({ length: 10 }, (_, i) => (
+        <ellipse
+          key={`i${i}`}
+          cx={100}
+          cy={64}
+          rx={10}
+          ry={16}
+          transform={`rotate(${i * 36 + 18} 100 104)`}
+          fill={C.mid}
+        />
+      ))}
+      <circle cx={100} cy={106} r={37} fill={FACE} />
+    </g>
+  );
+}
+
+/** Flower: doe eyes with an amber iris like a flower's heart, a lash line with a flick, and thin
+ *  arched brows. */
+const flowerEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
+  const ink = p.ink;
+  const [dx, dy] = look;
+  const brow = (raise: number, tilt: number) => {
+    const by = y - 16 - raise;
+    return (
+      <path
+        d={`M${x - 6} ${by + 1} Q${x} ${by - 2.5} ${x + 6} ${by + 1}`}
+        {...line(ink, 1.8)}
+        transform={turnAt(s, tilt, x, by)}
+      />
+    );
+  };
+  const open = (top = 0, tilt = 0, bottom = 0, k = 1) => {
+    const rx = 7 * k;
+    const ry = 9.4 * k;
+    return (
+      <g>
+        <Orb
+          id={id}
+          x={x}
+          y={y}
+          rx={rx}
+          ry={ry}
+          s={s}
+          fill={EYE_WHITE}
+          lid={{ top, tilt, bottom, color: FACE }}
+          edge={{ color: ink, width: 1.6 }}
+        >
+          <circle cx={x + dx} cy={y + 1 + dy} r={5.6 * k} fill={C.accentDeep} />
+          <circle cx={x + dx} cy={y + 1 + dy} r={2.6 * k} fill={ink} />
+          <circle cx={x - 1.8 + dx} cy={y - 1.6 + dy} r={1.8} fill={EYE_WHITE} />
+        </Orb>
+        {top === 0 && (
+          <path d={`M${x - rx} ${y - 1} A${rx} ${ry} 0 0 1 ${x + rx} ${y - 1}`} {...line(ink, 2.6)} />
+        )}
+        <path
+          d={`M${x + s * (rx - 0.5)} ${top === 0 ? y - 2 : y - ry + 2 * ry * top} l${s * 3.5} -3.5`}
+          {...line(ink, 2.2)}
+        />
+      </g>
+    );
+  };
+  const shut = (d: string) => (
+    <g>
+      <path d={d} {...line(ink, 2.6)} />
+      <path d={`M${x + s * 6.5} ${y + 1} l${s * 3.5} -2.5`} {...line(ink, 2.2)} />
+    </g>
+  );
+  const g = (a: ReactNode, b: ReactNode) => (
+    <g>
+      {a}
+      {b}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g(open(0.12, 0, 0.4), brow(2, 0));
+    case "delighted":
+      return g(
+        <g>
+          {shut(arcUp(x, y, 6.5, 4))}
+          <path d={`M${x - 3} ${y - 4} l-1 -3 M${x + 1} ${y - 5} l0 -3 M${x + 4.5} ${y - 4} l1 -3`} {...line(ink, 1.6)} />
+        </g>,
+        brow(5, 0),
+      );
+    case "curious":
+      return g(open(0, 0, 0, 1.08), s === 1 ? brow(5, -8) : brow(0, 3));
+    case "thinking":
+      return g(open(0.3), s === -1 ? brow(4, 8) : brow(-1, -6));
+    case "focused":
+      return g(open(0.45, -6), brow(-2, -10));
+    case "worried":
+      return g(open(0.1, 12), brow(1, 16));
+    case "oops":
+      return g(shut(`M${x - 6} ${y} Q${x} ${y - 3} ${x + 6} ${y}`), brow(2, 14));
+    case "wink":
+      return s === 1 ? g(shut(arcUp(x, y, 6.5, 4)), brow(1, 0)) : g(open(), brow(2, 0));
+    default:
+      return g(open(), brow(0, 0));
+  }
+};
 
 /* ——— Fruit bat (from Fuzzy): fuzz, a ruff, big ears; it hangs upside down ——— */
 
@@ -489,28 +1014,96 @@ function BatRuff() {
   );
 }
 
+
+/** Fruit bat: huge glossy dark eyes with a crescent of shine and a rim of reflected colour, and fur
+ *  tufts for brows that lift, droop and tilt. */
+const BAT_EYE = "#1b1420";
+const batEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
+  const [dx, dy] = look;
+  const tuft = (raise: number, tilt: number) => {
+    const by = y - 15 - raise;
+    return (
+      <path
+        d={`M${x - 6} ${by + 2} Q${x - 2} ${by - 3} ${x} ${by - 6} Q${x + 1} ${by - 2} ${x + 6} ${by + 2} Q${x} ${by} ${x - 6} ${by + 2} Z`}
+        fill={C.deep}
+        transform={turnAt(s, tilt, x, by)}
+      />
+    );
+  };
+  const open = (top: number, tilt = 0, bottom = 0, k = 1, extra = false) => (
+    <Orb
+      id={id}
+      x={x}
+      y={y}
+      rx={8.6 * k}
+      ry={10 * k}
+      s={s}
+      fill={BAT_EYE}
+      lid={{ top, tilt, bottom, color: FACE }}
+    >
+      <ellipse cx={x - 3 + dx} cy={y - 4 + dy} rx={3.4 * k} ry={3 * k} fill={EYE_WHITE} />
+      <circle cx={x + 3.4 + dx} cy={y + 3 + dy} r={1.6} fill={EYE_WHITE} />
+      {extra && <circle cx={x + 3.6 + dx} cy={y - 4.6 + dy} r={1.2} fill={EYE_WHITE} />}
+      <path d={`M${x - 5} ${y + 6.5} Q${x} ${y + 9.5} ${x + 5} ${y + 6.5}`} {...line(C.hi, 1.6)} />
+    </Orb>
+  );
+  const shut = (d: string) => <path d={d} {...line(BAT_EYE, 3.2)} />;
+  const g = (a: ReactNode, b: ReactNode) => (
+    <g>
+      {a}
+      {b}
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return g(open(0.08, 0, 0.42), tuft(2, 0));
+    case "delighted":
+      return g(open(0, 0, 0, 1.14, true), tuft(5, -4));
+    case "curious":
+      return g(open(0, 0, 0, 1.06), s === 1 ? tuft(7, -12) : tuft(0, 4));
+    case "thinking":
+      return g(open(0.34), s === -1 ? tuft(5, 10) : tuft(-1, -8));
+    case "focused":
+      return g(open(0.42, -8), tuft(-2, -14));
+    case "worried":
+      return g(open(0.14, 14, 0.05, 1, true), tuft(1, 18));
+    case "oops":
+      return g(shut(chevron(x, y, s, 5.5, 5)), tuft(3, 16));
+    case "wink":
+      return s === 1 ? g(shut(arcUp(x, y, 7, 4.5)), tuft(1, 0)) : g(open(0.12), tuft(3, 0));
+    default:
+      return g(open(0.12), tuft(0, 0));
+  }
+};
+
 /* ——— The cast of this round ——— */
 
 export const SIDE_CANDIDATES: Candidate[] = [
   {
     id: "side-lamb",
     kind: "animal",
-    frame: { ...LAMB, torso: LAMB_TORSO },
+    frame: LAMB,
     outline: false,
     label: "Lamb",
     signature: "A cloud of fleece with a pale face and floppy ears — it knits with its own wool",
     pitch:
-      "From Puff: the head of puffs and the cloud body, now a lamb's fleece. It walks, where Puff drifted, and the light at its core is gone. Its ability is Knit: it draws a strand from its own fleece and knits it into something — a scarf, a pennant, a small heart — so it is the cast's maker.",
-    risk: "Pale fleece needs its hairline edge on the light ground. A knitted thing must never become a reward that accumulates.",
+      "From Puff: the head of puffs and the cloud body, now a lamb's fleece, in a mid tone of the primary so it holds on the light ground. Its ability is Knit: it draws a strand from its own fleece and knits it into something — a scarf, a pennant, a small heart. Its eyes are dark and dreamy under a heavy lid, with curled lashes.",
+    risk: "A knitted thing must never become a reward that accumulates.",
     pal: palLamb,
-    body: C.tint,
-    face: face({ eyeY: 106, eyeGap: 15, mouthY: 124 }),
+    body: C.hi,
+    face: face({ eyeY: 106, eyeGap: 15, mouthY: 124, kit: lambEyes }),
     outfit: "bare",
     outfits: OUTFITS,
     behind: () => <LambBehind />,
     head: () => <LambHead />,
     belly: () => (
-      <path d={LAMB_TORSO} fill="none" stroke={C.hi} strokeWidth={1.4} strokeLinejoin="round" />
+      <Puffs
+        at={[
+          [88, 160, 6],
+          [110, 158, 5],
+        ]}
+        fill={C.soft}
+      />
     ),
   },
   {
@@ -523,52 +1116,15 @@ export const SIDE_CANDIDATES: Candidate[] = [
     label: "Octopus",
     signature: "A round bell and six curling arms — it draws in ink",
     pitch:
-      "From Jelly: the bell and the tendrils, but the bell is now an octopus's mantle and the tendrils are thick arms that curl, with suckers under the tips. No wings, no antennae, no light. Its ability is Ink: it draws a mark in the air with a squirt of ink — an arrow, a circle, an underline — to show where to look. The mark is never a tick or a cross; it carries no claim about the material.",
-    risk: "Real octopuses change colour, which is the chameleon's; this one never does. Ink must stay a pointer, never lettering.",
+      "From Jelly: the bell and the tendrils, now an octopus's mantle and six thick arms that curl, with suckers under the tips. Its ability is Ink: it draws a mark in the air — an arrow, a circle, an underline — to show where to look. Its eyes have an octopus's bar pupil, which widens, narrows and rounds with the mood.",
+    risk: "Real octopuses change colour, which is the chameleon's; this one never does. Ink stays a pointer: never a tick, a cross or lettering.",
     pal: palOcto,
     body: C.primary,
-    face: face({ eyeY: 104, eyeGap: 20, mouthY: 122 }),
+    face: face({ eyeY: 104, eyeGap: 20, mouthY: 124, kit: octoEyes }),
     outfit: "bare",
     outfits: ["bare", "winter", "party"],
     behind: () => <OctoBehind />,
     head: (c) => <OctoHead {...c} />,
-  },
-  {
-    id: "side-axolotl",
-    kind: "animal",
-    frame: AXO,
-    outline: false,
-    label: "Axolotl",
-    signature: "A wide smiling head with a crown of frilled gills and a finned tail — it mends things",
-    pitch:
-      "From Bloom: the crown of petals round the face becomes an axolotl's gills, three frilled fronds a side, and the petal skirt becomes a finned tail. Axolotls regrow what they lose, so its ability is Mend: it puts a broken thing back together. It suits the gentle incorrect answer — not yet, let's fix it — without a scold.",
-    risk: "Mending must never imply the learner broke something. Popular with children right now, so it may be more common in other apps.",
-    pal: palAxo,
-    body: C.soft,
-    face: face({ eyeY: 104, eyeGap: 24, mouthY: 120, lid: C.soft }),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: () => <AxoBehind />,
-    head: () => <AxoHead />,
-    belly: () => <ellipse cx={100} cy={190} rx={13} ry={20} fill={C.tint} />,
-  },
-  {
-    id: "side-hamster",
-    kind: "animal",
-    frame: PIP,
-    outline: false,
-    label: "Hamster",
-    signature: "A golden bean on stubby legs, with cheek pouches — it stashes things away",
-    pitch:
-      "From Pip: the bean that stands, head and body one shape. Where Pip's bottom glowed, the hamster has a cream tummy; the wing cases are gone. Its ability is Stash: it tucks something into its cheek pouches, cheeks bulging, and brings it out again later — the cast's keeper of things.",
-    risk: "The gold is the product accent, darkened so it does not read as Wisp's glow. A stash must not become a hoard that grows with use.",
-    pal: palHam,
-    body: C.accentDeep,
-    face: face({ eyeY: 104, eyeGap: 17, eyeSize: 1.15, mouthY: 122 }),
-    outfit: "bare",
-    outfits: OUTFITS,
-    head: () => <HamHead />,
-    belly: () => <ellipse cx={100} cy={216} rx={30} ry={28} fill={FACE} />,
   },
   {
     id: "side-bat",
@@ -578,155 +1134,90 @@ export const SIDE_CANDIDATES: Candidate[] = [
     label: "Fruit bat",
     signature: "Fuzz, a ruff, tall ears and wings folded like a cape — it hangs upside down",
     pitch:
-      "From Fuzzy: the fuzz, the ruff and the feathery antennae, which become a fruit bat's tall ears. The long wings fold into a cape. Its ability is Upside-down: it hangs from anything — a heading, the edge of a card — and sees it the other way round. The one character who is at home the wrong way up.",
-    risk: "Bats can read as spooky or as Halloween; the fruit bat's round face and the cream muzzle carry it. Its wings must stay folded, so it is never a second flier beside Wisp.",
+      "From Fuzzy: the fuzz and the ruff, and the feathery antennae become a fruit bat's tall ears; the long wings fold into a cape. Its ability is Upside-down: it hangs from anything — a heading, the edge of a card — and sees it the other way round. Huge glossy eyes, and fur tufts for brows.",
+    risk: "Bats can read as spooky; the round cream face carries it. Its wings stay folded, so it is never a second flier beside Wisp.",
     pal: palBat,
     body: C.deep,
-    face: face({ eyeY: 108, eyeGap: 17, mouthY: 126 }),
+    face: face({ eyeY: 108, eyeGap: 17, mouthY: 127, kit: batEyes }),
     outfit: "bare",
     outfits: OUTFITS,
     behind: () => <BatBehind />,
     head: () => <BatHead />,
     pendant: () => <BatRuff />,
   },
-];
-
-/* ——— The abilities, drawn as a preview over each figure ——— */
-
-export type Ability = {
-  /** The candidate it belongs to (`candidates.tsx` or this file). */
-  id: string;
-  name: string;
-  line: string;
-  /** How the preview holds the figure: over it, or turned upside down beneath a bar. */
-  mode?: "over" | "hang";
-  /** Moves the frame so a preview has room above the head. */
-  viewBox?: string;
-  mood?: Mood;
-  fx: () => ReactNode;
-};
-
-const TALL = "0 -40 200 340";
-
-export const SIDE_ABILITIES: Ability[] = [
-  {
-    id: "side-lamb",
-    name: "Knit",
-    line: "Draws a strand from its own fleece and knits it into a thing.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        <path
-          d="M122 186 C146 200 158 170 150 150 C144 134 156 124 160 132"
-          stroke={C.hi}
-          strokeWidth={3}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M160 150 C140 132 146 110 160 118 C174 110 180 132 160 150 Z"
-          fill={C.accent}
-        />
-        <path
-          d="M150 122 l4 5 l4 -5 M158 122 l4 5 l4 -5 M154 131 l4 5 l4 -5 M162 131 l4 5 l4 -5"
-          stroke={C.accentDeep}
-          strokeWidth={1.6}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M142 106 L176 146 M178 106 L144 146"
-          stroke={C.deep}
-          strokeWidth={2.6}
-          strokeLinecap="round"
-        />
-        <circle cx={142} cy={106} r={3} fill={C.deep} />
-        <circle cx={178} cy={106} r={3} fill={C.deep} />
-      </g>
-    ),
-  },
-  {
-    id: "side-octopus",
-    name: "Ink",
-    line: "Draws a mark in the air in ink — an arrow, a circle, an underline — to show where to look.",
-    mood: "curious",
-    fx: () => (
-      <g stroke={C.deep} strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M172 196 C192 176 192 146 172 140 C154 136 154 160 170 160 C186 160 190 128 184 96" />
-        <path d="M176 104 L184 94 L192 106" />
-        <circle cx={196} cy={150} r={2.2} fill={C.deep} stroke="none" />
-        <circle cx={158} cy={124} r={1.8} fill={C.deep} stroke="none" />
-      </g>
-    ),
-  },
   {
     id: "side-axolotl",
-    name: "Mend",
-    line: "Puts a broken thing back together. It regrows what it loses, so it knows how.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        <path
-          d="M164 88 L170 104 L187 104 L174 114 L179 131 L164 121 L149 131 L154 114 L141 104 L158 104 Z"
-          fill={C.accent}
-        />
-        <path d="M164 90 L160 102 L167 110 L161 120 L164 124" stroke={C.accentDeep} strokeWidth={1.8} fill="none" />
-        <g transform="rotate(-28 164 110)">
-          <rect x={152} y={105} width={24} height={10} rx={4} fill={FACE} stroke={FACE_SHADE} strokeWidth={1.2} />
-          <circle cx={161} cy={110} r={1} fill={FACE_SHADE} />
-          <circle cx={167} cy={110} r={1} fill={FACE_SHADE} />
-        </g>
-      </g>
-    ),
+    kind: "animal",
+    frame: AXO,
+    outline: false,
+    label: "Axolotl",
+    signature: "A wide head with feathery gill plumes, a round body and a finned tail — it mends things",
+    pitch:
+      "Redrawn from Bloom: the petal crown becomes three soft gill plumes a side, and the body is round and low with a broad finned tail. Axolotls regrow what they lose, so its ability is Mend: it puts a broken thing back together. Its eyes are small dots, wide apart, that grow, shrink, squash and swirl.",
+    risk: "Mending must never imply the learner broke something.",
+    pal: palAxo,
+    body: C.soft,
+    face: face({ eyeY: 102, eyeGap: 28, mouthY: 120, kit: axoEyes }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: () => <AxoBehind />,
+    head: () => <AxoHead />,
+    belly: () => <ellipse cx={100} cy={190} rx={18} ry={22} fill={C.tint} />,
   },
   {
-    id: "side-hamster",
-    name: "Stash",
-    line: "Tucks a thing into its cheek pouches and brings it out again later.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        {sides.map(([side, s]) => (
-          <ellipse key={side} cx={mirror(s, 62)} cy={122} rx={20} ry={17} fill={FACE} />
-        ))}
-        <path
-          d="M176 70 C168 90 154 100 142 108"
-          stroke={C.deep}
-          strokeOpacity={0.45}
-          strokeWidth={2}
-          strokeDasharray="3 5"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <ellipse cx={180} cy={62} rx={5} ry={8} transform="rotate(30 180 62)" fill={C.deep} />
-        <ellipse cx={181} cy={62} rx={2} ry={5} transform="rotate(30 181 62)" fill={FACE} />
-      </g>
-    ),
+    id: "side-penguin",
+    kind: "animal",
+    frame: { ...PIP, id: "penguin" },
+    arms: false,
+    outline: false,
+    label: "Penguin",
+    signature: "A dark bean with a white heart of a face, flippers and a beak — it slides",
+    pitch:
+      "From Pip, replacing the hamster: the bean that stands, head and body one shape. Where Pip's bottom glowed, the penguin has a white belly; the wing cases become flippers. Its ability is Slide: it drops onto its belly and slides to where it is going, the one character who travels that way. Tall eyes with a capsule of shine, thick brows in its coat's colour, and a beak that opens.",
+    risk: "Penguins are common mascots; the heart-shaped face and the product blue keep it its own.",
+    pal: palPeng,
+    body: C.deep,
+    face: face({ eyeY: 104, eyeGap: 16, mouthY: 122, lid: PENG_FACE, mouth: false, kit: penguinEyes }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: () => <PengBehind />,
+    head: () => <PengHead />,
+    top: (c) => <Beak {...c} />,
+    belly: () => <ellipse cx={100} cy={210} rx={34} ry={38} fill={PENG_FACE} />,
   },
   {
-    id: "side-bat",
-    name: "Upside-down",
-    line: "Hangs from anything — a heading, the edge of a card — and sees it the other way round.",
-    mode: "hang",
-    mood: "happy",
-    fx: () => (
-      <rect x={36} y={12} width={128} height={7} rx={3.5} fill={C.deep} opacity={0.6} />
-    ),
+    id: "side-cloud",
+    kind: "animal",
+    frame: CLOUD,
+    legs: false,
+    outline: false,
+    label: "Cloud",
+    signature: "A small round cloud with stubby arms — it rains",
+    pitch:
+      "From Puff, as itself: a cloud, but no spirit — no antennae, no wings, no light and no trail. A shaded underside, sunlit tops. Its ability is Rain: a small shower that waters what is below it, so things grow. Capsule eyes and nothing else; it is all shape.",
+    risk: "Rain can read as sad: it must never rain on an incorrect answer. Floats, like Wisp, but a cloud's silhouette is its own.",
+    pal: palCloud,
+    body: C.soft,
+    face: face({ eyeY: 112, eyeGap: 17, mouthY: 128, kit: cloudEyes }),
+    outfit: "bare",
+    outfits: ["bare", "winter", "party"],
+    head: () => <CloudHead />,
   },
   {
-    id: "panda",
-    name: "Balance",
-    line: "Balances anything on its head and tail: a proposal for the backup red panda.",
-    viewBox: TALL,
-    mood: "focused",
-    fx: () => (
-      <g>
-        <rect x={76} y={26} width={48} height={12} rx={2} fill={C.accent} />
-        <rect x={76} y={34} width={48} height={4} fill={C.accentDeep} />
-        <circle cx={100} cy={12} r={13} fill={C.primary} />
-        <path d="M88 8 Q100 16 112 8" stroke={C.soft} strokeWidth={2} fill="none" />
-        <rect x={90} y={-20} width={20} height={20} rx={3} fill={C.mid} />
-      </g>
-    ),
+    id: "side-flower",
+    kind: "animal",
+    frame: FLOWER,
+    outline: false,
+    label: "Flower",
+    signature: "A face in a crown of petals, a petal skirt — it makes things sprout",
+    pitch:
+      "From Bloom, as itself: the crown of petals and the petal skirt, standing on its own feet, with no leaf wings, no antennae and no lamp. Its ability is Sprout: it plants a seed and it grows. Doe eyes with an amber iris, like a flower's heart, a flicked lash line and thin brows.",
+    risk: "Never green: its stem and leaves would read as correct. Sprouting must never grow with a count.",
+    pal: palFlower,
+    body: C.mid,
+    face: face({ eyeY: 104, eyeGap: 15, mouthY: 123, kit: flowerEyes }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    head: () => <FlowerHead />,
   },
 ];

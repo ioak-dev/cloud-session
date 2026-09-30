@@ -147,7 +147,7 @@ export function NixFigure({
   const bodyLine = c.outline === false ? "none" : ink;
   const o = outfitParts(outfit ?? c.outfit, pal, f.torso);
   const on = new Set<PropId>([...(c.props ?? []), ...props, ...(o.brings ?? [])]);
-  const h = c.kind === "animal" ? null : Hair({ id: hair ?? c.hair ?? "bob", pal });
+  const h = c.kind === "animal" || c.hair === undefined ? null : Hair({ id: hair ?? c.hair, pal });
   const face = mood ?? p.mood;
   const ctx = { pal, uid, mood: face };
   const k = f.w.cloth;
@@ -260,6 +260,7 @@ export function NixFigure({
           <g data-joint="head" style={pivot("head", j)}>
             <g transform={f.headFit}>
               {o.back}
+              {c.headBack?.(ctx)}
               {h?.back}
             </g>
           </g>
@@ -315,6 +316,7 @@ export function NixFigure({
                 style={c.face}
                 pal={pal}
                 browColor={c.kind === "animal" ? undefined : pal.hair}
+                uid={uid}
               />
               <HeadProps on={on} pal={pal} eyeY={c.face.eyeY} eyeGap={c.face.eyeGap} />
               {/* the signature rides over any hat — it is what keeps the character itself */}

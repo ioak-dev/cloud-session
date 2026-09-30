@@ -1,4 +1,5 @@
 import { pivot } from "./skeleton";
+import type { EyeKit } from "./eyes";
 import { DROP, TONGUE, WHITE, type Palette } from "./palette";
 
 /**
@@ -142,6 +143,11 @@ export type FaceStyle = {
   gapTooth?: boolean;
   /** Skin the upper lid is drawn in when the eyes half-close. */
   lid: string;
+  /** The character's own eyes and brows (`eyes.tsx`), drawn for every mood in place of the
+   *  shared set. */
+  kit?: EyeKit;
+  /** `false` when the character's own part is its mouth (a beak). */
+  mouth?: false;
 };
 
 const EYE_RX = 7;
@@ -348,11 +354,13 @@ export function Face({
   style,
   pal,
   browColor,
+  uid = "face",
 }: {
   mood: Mood;
   style: FaceStyle;
   pal: Palette;
   browColor?: string;
+  uid?: string;
 }) {
   const m = MOODS.find((x) => x.id === mood) ?? MOODS[0];
   const xl = 100 - style.eyeGap;
@@ -366,15 +374,27 @@ export function Face({
           key={x}
           transform={`translate(${x} ${y}) scale(${style.eyeSize ?? 1}) translate(${-x} ${-y})`}
         >
-          <EyeShape
-            kind={m.eyes[i]}
-            x={x}
-            y={y}
-            look={m.look}
-            style={style}
-            pal={pal}
-            flip={i === 1}
-          />
+          {style.kit ? (
+            style.kit({
+              mood: m.id,
+              s: i === 0 ? -1 : 1,
+              x,
+              y,
+              look: m.look,
+              pal,
+              id: `${uid}-eye${i}`,
+            })
+          ) : (
+            <EyeShape
+              kind={m.eyes[i]}
+              x={x}
+              y={y}
+              look={m.look}
+              style={style}
+              pal={pal}
+              flip={i === 1}
+            />
+          )}
         </g>
       ))}
     </>
@@ -404,7 +424,7 @@ export function Face({
       ) : (
         eyes
       )}
-      {style.brows !== false && (
+      {style.brows !== false && !style.kit && (
         <g stroke={browColor ?? pal.hair} strokeWidth={2.8} fill="none" strokeLinecap="round">
           <path d={browPath(m.brow, xl, y - 15, true)} />
           <path d={browPath(m.brow, xr, y - 15, false)} />
@@ -419,12 +439,14 @@ export function Face({
           strokeLinecap="round"
         />
       )}
-      <MouthShape kind={m.mouth} y={style.mouthY} style={style} pal={pal} />
+      {style.mouth !== false && (
+        <MouthShape kind={m.mouth} y={style.mouthY} style={style} pal={pal} />
+      )}
       {m.drop && (
         <path
           d="M140 70 q-5 8 -5 11 a5 5 0 0 0 10 0 q0 -3 -5 -11 Z"
           fill={DROP}
-          stroke={pal.ink}
+          stroke={pal.line === "none" ? "none" : pal.ink}
           strokeWidth={1.5}
         />
       )}

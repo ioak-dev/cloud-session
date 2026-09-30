@@ -31,13 +31,14 @@ npm start
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
+| `src/design/nix/side-candidates.tsx`, `side-humans.tsx`, `side-abilities.tsx` | Side candidates (animals, people) and their ability previews |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
 | `docs/cast.md` | Status of every character, the one-ability rule |
 
-The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel.
+The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel. The people among the side candidates are new characters.
 
 ## What this repo does not do
 

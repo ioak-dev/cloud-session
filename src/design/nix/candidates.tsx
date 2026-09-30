@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { arcUp, line, Orb, type EyeKit } from "./rig/eyes";
 import type { FaceStyle, Mood } from "./rig/face";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
@@ -16,7 +17,7 @@ export type Ctx = { pal: Palette; uid: string; mood?: Mood };
 
 export type Candidate = {
   id: string;
-  kind: "animal";
+  kind: "animal" | "human";
   /** The body it stands on; chibi when absent. */
   frame?: Body;
   /** `false` for a character that floats: no legs are drawn. */
@@ -43,6 +44,8 @@ export type Candidate = {
   outfit: OutfitId;
   outfits: OutfitId[];
   props?: PropId[];
+  /** Behind the head, riding its joint: long hair, a bun. */
+  headBack?: (c: Ctx) => ReactNode;
   /** Behind the torso: a tail, wings. */
   behind?: (c: Ctx) => ReactNode;
   /** The head's base shape, ears and markings — before the face. */
@@ -378,6 +381,7 @@ const palCham: Palette = {
   shoe: "#34304d",
   accent: MAGENTA,
   glow: GLOW,
+  line: "none",
 };
 
 function ChamHead({ pal }: Ctx) {
@@ -386,8 +390,6 @@ function ChamHead({ pal }: Ctx) {
       <path
         d="M66 76 C66 44 98 26 128 34 C122 48 130 62 138 76 Z"
         fill={pal.skin}
-        stroke={pal.ink}
-        strokeWidth={2.5}
         strokeLinejoin="round"
       />
       <path
@@ -402,13 +404,11 @@ function ChamHead({ pal }: Ctx) {
         rx={46}
         ry={37}
         fill={pal.skin}
-        stroke={pal.ink}
-        strokeWidth={2.5}
       />
       <path d="M62 116 C74 136 126 136 138 116 C128 130 72 130 62 116 Z" fill={CHAM_BELLY} />
       {[78, 122].map((x) => (
         <g key={x}>
-          <circle cx={x} cy={98} r={15} fill={pal.skin} stroke={pal.ink} strokeWidth={2.4} />
+          <circle cx={x} cy={98} r={15} fill={pal.skin} />
           <circle cx={x} cy={98} r={11.5} fill="none" stroke={pal.skinShade} strokeWidth={2} />
         </g>
       ))}
@@ -423,12 +423,59 @@ function ChamHead({ pal }: Ctx) {
   );
 }
 
+/** Chameleon: turret eyes. A small pupil in each turret, and the two look their own ways — apart
+ *  at rest, together on something that interests it, crossed when it concentrates. The turret's
+ *  skin closes over the eye as a lid. */
+const chamEyes: EyeKit = ({ mood, s, x, y, id, pal }) => {
+  const left = s === -1;
+  const open = (dx: number, dy: number, r = 4.2, top = 0.18, tilt = 0) => (
+    <Orb
+      id={id}
+      x={x}
+      y={y}
+      rx={11.5}
+      ry={11.5}
+      s={s}
+      fill="#f4f0ff"
+      lid={{ top, tilt, color: pal.skin }}
+    >
+      <circle cx={x + dx} cy={y + dy} r={r} fill={pal.ink} />
+      <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.35} r={r * 0.3} fill={WHITE} />
+    </Orb>
+  );
+  const shut = (
+    <g>
+      <circle cx={x} cy={y} r={11.5} fill={pal.skin} />
+      <path d={arcUp(x, y + 1, 6, 3.5)} {...line(pal.ink, 2.6)} />
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return shut;
+    case "delighted":
+      return open(0, 0, 5.4, 0);
+    case "curious":
+      return left ? open(5, -1) : open(5, -1, 5.2, 0);
+    case "thinking":
+      return left ? open(-4, -5, 4, 0.2) : open(4, -5, 4, 0.2);
+    case "focused":
+      return open(-s * 4, 2, 4, 0.45);
+    case "worried":
+      return open(0, 2, 3, 0.18, 14);
+    case "oops":
+      return left ? open(-4, -4, 3.4, 0.08) : open(4, 4, 3.4, 0.08);
+    case "wink":
+      return s === 1 ? shut : open(3, 0);
+    default:
+      return left ? open(-4, 1) : open(3, -2);
+  }
+};
+
 function ChamTail({ pal }: Ctx) {
   const d = "M106 204 C138 210 164 232 154 256 C146 272 120 266 124 250 C127 239 142 240 142 250";
   return (
     <g data-joint="tail" style={pivot("tail")}>
-      <path d={d} stroke={pal.ink} strokeWidth={14} fill="none" strokeLinecap="round" />
-      <path d={d} stroke={pal.skin} strokeWidth={10} fill="none" strokeLinecap="round" />
+      <path d={d} stroke={pal.skin} strokeWidth={12} fill="none" strokeLinecap="round" />
       <path
         d="M130 212 l4 6 M146 226 l6 3 M156 244 l6 0"
         stroke={pal.skinShade}
@@ -557,7 +604,9 @@ export const CANDIDATES: Candidate[] = [
       nose: "none",
       brows: false,
       lid: palCham.skin,
+      kit: chamEyes,
     },
+    outline: false,
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     behind: (c) => <ChamTail {...c} />,
