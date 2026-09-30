@@ -25,6 +25,7 @@ import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { PRACTICE, STATES, type Variant } from "./side-states";
 import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
+import { NEW_CONCEPTS } from "./side-new";
 import { PUFF_FAMILY } from "./side-puff";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -59,11 +60,11 @@ const CAST: Candidate[] = [
   byId(ANIMAL_POOL, "side-chick"),
   byId(SIDE_HUMANS, "side-juno"),
   byId(SIDE_HUMANS, "side-lulu"),
-  byId(CANDIDATES, "panda"),
 ];
 
 /** Animal drawings kept as reference: the penguin, the otter and the bench's original firefly. */
 const ANIMAL_REFERENCE: Candidate[] = [
+  byId(CANDIDATES, "panda"),
   byId(ANIMAL_POOL, "side-octopus"),
   ...SIDE_REFERENCE,
   byId(CANDIDATES, "otter"),
@@ -79,12 +80,13 @@ const ALL: Candidate[] = [
   ...PIP_FAMILY,
   ...REFERENCE,
   ...CAST,
+  ...NEW_CONCEPTS,
   ...ANIMAL_REFERENCE,
 ];
 
 /** Every character with eyes of its own. */
 /** Every candidate has eyes and a mouth of its own. */
-const EYED = CAST;
+const EYED = [...CAST, ...NEW_CONCEPTS];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -108,14 +110,14 @@ function AbilityTile({ a }: { a: Ability }) {
           </svg>
         )}
         <div
-          className="absolute inset-0"
+          className={`absolute inset-0 ${a.move ?? ""}`}
           style={{
             transform: a.turn || a.scale ? `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` : undefined,
             opacity: a.fade,
             filter: a.hue ? `hue-rotate(${a.hue}deg)` : undefined,
           }}
         >
-          <NixFigure c={c} mood={a.mood} pose={a.pose} viewBox={vb} headFx={a.head?.()} className="h-full w-full" />
+          <NixFigure c={c} mood={a.mood} pose={a.pose} act={a.act} viewBox={vb} headFx={a.head?.()} className="h-full w-full" />
         </div>
         {!a.behind && (
           <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
@@ -461,6 +463,7 @@ export function NixBenchView() {
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates", CAST],
+          ["New concepts — for the sixth place", NEW_CONCEPTS],
           ["Reference — other animals", ANIMAL_REFERENCE],
         ] as const
       ).map(([title, group]) => (

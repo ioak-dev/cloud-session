@@ -16,7 +16,11 @@ Every character has **one special feature or ability that no other character in 
 | Chick | Fluff up: fluffs every feather out into a round ball, twice its size |
 | Juno | Cartwheel: arrives, and leaves, with a cartwheel |
 | Lulu | Puppy eyes: her eyes swell huge, glossy and brimming |
-| Red panda | Stand tall: rears up on its hind legs, arms wide, tail fluffed, to look big |
+| Fizz (frog) *(concept)* | Throat balloon: his throat swells up round when he is bursting to say something |
+| Clover (goat) *(concept)* | Climb: scrambles onto the top of anything and stands there, proud |
+| Tuck (tortoise) *(concept)* | Shell spin: flips onto his back and spins on his shell like a breakdancer |
+| Bit (robot) *(concept)* | Screen face: its face is a screen and can become any shape |
+| Remy (boy) *(concept)* | Drama: every feeling at full size — the gasp, the swoon, the bow |
 
 **Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. The chameleon changes its own colour; the octopus draws with its own ink; the fruit bat hangs by its own feet; the red panda rears up on its own legs. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
 
@@ -159,8 +163,9 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 |---|---|---|---|
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
-| — | Red panda | Stand tall *(proposed)* | Candidate, competing |
-| 2–6 | Fruit bat, chick, Juno, Lulu, red panda | See below | **Chosen**: the six side characters |
+| — | Red panda | Stand tall | **Dropped** — not expressive enough, no special character; kept as reference |
+| 2–5 | Fruit bat, chick, Juno, Lulu | See below | **Chosen** |
+| 6 | One of five new concepts: Fizz, Clover, Tuck, Bit, Remy | See below | **Open** |
 
 ### Rules for every side character
 
@@ -183,7 +188,7 @@ Duolingo's cast is loved for something the drawings here were missing: each of t
 
 ### The candidates
 
-The six side characters: the chameleon (confirmed), the fruit bat, the chick, Juno, Lulu and the red panda.
+Five side characters are chosen — the chameleon, the fruit bat, the chick, Juno and Lulu — and the sixth place is open to the five new concepts below.
 
 | Candidate | Temperament | At rest | Ability | Refined with |
 |---|---|---|---|---|
@@ -192,13 +197,12 @@ The six side characters: the chameleon (confirmed), the fruit bat, the chick, Ju
 | **Chick** | Brand new to everything: earnest, eager, easily overwhelmed, proud of every small thing | Gazing up at you, wide-eyed, head on one side | Fluff up | Two-tone fluff, cheek tufts that stick out, feather marks, a crack in its shell |
 | **Juno** | A big-hearted show-off: first to try, first to cheer someone else on | Hands on hips, a grin, head tipped | Cartwheel | Curl texture in her puff, freckles, two-tone skin, the fringe's shadow on her brow |
 | **Lulu** | A small schemer with a big face: smug when plotting, huge-eyed when she wants something, never as sneaky as she thinks | The smug look with one small fang, hands pressed together under her chin — all sweetness, which is how you know | Puppy eyes | Two stray strands that act: curled when plotting, tall when delighted, hooked into a question when curious, flopped when worried; rosy cheeks always and blush marks when she is pleased with herself; a shine across her hair, a bow on her side pony. Her puppy eyes are drawn on her face now (`headFx`), so they move with her head |
-| **Red panda** | Gentle, cosy, easily startled: it would rather be curled up in its tail | Paws up at its chest, a small contented smile | Stand tall | Two-tone head and ears, ear fluff, a darker mask round the eyes, whisker dots, a shaded, dark-tipped tail |
 
 The eyes and mouth of each are as described in their files and on the studio's eyes-and-mouths sheet.
 
 **Removed:** Sunny and Poppy; the jellyfish; every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
 
-**Reference — other animals** (shown in the studio, not candidates): the octopus, the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
+**Reference — other animals** (shown in the studio, not candidates): the red panda (dropped: not expressive enough, no special character of its own), the octopus, the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
 
 **Tangled.** The chameleon takes the spirit of the chameleon sidekick in *Tangled* and none of its look — it is violet, not green, with its own casque and eyes. The same “Not taken” test applies.
 
@@ -207,6 +211,32 @@ The eyes and mouth of each are as described in their files and on the studio's e
 **Anya.** Lulu takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
 
 
+
+### New concepts for the sixth place
+
+`src/design/nix/side-new.tsx`. Five concepts unlike anything tried so far — an amphibian, a hoofed animal, an old one, a machine and a boy — each built to act: a temperament readable at rest, a face that does something different in every mood, and an ability from its own body.
+
+| Concept | Temperament | At rest | Ability | Eyes | Mouth |
+|---|---|---|---|---|---|
+| **Fizz**, a blue dart frog | An over-excitable enthusiast: everything is the best thing ever; leaps before he looks | Already delighted, fists at his chest, grinning ear to ear | Throat balloon | Big round eyes on top of his head, huge pupils; frog lids that close from above and below and squint up from beneath | The widest in the cast; grins to show his whole tongue |
+| **Clover**, a goat kid | Stubborn, cheeky, fearless: climbs what she is told not to, nibbles what she shouldn't | Hands on hips, head cocked, winking | Climb | Amber with a goat's flat bar pupil, wide with glee, a slit when plotting; one brown eye patch | A sideways chew, little bottom teeth, a wide-open bleat |
+| **Tuck**, an old tortoise | Old, dry, unhurried; pretends nothing impresses him | Lids half down, mouth turned down, hands folded | Shell spin | Small deep-set eyes with bags, and enormous white eyebrows that do nearly all the talking | A thin beak, grumpy at rest, cracking into a toothless grin |
+| **Bit**, a small robot | Earnest, helpful, still learning feelings — gets them a bit wrong, overjoyed to be right | Head tipped, antenna bobbing, waiting to help | Screen face | Pixel eyes on a screen: blocks, carets, hearts, a loading ring, crosses | A pixel mouth that redraws itself |
+| **Remy**, a boy | A theatrical dreamer who narrates his life like a film; kind underneath | One hand on his heart, the other flung out to an audience | Drama | Hazel with a heavy lash line; enormous brows that fly | A big stage mouth, gap-toothed |
+
+Colours stay the product's where they can (Fizz is a dart frog's blue, never green; Tuck's shell is the primary; Bit is the primary's tones); Clover and Remy take natural colours, as the people do. Bit has no light of its own: glowing is Wisp's. None has practice states yet: they come once one is chosen.
+
+### Lessons from Duolingo
+
+What the Duolingo cast does that this studio's first rounds did not (a summary of the conversation that led to the rules above):
+
+- **One style, many silhouettes.** Every character is built from the same kit of simple, rounded geometric shapes in flat colour with a shadow tone, and big heads on small bodies — but each has a silhouette you could name in black (Lily's hair, Eddy's height, Oscar's moustache, Duo's round body).
+- **An archetype with an attitude.** Each is a recognisable type pushed to a caricature, and each is *somebody* at rest: Lily bored, Zari bursting, Oscar pompous, Duo intense. Personality is in the posture before anything moves.
+- **They talk.** In lessons the characters say the sentences, with their mouths moving to the words and their own voices — the strongest single hook. Here speech must stay fixed copy (`docs/brief.md`); lip-sync to fixed lines is still open to us.
+- **They are alive between events**: breathing, blinking, glancing — and they react in real time, because each is a state machine (idle, talking, reacting) rather than a set of clips.
+- **Animation principles, not just motion**: anticipation before an action, overshoot and settle after, squash and stretch, reactions under a second, timed to a sound.
+- **A world**: the characters know each other, have running jokes and stories; the absurd sentences are written for them.
+- **Emotional stakes** (Duo's guilt, streaks) — which the brief deliberately rules out for Sparkles.
 
 ## Practice states
 

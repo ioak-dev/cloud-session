@@ -533,9 +533,9 @@ const lulu: Variant[] = [
   { state: "partial", kind: "body", title: "Scrunch, then grin", line: "Scrunches her face up — then grins.", act: act("oops", 1.8, breathe()) },
 ];
 
-/* ——— The red panda: standing tall, its tail, its paws ——— */
+/* ——— The red panda (dropped from the cast; its acts are kept for reference) ——— */
 
-const redPanda: Variant[] = [
+export const redPanda: Variant[] = [
   { state: "writing", kind: "feature", title: "Tail wrap", line: "Curls its big ringed tail round itself, cosy, and waits.", act: act("happy", 3, { tail: rot(0, -30, -30, 0), ...breathe() }) },
   { state: "writing", kind: "feature", title: "Tail swish", line: "Its tail swishes slowly, keeping it company.", act: act("neutral", 2.4, { tail: rot(-10, 10, -10), ...breathe() }) },
   { state: "writing", kind: "body", title: "Slow blink", line: "Gives you a slow, trusting blink.", act: act("focused", 3, breathe()) },
@@ -567,5 +567,4 @@ export const PRACTICE: Sheet[] = [
   { id: "side-chick", variants: chick },
   { id: "side-juno", variants: juno },
   { id: "side-lulu", variants: lulu },
-  { id: "panda", variants: redPanda },
 ];

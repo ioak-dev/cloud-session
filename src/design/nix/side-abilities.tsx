@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { Mood } from "./rig/face";
-import type { PoseId } from "./rig/poses";
+import type { Pose, PoseId } from "./rig/poses";
+import { rot } from "./rig/motion";
 
 import { C } from "./theme";
 
@@ -23,6 +24,10 @@ export type Ability = {
   hue?: number;
   /** Draws the preview behind the figure rather than over it. */
   behind?: boolean;
+  /** A class from `studio.css` moving the whole figure (a spin). */
+  move?: string;
+  /** A one-off act for the rig, when the ability is a whole-body gesture. */
+  act?: Pose;
   /** A pose from the rig, when the ability is a gesture. */
   pose?: PoseId;
   /** Turns the figure (degrees) and scales it, for a cartwheel, a slide, hanging. */
@@ -115,15 +120,80 @@ export const SIDE_ABILITIES: Ability[] = [
     ),
   },
   {
-    id: "panda",
-    name: "Stand tall",
-    line: "A red panda's own startle: it rears up on its hind legs, arms thrown wide, tail fluffed, to look as big as it can.",
-    mood: "curious",
-    pose: "cheer",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.8} strokeLinecap="round" fill="none">
-        <path d="M30 70 l-10 -6 M26 86 l-12 -1 M170 70 l10 -6 M174 86 l12 -1 M100 22 v-12 M84 26 l-4 -10 M116 26 l4 -10" />
+    id: "new-frog",
+    name: "Throat balloon",
+    line: "When he is bursting to say something, the pale throat under his chin swells up round like a balloon.",
+    mood: "delighted",
+    fx: () => null,
+    head: () => (
+      <g className="fx fx-grow">
+        <ellipse cx={101.5} cy={154} rx={31} ry={24} fill={C.hi} />
+        <ellipse cx={100} cy={152} rx={30} ry={23} fill={C.tint} />
+        <path d="M80 142 Q88 136 98 136" stroke="#ffffff" strokeWidth={3} fill="none" strokeLinecap="round" />
       </g>
     ),
+  },
+  {
+    id: "new-goat",
+    name: "Climb",
+    line: "Scrambles up onto the top of anything — a card, a heading — and stands there, proud.",
+    mood: "delighted",
+    viewBox: "0 26 200 300",
+    behind: true,
+    fx: () => (
+      <g>
+        <rect x={34} y={282} width={132} height={20} rx={6} fill={C.hi} />
+        <rect x={48} y={302} width={104} height={20} rx={6} fill={C.mid} />
+      </g>
+    ),
+  },
+  {
+    id: "new-tortoise",
+    name: "Shell spin",
+    line: "Flips onto his back and spins on his shell like a breakdancer — then pretends it never happened.",
+    mood: "delighted",
+    move: "fx fx-spin",
+    scale: 0.78,
+    fx: () => (
+      <g stroke={C.hi} strokeWidth={3} strokeLinecap="round" fill="none">
+        <path d="M22 150 A80 80 0 0 1 60 72 M178 150 A80 80 0 0 1 140 228" />
+      </g>
+    ),
+  },
+  {
+    id: "new-robot",
+    name: "Screen face",
+    line: "Its face is a screen, so it can become any shape — here, a pair of hearts it is very proud of.",
+    mood: "happy",
+    fx: () => null,
+    head: () => (
+      <g>
+        <rect x={66} y={62} width={68} height={66} rx={12} fill="#1c2242" />
+        {[82, 118].map((x) => (
+          <path
+            key={x}
+            d={`M${x} ${104} l-10 -10 a6 6 0 0 1 10 -7 a6 6 0 0 1 10 7 Z`}
+            fill="#ff8fb0"
+            className="fx fx-grow"
+          />
+        ))}
+        <path d="M88 114 q12 8 24 0" stroke="#9fe2ff" strokeWidth={3} fill="none" strokeLinecap="round" />
+      </g>
+    ),
+  },
+  {
+    id: "new-boy",
+    name: "Drama",
+    line: "Every feeling at full size — here, the swoon: a hand to his brow, the other flung out, overcome.",
+    mood: "happy",
+    act: {
+      id: "idle",
+      title: "",
+      use: "",
+      mood: "happy",
+      hands: [{ L: [60, 150], R: [116, 126], outR: true }],
+      motion: { duration: 2.4, tracks: { torso: rot(-6, -10, -6), head: rot(-8, -14, -8) } },
+    },
+    fx: () => null,
   },
 ];
