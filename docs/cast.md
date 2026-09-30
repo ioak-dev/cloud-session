@@ -12,14 +12,11 @@ Every character has **one special feature or ability that no other character in 
 |---|---|
 | Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
-| Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) with its own ink, to show where to look |
-| Fruit bat *(proposed)* | Upside-down: hangs by its feet from anything and sees it the other way round |
-| Chick *(proposed)* | Fluff up: fluffs every feather out into a round ball, twice its size |
-| Juno *(proposed)* | Cartwheel: arrives, and leaves, with a cartwheel |
-| Lulu *(proposed)* | Puppy eyes: her eyes swell huge, glossy and brimming |
-| Sunny *(proposed)* | Hair: her impossibly long hair moves with her feelings, and whips out like a rope to catch things |
-| Poppy *(proposed)* | Dance: when she is happy it comes out of her — a spin, a stamp, a flourish |
-| Red panda *(proposed)* | Stand tall: rears up on its hind legs, arms wide, tail fluffed, to look big |
+| Fruit bat | Upside-down: hangs by its feet from anything and sees it the other way round |
+| Chick | Fluff up: fluffs every feather out into a round ball, twice its size |
+| Juno | Cartwheel: arrives, and leaves, with a cartwheel |
+| Lulu | Puppy eyes: her eyes swell huge, glossy and brimming |
+| Red panda | Stand tall: rears up on its hind legs, arms wide, tail fluffed, to look big |
 
 **Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. The chameleon changes its own colour; the octopus draws with its own ink; the fruit bat hangs by its own feet; the red panda rears up on its own legs. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
 
@@ -163,7 +160,7 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | Stand tall *(proposed)* | Candidate, competing |
-| 2–6 | Octopus, fruit bat, chick, Juno, Lulu (and the red panda) | See below | **Candidates**, not decided |
+| 2–6 | Fruit bat, chick, Juno, Lulu, red panda | See below | **Chosen**: the six side characters |
 
 ### Rules for every side character
 
@@ -186,33 +183,56 @@ Duolingo's cast is loved for something the drawings here were missing: each of t
 
 ### The candidates
 
-Nine characters are in the running for the six places: the chameleon (confirmed) and eight more.
+The six side characters: the chameleon (confirmed), the fruit bat, the chick, Juno, Lulu and the red panda.
 
 | Candidate | Temperament | At rest | Ability | Refined with |
 |---|---|---|---|---|
 | **Chameleon** | A small, fierce, loyal best friend who says everything with its face and hands — mimes, points, sulks, cheers; brave beyond its size, and it blushes, literally, when caught caring | One hand on its hip, the other up mid-gesture, its two eyes looking two ways; head tipped | Colour change | Redrawn in the spirit of the chameleon in *Tangled*, not its look: a rounder head rising to a low casque swept back to one side, a crest of small bumps, big turret eyes bulging past the head with an amber ring round each pupil, a pale scaled throat, a pear-shaped body with a scaled belly and pale flank stripes, two-toed grips on hands and feet (`hands: "tong"`), short bowed legs, a thick tail coiled tight with pale rings. Violet, not green |
-| **Octopus** | Busy, clever, a little scatterbrained: six arms, six things on the go | Happy; one arm always up in a wave it never finishes; mantle tipped | Ink | Two-tone mantle and arms, suckers large to small, a paler underside, more spots |
 | **Fruit bat** | A night owl: dozy and droll by day, awake at the wrong times, sees things differently | Heavy-lidded, head on one side, hands folded | Upside-down | A flying fox's golden collar, a soft muzzle and dog's nose, ridged ears, two-tone wings with thumb claws |
 | **Chick** | Brand new to everything: earnest, eager, easily overwhelmed, proud of every small thing | Gazing up at you, wide-eyed, head on one side | Fluff up | Two-tone fluff, cheek tufts that stick out, feather marks, a crack in its shell |
 | **Juno** | A big-hearted show-off: first to try, first to cheer someone else on | Hands on hips, a grin, head tipped | Cartwheel | Curl texture in her puff, freckles, two-tone skin, the fringe's shadow on her brow |
 | **Lulu** | A small schemer with a big face: smug when plotting, huge-eyed when she wants something, never as sneaky as she thinks | The smug look with one small fang, hands pressed together under her chin — all sweetness, which is how you know | Puppy eyes | Two stray strands that act: curled when plotting, tall when delighted, hooked into a question when curious, flopped when worried; rosy cheeks always and blush marks when she is pleased with herself; a shine across her hair, a bow on her side pony. Her puppy eyes are drawn on her face now (`headFx`), so they move with her head |
-| **Sunny** | Wide-eyed and wildly curious, seeing everything for the first time; brave in bursts, then worried she broke a rule, then off again | Hands clasped under her chin, head tipped, one brow up, lips in a little “o”: wonder | Hair | Rapunzel's spirit, not her look: honey hair in a curtain behind her shoulders and one rope of it to the floor, coiled there; two front locks whose ends curl up when she is happy and hang when she is worried; freckles; big tall sea-glass eyes with long lashes and a wet shine when anxious; thin brows that never stop; lips that gasp, grin and bite when nervous |
-| **Poppy** | Bold, quick and warm, an artist who can't sit still: paints on anything, marches when determined, dances when happy | Arms out — ta-da — with a grin that runs off one side | Dance | Rapunzel after the haircut, in spirit: a short chestnut crop cut in a hurry with a flick at one end, a paint smudge on her cheek and a dab on her nose; warm round eyes and bold brows that do half the acting (curious: one eye squints, the other widens; dizzy: they spin); a wide lopsided mouth that pokes its tongue out when she concentrates |
 | **Red panda** | Gentle, cosy, easily startled: it would rather be curled up in its tail | Paws up at its chest, a small contented smile | Stand tall | Two-tone head and ears, ear fluff, a darker mask round the eyes, whisker dots, a shaded, dark-tipped tail |
 
 The eyes and mouth of each are as described in their files and on the studio's eyes-and-mouths sheet.
 
-**Removed:** the jellyfish; every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
+**Removed:** Sunny and Poppy; the jellyfish; every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
 
-**Reference — other animals** (shown in the studio, not candidates): the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
+**Reference — other animals** (shown in the studio, not candidates): the octopus, the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
 
-**Tangled.** The chameleon, Sunny and Poppy take the spirit of *Tangled* (the chameleon sidekick; Rapunzel's wonder, restlessness and hair) and none of its look — no green chameleon, no golden braid with flowers, no purple dress, no green eyes, no frying pan. These are copyrighted characters; the same “Not taken” test applies.
+**Tangled.** The chameleon takes the spirit of the chameleon sidekick in *Tangled* and none of its look — it is violet, not green, with its own casque and eyes. The same “Not taken” test applies.
 
-**Humans need to act.** What was missing from the earlier people was acting: their faces changed shape but not meaning. Sunny and Poppy set the bar for any person in the cast — brows that carry half of every expression, eyes that do different things from each other (a squint and a widen), mouths with business (a bitten lip, a tongue poked out, a lopsided grin), and hair, freckles or a paint smudge that tell you who she is before she moves.
+**Humans need to act.** What was missing from the earlier people was acting: their faces changed shape but not meaning. Any person in the cast should reach the bar the Rapunzel-inspired studies (since removed) set — brows that carry half of every expression, eyes that do different things from each other (a squint and a widen), mouths with business (a bitten lip, a tongue poked out, a lopsided grin), and hair, freckles or a paint smudge that tell you who she is before she moves.
 
 **Anya.** Lulu takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
 
-**Next step:** choose six from the eight (the chameleon is one), then refine each.
+
+
+## Practice states
+
+Each side character reacts while a learner answers a question and to the answer, in four states, with **five variants each** so the reaction is never the same twice in a row: 120 acts in all. They are data in `src/design/nix/side-states.tsx` (`PRACTICE`) and play in the studio under “Practice states”.
+
+| State | When |
+|---|---|
+| Still writing | The question is up and the learner is still writing |
+| Correct | The answer is right |
+| Incorrect | The answer is wrong — always gentle, never a scold |
+| Partly correct | Some of it is right: nearly |
+
+Every character mixes three kinds of variant: **its own feature** (what only it has — the chameleon's colour, the bat's hanging and ears, the chick's shell and fluff, Juno's cartwheel, Lulu's puppy eyes and strands, the red panda's tail and standing tall), **face and body** acting, and **a prop**. Motion is the rig's declared joint keyframes on one clock; whole-figure moves and props are declared CSS keyframes (`.fx-*` in `src/styles/studio.css`); everything holds still under reduced motion.
+
+**No two characters share an action or a prop.** Facial expressions may repeat; nothing else does. The ledger, so a new variant can be checked against it:
+
+| Character | Body actions | Props |
+|---|---|---|
+| Chameleon | chin tap, hum and sway, grip clap, fist bump, shrug, so-so hand, hand over a giggle | hourglass, party horn, eraser, puzzle piece |
+| Fruit bat | doze, foot tap, shimmy, hug itself, scratch its head, tap its temple, slow wink, count on its fingers | book, mango, cup of tea, magnifying glass |
+| Chick | on tiptoe, rock on its heels, bounce, wobble, sigh and deflate, head tilts, lean in | pencil, balloon, pillow, glass half full |
+| Juno | arms crossed, thumbs up, fist pump, high five, shake it off, deep breath, kneel, roll shoulders, “this close” pinch, point | water bottle, pom-poms, towel, relay baton |
+| Lulu | hold her breath, peek through fingers, rub her hands, peace signs, blow her fringe, pat her own head, tap her nose, scrunch then grin | peanut, lollipop, sticky note, half a cookie |
+| Red panda | slow blink, knead its paws, wave both paws, bow, paws on its heart, wash its face, “this much”, sniff the air | bamboo, autumn leaf, blanket, kite |
+
+**Against the brief.** `docs/brief.md` allows three practice events — correct, incorrect (gentle), level unlock — “and no fourth”, and says that mid-item the guide is absent and the slot is the practice character's. “Still writing” and “partly correct” are new events, and these side characters would be reacting mid-item. This was asked for here; it has to be reconciled with Sparkles before these states move back. The other bounds still hold: reactions do not escalate (a variant is picked, never built up), the chameleon's green is always paired with words or a status mark, no other character turns a status colour, and incorrect is never a scold. No prop is a reward (no medals, crowns or trophies).
 
 ## Cast structure: recommended, not decided
 

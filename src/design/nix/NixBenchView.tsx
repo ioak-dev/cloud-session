@@ -22,9 +22,9 @@ import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
+import { PRACTICE, STATES, type Variant } from "./side-states";
 import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
-import { RAPUNZEL_LINE } from "./side-rapunzel";
 import { PUFF_FAMILY } from "./side-puff";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -55,17 +55,16 @@ const ANIMAL_POOL = [...SIDE_CANDIDATES, ...PUFF_FAMILY, ...CANDIDATES];
 /** The side candidates still in the running, with the confirmed chameleon first. */
 const CAST: Candidate[] = [
   byId(CANDIDATES, "chameleon"),
-  byId(ANIMAL_POOL, "side-octopus"),
   byId(ANIMAL_POOL, "side-bat"),
   byId(ANIMAL_POOL, "side-chick"),
   byId(SIDE_HUMANS, "side-juno"),
   byId(SIDE_HUMANS, "side-lulu"),
   byId(CANDIDATES, "panda"),
-  ...RAPUNZEL_LINE,
 ];
 
 /** Animal drawings kept as reference: the penguin, the otter and the bench's original firefly. */
 const ANIMAL_REFERENCE: Candidate[] = [
+  byId(ANIMAL_POOL, "side-octopus"),
   ...SIDE_REFERENCE,
   byId(CANDIDATES, "otter"),
   byId(CANDIDATES, "firefly"),
@@ -131,6 +130,92 @@ function AbilityTile({ a }: { a: Ability }) {
         <span className="material mt-1 block text-muted-foreground">{a.line}</span>
       </figcaption>
     </figure>
+  );
+}
+
+const KIND_LABEL = { feature: "Its own feature", body: "Face and body", prop: "A prop" } as const;
+
+/** One practice-state variant, animated: the rig plays its act; whole-figure moves, the
+ *  chameleon's colour and the props and effects are declared keyframes around it. */
+function StateTile({ c, v }: { c: Candidate; v: Variant }) {
+  const vb = v.viewBox ?? "0 0 200 300";
+  return (
+    <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+      <div className="relative h-48 w-full overflow-hidden" style={{ isolation: "isolate" }}>
+        {v.behind && (
+          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
+            {v.behind()}
+          </svg>
+        )}
+        <div
+          className={`absolute inset-0 ${v.move ?? ""}`}
+          style={v.turn || v.scale ? { transform: `rotate(${v.turn ?? 0}deg) scale(${v.scale ?? 1})` } : undefined}
+        >
+          <div
+            className={`h-full w-full ${v.figureClass ?? ""}`}
+            style={v.tint && !v.tint.half ? { filter: v.tint.filter } : undefined}
+          >
+            <NixFigure c={c} act={v.act} viewBox={vb} headFx={v.head?.()} className="h-full w-full" />
+          </div>
+          {v.tint?.half && (
+            <div className="absolute inset-0" style={{ filter: v.tint.filter, clipPath: "inset(0 0 50% 0)" }}>
+              <NixFigure c={c} act={v.act} viewBox={vb} className="h-full w-full" />
+            </div>
+          )}
+        </div>
+        {v.over && (
+          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
+            {v.over()}
+          </svg>
+        )}
+      </div>
+      <figcaption className="text-sm">
+        <span className="instrument block text-xs text-muted-foreground">{KIND_LABEL[v.kind]}</span>
+        <span className="material-heading text-foreground">{v.title}</span>
+        <span className="material mt-1 block text-muted-foreground">{v.line}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function PracticeStates() {
+  const [who, setWho] = React.useState(PRACTICE[0].id);
+  const sheet = PRACTICE.find((x) => x.id === who) ?? PRACTICE[0];
+  const c = ALL.find((x) => x.id === sheet.id)!;
+  return (
+    <section aria-labelledby="practice-states">
+      <h2 id="practice-states" className="material-heading mt-10 text-lg text-foreground">
+        Practice states — five of each, per character
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        How each side character reacts while a learner answers, and to the answer: still writing,
+        correct, incorrect (always gentle), partly correct. Five variants each, so it is never the
+        same twice in a row. Each character mixes its own feature, face-and-body acting and a prop,
+        and no two characters share an action or a prop — only faces may repeat.
+      </p>
+      <div className="mt-3">
+        <FilterSet className="flex-wrap">
+          {PRACTICE.map((x) => (
+            <FilterSegment key={x.id} pressed={x.id === who} onClick={() => setWho(x.id)}>
+              {ALL.find((y) => y.id === x.id)?.label}
+            </FilterSegment>
+          ))}
+        </FilterSet>
+      </div>
+      {STATES.map((st) => (
+        <div key={st.id} className="mt-5">
+          <h3 className="material-heading text-base text-foreground">{st.title}</h3>
+          <p className="material m-0 text-sm text-muted-foreground">{st.use}</p>
+          <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {sheet.variants
+              .filter((v) => v.state === st.id)
+              .map((v) => (
+                <StateTile key={v.title} c={c} v={v} />
+              ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 
@@ -330,6 +415,8 @@ export function NixBenchView() {
           <AbilityTile key={a.id} a={a} />
         ))}
       </div>
+
+      <PracticeStates />
 
       <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">

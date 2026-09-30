@@ -45,18 +45,6 @@ export const SIDE_ABILITIES: Ability[] = [
     fx: () => null,
   },
   {
-    id: "side-octopus",
-    name: "Ink",
-    line: "Draws a mark in the air — an arrow, a circle, an underline — to show where to look.",
-    mood: "curious",
-    fx: () => (
-      <g stroke={C.deep} strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M172 196 C192 176 192 146 172 140 C154 136 154 160 170 160 C186 160 190 128 184 96" />
-        <path d="M176 104 L184 94 L192 106" />
-      </g>
-    ),
-  },
-  {
     id: "side-bat",
     name: "Upside-down",
     line: "Hangs from anything — a heading, the edge of a card — and sees it the other way round.",
@@ -123,34 +111,6 @@ export const SIDE_ABILITIES: Ability[] = [
         ))}
         {/* brows up in the middle: please */}
         <path d="M74 91 Q80 86 88 88 M126 91 Q120 86 112 88" stroke={"#c9894a"} strokeWidth={3} fill="none" strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    id: "side-sunny",
-    name: "Hair",
-    line: "Her impossibly long hair is part of her: it curls with her feelings, and whips out like a rope to catch what she reaches for.",
-    mood: "delighted",
-    fx: () => null,
-    /* the hair is hers, so it rides her head */
-    head: () => (
-      <g>
-        <path d="M140 100 C176 92 196 60 180 40 C168 26 146 40 158 54 C166 64 184 58 190 46" stroke="#e3a94a" strokeWidth={12} fill="none" strokeLinecap="round" />
-        <path d="M146 98 C170 90 186 72 184 56" stroke="#f6d489" strokeWidth={3} fill="none" strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
-    id: "side-poppy",
-    name: "Dance",
-    line: "When she is happy it comes out of her: a spin, a stamp and a flourish.",
-    mood: "delighted",
-    pose: "cheer",
-    turn: -6,
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.8} strokeLinecap="round" fill="none">
-        <path d="M44 272 A56 12 0 0 0 156 272" strokeDasharray="3 7" />
-        <path d="M30 150 q-8 10 -2 22 M170 150 q8 10 2 22 M26 118 l-8 -4 M174 118 l8 -4" />
       </g>
     ),
   },
