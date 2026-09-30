@@ -17,9 +17,21 @@ Every character has **one special feature or ability that no other character in 
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
-Eight candidates, in two groups. The rest (Lantern, Spark, Flicker) were dropped.
+Eleven candidates. Dropped so far: Lantern, Spark, Flicker, Nightlight, Bulb.
 
-**New bodies**, in `src/design/nix/firefly-bodies.tsx`. Each is built from the ground up on a body frame of its own, not the shared chibi one, so they differ in silhouette, in where the light lives, and in how they stand:
+Ten are built from the ground up, each on a body frame of its own rather than the shared chibi one. They differ in silhouette, in where the light lives, and in how they stand.
+
+**Round two**, in `src/design/nix/firefly-bodies-2.tsx`:
+
+| Variant | Body plan | Where the light is | Antennae |
+|---|---|---|---|
+| Flutter | A slight body under four great wings | Glowing eyespots on the wings | Long and willowy, drooping like whiskers |
+| Lampion | The body is a ribbed paper lantern, with a hanging loop on its head | The whole body, lit from inside | Short, tasselled |
+| Trio | Three spheres: head, thorax, a big round abdomen; wings folded along the back | The last abdominal segment, as on a real firefly | Elbowed and beaded |
+| Cube | Square head, square body, panel wings | A four-paned window in its chest | Right-angled, with square lights |
+| Hood | A cone of a cloak and a floppy pointed hood | Spilling from where the cloak parts at the front | Curled, poking out through slits in the hood |
+
+**Round one**, in `src/design/nix/firefly-bodies.tsx`:
 
 | Variant | Body plan | Where the light is | Antennae |
 |---|---|---|---|
@@ -29,13 +41,11 @@ Eight candidates, in two groups. The rest (Lantern, Spark, Flicker) were dropped
 | Glowworm | A firefly larva: a segmented body, a bare baby face, no wings | A pair of lights on every ring; the last ring glows | Nubs |
 | Strider | Tall and lanky, long legs, a lopsided cap | The tail arcs over its shoulder like a lantern on a pole | Question marks |
 
-**Kept from earlier rounds**, in `src/design/nix/firefly-variants.tsx`, all on the shared chibi frame:
+**Kept from the chibi frame**, in `src/design/nix/firefly-variants.tsx`:
 
 | Variant | Direction |
 |---|---|
 | Fuzzy | The most huggable: fuzzy body, feathery antennae, a round glow bulb, long wings |
-| Nightlight | Calm and tender: a constellation on its cap, heart-dipped bangs, glowing antenna bulbs, round starry wings |
-| Bulb | The learning one: a lightbulb tail with a filament (a bright idea), a striped cap, glass-bead antennae, polka-dot wings |
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
 
@@ -53,6 +63,17 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | (none yet — the ringed tail is a look, not an ability) | Backup, no preference |
 | 2–6 | — | — | Open: new candidates are to be proposed in this repo |
+
+## Cast structure: recommended, not decided
+
+Recommended: **one firefly as the main character, and every side character a different species.** No second firefly.
+
+- **The ability rule.** Glow is the firefly’s one ability. A second firefly either shares it, which breaks the rule, or glows differently, which weakens what the main character is known for.
+- **Recognition.** A child names the character the product is known by. Two or three fireflies turn “the firefly” into “which firefly?”, and the main one stops being the face of the product.
+- **Duolingo’s shape.** Duo is the only owl. The rest of the cast are different species and people, each told apart by silhouette alone.
+- **The loser variants are not wasted.** Several of the body plans already carry a side character’s idea without being a firefly. A domed shell (Chonk), a cloak and hood (Hood), a floating spirit (Wisp) or a square toy (Cube) can be redrawn as another species with its own ability.
+
+One exception is worth keeping open: **a younger firefly-family member** (a glowworm, say) as the learner’s companion. It would need an ability other than glow, and a story that never turns growing up into a reward. Decide this only after the main firefly is chosen.
 
 A side character must be told apart from the main character and from every other side character by silhouette alone, at small size.
 

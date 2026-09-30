@@ -19,8 +19,9 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-bodies.tsx` | Main-character variants on their own bodies: Pip, Wisp, Chonk, Glowworm, Strider |
-| `src/design/nix/firefly-variants.tsx` | Kept variants: Fuzzy, Nightlight, Bulb; shared antenna and glow helpers |
+| `src/design/nix/firefly-bodies.tsx` | Round one on their own bodies: Pip, Wisp, Chonk, Glowworm, Strider |
+| `src/design/nix/firefly-bodies-2.tsx` | Round two on their own bodies: Flutter, Lampion, Trio, Cube, Hood |
+| `src/design/nix/firefly-variants.tsx` | Fuzzy (chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
