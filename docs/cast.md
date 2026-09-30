@@ -10,7 +10,7 @@ Every character has **one special feature or ability that no other character in 
 
 | Character | Ability |
 |---|---|
-| Firefly | Glow and fire sparkles: its tail lights up and sheds sparkles |
+| Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
 
 ## Main character: Wisp (decided)
@@ -49,13 +49,25 @@ In the rig, `Palette.line` is the outline colour for the body, limbs, clothes an
 | Solid | Opaque and flat in the primary, with a cream face patch. Only the wings and the glow’s halo are translucent |
 | Curly | True colour, with Pip’s coiled-spring antennae |
 
-**New wispy directions**, drawn from scratch rather than from the droplet, in `src/design/nix/firefly-spirits.tsx`. Each floats and puts its light somewhere of its own:
+True colour has **no outline on its head**: the gradient runs from a light centre to the primary at the rim, so the colour itself is the edge.
+
+**New wispy directions**, drawn from scratch rather than from the droplet. Each floats and puts its light somewhere of its own. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
 | Variant | Shape | Where the light is |
 |---|---|---|
 | Puff | A cloud: a head of puffs, a cloud body, a trail of puffs thinning out behind | At its core, in the chest, through any outfit |
 | Jelly | A jellyfish bell with a frilled rim, and tendrils beneath | At the tip of every tendril |
 | Bloom | A bellflower: a crown of petals, a petal skirt, leaf wings | Hanging below the petals like a stamen, a lamp it carries |
+
+Round two is in `src/design/nix/firefly-spirits-2.tsx`:
+
+| Variant | Shape | Where the light is |
+|---|---|---|
+| Comet | A round head with a mane of light swept back | The mane itself; sparks peel off its end |
+| Bubble | A soap-bubble head around a coloured heart; a smaller bubble for a body | A light floating at the core of the body bubble |
+| Dandelion | A parachute of filaments over its head, a slim stem | The seed at the bottom |
+| Star | A plush five-pointed star with a cream face; no rig arms | Its two lower points |
+| Crescent | A small moon whose body curls round from behind its head | The pearl it cradles in the curve |
 
 **Wings move as two pairs.** Where a character has upper and lower wings, the upper pair rides `wingL`/`wingR` and the lower pair `hindL`/`hindR`. The upper pair strokes slowly; the lower pair beats twice to each stroke, half a beat behind. The two pairs are never one piece.
 
@@ -77,7 +89,7 @@ The antennae and glow follow the expression: they droop and dim when worried, pe
 
 The original bench firefly stays in `candidates.tsx` for reference. **Next step:** pick one variant, or combine parts of several. Motion and extra poses wait until a variant is chosen.
 
-**Flourishes are not part of any character.** Sparkle trails, bursts, confetti and similar effects are a separate layer (props or animation), to be designed later. When they are, they can be applied to any character. Do not draw them into a character.
+**The spark trail is the firefly’s ability.** Every Wisp-line character leaves glowing sparks behind as it flies. It is the one thing kept from the bench firefly. It is drawn once, by the rig (`rig/sparks.tsx`), and never painted into a drawing. A character names where its sparks come from with `trail`. The sparks drift down and back from that point, shrink and fade on declared keyframes, and are left behind rather than carried by the body. Stilled, or under reduced motion, they show as a frozen trail. **Every other flourish** (bursts, confetti, celebration effects) is still a separate layer, to be designed later for any character.
 
 Once one is chosen, the main character’s silhouette, palette and ability stay fixed across every context. Only pose, expression and authored wardrobe change. The glow is its signature, not a status.
 

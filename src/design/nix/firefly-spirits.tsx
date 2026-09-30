@@ -453,6 +453,7 @@ export const SPIRITS: Candidate[] = [
     kind: "animal",
     frame: PUFF,
     legs: false,
+    trail: [100, 256],
     label: "Puff",
     signature: "A cloud that floats, with a light at its core and a trail of little puffs",
     pitch:
@@ -473,6 +474,7 @@ export const SPIRITS: Candidate[] = [
     kind: "animal",
     frame: JELLY,
     legs: false,
+    trail: [100, 248],
     label: "Jelly",
     signature: "A floating bell with a frilled rim, and tendrils whose tips glow",
     pitch:
@@ -492,6 +494,7 @@ export const SPIRITS: Candidate[] = [
     kind: "animal",
     frame: BLOOM,
     legs: false,
+    trail: [100, 248],
     label: "Bloom",
     signature:
       "A bellflower spirit: a crown of petals, a petal skirt, and its light hanging below like a lamp",

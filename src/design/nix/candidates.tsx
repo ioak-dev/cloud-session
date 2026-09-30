@@ -21,6 +21,10 @@ export type Candidate = {
   frame?: Body;
   /** `false` for a character that floats: no legs are drawn. */
   legs?: false;
+  /** `false` for a character whose shape carries its own arms (a star's points). */
+  arms?: false;
+  /** Where its spark trail comes from, in figure space: the sparks it leaves behind as it flies. */
+  trail?: readonly [number, number];
   label: string;
   signature: string;
   pitch: string;

@@ -129,8 +129,9 @@ function Head({ uid, d = DROPLET, look = "pale" }: Ctx & { d?: string; look?: Lo
     look === "true"
       ? [
           [0, C.tint],
-          [45, C.soft],
-          [100, C.mid],
+          [40, C.soft],
+          [78, C.mid],
+          [100, C.primary],
         ]
       : [
           [0, FACE],
@@ -149,8 +150,10 @@ function Head({ uid, d = DROPLET, look = "pale" }: Ctx & { d?: string; look?: Lo
       <path
         d={d}
         fill={`url(#${g})`}
-        stroke={look === "true" ? C.primary : C.hi}
-        strokeWidth={look === "true" ? 2 : 2.4}
+        /* True colour needs no outline: its rim is the primary itself, which holds on both
+           grounds. Only the pale original keeps a tonal edge against the light ground. */
+        stroke={look === "true" ? "none" : C.hi}
+        strokeWidth={2.4}
         strokeLinejoin="round"
       />
       <path
@@ -380,6 +383,7 @@ export const WISP_FAMILY: Candidate[] = [
     kind: "animal",
     frame: WISP,
     legs: false,
+    trail: [104, 264],
     label: "Wisp",
     signature: "A droplet head and a body that ends in a flame of light — it floats",
     pitch:
@@ -404,6 +408,7 @@ export const WISP_FAMILY: Candidate[] = [
     kind: "animal",
     frame: MOTH,
     legs: false,
+    trail: [100, 258],
     label: "Wisp · Moth",
     signature: "Two pairs of round wings with eyespots, and a short flame curled like a comma",
     pitch:
@@ -428,6 +433,7 @@ export const WISP_FAMILY: Candidate[] = [
     kind: "animal",
     frame: WISP,
     legs: false,
+    trail: [104, 264],
     label: "Wisp · True colour",
     signature: "The original Wisp, colour-corrected to sit in the product's mid-tones",
     pitch:
@@ -452,6 +458,7 @@ export const WISP_FAMILY: Candidate[] = [
     kind: "animal",
     frame: WISP,
     legs: false,
+    trail: [104, 264],
     label: "Wisp · Solid",
     signature: "Opaque, flat Wisp: only the wings and the glow's halo are translucent",
     pitch:
@@ -476,6 +483,7 @@ export const WISP_FAMILY: Candidate[] = [
     kind: "animal",
     frame: WISP,
     legs: false,
+    trail: [104, 264],
     label: "Wisp · Curly",
     signature: "True-colour Wisp with Pip's coiled-spring antennae",
     pitch:

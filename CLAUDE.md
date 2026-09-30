@@ -21,13 +21,14 @@ npm start
 |---|---|
 | `src/design/nix/firefly-wisp.tsx` | Wisp, the main character, and its variants: Moth, True colour, Solid, Curly |
 | `src/design/nix/firefly-spirits.tsx` | New wispy directions drawn from scratch: Puff, Jelly, Bloom |
+| `src/design/nix/firefly-spirits-2.tsx` | Wispy directions, round two: Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |
 | `src/design/nix/theme.ts` | The colour tokens every firefly draws with, and the header's schemes |
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
-| `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
+| `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |

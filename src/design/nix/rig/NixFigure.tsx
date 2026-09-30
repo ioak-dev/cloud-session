@@ -9,6 +9,7 @@ import { useJointMotion } from "./motion";
 import { outfitParts, type Cloth, type OutfitId } from "./outfit";
 import { motionFor, POSES, type PoseId } from "./poses";
 import { Backpack, Book, HeadProps, type PropId } from "./props";
+import { SparkTrail } from "./sparks";
 import { CHIBI, FIGURE_VB, HEAD_VB, lerp, pivot, type P } from "./skeleton";
 
 /**
@@ -158,6 +159,7 @@ export function NixFigure({
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
+      data-still={still ? "true" : undefined}
       xmlns="http://www.w3.org/2000/svg"
     >
       <ellipse
@@ -170,6 +172,7 @@ export function NixFigure({
         fill={pal.ink}
         opacity={0.12}
       />
+      {c.trail && <SparkTrail at={c.trail} glow={pal.glow} edge="var(--char-glow-edge)" />}
       <g data-joint="root" style={pivot("root", j)}>
         <g data-joint="torso" style={pivot("torso", j)}>
           <g transform={f.torsoFit}>
@@ -231,8 +234,8 @@ export function NixFigure({
             </g>
           </g>
 
-          {arm("L")}
-          {arm("R")}
+          {c.arms !== false && arm("L")}
+          {c.arms !== false && arm("R")}
         </g>
       </g>
     </svg>
