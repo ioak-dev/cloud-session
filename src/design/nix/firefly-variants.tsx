@@ -76,6 +76,11 @@ const DROOP: Record<Mood, [number, number]> = {
   worried: [32, 32],
   oops: [22, -6],
   wink: [0, -12],
+  sly: [-4, 14],
+  silly: [26, -20],
+  surprised: [-22, -22],
+  proud: [-10, -4],
+  party: [-18, -10],
 };
 
 /** How brightly the glow halo shines for a mood. */
@@ -84,6 +89,9 @@ const BRIGHT: Partial<Record<Mood, number>> = {
   delighted: 1.5,
   worried: 0.6,
   oops: 0.8,
+  surprised: 1.3,
+  proud: 1.2,
+  party: 1.5,
 };
 export const bright = (m?: Mood) => (m && BRIGHT[m]) ?? 1;
 

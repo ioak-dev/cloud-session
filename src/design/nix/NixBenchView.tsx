@@ -16,7 +16,8 @@ import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
-import { WISP_WARM } from "./wisp-warm";
+import { WISP_EYES, WISP_WARM } from "./wisp-warm";
+import { EYE_STYLES } from "./wisp-eyes";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
@@ -25,7 +26,7 @@ import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
 import { RAPUNZEL_LINE } from "./side-rapunzel";
 import { PUFF_FAMILY } from "./side-puff";
-import { MOODS, type Mood } from "./rig/face";
+import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
 import { POSES, type PoseId } from "./rig/poses";
@@ -73,6 +74,7 @@ const ANIMAL_REFERENCE: Candidate[] = [
 const ALL: Candidate[] = [
   WISP_MAIN,
   ...WISP_WARM,
+  ...WISP_EYES,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
@@ -267,6 +269,55 @@ export function NixBenchView() {
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
+        Wisp, warmer — eye styles
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The warmer in five eye styles, each drawn for the shared nine expressions and five of
+        Wisp's own — sly, silly, surprised, proud, party — so its range runs from composed to
+        clowning. Everything but the eyes is the warmer as drawn. Its stalks sway, and once a loop
+        the left one twitches and the flopped one boings.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {WISP_EYES.map((x, i) => (
+          <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={x} className="h-56 w-full" />
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{EYE_STYLES[i].label}</span>
+              <span className="material mt-1 block text-muted-foreground">{EYE_STYLES[i].note}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {ALL_MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {WISP_EYES.map((x, i) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {EYE_STYLES[i].label}
+                </th>
+                {ALL_MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
         Side candidates and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
@@ -318,6 +369,7 @@ export function NixBenchView() {
         [
           ["Main character — Wisp", [WISP_MAIN]],
           ["Wisp, warmer — proposals", WISP_WARM],
+          ["Wisp, warmer — eye styles", WISP_EYES],
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],

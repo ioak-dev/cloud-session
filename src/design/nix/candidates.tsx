@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { arcUp, chevron, line, OpenMouth, Orb, TONGUE_PINK, type EyeKit, type MouthKit } from "./rig/eyes";
 import type { FaceStyle, Mood } from "./rig/face";
-import type { Hands } from "./rig/motion";
+import type { Hands, Motion } from "./rig/motion";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
 import { WHITE, type Palette } from "./rig/palette";
@@ -48,7 +48,14 @@ export type Candidate = {
   props?: PropId[];
   /** Who it is at rest: the expression it wears when nothing is happening, the way it holds its
    *  head, and how it stands. A character is never neutral. */
-  attitude?: { mood?: Mood; tilt?: number; hands?: Hands };
+  attitude?: {
+    mood?: Mood;
+    tilt?: number;
+    hands?: Hands;
+    /** Its own habits at rest, laid over the idle pose on the same clock: an antenna that
+     *  twitches, a flame that flicks. */
+    motion?: Motion["tracks"];
+  };
   /** Behind the head, riding its joint: long hair, a bun. */
   headBack?: (c: Ctx) => ReactNode;
   /** Behind the torso: a tail, wings. */

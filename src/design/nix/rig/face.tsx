@@ -16,7 +16,13 @@ export type Mood =
   | "focused"
   | "worried"
   | "oops"
-  | "wink";
+  | "wink"
+  /* Wisp's own range, beyond the shared nine (`MORE_MOODS`) */
+  | "sly"
+  | "silly"
+  | "surprised"
+  | "proud"
+  | "party";
 
 type Eye = "open" | "happy" | "squeeze" | "sparkle" | "half";
 type Brow = "neutral" | "raised" | "worried" | "think" | "focused";
@@ -126,6 +132,68 @@ export const MOODS: {
     blush: 0.6,
   },
 ];
+
+type MoodDef = (typeof MOODS)[number];
+
+/**
+ * Expressions beyond the shared nine, for the main character only: the range a playful,
+ * mischievous character needs. Side characters' kits are not asked to draw them; the shared face
+ * falls back to the nearest of its own shapes.
+ */
+export const MORE_MOODS: MoodDef[] = [
+  {
+    id: "sly",
+    title: "Sly",
+    use: "Up to something: a shortcut it knows, a hidden thing it has spotted",
+    eyes: ["half", "half"],
+    look: [2.4, 0],
+    brow: "think",
+    mouth: "grin",
+    blush: 0.5,
+  },
+  {
+    id: "silly",
+    title: "Silly",
+    use: "Clowning: a gag, a pulled face",
+    eyes: ["squeeze", "open"],
+    look: [0, 0],
+    brow: "raised",
+    mouth: "tongue",
+    blush: 0.6,
+  },
+  {
+    id: "surprised",
+    title: "Surprised",
+    use: "Caught off guard: the unexpected",
+    eyes: ["open", "open"],
+    look: [0, -1],
+    brow: "raised",
+    mouth: "o",
+    blush: 0.4,
+  },
+  {
+    id: "proud",
+    title: "Proud",
+    use: "Quietly pleased with itself; composed",
+    eyes: ["happy", "happy"],
+    look: [0, 0],
+    brow: "raised",
+    mouth: "smile",
+    blush: 0.6,
+  },
+  {
+    id: "party",
+    title: "Party",
+    use: "A party outfit, a celebration it is dressed for",
+    eyes: ["sparkle", "sparkle"],
+    look: [0, 0],
+    brow: "raised",
+    mouth: "bigD",
+    blush: 0.8,
+  },
+];
+
+export const ALL_MOODS: MoodDef[] = [...MOODS, ...MORE_MOODS];
 
 export type FaceStyle = {
   eyes: "anime" | "bead";
@@ -364,7 +432,7 @@ export function Face({
   browColor?: string;
   uid?: string;
 }) {
-  const m = MOODS.find((x) => x.id === mood) ?? MOODS[0];
+  const m = ALL_MOODS.find((x) => x.id === mood) ?? MOODS[0];
   const xl = 100 - style.eyeGap;
   const xr = 100 + style.eyeGap;
   const y = style.eyeY;

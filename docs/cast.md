@@ -93,10 +93,24 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 | Variation | What it changes | Temperament and attitude |
 |---|---|---|
 | Hearth | Warmth: a small flame in its chest, the same light as its tail, that breathes and brightens with the mood; a peach warmth through the face, fading before the rim; warmer cheeks | Warm-hearted and eager to help; worries it is too small to. Hands held together under its heart |
-| Scamp | Attitude: the drop's tip swept into a curl, one antenna bent at a kink, a lopsided smile with a dimple, tongue at the corner when focused | Curious and a bit cheeky, slightly too pleased with itself. Head tipped, one hand up in a hey |
+| Scamp | Attitude: the drop's tip swept into a curl, one antenna flopped over in a soft curl that bounces, a lopsided smile with a dimple, tongue at the corner when focused | Curious and a bit cheeky, slightly too pleased with itself. Head tipped, one hand up in a hey |
 | Moony | Face: big round eyes with warm honey irises, thick ink brows that lift and knit, a bigger mouth that is open at rest | Wears every feeling on its face; cannot keep a secret. Arms a little out, about to tell you something |
 | Snug | Softness: a rounder drop, a ruff of fuzz hiding the neck, a rounder body, chunkier arms with bigger tips | Cosy and patient, a homebody. Content, eyes closed in a smile, hands together |
 | Wisp · warmer | All four, each turned down | Warm-hearted, curious and a bit cheeky |
+
+**The warmer's antennae** (and Scamp's) are soft stalks in three segments on their own joints (`antL` → `antMidL` → `antTipL`, and R; `rig/skeleton.ts`). The left stands up; the right flops over in a smooth curl, not a kink. In every pose each segment follows through, turning a little later and further than the one it hangs from (`secondary` in `rig/poses.ts`). At rest they have a habit of their own (`attitude.motion`, laid over the idle pose on its clock): once a loop the left one twitches, and a beat later the flopped one's tip flicks up and springs back in shrinking bounces. Declared keyframes (`rotAt`); stilled or under reduced motion they hold the first frame.
+
+**Wisp's own expressions.** The shared nine cannot say mischief, surprise or clowning. `MORE_MOODS` (`rig/face.tsx`) adds five for the main character only: sly, silly, surprised, proud, party. Side characters' kits are not asked to draw them.
+
+**Eye styles for the warmer — proposals** (`src/design/nix/wisp-eyes.tsx`, shown as `WISP_EYES`). One acting table (`act`) says what an eye does in each of the fourteen moods; each style only decides how an eye and a brow are drawn. Lids cut the eye instead of being painted over it, so every style holds on the warm face and on both grounds.
+
+| Style | What it is | Strongest at |
+|---|---|---|
+| Honey | Dark eyes, honey irises, two shines (as drawn) | Warm, sweet; weaker at side-eye |
+| Bean | White eyes, a roaming pupil, chunky brows | The widest range: side-eye, cross-eyed, a pinprick of shock. Closest to Duolingo's look — keep it clear of Duo |
+| Gumdrop | Solid glossy eyes that change shape | Reads smallest; sparks at a party |
+| Lidded | White eyes, small pupils, heavy lids in its own colour | Sly, proud, professional; rests cooler |
+| Starry | Dark eyes with a spark of its own light for a catchlight | Ties the eyes to the glow; the eye becomes a spark at a party |
 
 None of them is in the turn puppet, the views, the flight or the form: that waits until one, or a mix, is picked into `WISP_MAIN`.
 

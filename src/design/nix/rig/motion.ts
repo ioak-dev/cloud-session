@@ -27,6 +27,10 @@ export const lift = (...y: number[]): Track => y.map((v) => ({ translate: `0px $
 export const squash = (...k: [number, number][]): Track =>
   k.map(([x, y]) => ({ scale: `${x} ${y}` }));
 export const fade = (...o: number[]): Track => o.map((v) => ({ opacity: v }));
+/** A rotation track with its timing declared: [offset 0–1, degrees] pairs, so a joint can lag
+ *  another, hold, or flick. */
+export const rotAt = (...k: [number, number][]): Track =>
+  k.map(([offset, v]) => ({ offset, rotate: `${v}deg` }));
 
 /** One keyframe's hand targets, in chibi space. */
 export type Hands = { L?: P; R?: P; outL?: boolean; outR?: boolean };

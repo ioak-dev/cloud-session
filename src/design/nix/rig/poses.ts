@@ -1,4 +1,4 @@
-import { arms, fade, lift, rot, squash, type Hands, type Motion } from "./motion";
+import { arms, fade, lift, rot, rotAt, squash, type Hands, type Motion } from "./motion";
 import { CHIBI, type Body } from "./skeleton";
 import type { Mood } from "./face";
 
@@ -17,6 +17,12 @@ const secondary = (k = 1) => ({
   braidR: rot(-2 * k, 3 * k, -2 * k),
   antL: rot(-7 * k, 5 * k, -7 * k),
   antR: rot(7 * k, -5 * k, 7 * k),
+  /* A segmented antenna follows through: each segment turns a little later and a little further
+     than the one it hangs from, so it bends like a stalk instead of swinging like a stick. */
+  antMidL: rotAt([0, -3 * k], [0.14, -5 * k], [0.64, 6 * k], [1, -3 * k]),
+  antMidR: rotAt([0, 3 * k], [0.14, 5 * k], [0.64, -6 * k], [1, 3 * k]),
+  antTipL: rotAt([0, -2 * k], [0.24, -8 * k], [0.74, 9 * k], [1, -2 * k]),
+  antTipR: rotAt([0, 2 * k], [0.24, 8 * k], [0.74, -9 * k], [1, 2 * k]),
   earL: rot(0, 0, -8, 0, 0, 0),
   earR: rot(0, 0, 0, 8, 0, 0),
   wingL: rot(0, -14, 0, -14, 0, -14, 0),

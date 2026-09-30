@@ -169,6 +169,9 @@ export function NixFigure({
             ...base,
             mood: att.mood ?? base.mood,
             hands: att.hands ? base.hands.map(() => att.hands!) : base.hands,
+            motion: att.motion
+              ? { ...base.motion, tracks: { ...base.motion.tracks, ...att.motion } }
+              : base.motion,
           }
         : base,
     [base, att],

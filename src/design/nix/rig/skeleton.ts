@@ -9,6 +9,7 @@
  *   root ─┬─ hipL ── kneeL        legs sit outside the torso so it can lean over them
  *         ├─ hipR ── kneeR
  *         └─ torso ─┬─ head ─┬─ hairSway · braidL · braidR · antL · antR · earL · earR
+ *                   │        └─ antL ── antMidL ── antTipL (and R): an antenna in segments
  *                   ├─ tail · wingL · wingR · hindL · hindR
  *                   ├─ shoulderL ── elbowL
  *                   └─ shoulderR ── elbowR
@@ -48,6 +49,12 @@ export const J = {
   braidR: [140, 104],
   antL: [80, 56],
   antR: [120, 56],
+  /** An antenna in segments, for one that bends as it sways: the joint halfway up, and the one
+   *  its tip hangs from. A character that draws them places them in its own frame. */
+  antMidL: [86, 40],
+  antMidR: [114, 40],
+  antTipL: [82, 28],
+  antTipR: [118, 28],
   earL: [66, 72],
   earR: [134, 72],
   blink: [100, 102],
