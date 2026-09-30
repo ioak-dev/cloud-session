@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Mood } from "./rig/face";
-import { FACE, FACE_SHADE } from "./side-candidates";
+
 import { C } from "./theme";
 
 /**
@@ -26,32 +26,6 @@ const TALL = "0 -40 200 340";
 
 export const SIDE_ABILITIES: Ability[] = [
   {
-    id: "side-lamb",
-    name: "Knit",
-    line: "Draws a strand from its own fleece and knits it into a thing.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        <path
-          d="M122 186 C146 200 158 170 150 150 C144 134 156 124 160 132"
-          stroke={C.hi}
-          strokeWidth={3}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path d="M160 150 C140 132 146 110 160 118 C174 110 180 132 160 150 Z" fill={C.accent} />
-        <path
-          d="M150 122 l4 5 l4 -5 M158 122 l4 5 l4 -5 M154 131 l4 5 l4 -5 M162 131 l4 5 l4 -5"
-          stroke={C.accentDeep}
-          strokeWidth={1.6}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path d="M142 106 L176 146 M178 106 L144 146" stroke={C.deep} strokeWidth={2.6} strokeLinecap="round" />
-      </g>
-    ),
-  },
-  {
     id: "side-octopus",
     name: "Ink",
     line: "Draws a mark in the air — an arrow, a circle, an underline — to show where to look.",
@@ -70,26 +44,6 @@ export const SIDE_ABILITIES: Ability[] = [
     turn: 180,
     mood: "happy",
     fx: () => <rect x={36} y={12} width={128} height={7} rx={3.5} fill={C.deep} opacity={0.6} />,
-  },
-  {
-    id: "side-axolotl",
-    name: "Mend",
-    line: "Puts a broken thing back together. It regrows what it loses, so it knows how.",
-    mood: "happy",
-    fx: () => (
-      <g>
-        <path
-          d="M164 88 L170 104 L187 104 L174 114 L179 131 L164 121 L149 131 L154 114 L141 104 L158 104 Z"
-          fill={C.accent}
-        />
-        <path d="M164 90 L160 102 L167 110 L161 120 L164 124" stroke={C.accentDeep} strokeWidth={1.8} fill="none" />
-        <g transform="rotate(-28 164 110)">
-          <rect x={152} y={105} width={24} height={10} rx={4} fill={FACE} />
-          <circle cx={161} cy={110} r={1} fill={FACE_SHADE} />
-          <circle cx={167} cy={110} r={1} fill={FACE_SHADE} />
-        </g>
-      </g>
-    ),
   },
   {
     id: "side-penguin",
@@ -158,48 +112,151 @@ export const SIDE_ABILITIES: Ability[] = [
     ),
   },
   {
-    id: "side-amara",
-    name: "Telescope",
-    line: "Opens a telescope and looks at what is coming next.",
-    mood: "curious",
+    id: "side-jellyfish",
+    name: "See-through",
+    line: "Its bell is clear, so whatever it carries shows through.",
+    mood: "happy",
     fx: () => (
       <g>
-        <path d="M112 62 L150 44 L154 52 L116 70 Z" fill={C.deep} />
-        <path d="M148 42 L176 30 L181 42 L153 54 Z" fill={C.primary} />
-        <rect x={147} y={41} width={6} height={15} rx={2} transform="rotate(-25 150 48)" fill={C.accent} />
+        <circle cx={100} cy={59} r={15} fill={C.tint} opacity={0.75} />
+        <path
+          d="M100 48 L103.5 55 L111 56 L105.5 61 L107 68.5 L100 65 L93 68.5 L94.5 61 L89 56 L96.5 55 Z"
+          fill={C.accent}
+        />
       </g>
+    ),
+  },
+  {
+    id: "side-squid",
+    name: "Jet",
+    line: "Squeezes and shoots off, mantle first, in a rush of water: the fastest in the cast.",
+    turn: 35,
+    scale: 0.85,
+    mood: "delighted",
+    fx: () => (
+      <g fill={C.hi}>
+        {[
+          [40, 250, 6],
+          [28, 272, 4.5],
+          [54, 276, 3.5],
+          [22, 240, 3],
+          [46, 292, 2.6],
+        ].map(([x, y, r]) => (
+          <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
+        ))}
+        <path d="M60 230 l-26 18 M70 244 l-24 20" stroke={C.hi} strokeWidth={3} strokeLinecap="round" />
+      </g>
+    ),
+  },
+  {
+    id: "side-mushroom",
+    name: "Umbrella",
+    line: "Its cap keeps off the rain and shelters whatever stands under it.",
+    mood: "happy",
+    fx: () => (
+      <g fill={C.hi}>
+        {[
+          [60, 2],
+          [96, -6],
+          [134, 4],
+          [168, 60],
+          [30, 58],
+        ].map(([x, y]) => (
+          <path key={`${x}${y}`} d={`M${x} ${y} q-4 7 -4 10 a4 4 0 0 0 8 0 q0 -3 -4 -10 Z`} />
+        ))}
+        <path d="M24 100 l-5 -5 M24 100 l0 -7 M176 100 l5 -5 M176 100 l0 -7" stroke={C.hi} strokeWidth={2.2} strokeLinecap="round" />
+      </g>
+    ),
+    viewBox: "0 -20 200 320",
+  },
+  {
+    id: "side-poodle",
+    name: "Fetch",
+    line: "Runs off and brings the thing back.",
+    mood: "happy",
+    fx: () => (
+      <g>
+        <path d="M150 116 h22 M146 128 h28 M152 140 h18" stroke={C.hi} strokeWidth={3} strokeLinecap="round" />
+        <circle cx={100} cy={128} r={9} fill={C.accent} />
+        <path d="M92 124 Q100 130 108 124" stroke={C.accentDeep} strokeWidth={1.8} fill="none" />
+      </g>
+    ),
+  },
+  {
+    id: "side-pufferfish",
+    name: "Puff up",
+    line: "Gulps and swells into a spiky ball, then lets it out again: surprise, made visible.",
+    mood: "curious",
+    fx: () => (
+      <g fill={C.primary}>
+        {Array.from({ length: 22 }, (_, i) => {
+          const r = (i / 22) * Math.PI * 2;
+          const [ox, oy] = [Math.cos(r), Math.sin(r)];
+          const [cx, cy] = [100 + ox * 52, 112 + oy * 52];
+          return (
+            <path
+              key={i}
+              d={`M${cx - oy * 5} ${cy + ox * 5} L${cx + ox * 12} ${cy + oy * 12} L${cx + oy * 5} ${cy - ox * 5} Z`}
+            />
+          );
+        })}
+      </g>
+    ),
+  },
+  {
+    id: "side-chick",
+    name: "Shell",
+    line: "When it is shy, it ducks down into its eggshell, and pops out again.",
+    mood: "worried",
+    fx: () => (
+      <path
+        d="M50 100 L58 110 L66 100 L74 110 L82 100 L90 110 L98 100 L106 110 L114 100 L122 110 L130 100 L138 110 L146 100 L151 104 C150 60 128 40 100 40 C72 40 50 60 50 100 Z"
+        fill="#efd8c6"
+        transform="rotate(-10 100 80)"
+      />
     ),
   },
   {
     id: "side-wren",
-    name: "Headphones",
-    line: "Puts them on, and everything goes quiet: the one character for focus.",
+    name: "Nap",
+    line: "Dozes off anywhere — standing up, mid-sentence — and wakes with a start. For a long wait.",
     mood: "focused",
     fx: () => (
       <g>
-        <path d="M50 108 C48 34 152 34 150 108" stroke={C.primary} strokeWidth={7} fill="none" strokeLinecap="round" />
-        <rect x={40} y={94} width={16} height={30} rx={8} fill={C.accent} />
-        <rect x={144} y={94} width={16} height={30} rx={8} fill={C.accent} />
+        <circle cx={124} cy={120} r={8} fill={C.tint} opacity={0.85} />
+        <circle cx={122} cy={117} r={2} fill="#ffffff" />
       </g>
     ),
   },
   {
-    id: "side-sloane",
-    name: "Paper plane",
-    line: "Folds a note and sends it where it needs to go.",
-    mood: "happy",
+    id: "side-lulu",
+    name: "Peekaboo",
+    line: "Peeks over the edge of anything — a card, a heading — just her eyes and fingers showing.",
+    mood: "curious",
     fx: () => (
       <g>
-        <path
-          d="M124 168 C150 150 146 110 170 92"
-          stroke={C.hi}
-          strokeWidth={2.4}
-          strokeDasharray="3 6"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path d="M166 90 L196 70 L180 98 Z" fill={C.tint} />
-        <path d="M166 90 L196 70 L176 92 Z" fill={C.hi} />
+        <rect x={10} y={146} width={180} height={160} rx={12} fill={C.soft} />
+        <ellipse cx={74} cy={147} rx={7} ry={5} fill="#f7dcca" />
+        <ellipse cx={126} cy={147} rx={7} ry={5} fill="#f7dcca" />
+      </g>
+    ),
+  },
+  {
+    id: "side-mimi",
+    name: "Tiptoe",
+    line: "Sneaks in, spy-style, on tiptoe — and is suddenly there.",
+    turn: -6,
+    mood: "thinking",
+    fx: () => (
+      <g fill={C.hi}>
+        {[
+          [30, 288],
+          [46, 280],
+          [18, 272],
+          [36, 264],
+        ].map(([x, y]) => (
+          <ellipse key={`${x}${y}`} cx={x} cy={y} rx={4} ry={2.6} />
+        ))}
       </g>
     ),
   },

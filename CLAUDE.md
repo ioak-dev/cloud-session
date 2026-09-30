@@ -31,7 +31,7 @@ npm start
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
-| `src/design/nix/side-candidates.tsx`, `side-humans.tsx`, `side-abilities.tsx` | Side candidates (animals, people) and their ability previews |
+| `src/design/nix/side-candidates.tsx`, `side-jelly.tsx`, `side-puff.tsx`, `side-humans.tsx`, `side-abilities.tsx` | Side candidates (animals, the jelly and puff families, people) and their ability previews |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
 | `src/styles/studio.css` | The surface colour tokens |

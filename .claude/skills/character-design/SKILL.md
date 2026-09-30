@@ -27,7 +27,10 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 - **Colour comes from the scheme.** Draw a firefly with the `C` tokens in `theme.ts` (primary, deep, mid, soft, tint, hi, accent), never hex. The header switches the scheme for every character at once. Never make per-character colourways. Only the glow keeps its own colour.
 - **No black outlines.** Separate shapes by colour and tone. Where an edge is needed, use a tone of the part’s own colour: `C.line` for the body, limbs and clothes, `C.hi` for pale parts on a pale ground, `C.glowEdge` for the glow. Draw thin parts (antennae) in `C.thin` with no outline. Keep `pal.ink` for eyes, mouth and brows only, and set `line: C.line` in the palette. Check every change on the dark ground.
 - **Side characters avoid outlines as far as possible**: palette `line: "none"`, parts told apart by colour alone.
-- **Every side character has its own eyes.** Give it an eye kit (`face.kit`, `rig/eyes.tsx`) designed for it — shape, colour, shine, lids, brows — that draws every mood. Never reuse another character's kit or fall back to the shared eyes. Check the studio's eyes sheet.
+- **Every side character has its own eyes and mouth.** Give it an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) designed for it (`rig/eyes.tsx`) — eye shape, colour, shine, lids, brows; lips, beak or muzzle — that draw every mood. Never reuse another character's kit or fall back to the shared face. Check the studio's eyes-and-mouths sheet.
+- **An ability is what the character naturally does**, never a prop it holds.
+- **Legible small, on both grounds**: check the recognition sheet on light and dark.
+- **Never copy a copyrighted character** (Anya, Duolingo's cast): take the spirit, not the look.
 - **People are allowed as side characters** when the user asks for them (round two); they are new characters, not the Nix bench's humans, and each draws its own hair.
 - **Two pairs of wings move apart.** Put the upper pair on `wingL`/`wingR` and the lower pair on `hindL`/`hindR`. Never draw both pairs on one joint.
 - Each character must read apart from the others by silhouette alone, at small size. Only the chameleon may take a status hue, and only through its ability.
@@ -39,7 +42,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 - Main-character variants: `src/design/nix/firefly-bodies.tsx` and `firefly-bodies-2.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
-- Side candidates: animals in `src/design/nix/side-candidates.tsx`, people in `src/design/nix/side-humans.tsx`, ability previews in `src/design/nix/side-abilities.tsx`. Per-character eyes: `src/design/nix/rig/eyes.tsx`.
+- Side candidates: animals in `src/design/nix/side-candidates.tsx`, the jelly family in `side-jelly.tsx`, the puff family in `side-puff.tsx`, people in `side-humans.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 

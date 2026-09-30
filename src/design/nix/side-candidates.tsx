@@ -3,7 +3,18 @@ import type { ReactNode } from "react";
 import type { Candidate, Ctx } from "./candidates";
 import { palette } from "./firefly-variants";
 import { PIP } from "./firefly-pip";
-import { arcUp, chevron, EYE_WHITE, line, Orb, turnAt, type EyeKit } from "./rig/eyes";
+import {
+  arcUp,
+  chevron,
+  EYE_WHITE,
+  line,
+  OpenMouth,
+  Orb,
+  TONGUE_PINK,
+  turnAt,
+  type EyeKit,
+  type MouthKit,
+} from "./rig/eyes";
 import type { Palette } from "./rig/palette";
 import { CHIBI, J, pivot, type Body, type P } from "./rig/skeleton";
 import { C } from "./theme";
@@ -21,9 +32,9 @@ import { C } from "./theme";
 
 export const FACE = "#fff4e8";
 export const FACE_SHADE = "#efd8c6";
-const INNER = "#f6c1b0";
+export const INNER = "#f6c1b0";
 
-const OUTFITS: Candidate["outfits"] = [
+export const OUTFITS: Candidate["outfits"] = [
   "bare",
   "dungarees",
   "hoodie",
@@ -32,7 +43,7 @@ const OUTFITS: Candidate["outfits"] = [
   "party",
 ];
 
-const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
+export const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
   palette(body, paw, FACE, FACE_SHADE, {
     line: "none",
     eye: "#1f1a36",
@@ -44,7 +55,7 @@ const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
     ...over,
   });
 
-const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
+export const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
   eyes: "bead",
   eyeY: 106,
   eyeGap: 18,
@@ -55,18 +66,18 @@ const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
   ...over,
 });
 
-const NO_NECK = { x: 100, y: 150, w: 0, h: 0 };
+export const NO_NECK = { x: 100, y: 150, w: 0, h: 0 };
 
-const sides = [
+export const sides = [
   ["L", -1],
   ["R", 1],
 ] as const;
 
 /* ——— A tapering limb along cubic curves: tentacles, gills, tails ——— */
 
-type Cubic = readonly [P, P, P, P];
+export type Cubic = readonly [P, P, P, P];
 
-function bez([a, b, c, d]: Cubic, t: number): P {
+export function bez([a, b, c, d]: Cubic, t: number): P {
   const u = 1 - t;
   return [
     u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * d[0],
@@ -82,7 +93,7 @@ function along(segs: Cubic[], n = 12): P[] {
 }
 
 /** One filled shape that narrows from `w0` at the base to `w1` at the tip, with round ends. */
-function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; fill: string }) {
+export function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; fill: string }) {
   const pts = along(segs);
   const last = pts.length - 1;
   const left: string[] = [];
@@ -108,7 +119,7 @@ function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; 
 }
 
 /** A cluster of puffs in one colour: no rim, the overlaps read as one soft mass. */
-function Puffs({ at, fill }: { at: readonly (readonly [number, number, number])[]; fill: string }) {
+export function Puffs({ at, fill }: { at: readonly (readonly [number, number, number])[]; fill: string }) {
   return (
     <g fill={fill}>
       {at.map(([x, y, r]) => (
@@ -118,141 +129,7 @@ function Puffs({ at, fill }: { at: readonly (readonly [number, number, number])[
   );
 }
 
-const mirror = (s: number, x: number) => 100 + (x - 100) * s;
-
-/* ——— Lamb (from Puff): a cloud of fleece; it knits with its own wool ——— */
-
-const LAMB_TORSO =
-  "M82 152 C74 150 70 162 76 168 C66 174 68 190 78 192 C72 204 82 216 92 212 C96 222 106 222 110 212 C120 216 130 204 122 192 C132 190 134 174 124 168 C130 162 126 150 118 152 C112 144 88 144 82 152 Z";
-
-const LAMB: Body = {
-  ...CHIBI,
-  id: "lamb",
-  j: { ...J, earL: [66, 96], earR: [134, 96] },
-  torso: LAMB_TORSO,
-  neck: NO_NECK,
-};
-const palLamb = pal(C.deep, C.deep);
-
-const FLEECE_HEAD = [
-  [100, 64, 18],
-  [80, 70, 16],
-  [120, 70, 16],
-  [66, 84, 14],
-  [134, 84, 14],
-  [88, 56, 12],
-  [112, 56, 12],
-  [62, 102, 11],
-  [138, 102, 11],
-] as const;
-
-function LambHead() {
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, LAMB.j)}>
-          <g transform={`rotate(${22 * s} ${mirror(s, 140)} 104)`}>
-            <ellipse cx={mirror(s, 142)} cy={104} rx={17} ry={7.5} fill={C.deep} />
-            <ellipse cx={mirror(s, 140)} cy={104} rx={10} ry={3.6} fill={INNER} />
-          </g>
-        </g>
-      ))}
-      {/* fleece in a mid tone of the primary, so it holds on the light ground; paler tops */}
-      <Puffs at={FLEECE_HEAD} fill={C.hi} />
-      <Puffs
-        at={[
-          [90, 54, 7],
-          [108, 50, 8],
-          [124, 62, 6],
-          [72, 72, 6],
-        ]}
-        fill={C.soft}
-      />
-      <ellipse cx={100} cy={110} rx={33} ry={30} fill={FACE} />
-      <Puffs
-        at={[
-          [92, 84, 9],
-          [104, 82, 10],
-          [114, 88, 7],
-        ]}
-        fill={C.hi}
-      />
-      <path d="M96 116 Q100 113 104 116 Q102 120 100 120 Q98 120 96 116 Z" fill={INNER} />
-    </g>
-  );
-}
-
-function LambBehind() {
-  return (
-    <g data-joint="tail" style={pivot("tail", LAMB.j)}>
-      <Puffs
-        at={[
-          [124, 204, 9],
-          [130, 198, 6],
-        ]}
-        fill={C.hi}
-      />
-    </g>
-  );
-}
-
-/** Lamb: dark, dreamy eyes under a heavy lid, curled lashes at the outer corner. No brows: the lid
- *  does the brows' work. */
-const LAMB_EYE = "#3b2a2c";
-const lambEyes: EyeKit = ({ mood, s, x, y, look, id, pal: p }) => {
-  const [dx, dy] = look;
-  const lashes = (by: number) => (
-    <path
-      d={`M${x + s * 6} ${by} q${s * 2.5} 0 ${s * 4} -2 M${x + s * 5} ${by - 2.5} q${s * 2} -1 ${s * 3} -3.5`}
-      {...line(p.ink, 1.6)}
-    />
-  );
-  const open = (top: number, tilt = 0, bottom = 0, k = 1, extra = false) => (
-    <g>
-      <Orb
-        id={id}
-        x={x}
-        y={y}
-        rx={6.6 * k}
-        ry={8 * k}
-        s={s}
-        fill={LAMB_EYE}
-        lid={{ top, tilt, bottom, color: FACE }}
-      >
-        <circle cx={x - 2 + dx} cy={y - 3 + dy} r={2.6 * k} fill={EYE_WHITE} />
-        <circle cx={x + 2.2 + dx} cy={y + 3 + dy} r={1.2} fill={EYE_WHITE} />
-        {extra && <circle cx={x + 2.6 + dx} cy={y - 3.4 + dy} r={1.3} fill={EYE_WHITE} />}
-      </Orb>
-      {lashes(Math.max(y - 3, y - 8 * k + 16 * k * top))}
-    </g>
-  );
-  const shut = (d: string) => (
-    <g>
-      <path d={d} {...line(p.ink, 2.8)} />
-      {lashes(y)}
-    </g>
-  );
-  switch (mood) {
-    case "happy":
-      return open(0.2, 0, 0.42);
-    case "delighted":
-      return shut(arcUp(x, y, 6.5, 4));
-    case "curious":
-      return open(0, 0, 0, 1.12, true);
-    case "thinking":
-      return open(0.42);
-    case "focused":
-      return open(0.5, -6);
-    case "worried":
-      return open(0.2, 14, 0.06, 1, true);
-    case "oops":
-      return shut(`M${x - 6} ${y} Q${x} ${y + 3} ${x + 6} ${y}`);
-    case "wink":
-      return s === 1 ? shut(arcUp(x, y, 6.5, 4)) : open(0.28);
-    default:
-      return open(0.28);
-  }
-};
+export const mirror = (s: number, x: number) => 100 + (x - 100) * s;
 
 /* ——— Octopus (from Jelly): a bell with curling arms; it doodles in ink ——— */
 
@@ -358,8 +235,6 @@ function OctoHead({ uid }: Ctx) {
   );
 }
 
-/* ——— Axolotl (from Bloom): a crown of frilled gills; it mends what is broken ——— */
-
 /** Octopus: a white eye with an octopus's bar pupil, which widens, narrows, tilts and rounds with
  *  the mood; the mantle closes over it as a lid. No brows. */
 const OCTO_PUPIL = "#1d1838";
@@ -416,167 +291,6 @@ const octoEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
       return s === 1 ? shut(arcUp(x, y, 7, 4.5)) : open(bar(11, 4.5), 0.18);
     default:
       return open(bar(11, 4.5), 0.18);
-  }
-};
-
-/* ——— Axolotl (from Bloom): a wide head, a crown of feathery gills; it mends things ——— */
-
-const AXO: Body = {
-  ...CHIBI,
-  id: "axolotl",
-  j: {
-    ...J,
-    earL: [56, 92],
-    earR: [144, 92],
-    shoulderL: [78, 162],
-    elbowL: [70, 182],
-    wristL: [66, 200],
-    shoulderR: [122, 162],
-    elbowR: [130, 182],
-    wristR: [134, 200],
-  },
-  torso:
-    "M80 150 Q100 144 120 150 Q134 160 132 188 Q130 216 100 218 Q70 216 68 188 Q66 160 80 150 Z",
-  neck: NO_NECK,
-};
-const palAxo = pal(C.soft, C.hi);
-
-/** One gill: a soft plume with three bumps down each side, paler at the tip. */
-function Plume({ s, a }: { s: number; a: number }) {
-  const bx = 100 + s * 44;
-  const by = 92;
-  const r = (a * Math.PI) / 180;
-  const ux = s * Math.cos(r);
-  const uy = -Math.sin(r);
-  const cx = bx + ux * 17;
-  const cy = by + uy * 17;
-  const deg = (Math.atan2(uy, ux) * 180) / Math.PI;
-  return (
-    <g fill={C.primary}>
-      <ellipse cx={cx} cy={cy} rx={17} ry={6.5} transform={`rotate(${deg} ${cx} ${cy})`} />
-      {[-0.5, 0, 0.5].flatMap((t) =>
-        [-1, 1].map((n) => (
-          <circle
-            key={`${t}${n}`}
-            cx={cx + ux * 12 * t - uy * 6 * n}
-            cy={cy + uy * 12 * t + ux * 6 * n}
-            r={3.6}
-          />
-        )),
-      )}
-      <circle cx={bx + ux * 31} cy={by + uy * 31} r={5} fill={C.mid} />
-    </g>
-  );
-}
-
-function AxoHead() {
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, AXO.j)}>
-          <Plume s={s} a={62} />
-          <Plume s={s} a={24} />
-          <Plume s={s} a={-14} />
-        </g>
-      ))}
-      <ellipse cx={100} cy={104} rx={56} ry={40} fill={C.soft} />
-      <ellipse cx={100} cy={114} rx={42} ry={24} fill={C.tint} />
-      {[
-        [82, 76],
-        [100, 72],
-        [118, 76],
-      ].map(([x, y]) => (
-        <circle key={x} cx={x} cy={y} r={2.8} fill={C.hi} />
-      ))}
-    </g>
-  );
-}
-
-function AxoBehind() {
-  const tail: Cubic = [
-    [106, 200],
-    [132, 208],
-    [150, 236],
-    [170, 250],
-  ];
-  return (
-    <g data-joint="tail" style={pivot("tail", AXO.j)}>
-      {/* the fin runs the length of the tail, a paler band round it */}
-      <Taper segs={[tail]} w0={36} w1={8} fill={C.hi} />
-      <Taper segs={[tail]} w0={22} w1={4} fill={C.soft} />
-    </g>
-  );
-}
-
-/** Axolotl: small dark dot eyes, wide apart. They grow, shrink, squash to dashes and arcs, and
- *  spin into swirls; thin brows in the gills' colour come and go. */
-const axoEyes: EyeKit = ({ mood, s, x, y, look, pal: p }) => {
-  const ink = p.ink;
-  const [dx, dy] = look;
-  const dot = (r: number, two = false) => (
-    <g>
-      <circle cx={x + dx} cy={y + dy} r={r} fill={ink} />
-      <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.4} r={r * 0.3} fill={EYE_WHITE} />
-      {two && <circle cx={x + dx + r * 0.4} cy={y + dy + r * 0.35} r={r * 0.16} fill={EYE_WHITE} />}
-    </g>
-  );
-  const brow = (raise: number, tilt: number, wavy = false) => {
-    const by = y - 12 - raise;
-    return (
-      <path
-        d={
-          wavy
-            ? `M${x - 5} ${by} q2.5 -2 5 0 q2.5 2 5 0`
-            : `M${x - 5} ${by + 1} Q${x} ${by - 2} ${x + 5} ${by + 1}`
-        }
-        {...line(C.primary, 2)}
-        transform={turnAt(s, tilt, x, by)}
-      />
-    );
-  };
-  const shut = (d: string, w = 3) => <path d={d} {...line(ink, w)} />;
-  switch (mood) {
-    case "happy":
-      return shut(arcUp(x, y, 5, 3));
-    case "delighted":
-      return (
-        <g>
-          {shut(arcUp(x, y, 5.5, 3.5))}
-          <path
-            d={`M${x + s * 8} ${y - 7} l${s * 3} -3 M${x + s * 10} ${y - 1} l${s * 4} -0.5`}
-            {...line(C.primary, 1.8)}
-          />
-        </g>
-      );
-    case "curious":
-      return (
-        <g>
-          {dot(6, true)}
-          {s === 1 && brow(4, -10)}
-        </g>
-      );
-    case "thinking":
-      return (
-        <g>
-          {dot(4.6)}
-          {s === -1 && brow(3, 12)}
-        </g>
-      );
-    case "focused":
-      return shut(`M${x - 5} ${y} L${x + 5} ${y}`, 3.6);
-    case "worried":
-      return (
-        <g>
-          {dot(3.6)}
-          {brow(1, 16, true)}
-        </g>
-      );
-    case "oops":
-      return shut(`M${x} ${y} a1.5 1.5 0 1 1 3 0 a3 3 0 1 1 -6 0 a4.5 4.5 0 1 1 9 0`, 1.8);
-    case "wink":
-      return s === 1 ? shut(arcUp(x, y, 5, 3)) : dot(4.6);
-    default:
-      return dot(4.6);
   }
 };
 
@@ -1076,36 +790,127 @@ const batEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
   }
 };
 
+/* ——— Mouths: each character's own ——— */
+
+/** A D-shaped open mouth, `w` half-wide and `h` deep, its top edge at `y`. */
+export const dMouth = (y: number, w: number, h: number, cx = 100) =>
+  `M${cx - w} ${y} Q${cx} ${y + h * 1.6} ${cx + w} ${y} Q${cx} ${y + h * 0.15} ${cx - w} ${y} Z`;
+/** A curve from one corner to the other, `d` deep (negative frowns). */
+export const curve = (y: number, w: number, d: number, cx = 100) =>
+  `M${cx - w} ${y} Q${cx} ${y + d} ${cx + w} ${y}`;
+export const wave = (y: number, w: number, a: number, cx = 100) =>
+  `M${cx - w} ${y} Q${cx - w / 2} ${y - a} ${cx} ${y} Q${cx + w / 2} ${y + a} ${cx + w} ${y}`;
+
+/** Octopus: small, puckered, round mouths in its deep tone, never wide. */
+const octoMouth: MouthKit = ({ mood, y }) => {
+  const c = C.deep;
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={dMouth(y, 6, 6)} fill={c} tongue={[100, y + 8, 3.5, 2.4]} />;
+    case "delighted":
+      return <OpenMouth d={dMouth(y - 1, 8, 9)} fill={c} tongue={[100, y + 11, 4.5, 3]} />;
+    case "curious":
+      return <ellipse cx={101} cy={y + 2} rx={2.6} ry={3.2} fill={c} />;
+    case "thinking":
+      return <path d={`M104 ${y - 2} q3 1.5 0 3 q3 1.5 0 3`} {...line(c, 2.2)} />;
+    case "focused":
+      return <path d={`M97 ${y + 1} L103 ${y + 1}`} {...line(c, 2.4)} />;
+    case "worried":
+      return <path d={wave(y + 2, 5, 2.5)} {...line(c, 2.2)} />;
+    case "oops":
+      return <OpenMouth d={`M96 ${y} a4 4.5 0 1 0 8 0 a4 4.5 0 1 0 -8 0 Z`} fill={c} tongue={[103, y + 4, 3, 2.6]} />;
+    case "wink":
+      return <path d={curve(y, 5, 4, 102)} {...line(c, 2.4)} />;
+    default:
+      return <path d={curve(y, 4.5, 3.5)} {...line(c, 2.4)} />;
+  }
+};
+
+/** Fruit bat: a cat's ω with two small fangs, which show in every open mouth. */
+const batMouth: MouthKit = ({ mood, y, pal: p }) => {
+  const ink = p.ink;
+  const fang = (x: number, top: number) => <path d={`M${x - 1.8} ${top} L${x + 1.8} ${top} L${x} ${top + 3.4} Z`} fill={EYE_WHITE} />;
+  const omega = (dy = 0, tilt = 0) => (
+    <path d={`M92 ${y + dy} Q96 ${y + 4 + dy} 100 ${y + dy - tilt} Q104 ${y + 4 + dy - tilt} 108 ${y + dy - tilt * 2}`} {...line(ink, 2.2)} />
+  );
+  switch (mood) {
+    case "happy":
+      return <g><OpenMouth d={dMouth(y, 8, 7)} fill={ink} tongue={[100, y + 9, 4, 2.6]} />{fang(95, y + 0.4)}{fang(105, y + 0.4)}</g>;
+    case "delighted":
+      return <g><OpenMouth d={dMouth(y - 1, 10, 10)} fill={ink} tongue={[100, y + 12, 5, 3.2]} />{fang(94, y - 0.4)}{fang(106, y - 0.4)}</g>;
+    case "curious":
+      return <ellipse cx={100} cy={y + 2.5} rx={3} ry={3.6} fill={ink} />;
+    case "thinking":
+      return <g>{omega(0, 1.5)}{fang(97, y + 1.6)}</g>;
+    case "focused":
+      return <g><path d={`M94 ${y + 1} L106 ${y + 1}`} {...line(ink, 2.2)} />{fang(103, y + 1.2)}</g>;
+    case "worried":
+      return <g><path d={wave(y + 2, 7, 3)} {...line(ink, 2.2)} />{fang(97, y + 2.4)}</g>;
+    case "oops":
+      return <g>{omega()}<path d={`M101 ${y + 3} q1 6 5 5 q1 -3 -1 -5 Z`} fill={TONGUE_PINK} />{fang(96, y + 2)}</g>;
+    case "wink":
+      return <g>{omega(0, -1)}{fang(96, y + 2)}</g>;
+    default:
+      return <g>{omega()}{fang(96, y + 2)}</g>;
+  }
+};
+
+/** Cloud: wide, simple strokes and wide-open shapes: a mouth as broad as the cloud is soft. */
+const cloudMouth: MouthKit = ({ mood, y, pal: p }) => {
+  const ink = p.ink;
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={dMouth(y, 10, 7)} fill={ink} tongue={[100, y + 10, 5, 3]} />;
+    case "delighted":
+      return <OpenMouth d={dMouth(y - 2, 13, 11)} fill={ink} tongue={[100, y + 13, 6, 3.6]} />;
+    case "curious":
+      return <ellipse cx={100} cy={y + 2} rx={3.4} ry={4} fill={ink} />;
+    case "thinking":
+      return <path d={`M92 ${y + 3} L108 ${y}`} {...line(ink, 2.6)} />;
+    case "focused":
+      return <path d={`M92 ${y + 1} L108 ${y + 1}`} {...line(ink, 2.6)} />;
+    case "worried":
+      return <path d={wave(y + 2, 10, 3.5)} {...line(ink, 2.6)} />;
+    case "oops":
+      return <path d={`M89 ${y + 2} l4 -3 l4 3 l4 -3 l4 3 l4 -3 l4 3`} {...line(ink, 2.4)} />;
+    case "wink":
+      return <path d={curve(y, 10, 6)} {...line(ink, 2.6)} />;
+    default:
+      return <path d={curve(y, 9, 5)} {...line(ink, 2.6)} />;
+  }
+};
+
+/** Flower: small rosebud lips in a petal pink, that open, purse and push aside. */
+const LIP = "#e0607e";
+const LIP_DEEP = "#7a2438";
+const rosebud = (y: number, dx = 0) =>
+  `M${95 + dx} ${y} Q${97.5 + dx} ${y - 2.6} ${100 + dx} ${y - 0.6} Q${102.5 + dx} ${y - 2.6} ${105 + dx} ${y} Q${102.5 + dx} ${y + 3.8} ${100 + dx} ${y + 3.8} Q${97.5 + dx} ${y + 3.8} ${95 + dx} ${y} Z`;
+const flowerMouth: MouthKit = ({ mood, y }) => {
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={dMouth(y, 6.5, 6)} fill={LIP_DEEP} tongue={[100, y + 8, 3.6, 2.4]} />;
+    case "delighted":
+      return <OpenMouth d={dMouth(y - 1, 8.5, 9)} fill={LIP_DEEP} tongue={[100, y + 11, 4.6, 3]} />;
+    case "curious":
+      return <g><circle cx={100} cy={y + 1.5} r={3.4} fill={LIP} /><circle cx={100} cy={y + 1.5} r={1.6} fill={LIP_DEEP} /></g>;
+    case "thinking":
+      return <path d={rosebud(y, 4)} fill={LIP} transform={`rotate(-12 104 ${y})`} />;
+    case "focused":
+      return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(LIP, 3)} />;
+    case "worried":
+      return <path d={wave(y + 2, 5, 2.4)} {...line(LIP, 2.6)} />;
+    case "oops":
+      return <g><path d={rosebud(y)} fill={LIP} /><ellipse cx={101} cy={y + 5} rx={2.6} ry={2.4} fill={TONGUE_PINK} /></g>;
+    case "wink":
+      return <path d={curve(y, 6, 4)} {...line(LIP, 3.2)} />;
+    default:
+      return <path d={rosebud(y)} fill={LIP} />;
+  }
+};
+
 /* ——— The cast of this round ——— */
 
 export const SIDE_CANDIDATES: Candidate[] = [
-  {
-    id: "side-lamb",
-    kind: "animal",
-    frame: LAMB,
-    outline: false,
-    label: "Lamb",
-    signature: "A cloud of fleece with a pale face and floppy ears — it knits with its own wool",
-    pitch:
-      "From Puff: the head of puffs and the cloud body, now a lamb's fleece, in a mid tone of the primary so it holds on the light ground. Its ability is Knit: it draws a strand from its own fleece and knits it into something — a scarf, a pennant, a small heart. Its eyes are dark and dreamy under a heavy lid, with curled lashes.",
-    risk: "A knitted thing must never become a reward that accumulates.",
-    pal: palLamb,
-    body: C.hi,
-    face: face({ eyeY: 106, eyeGap: 15, mouthY: 124, kit: lambEyes }),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: () => <LambBehind />,
-    head: () => <LambHead />,
-    belly: () => (
-      <Puffs
-        at={[
-          [88, 160, 6],
-          [110, 158, 5],
-        ]}
-        fill={C.soft}
-      />
-    ),
-  },
   {
     id: "side-octopus",
     kind: "animal",
@@ -1120,7 +925,7 @@ export const SIDE_CANDIDATES: Candidate[] = [
     risk: "Real octopuses change colour, which is the chameleon's; this one never does. Ink stays a pointer: never a tick, a cross or lettering.",
     pal: palOcto,
     body: C.primary,
-    face: face({ eyeY: 104, eyeGap: 20, mouthY: 124, kit: octoEyes }),
+    face: face({ eyeY: 104, eyeGap: 20, mouthY: 124, kit: octoEyes, mouthKit: octoMouth }),
     outfit: "bare",
     outfits: ["bare", "winter", "party"],
     behind: () => <OctoBehind />,
@@ -1138,31 +943,12 @@ export const SIDE_CANDIDATES: Candidate[] = [
     risk: "Bats can read as spooky; the round cream face carries it. Its wings stay folded, so it is never a second flier beside Wisp.",
     pal: palBat,
     body: C.deep,
-    face: face({ eyeY: 108, eyeGap: 17, mouthY: 127, kit: batEyes }),
+    face: face({ eyeY: 108, eyeGap: 17, mouthY: 127, kit: batEyes, mouthKit: batMouth }),
     outfit: "bare",
     outfits: OUTFITS,
     behind: () => <BatBehind />,
     head: () => <BatHead />,
     pendant: () => <BatRuff />,
-  },
-  {
-    id: "side-axolotl",
-    kind: "animal",
-    frame: AXO,
-    outline: false,
-    label: "Axolotl",
-    signature: "A wide head with feathery gill plumes, a round body and a finned tail — it mends things",
-    pitch:
-      "Redrawn from Bloom: the petal crown becomes three soft gill plumes a side, and the body is round and low with a broad finned tail. Axolotls regrow what they lose, so its ability is Mend: it puts a broken thing back together. Its eyes are small dots, wide apart, that grow, shrink, squash and swirl.",
-    risk: "Mending must never imply the learner broke something.",
-    pal: palAxo,
-    body: C.soft,
-    face: face({ eyeY: 102, eyeGap: 28, mouthY: 120, kit: axoEyes }),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: () => <AxoBehind />,
-    head: () => <AxoHead />,
-    belly: () => <ellipse cx={100} cy={190} rx={18} ry={22} fill={C.tint} />,
   },
   {
     id: "side-penguin",
@@ -1198,7 +984,7 @@ export const SIDE_CANDIDATES: Candidate[] = [
     risk: "Rain can read as sad: it must never rain on an incorrect answer. Floats, like Wisp, but a cloud's silhouette is its own.",
     pal: palCloud,
     body: C.soft,
-    face: face({ eyeY: 112, eyeGap: 17, mouthY: 128, kit: cloudEyes }),
+    face: face({ eyeY: 112, eyeGap: 17, mouthY: 128, kit: cloudEyes, mouthKit: cloudMouth }),
     outfit: "bare",
     outfits: ["bare", "winter", "party"],
     head: () => <CloudHead />,
@@ -1215,7 +1001,7 @@ export const SIDE_CANDIDATES: Candidate[] = [
     risk: "Never green: its stem and leaves would read as correct. Sprouting must never grow with a count.",
     pal: palFlower,
     body: C.mid,
-    face: face({ eyeY: 104, eyeGap: 15, mouthY: 123, kit: flowerEyes }),
+    face: face({ eyeY: 104, eyeGap: 15, mouthY: 123, kit: flowerEyes, mouthKit: flowerMouth }),
     outfit: "bare",
     outfits: OUTFITS,
     head: () => <FlowerHead />,

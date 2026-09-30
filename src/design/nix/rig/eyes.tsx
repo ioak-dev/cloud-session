@@ -25,6 +25,43 @@ export type EyeArgs = {
 
 export type EyeKit = (a: EyeArgs) => ReactNode;
 
+/** A character's own mouth, centred on x = 100 at `y`, for every mood. */
+export type MouthArgs = { mood: Mood; y: number; pal: Palette };
+export type MouthKit = (a: MouthArgs) => ReactNode;
+
+export const TONGUE_PINK = "#ef7f8e";
+
+/** An open mouth: a filled shape with a tongue at its floor, optionally a row of teeth. */
+export function OpenMouth({
+  d,
+  fill,
+  tongue,
+  teeth,
+}: {
+  d: string;
+  fill: string;
+  /** Tongue ellipse [cx, cy, rx, ry]. */
+  tongue?: readonly [number, number, number, number];
+  /** Teeth as a rect [x, y, w, h] at the top of the mouth. */
+  teeth?: readonly [number, number, number, number];
+}) {
+  const id = `m${d.length}${Math.round(Math.abs(d.charCodeAt(4) * 97))}`;
+  return (
+    <g>
+      <clipPath id={id}>
+        <path d={d} />
+      </clipPath>
+      <path d={d} fill={fill} />
+      <g clipPath={`url(#${id})`}>
+        {tongue && (
+          <ellipse cx={tongue[0]} cy={tongue[1]} rx={tongue[2]} ry={tongue[3]} fill={TONGUE_PINK} />
+        )}
+        {teeth && <rect x={teeth[0]} y={teeth[1]} width={teeth[2]} height={teeth[3]} fill={EYE_WHITE} />}
+      </g>
+    </g>
+  );
+}
+
 export const EYE_WHITE = "#fffdf8";
 
 /** Lids in the colour of the skin around the eye. `top` and `bottom` are how much of the eye

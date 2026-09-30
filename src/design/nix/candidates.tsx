@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { arcUp, line, Orb, type EyeKit } from "./rig/eyes";
+import { arcUp, line, OpenMouth, Orb, TONGUE_PINK, type EyeKit, type MouthKit } from "./rig/eyes";
 import type { FaceStyle, Mood } from "./rig/face";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
@@ -471,6 +471,40 @@ const chamEyes: EyeKit = ({ mood, s, x, y, id, pal }) => {
   }
 };
 
+/** Chameleon: a lizard's long mouth line, nearly ear to ear; when it opens wide, its long tongue
+ *  curls out. */
+const chamMouth: MouthKit = ({ mood, y, pal }) => {
+  const ink = pal.ink;
+  const long = (d: number, tilt = 0) => (
+    <path d={`M74 ${y + tilt} Q100 ${y + d} 126 ${y - tilt}`} {...line(ink, 2.6)} />
+  );
+  switch (mood) {
+    case "happy":
+      return <OpenMouth d={`M76 ${y} Q100 ${y + 16} 124 ${y} Q100 ${y + 5} 76 ${y} Z`} fill="#3a1d34" tongue={[100, y + 9, 7, 3]} />;
+    case "delighted":
+      return (
+        <g>
+          <OpenMouth d={`M74 ${y - 1} Q100 ${y + 22} 126 ${y - 1} Q100 ${y + 4} 74 ${y - 1} Z`} fill="#3a1d34" />
+          <path d={`M100 ${y + 8} C104 ${y + 22} 122 ${y + 24} 120 ${y + 14} C118 ${y + 8} 110 ${y + 12} 114 ${y + 16}`} {...line(TONGUE_PINK, 4)} />
+        </g>
+      );
+    case "curious":
+      return <g>{long(3)}<ellipse cx={100} cy={y + 3} rx={3} ry={3.6} fill={ink} /></g>;
+    case "thinking":
+      return long(3, 3);
+    case "focused":
+      return long(0);
+    case "worried":
+      return <path d={`M76 ${y + 2} Q88 ${y - 2} 100 ${y + 2} Q112 ${y + 6} 124 ${y + 2}`} {...line(ink, 2.6)} />;
+    case "oops":
+      return <g>{long(6)}<path d={`M104 ${y + 4} C106 ${y + 14} 116 ${y + 14} 114 ${y + 8}`} {...line(TONGUE_PINK, 3.6)} /></g>;
+    case "wink":
+      return long(9, -2);
+    default:
+      return long(8);
+  }
+};
+
 function ChamTail({ pal }: Ctx) {
   const d = "M106 204 C138 210 164 232 154 256 C146 272 120 266 124 250 C127 239 142 240 142 250";
   return (
@@ -605,6 +639,7 @@ export const CANDIDATES: Candidate[] = [
       brows: false,
       lid: palCham.skin,
       kit: chamEyes,
+      mouthKit: chamMouth,
     },
     outline: false,
     outfit: "bare",

@@ -12,17 +12,21 @@ Every character has **one special feature or ability that no other character in 
 |---|---|
 | Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
-| Lamb *(proposed)* | Knit: draws a strand from its own fleece and knits it into a thing |
 | Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) to show where to look |
 | Fruit bat *(proposed)* | Upside-down: hangs from anything and sees it the other way round |
-| Axolotl *(proposed)* | Mend: puts a broken thing back together |
 | Penguin *(proposed)* | Slide: drops onto its belly and slides to where it is going |
 | Cloud *(proposed)* | Rain: a small shower that waters what is below, so things grow |
 | Flower *(proposed)* | Sprout: plants a seed, and it grows |
+| Jellyfish *(proposed)* | See-through: its bell is clear, so whatever it carries shows through |
+| Squid *(proposed)* | Jet: squeezes and shoots off, mantle first |
+| Mushroom *(proposed)* | Umbrella: its cap keeps off the rain and shelters what is under it |
+| Poodle *(proposed)* | Fetch: runs off and brings the thing back |
+| Pufferfish *(proposed)* | Puff up: swells into a spiky ball, then lets it out |
+| Chick *(proposed)* | Shell: ducks down into its eggshell when shy, and pops out |
 | Juno *(proposed)* | Cartwheel: arrives, and leaves, with a cartwheel |
-| Amara *(proposed)* | Telescope: looks at what is coming next |
-| Wren *(proposed)* | Headphones: puts them on and everything goes quiet |
-| Sloane *(proposed)* | Paper plane: folds a note and sends it where it needs to go |
+| Wren *(proposed)* | Nap: dozes off anywhere and wakes with a start |
+| Lulu *(proposed)* | Peekaboo: peeks over the edge of anything |
+| Mimi *(proposed)* | Tiptoe: sneaks in on tiptoe, and is suddenly there |
 | Red panda *(proposed)* | Balance: balances anything on its head and tail |
 
 ## Main character: Wisp (decided)
@@ -141,37 +145,49 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | — | Red panda | Balance *(proposed)*: the ringed tail is a look, so it is given an ability to compete | Backup, competing |
 | 2–6 | See round two below | | **Proposed**, not decided |
 
-### Rules for every side character (from round two)
+### Rules for every side character
 
-- **No outlines, as far as possible.** Parts are told apart by colour and tone alone. A new side character's palette sets `line: "none"`, which the rig's clothes and shoes follow too. The chameleon has had its black outlines removed.
-- **Its own eyes.** Eyes are what a character is read by, so no two characters share a set. Each side character has an eye kit of its own (`rig/eyes.tsx`; `face.kit`): its own shape, colour, shine, lids and brows, drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The shared eyes in `rig/face.tsx` are for the reference drawings only. The studio shows every kit side by side under “Eyes — each character's own”.
+- **No outlines, as far as possible.** Parts are told apart by colour and tone alone. A side character's palette sets `line: "none"`, which the rig's clothes and shoes follow too. The chameleon has had its black outlines removed.
+- **Its own eyes and its own mouth.** No two characters share either. Each side character has an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) of its own (`rig/eyes.tsx`): its own eye shape, colour, shine, lids and brows, and its own lips, beak or muzzle, drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The studio shows them side by side under “Eyes and mouths — each character's own”.
+- **The ability is what it naturally does.** Not a prop it holds: a squid jets, a poodle fetches, a chick ducks into its shell. (Round two's headphones are gone for this reason.)
+- **Legible small and on both grounds.** Check the recognition sheet (silhouettes at 96, 48 and 32px, the head at 32, 24 and 16px) on the light and the dark ground.
 
-### Round two: side candidates
+### Round three: side candidates
 
-Animals in `src/design/nix/side-candidates.tsx`, people in `src/design/nix/side-humans.tsx`, abilities previewed in `src/design/nix/side-abilities.tsx`. None glows, has antennae or leaves sparks (Wisp's), and none changes colour (the chameleon's).
+Round two's axolotl, lamb, Amara and Sloane are removed. The fruit bat, octopus, penguin, cloud, flower, Juno and Wren stay, each with its own mouth now; Wren's ability is now Nap. The red panda stays a backup.
 
-Feedback on round one: the fruit bat and the octopus are kept as they were; the lamb did not hold on the light ground and is redrawn; the axolotl is redrawn; the hamster is replaced by another Pip-based animal; the red panda stays a backup.
+Files: the kept animals in `side-candidates.tsx`, the jelly family in `side-jelly.tsx`, the puff family in `side-puff.tsx`, the people in `side-humans.tsx`, the ability previews in `side-abilities.tsx` (all in `src/design/nix/`).
 
-| From | Candidate | Body plan | Ability | Eyes | Watch for |
+**The jelly family** — Jelly's bell and tendrils, as real animals, with none of the spirit (no wings, antennae or light):
+
+| Candidate | Body plan | Ability | Eyes | Mouth |
+|---|---|---|---|---|
+| **Octopus** | Mantle and six curling arms with suckers | Ink | White, with an octopus's bar pupil | Small and puckered, never wide |
+| **Jellyfish** | A moon jelly: a scalloped bell with four rings on its crown, frilly oral arms, fine tentacles | See-through | Half-moons, flat on top: sleepy and content | A tiny cat's “w” |
+| **Squid** | An arrowhead mantle (its fins), short arms, two long clubbed tentacles | Jet | A gold ring round a big black pupil, no white | A small beak of a “v” that opens into a triangle |
+| **Mushroom** | The bell as a spotted cap with gills; the face on the stem, in its shade | Umbrella | Tall, narrow and shy, glancing down; they blush in little lines | Small, with one front tooth |
+
+**The puff family** — Puff's soft round puffs, as real animals:
+
+| Candidate | Body plan | Ability | Eyes | Mouth |
+|---|---|---|---|---|
+| **Cloud** | A cloud with a shaded underside and sunlit tops; floats | Rain | Capsules, nothing else | Wide, simple strokes |
+| **Poodle** | Pompoms: a topknot, the end of each long ear, the tail, the chest | Fetch | Big wet puppy eyes and a dog's brow dots | A split lip under the nose; pants with its tongue out |
+| **Pufferfish** | One round spotted body with soft spikes, fins and a tail; floats | Puff up | Bulging and white, with a darting pupil | Puckered fish lips in the accent |
+| **Chick** | A ball of fluff with a curly tuft, in the bottom of its eggshell, on thin legs | Shell | Wide flat ovals; the tuft droops when worried | A beak in the accent that opens to cheep |
+
+**People:**
+
+| Candidate | Inspired by | Look | Ability | Eyes | Mouth |
 |---|---|---|---|---|---|
-| Puff | **Lamb** | Fleece of puffs, now in `C.hi` with `C.soft` tops so it holds on white; pale face, floppy ears | Knit | Dark and dreamy under a heavy lid; curled lashes at the outer corner; no brows | A knitted thing never accumulates as a reward |
-| Jelly | **Octopus** *(kept)* | Mantle and six curling arms with suckers; floats | Ink | White eyes with an octopus's bar pupil that widens, narrows, tilts and rounds; the mantle is the lid | Never a tick, a cross or lettering; never changes colour |
-| Fuzzy | **Fruit bat** *(kept)* | Fuzz, a ruff, tall ears, wings folded as a cape | Upside-down | Huge glossy eyes with a crescent shine and a rim of reflected colour; fur tufts for brows | Wings stay folded: never a second flier |
-| Bloom | **Axolotl** *(redrawn)* | Wide head, three feathery gill plumes a side, round low body, broad finned tail | Mend | Small dot eyes, wide apart, that grow, shrink, squash to dashes and spin into swirls; thin brows come and go | Mending never implies the learner broke something |
-| Pip | **Penguin** *(replaces the hamster)* | The standing bean in a dark coat; a white heart of a face and a white belly where Pip glowed; flippers; a beak that opens | Slide | Tall black ovals with a capsule of shine; short thick brows | A common mascot animal; the heart face keeps it its own |
-| Puff | **Cloud** | A cloud, as itself but no spirit: shaded underside, sunlit tops, stubby arms; floats | Rain | Capsule eyes and nothing else: all shape | Never rains on an incorrect answer |
-| Bloom | **Flower** | A face in a crown of petals, a petal skirt; stands | Sprout | Doe eyes with an amber iris, a flicked lash line, thin brows | Never green; sprouting never grows with a count |
+| **Juno** | Zari's brightness | A high puff of curls, a headband | Cartwheel | Big round, a warm brown iris, thick mobile brows | Full lips; a wide grin with top teeth |
+| **Wren** | Lily's deadpan | A blunt deep-blue bob | Nap | Heavy flat lids at rest | Small and off-centre; mostly a line or a smirk |
+| **Lulu** | Anya's spirit | A big head; caramel hair, choppy fringe, side pony | Peekaboo | Huge, violet iris that shrinks to a dot when startled; the smug flat-lidded look | Gag mouths: “:3”, a chin-wide grin, the smug “heh”, a gritted fright |
+| **Mimi** | Anya's spirit | A big head; chestnut space buns, curtain fringe | Tiptoe | Big dark eyes, all iris, lower lashes; blank white when shocked | A tiny triangle that opens huge |
 
-**People.** New characters, not the human candidates from the Nix bench. Two are inspired by the spirit of Duolingo's Zari (bright, animated) and two by Lily (deadpan, half-lidded), without their look: each has her own hair and eyes. One of each pair is a girl on the chibi frame, the other a young woman on the adult frame. Hair is drawn per character (`headBack` and `head`), not from the shared hair kit.
+**Anya.** Lulu and Mimi take the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
 
-| Inspired by | Candidate | Look | Ability | Eyes | Watch for |
-|---|---|---|---|---|---|
-| Zari | **Juno** (girl) | A high puff of curls, a curly fringe, a headband and hoops in the accent | Cartwheel | Big round eyes nearly filled by a warm brown iris; bold lash line; thick, very mobile brows | Energy must not make the product loud |
-| Zari | **Amara** (woman) | Box braids up in a bun, beads in the accent, hoops | Telescope | Almond eyes lifted at the outer corner, a winged liner, a hazel iris; high arched brows | Seeing ahead never claims what the material holds |
-| Lily | **Wren** (girl) | A blunt bob in the product's deep blue, a fringe to the brows, a hair clip | Headphones | A heavy flat lid at rest over a small blue iris; a faint line under each eye; thin straight brows. A wide-open eye is her big reaction | Deadpan must never read as disappointed |
-| Lily | **Sloane** (woman) | Long dark hair with a deep side part and a streak of the primary | Paper plane | Narrow squared eyes with a thick liner, glancing aside at rest; angled brows, one always a little raised | A note is fixed copy beside the figure, never text on the plane |
-
-With the chameleon, six of these make the cast; the red panda competes for any slot. **Next step:** pick which to keep, then refine each drawing and its eyes.
+With the chameleon, six of these make the cast; the red panda competes for any slot. **Next step:** pick which to keep, then refine each.
 
 ## Cast structure: recommended, not decided
 

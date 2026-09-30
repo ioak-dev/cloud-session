@@ -22,6 +22,8 @@ import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { SIDE_CANDIDATES } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
+import { JELLY_FAMILY } from "./side-jelly";
+import { PUFF_FAMILY } from "./side-puff";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -52,12 +54,14 @@ const ALL: Candidate[] = [
   ...PIP_FAMILY,
   ...REFERENCE,
   ...SIDE_CANDIDATES,
+  ...JELLY_FAMILY,
+  ...PUFF_FAMILY,
   ...SIDE_HUMANS,
   ...CANDIDATES,
 ];
 
 /** Every character with eyes of its own. */
-const EYED = [...SIDE_CANDIDATES, ...SIDE_HUMANS, CANDIDATES.find((x) => x.id === "chameleon")!];
+const EYED = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...SIDE_HUMANS, CANDIDATES.find((x) => x.id === "chameleon")!];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -184,15 +188,14 @@ export function NixBenchView() {
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
-        Side candidates — round two, and their abilities
+        Side candidates and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Animals from the reference body plans — Puff as a lamb and as a cloud, Jelly as an octopus,
-        Bloom as an axolotl and as a flower, Pip as a penguin, Fuzzy as a fruit bat — and four
-        people: two bright (after Duolingo's Zari), two deadpan (after Lily). None glows, carries
-        antennae or leaves sparks, which are Wisp's, and none changes colour, which is the
-        chameleon's. No outlines. Each has one ability, previewed beside the figure; the red panda
-        is given one to compete.
+        Every side candidate with its ability — what it naturally does, not a prop it holds. The
+        jelly family (octopus, jellyfish, squid, mushroom) and the puff family (cloud, poodle,
+        pufferfish, chick) come from those two body plans; the people are two after Duolingo's Zari
+        and Lily, and two in the spirit of Anya. None glows, carries antennae or leaves sparks, and
+        none changes colour but the chameleon. The red panda is given an ability to compete.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {SIDE_ABILITIES.map((a) => (
@@ -200,10 +203,10 @@ export function NixBenchView() {
         ))}
       </div>
 
-      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes — each character's own</h2>
+      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        No two characters share eyes. Each has its own shape, colour, shine, lids and brows, and
-        draws every expression with them.
+        No two characters share eyes or a mouth. Each has its own eye shape, colour, shine, lids
+        and brows, and its own mouth or lips, beak or muzzle, and draws every expression with them.
       </p>
       <div className="mt-3 overflow-x-auto">
         <table className="border-separate border-spacing-1">
@@ -241,6 +244,8 @@ export function NixBenchView() {
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates — animals", SIDE_CANDIDATES],
+          ["Side candidates — the jelly family", JELLY_FAMILY],
+          ["Side candidates — the puff family", PUFF_FAMILY],
           ["Side candidates — people", SIDE_HUMANS],
           ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
         ] as const

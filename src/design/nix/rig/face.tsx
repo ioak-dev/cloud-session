@@ -1,5 +1,5 @@
 import { pivot } from "./skeleton";
-import type { EyeKit } from "./eyes";
+import type { EyeKit, MouthKit } from "./eyes";
 import { DROP, TONGUE, WHITE, type Palette } from "./palette";
 
 /**
@@ -148,6 +148,8 @@ export type FaceStyle = {
   kit?: EyeKit;
   /** `false` when the character's own part is its mouth (a beak). */
   mouth?: false;
+  /** The character's own mouth, drawn for every mood in place of the shared one. */
+  mouthKit?: MouthKit;
 };
 
 const EYE_RX = 7;
@@ -439,9 +441,11 @@ export function Face({
           strokeLinecap="round"
         />
       )}
-      {style.mouth !== false && (
-        <MouthShape kind={m.mouth} y={style.mouthY} style={style} pal={pal} />
-      )}
+      {style.mouthKit
+        ? style.mouthKit({ mood: m.id, y: style.mouthY, pal })
+        : style.mouth !== false && (
+            <MouthShape kind={m.mouth} y={style.mouthY} style={style} pal={pal} />
+          )}
       {m.drop && (
         <path
           d="M140 70 q-5 8 -5 11 a5 5 0 0 0 10 0 q0 -3 -5 -11 Z"
