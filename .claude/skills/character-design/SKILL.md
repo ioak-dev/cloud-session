@@ -42,7 +42,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 - Main-character variants: `src/design/nix/firefly-bodies.tsx` and `firefly-bodies-2.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
-- Side candidates: animals in `src/design/nix/side-candidates.tsx`, the jelly family in `side-jelly.tsx`, the puff family in `side-puff.tsx`, people in `side-humans.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
+- Side candidates: animals in `src/design/nix/side-candidates.tsx`, the jelly family in `side-jelly.tsx`, the puff family in `side-puff.tsx`, people in `side-humans.tsx` and `side-girls.tsx` (more of Lulu's line, built on the `bigEyes` recipe), ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 

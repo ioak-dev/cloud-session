@@ -24,6 +24,11 @@ Every character has **one special feature or ability that no other character in 
 | Nell *(proposed)* | Twirl: spins on the spot, twin tails flying |
 | Koko *(proposed)* | Hiccup: gets the hiccups, and hops a little with each one |
 | Tami *(proposed)* | Daydream: drifts off, and a small cloud of a thought appears |
+| Suki *(proposed)* | Whistle: purses her lips and whistles a little tune |
+| Rue *(proposed)* | Pout: puffs out her cheeks and side-eyes you |
+| Momo *(proposed)* | Giggle: gets the giggles and can't stop |
+| Tess *(proposed)* | Salute: snaps to attention with a salute |
+| Bibi *(proposed)* | Skip: skips along instead of walking |
 | Red panda *(proposed)* | Balance: balances anything on its head and tail |
 
 ## Main character: Wisp (decided)
@@ -176,6 +181,16 @@ Files, all in `src/design/nix/`: the octopus, fruit bat and penguin in `side-can
 | **Nell** | Lulu | Long auburn twin tails, a swept fringe | Twirl | Tall, blue iris, big oval shine, three lashes; they well up when worried, swirl when flustered | A gap-toothed grin |
 | **Koko** | Lulu | A short lilac-grey bob, a scalloped fringe, a big bow | Hiccup | Big black pupils on white with three shines; round dot brows; a hiccup squeezes one eye and pops the other | A tiny “u” with the tip of her tongue; a round “o” to hiccup |
 | **Tami** | Juno (normal head) | Two long braids with ribbons, a middle parting | Daydream | Soft and dreamy under a lowered lid, hazel, long lower lashes | Soft full lips; a small “o” when miles away |
+
+**More of Lulu's line** (`src/design/nix/side-girls.tsx`). Five more girls on the big-head frame. Their eyes come from one recipe (`bigEyes`) so the line reads as a family, but each sets her own eye shape, iris, shine, lashes and brows, and replaces the moods that are her gags.
+
+| Candidate | Hair | Ability | Eyes | Mouth |
+|---|---|---|---|---|
+| **Suki** | Navy low bunches with pompom ties, a blunt fringe, straight side-locks | Whistle | Round, a rose iris with a pale band, three lashes; pinprick pupils when startled; shut and content as she whistles | A cat's “v”; a round pucker to whistle |
+| **Rue** | Long plum hair cut blunt, straight side-locks, a headband | Pout | Soft, the outer corners drooping, a gold iris, a heavy lash line; she side-eyes you when she pouts | Small and soft; the pout puffs both cheeks past her face |
+| **Momo** | A cloud of strawberry curls and a little beret | Giggle | The biggest and glossiest: a teal iris with four shines; giggling, crescents with a tear of laughter | A small “ω”, and a laugh never far off |
+| **Tess** | A thick braid over one shoulder, a swept fringe, a clip | Salute | Round and level, a grey-blue iris, a thick lid line, dash brows that set hard | A wide flat grin with teeth |
+| **Bibi** | A high ponytail with a scrunchie, long side-bangs | Skip | Wider than tall, a chocolate iris, twin shines, bouncing dot brows; happy tents mid-skip | A bright smile with a dimple |
 
 **Anya.** Lulu's line takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
 
