@@ -88,6 +88,9 @@ export function useJointMotion(
   ref: React.RefObject<SVGSVGElement | null>,
   motion: Motion,
   still = false,
+  /** Changes when the drawing inside `ref` does (another character, outfit or prop), so joints
+   *  that only the new drawing has are picked up. */
+  drawing = "",
 ) {
   React.useEffect(() => {
     const svg = ref.current;
@@ -132,5 +135,5 @@ export function useJointMotion(
       running.forEach((a) => a.cancel());
       touched.forEach((el) => apply(el, {}));
     };
-  }, [ref, motion, still]);
+  }, [ref, motion, still, drawing]);
 }

@@ -74,7 +74,7 @@ export function NixFigure({
   const j = f.j;
   const p = POSES.find((x) => x.id === pose) ?? POSES[0];
   const motion = React.useMemo(() => motionFor(p, f), [p, f]);
-  useJointMotion(ref, motion, still);
+  useJointMotion(ref, motion, still, `${c.id}|${outfit ?? ""}|${props.join(",")}`);
 
   const pal = c.pal;
   const ink = pal.ink;

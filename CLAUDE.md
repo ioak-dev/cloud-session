@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is a firefly, shortlisted to Pip, Wisp and Fuzzy; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is a firefly, to be chosen between the Pip and Wisp families; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. Light, dark, and system change the ground only.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. Light, dark, and system change the ground only. The colour schemes in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -19,10 +19,12 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-pip.tsx` | Pip refined (Dusk, Sea, Mauve) and Pip × Wisp hybrids (Droplet, Flame-top, Comet) |
-| `src/design/nix/firefly-bodies.tsx` | Pip, Wisp (shortlist) and Chonk (reference), each on its own body |
+| `src/design/nix/firefly-pip.tsx` | The Pip family: Pip, Wing cases, Plump, Cap |
+| `src/design/nix/firefly-wisp.tsx` | The Wisp family: Wisp, Moth, Swirl |
+| `src/design/nix/theme.ts` | The colour tokens every firefly draws with, and the header's schemes |
+| `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
-| `src/design/nix/firefly-variants.tsx` | Fuzzy (shortlist, chibi frame); shared antenna, glow and palette helpers |
+| `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
 | `src/design/nix/NixBenchView.tsx` | The studio page |

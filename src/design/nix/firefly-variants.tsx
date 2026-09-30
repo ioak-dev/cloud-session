@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { Mood } from "./rig/face";
 import { WHITE, type Palette } from "./rig/palette";
 import { pivot } from "./rig/skeleton";
+import { C } from "./theme";
 
 /**
  * Directions for the main character, the firefly. Each is drawn on the shared chibi rig, so every
@@ -163,14 +164,17 @@ function LongWings({ pal, tint, vein }: { pal: Palette; tint: string; vein?: str
 
 /* ——— Fuzzy ——— */
 
-const FUZ_BODY = "#6a4d82";
-const FUZ_HI = "#9677ae";
-const FUZ_CORAL = "#f08a6c";
-const palFuzzy = palette(FUZ_BODY, "#35253f", "#fbe8d8", "#e2c6ae", {
+const FUZ_BODY = C.primary;
+const FUZ_HI = C.hi;
+const FUZ_CORAL = C.accent;
+const palFuzzy = palette(FUZ_BODY, C.deep, "#fbe8d8", "#e2c6ae", {
   eye: "#4a3657",
   glow: "#ffd35a",
-  accent: FUZ_CORAL,
+  accent: C.accent,
   blush: "#f59c8c",
+  top: C.accent,
+  bottom: C.deep,
+  shoe: C.accent,
 });
 
 /** A scalloped fuzz edge round an ellipse: stroked puffs, then the fill laid over their seams. */
@@ -276,7 +280,7 @@ function FuzzyAntennae({ pal, mood }: Ctx) {
 function FuzzyBehind({ pal, mood }: Ctx) {
   return (
     <g>
-      <LongWings pal={pal} tint="#fbe3ef" />
+      <LongWings pal={pal} tint={C.tint} />
       <g data-joint="tail" style={pivot("tail")}>
         <circle
           data-joint="glow"

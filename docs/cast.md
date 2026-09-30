@@ -17,39 +17,34 @@ Every character has **one special feature or ability that no other character in 
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
-### Shortlist
+### Colour
 
-| Variant | File | Body plan | Where the light is |
-|---|---|---|---|
-| Pip | `firefly-bodies.tsx` | A bean: head and body are one shape, stubby limbs, spring antennae | The bean’s whole bottom, through any outfit |
-| Wisp | `firefly-bodies.tsx` | Floats with no legs; a droplet head, ribbon wings | The body ends in a flame of light |
-| Fuzzy | `firefly-variants.tsx` | Shared chibi frame; fuzzy head, ruff, feathery antennae, long wings | A round glow bulb tail |
+A character has no colours of its own. Every firefly draws with the product’s **primary** and **accent** (`src/design/nix/theme.ts`), and in Sparkles those are the product’s own tokens. The studio header switches the scheme for every character at once. *Sparkles* uses the product tokens, and a custom pair can be picked. Deeper and lighter shades are derived from the primary in `studio.css`. **The glow is the one fixed colour**, because it is the firefly’s ability. Never make per-character colourways.
 
-**Recommendation (not decided):** Pip first, Wisp second, Fuzzy third.
+The product’s current accent is a yellow close to the glow. Clothes drawn in it sit near the light, so check the glow still stands apart once real clothes are on.
 
-- **Pip** passes the most of the brief’s tests. It has the simplest shape to keep consistent and to animate. Its glow shows through every outfit, so the signature survives wardrobe. Its head reads at 16px. Before it is final, two things need work: it reads as a bean more than a firefly, and the pink leans young for secondary-school learners and teachers. Fixes to try: bigger, more firefly wings; a less candy colour.
-- **Wisp** has the most distinctive silhouette, and floating suits a guide that appears across the product. It has no legs, though, so trousers, shoes and dungarees are lost. Its pale body is the weakest at 16px and on the light ground, and it can read as a ghost or a candle flame.
-- **Fuzzy** reads most clearly as a firefly and is the most huggable. It is also the most generic (a child in a bug suit). Its glow tail hides behind a leg from the front, so the signature is weakest, and the fuzz edge is busy at small sizes.
+### The choice: Pip or Wisp
 
-### Pip refinement round
+One of these two families becomes the main character. Each variant is independent: no hybrids.
 
-In `src/design/nix/firefly-pip.tsx`. Pip leads the shortlist, so it gets two branches, three variants each.
+**Pip** (`src/design/nix/firefly-pip.tsx`): a bean that stands, with a glowing bottom that shows through any outfit.
 
-**Pip refined:** firefly wings, three colourways. Hard wing cases are lifted up and out as a firefly holds them in flight, with a cream edge stripe. Clear flying wings spread below them, and rings above the glow read as an abdomen.
+| Variant | What is different |
+|---|---|
+| Pip | The original: stubby wings, coiled-spring antennae |
+| Wing cases | Wing cases lifted up and out over clear flying wings; rings above the glow |
+| Plump | A rounder egg with a bigger face; glowing antenna tips; two pairs of clear wings |
+| Cap | A firefly’s head shield worn as a cap; beaded antennae; wing cases closed down the back, flying-wing tips peeking out below |
 
-| Colourway | Body | Wing cases | Clothes |
-|---|---|---|---|
-| Dusk | Indigo | Deep indigo | Coral |
-| Sea | Sea blue | Deep teal-blue | Coral |
-| Mauve | Dusty rose (Pip’s pink, grown up) | Plum | Navy |
+**Wisp** (`src/design/nix/firefly-wisp.tsx`): floats, with no legs; a droplet head and a body that ends in a flame of light. It is drawn in lightened product colours so it still reads as pale.
 
-**Pip × Wisp hybrids:** all keep Pip’s legs, so the whole wardrobe works.
+| Variant | What is different |
+|---|---|
+| Wisp | The original: ribbon wings, a long flame |
+| Moth | Two pairs of round wings with eyespots; a short flame curled like a comma |
+| Swirl | The head’s point curls over like a licked flame; the body is one S that ends in light; swept fins |
 
-| Hybrid | What it takes from Wisp | Where the light is |
-|---|---|---|
-| Droplet | The droplet head, on Pip’s bean body; ribbon wings; smoke antennae | Pip’s glowing bottom |
-| Flame-top | One bean whose top rises to Wisp’s point; smoke antennae; firefly wings | Pip’s glowing bottom |
-| Comet | The droplet head, the ribbon wings, and Wisp’s flame as a comet tail | The tail, which no outfit covers |
+**Wings move as two pairs.** Where a character has upper and lower wings, the upper pair rides `wingL`/`wingR` and the lower pair `hindL`/`hindR`. The upper pair strokes slowly; the lower pair beats twice to each stroke, half a beat behind. The two pairs are never one piece.
 
 ### Reference
 
@@ -57,11 +52,12 @@ Kept as inspiration for the main character or a side character, not as candidate
 
 | Variant | File | Idea worth keeping |
 |---|---|---|
+| Fuzzy | `firefly-variants.tsx` | Fuzz, a ruff and feathery antennae: the most huggable firefly |
 | Chonk | `firefly-bodies.tsx` | A low, wide body in a domed shell; lamps set into the shell |
 | Cube | `firefly-bodies-2.tsx` | Everything square; a lit window in the chest |
 | Hood | `firefly-bodies-2.tsx` | A cone of a cloak, a floppy hood, light from inside the cloak |
 
-Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio.
+Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio; Pip’s per-character colourways; the Pip × Wisp hybrids (Droplet, Flame-top, Comet).
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
 

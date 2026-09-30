@@ -61,6 +61,8 @@ These are the product’s rules. A drawing that breaks one of them cannot move b
 
 **The guide is rigged.** A pose is joint data, not a new drawing. Forward-kinematic joints, pivot on the joint each piece hangs from. Motion is declared keyframes on one clock. No canvas, no WebGL, no physics engine. Under reduced motion, and when a person stills the guide, it holds a rest pose. Expressions may still change.
 
+**Colours are the product’s.** A character is drawn in the product’s primary and accent, the same scheme for every character; only a character’s ability colour (the firefly’s glow) is its own.
+
 **No large field in a status hue.** A green body must not read as “correct”. The one exception is the chameleon’s colour change, which is semantic on purpose. It is paired with words or a status mark, and it follows the conditions in `docs/cast.md`.
 
 **Decorative by default.** `aria-hidden`. A speech line is real text beside the figure, never drawn onto it.

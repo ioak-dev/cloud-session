@@ -9,7 +9,7 @@
  *   root ─┬─ hipL ── kneeL        legs sit outside the torso so it can lean over them
  *         ├─ hipR ── kneeR
  *         └─ torso ─┬─ head ─┬─ hairSway · braidL · braidR · antL · antR · earL · earR
- *                   ├─ tail · wingL · wingR
+ *                   ├─ tail · wingL · wingR · hindL · hindR
  *                   ├─ shoulderL ── elbowL
  *                   └─ shoulderR ── elbowR
  */
@@ -40,6 +40,9 @@ export const J = {
   tail: [110, 206],
   wingL: [92, 160],
   wingR: [108, 160],
+  /** The lower (flying) wings, on their own joints so they beat apart from the upper pair. */
+  hindL: [92, 166],
+  hindR: [108, 166],
   hairSway: [124, 54],
   braidL: [60, 104],
   braidR: [140, 104],

@@ -1,5 +1,6 @@
 import type { Candidate, Ctx } from "./candidates";
 import { Antenna, bright, GlowGrad, palette } from "./firefly-variants";
+import { C } from "./theme";
 import { WHITE } from "./rig/palette";
 import { J, pivot, type Body } from "./rig/skeleton";
 
@@ -19,16 +20,16 @@ const OUTFITS: Candidate["outfits"] = [
 
 /* ——— Cube: everything square — head, body, antennae — and a lit window in its chest ——— */
 
-const CUBE_BODY = "#23a6c8";
-const CUBE_DARK = "#157a96";
-const palCube = palette(CUBE_DARK, "#0f5b70", "#fff4e4", "#ead6bd", {
+const CUBE_BODY = C.primary;
+const CUBE_DARK = C.deep;
+const palCube = palette(CUBE_DARK, C.deep, "#fff4e4", "#ead6bd", {
   eye: "#10384a",
   glow: "#ffd23f",
-  top: "#f06a8a",
+  top: C.accent,
   topAlt: "#fff3de",
-  bottom: "#2d3a7a",
-  shoe: "#f06a8a",
-  accent: "#f06a8a",
+  bottom: C.accent,
+  shoe: C.accent,
+  accent: C.accent,
   blush: "#ff9fb0",
 });
 
@@ -118,7 +119,7 @@ function CubeBehind({ pal, mood }: Ctx) {
             height={24}
             rx={6}
             transform={`rotate(${-16 * s} ${100 + 20 * s} 158)`}
-            fill="#e2f6fb"
+            fill={C.tint}
             fillOpacity={0.9}
             stroke={pal.ink}
             strokeWidth={2.2}
@@ -130,7 +131,7 @@ function CubeBehind({ pal, mood }: Ctx) {
             height={18}
             rx={5}
             transform={`rotate(${12 * s} ${100 + 20 * s} 180)`}
-            fill="#e2f6fb"
+            fill={C.tint}
             fillOpacity={0.9}
             stroke={pal.ink}
             strokeWidth={2.2}
@@ -174,16 +175,16 @@ function CubeWindow({ pal, uid }: Ctx) {
 
 /* ——— Hood: a cone of a cloak with a pointed hood; the light glows from inside the cloak ——— */
 
-const HOOD_CLOAK = "#1e4d6b";
-const HOOD_LINE = "#3f7aa0";
-const palHood = palette(HOOD_CLOAK, "#123349", "#fdeede", "#e8cdb4", {
+const HOOD_CLOAK = C.deep;
+const HOOD_LINE = C.primary;
+const palHood = palette(HOOD_CLOAK, C.deep, "#fdeede", "#e8cdb4", {
   eye: "#173a52",
   glow: "#ffd23f",
-  top: "#e8b04a",
+  top: C.accent,
   topAlt: "#fff3de",
-  bottom: HOOD_CLOAK,
-  shoe: "#e8b04a",
-  accent: "#e8b04a",
+  bottom: C.accent,
+  shoe: C.accent,
+  accent: C.accent,
   blush: "#f7a3a3",
 });
 
@@ -231,7 +232,7 @@ function HoodHead({ pal }: Ctx) {
         strokeLinecap="round"
       />
       {/* the opening, shadowed at its rim */}
-      <ellipse cx={100} cy={108} rx={40} ry={35} fill="#123349" />
+      <ellipse cx={100} cy={108} rx={40} ry={35} fill={C.deep} />
       <ellipse cx={100} cy={110} rx={36} ry={31} fill={pal.skin} />
     </g>
   );

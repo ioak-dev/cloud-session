@@ -21,6 +21,10 @@ const secondary = (k = 1) => ({
   earR: rot(0, 0, 0, 8, 0, 0),
   wingL: rot(0, -14, 0, -14, 0, -14, 0),
   wingR: rot(0, 14, 0, 14, 0, 14, 0),
+  /* The lower wings beat twice for each stroke of the upper pair, half a beat behind it: the
+     two pairs move on their own joints but to one rhythm. */
+  hindL: rot(0, 10, -16, 10, -16, 10, -16, 10, -16, 10, -16, 10, 0),
+  hindR: rot(0, -10, 16, -10, 16, -10, 16, -10, 16, -10, 16, -10, 0),
   glow: fade(0.35, 0.8, 0.35),
 });
 

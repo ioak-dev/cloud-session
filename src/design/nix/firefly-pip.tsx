@@ -1,14 +1,16 @@
 import type { Candidate, Ctx } from "./candidates";
-import { PIP, PipGlow } from "./firefly-bodies";
-import { Antenna, bright, palette } from "./firefly-variants";
-import type { Palette } from "./rig/palette";
-import { WHITE } from "./rig/palette";
-import { pivot, type Body } from "./rig/skeleton";
+import { Antenna, bright, GlowGrad, palette } from "./firefly-variants";
+import { WHITE, type Palette } from "./rig/palette";
+import { J, pivot, type Body } from "./rig/skeleton";
+import { C } from "./theme";
 
 /**
- * Pip, refined: the bean body with firefly wings (hard wing cases over clear flying wings) in
- * three colourways. Then three Pip–Wisp hybrids: Pip's legged bean body with Wisp's droplet, its
- * smoke-thin antennae or its flame.
+ * Pip: a bean. Head and body are one shape, it stands on stubby legs, and the bottom of the bean
+ * glows — through any outfit. Every Pip draws in the product's colours (`theme.ts`); only the glow
+ * is its own.
+ *
+ * Where a Pip has two pairs of wings, the upper pair rides `wingL`/`wingR` and the lower pair
+ * `hindL`/`hindR`, so the two move apart but to one rhythm (`poses.ts`).
  */
 
 const OUTFITS: Candidate["outfits"] = [
@@ -19,19 +21,20 @@ const OUTFITS: Candidate["outfits"] = [
   "winter",
   "party",
 ];
+const NO_NECK = { x: 100, y: 150, w: 0, h: 0 };
+const FACE = "#fff4e8";
 
-type Colourway = {
-  id: string;
-  name: string;
-  body: string;
-  shade: string;
-  /** The wing cases. */
-  cases: string;
-  clothes: string;
-  note: string;
-};
+const pal: Palette = palette(C.deep, C.deep, FACE, "#efd8c6", {
+  eye: "#241a2e",
+  glow: "#ffd84a",
+  top: C.accent,
+  bottom: C.accent,
+  shoe: C.accent,
+  accent: C.accent,
+  blush: "#ff9aae",
+});
 
-const face = (pal: Palette): Candidate["face"] => ({
+const face = (over: Partial<Candidate["face"]> = {}): Candidate["face"] => ({
   eyes: "bead",
   eyeY: 106,
   eyeGap: 16,
@@ -39,39 +42,99 @@ const face = (pal: Palette): Candidate["face"] => ({
   mouthY: 124,
   nose: "none",
   brows: false,
-  lid: pal.skin,
+  lid: FACE,
+  ...over,
 });
 
-/** The upper bean, filled down over the body so there is no seam, outlined only on top. */
+export const PIP: Body = {
+  id: "pip",
+  j: {
+    ...J,
+    shoulderL: [58, 176],
+    elbowL: [50, 194],
+    wristL: [47, 210],
+    shoulderR: [142, 176],
+    elbowR: [150, 194],
+    wristR: [153, 210],
+    torso: [100, 230],
+    hipL: [86, 240],
+    kneeL: [85, 255],
+    footL: [84, 269],
+    hipR: [114, 240],
+    kneeR: [115, 255],
+    footR: [116, 269],
+    tail: [100, 236],
+    wingL: [62, 140],
+    wingR: [138, 140],
+    hindL: [58, 136],
+    hindR: [142, 136],
+  },
+  torso:
+    "M56 150 C56 140 70 136 100 136 C130 136 144 140 144 150 C144 170 142 182 146 202 C148 236 128 256 100 256 C72 256 52 236 54 202 C58 182 56 170 56 150 Z",
+  headVB: "34 8 132 132",
+  w: { upper: 10, fore: 9.5, thigh: 14, shin: 13, hand: 7.4, cloth: 1 },
+  neck: NO_NECK,
+};
+
+/* ——— shared parts ——— */
+
 const BEAN_TOP =
   "M54 160 C54 126 54 98 60 82 C68 62 84 52 100 52 C116 52 132 62 140 82 C146 98 146 126 146 160";
+const BEAN_GLOW = "M57 228 Q100 242 143 228 C140 246 124 256 100 256 C76 256 60 246 57 228 Z";
 
-function BeanHead({ pal, body, top = BEAN_TOP }: { pal: Palette; body: string; top?: string }) {
+/** The upper bean, filled down over the body so there is no seam, outlined only on top. */
+function BeanTop({
+  d = BEAN_TOP,
+  faceAt = [100, 110, 36, 29],
+  shine = "M70 80 Q80 66 94 62",
+}: {
+  d?: string;
+  faceAt?: number[];
+  shine?: string;
+}) {
+  const [cx, cy, rx, ry] = faceAt;
   return (
     <g>
-      <path d={`${top} Z`} fill={body} />
-      <path
-        d={top}
-        fill="none"
-        stroke={pal.ink}
-        strokeWidth={2.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M70 80 Q80 66 94 62"
-        stroke={WHITE}
-        strokeOpacity={0.5}
-        strokeWidth={4}
-        fill="none"
-        strokeLinecap="round"
-      />
-      <ellipse cx={100} cy={110} rx={36} ry={29} fill={pal.skin} />
+      <path d={`${d} Z`} fill={C.primary} />
+      <path d={d} fill="none" stroke={pal.ink} strokeWidth={2.6} strokeLinecap="round" />
+      <path d={shine} stroke={C.hi} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={FACE} />
     </g>
   );
 }
 
-function SpringAntennae({ pal, mood, tip }: Ctx & { tip: string }) {
+/** The light is the bean's own bottom, and it shines through any outfit. */
+function BottomGlow({ uid, d = BEAN_GLOW }: Ctx & { d?: string }) {
+  const g = `${uid}-pipglow`;
+  return (
+    <g>
+      <GlowGrad id={g} glow={pal.glow} rim="#f5a623" />
+      <path d={d} fill={`url(#${g})`} stroke={pal.ink} strokeWidth={2.4} strokeLinejoin="round" />
+      <path
+        d="M72 238 Q80 244 90 246"
+        stroke={WHITE}
+        strokeWidth={2.6}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+}
+
+function Halo({ mood, cy = 244 }: Ctx & { cy?: number }) {
+  return (
+    <circle
+      data-joint="glow"
+      cx={100}
+      cy={cy}
+      r={46}
+      fill={pal.glow}
+      opacity={0.3 * bright(mood)}
+    />
+  );
+}
+
+function SpringAntennae({ mood }: Ctx) {
   return (
     <g>
       {(
@@ -89,239 +152,38 @@ function SpringAntennae({ pal, mood, tip }: Ctx & { tip: string }) {
         ] as const
       ).map(([side, d, [x, y]]) => (
         <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 56]} mood={mood}>
+          {/* a coiled spring: boing */}
           <path d={d} stroke={pal.ink} strokeWidth={2.6} fill="none" strokeLinecap="round" />
-          <circle cx={x} cy={y} r={4.5} fill={tip} stroke={pal.ink} strokeWidth={1.8} />
+          <circle cx={x} cy={y} r={4.5} fill={C.deep} stroke={pal.ink} strokeWidth={1.8} />
         </Antenna>
       ))}
     </g>
   );
 }
 
-/** Wisp's antennae: thin as smoke, each tipped with a spark. */
-function SmokeAntennae({ pal, mood, base }: Ctx & { base: readonly [number, number] }) {
-  const [bx, by] = base;
-  return (
-    <g>
-      {(["L", "R"] as const).map((side) => {
-        const s = side === "L" ? -1 : 1;
-        const x = bx + 18 * s;
-        const y = by - 26;
-        return (
-          <Antenna key={side} side={side} base={[bx + 3 * s, by]} mood={mood}>
-            <path
-              d={`M${bx + 3 * s} ${by} C${bx + 10 * s} ${by - 10} ${bx + 20 * s} ${by - 8} ${bx + 24 * s} ${by - 18} C${bx + 26 * s} ${by - 24} ${bx + 22 * s} ${by - 28} ${x} ${y}`}
-              stroke={pal.ink}
-              strokeWidth={2.2}
-              fill="none"
-              strokeLinecap="round"
-            />
-            <circle cx={x} cy={y} r={6.5} fill={pal.glow} opacity={0.35 * bright(mood)} />
-            <circle cx={x} cy={y} r={3} fill={pal.glow} stroke={pal.ink} strokeWidth={1.2} />
-          </Antenna>
-        );
-      })}
-    </g>
-  );
-}
+const sides = [
+  ["L", -1],
+  ["R", 1],
+] as const;
 
-function GlowHalo({
-  pal,
-  mood,
-  cx = 100,
-  cy = 244,
-  r = 46,
-}: Ctx & { cx?: number; cy?: number; r?: number }) {
-  return (
-    <circle data-joint="glow" cx={cx} cy={cy} r={r} fill={pal.glow} opacity={0.3 * bright(mood)} />
-  );
-}
+/* ——— Pip: the original ——— */
 
-/* ——— Pip refined: firefly wings ——— */
-
-/** Hard wing cases lifted open over clear flying wings, as a firefly holds them in flight. */
-function FireflyWings({ pal, cases, frame }: { pal: Palette; cases: string; frame: Body }) {
+function PipWings() {
   return (
     <>
-      {(
-        [
-          ["wingL", -1],
-          ["wingR", 1],
-        ] as const
-      ).map(([j, s]) => (
-        <g key={j} data-joint={j} style={pivot(j, frame.j)}>
-          {/* the flying wing, clear and veined, spread out and down below the case */}
-          <g transform={`rotate(${-38 * s} ${100 + 62 * s} 160)`}>
-            <ellipse
-              cx={100 + 62 * s}
-              cy={160}
-              rx={15}
-              ry={32}
-              fill="#f4f8ff"
-              fillOpacity={0.88}
-              stroke={pal.ink}
-              strokeWidth={2}
-            />
-            <path
-              d={`M${100 + 62 * s} 132 Q${100 + 66 * s} 160 ${100 + 62 * s} 188`}
-              stroke={pal.ink}
-              strokeOpacity={0.22}
-              strokeWidth={1.4}
-              fill="none"
-            />
-          </g>
-          {/* the wing case, lifted up and out as a firefly holds it in flight, with the cream
-              edge stripe a real firefly has */}
-          <g transform={`rotate(${38 * s} ${100 + 64 * s} 112)`}>
-            <ellipse
-              cx={100 + 64 * s}
-              cy={112}
-              rx={17}
-              ry={40}
-              fill={cases}
-              stroke={pal.ink}
-              strokeWidth={2.4}
-            />
-            <path
-              d={`M${100 + 72 * s} 80 Q${100 + 82 * s} 112 ${100 + 72 * s} 144`}
-              stroke="#fff3de"
-              strokeOpacity={0.85}
-              strokeWidth={2.6}
-              fill="none"
-              strokeLinecap="round"
-            />
-            <path
-              d={`M${100 + 56 * s} 86 Q${100 + 52 * s} 104 ${100 + 54 * s} 118`}
-              stroke={WHITE}
-              strokeOpacity={0.35}
-              strokeWidth={3}
-              fill="none"
-              strokeLinecap="round"
-            />
-          </g>
-        </g>
-      ))}
-    </>
-  );
-}
-
-const COLOURWAYS: Colourway[] = [
-  {
-    id: "dusk",
-    name: "Dusk",
-    body: "#6a6fd0",
-    shade: "#4b50b0",
-    cases: "#3a3d8f",
-    clothes: "#ff8f7a",
-    note: "Indigo, the colour of the sky fireflies come out in. Calm and grown-up enough for a teacher; the yellow glow has the most contrast against it.",
-  },
-  {
-    id: "sea",
-    name: "Sea",
-    body: "#3a9ab8",
-    shade: "#27789a",
-    cases: "#1f5670",
-    clothes: "#f58a6c",
-    note: "A clear sea blue: fresh and friendly, reads well on both grounds. The nearest to an info hue, so it must stay out of status use.",
-  },
-  {
-    id: "mauve",
-    name: "Mauve",
-    body: "#c4829f",
-    shade: "#a3607f",
-    cases: "#6f3a58",
-    clothes: "#3a4f8a",
-    note: "Pip's pink, grown up: a dusty rose with plum wing cases. Keeps Pip's warmth without the candy.",
-  },
-];
-
-function refined(cw: Colourway): Candidate {
-  const pal = palette(cw.shade, cw.cases, "#fff4e8", "#efd8c6", {
-    eye: "#2a1d32",
-    glow: "#ffd84a",
-    top: cw.clothes,
-    bottom: cw.clothes,
-    shoe: cw.clothes,
-    accent: cw.clothes,
-    blush: "#ff9aae",
-  });
-  return {
-    id: `firefly-pip-${cw.id}`,
-    kind: "animal",
-    frame: PIP,
-    label: `Pip refined · ${cw.name}`,
-    signature: "A bean with firefly wing cases, clear wings, and a bottom that glows",
-    pitch: `Pip with real firefly wings: hard wing cases lifted open, cream-striped at the edge, over clear flying wings — the silhouette now says firefly, not bean. Rings above the glow read as an insect's abdomen. ${cw.note}`,
-    risk: "The wing cases widen the silhouette; they must fold flat when the guide sits beside material.",
-    pal,
-    body: cw.body,
-    face: face(pal),
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => (
-      <g>
-        <FireflyWings pal={c.pal} cases={cw.cases} frame={PIP} />
-        <GlowHalo {...c} />
-      </g>
-    ),
-    head: (c) => <BeanHead pal={c.pal} body={cw.body} />,
-    top: (c) => <SpringAntennae {...c} tip={cw.cases} />,
-    belly: () => (
-      <path
-        d="M62 206 Q100 218 138 206 M58 220 Q100 232 142 220"
-        stroke={cw.shade}
-        strokeWidth={2.6}
-        fill="none"
-        strokeLinecap="round"
-      />
-    ),
-    pendant: (c) => <PipGlow {...c} />,
-  };
-}
-
-/* ——— Pip–Wisp hybrids ——— */
-
-const DROPLET =
-  "M100 44 C110 62 146 72 146 106 C146 130 126 144 100 144 C74 144 54 130 54 106 C54 72 90 62 100 44 Z";
-
-function DropletHead({ pal, body }: { pal: Palette; body: string }) {
-  return (
-    <g>
-      <path d={DROPLET} fill={body} stroke={pal.ink} strokeWidth={2.5} strokeLinejoin="round" />
-      <path
-        d="M60 112 C60 94 78 86 100 86 C122 86 140 94 140 112 C140 132 122 142 100 142 C78 142 60 132 60 112 Z"
-        fill={pal.skin}
-      />
-      <path d={DROPLET} fill="none" stroke={pal.ink} strokeWidth={2.5} strokeLinejoin="round" />
-      <path
-        d="M72 88 Q78 72 94 62"
-        stroke={WHITE}
-        strokeOpacity={0.6}
-        strokeWidth={3.4}
-        fill="none"
-        strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
-/** Wisp's ribbon wings, shortened to suit a body that stands. */
-function RibbonWings({ pal, tint, frame }: { pal: Palette; tint: string; frame: Body }) {
-  return (
-    <>
-      {(
-        [
-          ["wingL", -1],
-          ["wingR", 1],
-        ] as const
-      ).map(([j, s]) => (
-        <g key={j} data-joint={j} style={pivot(j, frame.j)}>
-          <path
-            d={`M${100 + 30 * s} 150 C${100 + 58 * s} 124 ${100 + 84 * s} 132 ${100 + 80 * s} 156 C${100 + 78 * s} 176 ${100 + 64 * s} 186 ${100 + 64 * s} 206 C${100 + 54 * s} 188 ${100 + 50 * s} 168 ${100 + 30 * s} 162 Z`}
-            fill={tint}
-            fillOpacity={0.88}
+      {sides.map(([side, s]) => (
+        <g key={side} data-joint={`wing${side}`} style={pivot(`wing${side}`, PIP.j)}>
+          {/* stubby wings, too small to fly by the look of them */}
+          <ellipse
+            cx={100 + 52 * s}
+            cy={124}
+            rx={13}
+            ry={19}
+            transform={`rotate(${34 * s} ${100 + 52 * s} 124)`}
+            fill={C.tint}
+            fillOpacity={0.92}
             stroke={pal.ink}
-            strokeWidth={2}
-            strokeLinejoin="round"
+            strokeWidth={2.2}
           />
         </g>
       ))}
@@ -329,29 +191,205 @@ function RibbonWings({ pal, tint, frame }: { pal: Palette; tint: string; frame: 
   );
 }
 
-/** Wisp's flame, as a tail that sweeps out behind like a comet. */
-function CometTail({ pal, uid }: Ctx) {
-  const g = `${uid}-comet`;
+/* ——— Pip · Wing cases: lifted cases over clear flying wings, each pair on its own joints ——— */
+
+function CaseWings() {
   return (
-    <g data-joint="tail" style={pivot("tail", PIP.j)}>
-      <defs>
-        <linearGradient id={g} x1="0" y1="0" x2="1" y2="0.6">
-          <stop offset="0%" stopColor={WHITE} />
-          <stop offset="40%" stopColor={pal.glow} />
-          <stop offset="100%" stopColor="#ffb547" />
-        </linearGradient>
-      </defs>
-      <circle data-joint="glow" cx={150} cy={226} r={40} fill={pal.glow} opacity={0.35} />
+    <>
+      {sides.map(([side, s]) => (
+        <g key={side}>
+          {/* the flying wing: clear, veined, spread out and down; it beats on its own joint */}
+          <g data-joint={`hind${side}`} style={pivot(`hind${side}`, PIP.j)}>
+            <g transform={`rotate(${-38 * s} ${100 + 62 * s} 160)`}>
+              <ellipse
+                cx={100 + 62 * s}
+                cy={160}
+                rx={15}
+                ry={32}
+                fill={C.tint}
+                fillOpacity={0.88}
+                stroke={pal.ink}
+                strokeWidth={2}
+              />
+              <path
+                d={`M${100 + 62 * s} 132 Q${100 + 66 * s} 160 ${100 + 62 * s} 188`}
+                stroke={pal.ink}
+                strokeOpacity={0.22}
+                strokeWidth={1.4}
+                fill="none"
+              />
+            </g>
+          </g>
+          {/* the wing case: lifted up and out as a firefly holds it in flight, with the cream
+              edge stripe a real firefly has; it strokes slower, on the upper joint */}
+          <g data-joint={`wing${side}`} style={pivot(`wing${side}`, PIP.j)}>
+            <g transform={`rotate(${38 * s} ${100 + 64 * s} 112)`}>
+              <ellipse
+                cx={100 + 64 * s}
+                cy={112}
+                rx={17}
+                ry={40}
+                fill={C.deep}
+                stroke={pal.ink}
+                strokeWidth={2.4}
+              />
+              <path
+                d={`M${100 + 72 * s} 80 Q${100 + 82 * s} 112 ${100 + 72 * s} 144`}
+                stroke="#fff3de"
+                strokeOpacity={0.85}
+                strokeWidth={2.6}
+                fill="none"
+                strokeLinecap="round"
+              />
+              <path
+                d={`M${100 + 56 * s} 86 Q${100 + 52 * s} 104 ${100 + 54 * s} 118`}
+                stroke={WHITE}
+                strokeOpacity={0.3}
+                strokeWidth={3}
+                fill="none"
+                strokeLinecap="round"
+              />
+            </g>
+          </g>
+        </g>
+      ))}
+    </>
+  );
+}
+
+const RINGS = (y: number) => (
+  <path
+    d={`M62 ${y} Q100 ${y + 12} 138 ${y} M58 ${y + 14} Q100 ${y + 26} 142 ${y + 14}`}
+    stroke={C.deep}
+    strokeOpacity={0.55}
+    strokeWidth={2.6}
+    fill="none"
+    strokeLinecap="round"
+  />
+);
+
+/* ——— Pip · Plump: a rounder egg, glowing antenna tips, two pairs of clear wings ——— */
+
+const PLUMP: Body = {
+  ...PIP,
+  id: "pip-plump",
+  j: {
+    ...PIP.j,
+    shoulderL: [52, 182],
+    elbowL: [45, 200],
+    wristL: [42, 216],
+    shoulderR: [148, 182],
+    elbowR: [155, 200],
+    wristR: [158, 216],
+    hipL: [84, 238],
+    kneeL: [83, 254],
+    footL: [82, 269],
+    hipR: [116, 238],
+    kneeR: [117, 254],
+    footR: [118, 269],
+    wingL: [74, 128],
+    wingR: [126, 128],
+    hindL: [72, 150],
+    hindR: [128, 150],
+  },
+  torso:
+    "M52 150 C52 142 70 138 100 138 C130 138 148 142 148 150 C148 172 150 186 150 204 C150 236 128 252 100 252 C72 252 50 236 50 204 C50 186 52 172 52 150 Z",
+  headVB: "30 14 140 140",
+};
+
+const PLUMP_TOP =
+  "M50 162 C50 128 56 104 66 90 C76 76 88 70 100 70 C112 70 124 76 134 90 C144 104 150 128 150 162";
+const PLUMP_GLOW = "M51 220 Q100 238 149 220 C146 240 126 252 100 252 C74 252 54 240 51 220 Z";
+
+function PlumpWings() {
+  return (
+    <>
+      {sides.map(([side, s]) => (
+        <g key={side}>
+          <g data-joint={`hind${side}`} style={pivot(`hind${side}`, PLUMP.j)}>
+            <ellipse
+              cx={100 + 58 * s}
+              cy={170}
+              rx={13}
+              ry={18}
+              transform={`rotate(${-28 * s} ${100 + 58 * s} 170)`}
+              fill={C.tint}
+              fillOpacity={0.9}
+              stroke={pal.ink}
+              strokeWidth={2}
+            />
+          </g>
+          <g data-joint={`wing${side}`} style={pivot(`wing${side}`, PLUMP.j)}>
+            <ellipse
+              cx={100 + 62 * s}
+              cy={116}
+              rx={20}
+              ry={27}
+              transform={`rotate(${34 * s} ${100 + 62 * s} 116)`}
+              fill={C.tint}
+              fillOpacity={0.9}
+              stroke={pal.ink}
+              strokeWidth={2.2}
+            />
+            <path
+              d={`M${100 + 50 * s} 130 Q${100 + 64 * s} 116 ${100 + 74 * s} 98`}
+              stroke={pal.ink}
+              strokeOpacity={0.22}
+              strokeWidth={1.4}
+              fill="none"
+            />
+          </g>
+        </g>
+      ))}
+    </>
+  );
+}
+
+function GlowAntennae({ uid, mood }: Ctx) {
+  const g = `${uid}-plumptip`;
+  return (
+    <g>
+      <GlowGrad id={g} glow={pal.glow} rim="#f5a623" />
+      {(
+        [
+          ["L", "M90 74 C86 58 76 50 66 46", [64, 44]],
+          ["R", "M110 74 C114 58 124 50 134 46", [136, 44]],
+        ] as const
+      ).map(([side, d, [x, y]]) => (
+        <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 74]} mood={mood}>
+          <path d={d} stroke={pal.ink} strokeWidth={2.8} fill="none" strokeLinecap="round" />
+          <circle cx={x} cy={y} r={10} fill={pal.glow} opacity={0.3 * bright(mood)} />
+          <circle cx={x} cy={y} r={5.5} fill={`url(#${g})`} stroke={pal.ink} strokeWidth={1.8} />
+        </Antenna>
+      ))}
+    </g>
+  );
+}
+
+/* ——— Pip · Cap: a firefly's head shield worn as a cap; wing cases closed down the back ——— */
+
+function CapTop() {
+  return (
+    <g>
+      <BeanTop />
+      {/* the pronotum: on a real firefly, the shield over its head */}
       <path
-        d="M130 196 C156 200 178 214 184 244 C176 240 170 246 174 254 C156 250 140 242 132 232 C124 222 124 206 130 196 Z"
-        fill={`url(#${g})`}
+        d="M59 84 C67 63 84 52 100 52 C116 52 133 63 141 84 C128 78 114 75 100 75 C86 75 72 78 59 84 Z"
+        fill={C.deep}
         stroke={pal.ink}
         strokeWidth={2.4}
         strokeLinejoin="round"
       />
       <path
-        d="M136 208 C150 212 162 220 168 232"
-        stroke={WHITE}
+        d="M62 84 C76 78 88 76 100 76 C112 76 124 78 138 84"
+        stroke={C.accent}
+        strokeWidth={3}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M76 66 Q86 58 98 57"
+        stroke={C.hi}
         strokeWidth={3}
         fill="none"
         strokeLinecap="round"
@@ -360,131 +398,200 @@ function CometTail({ pal, uid }: Ctx) {
   );
 }
 
-/** The droplet sits on the bean at full size, overlapping its shoulders. */
-const PIP_DROPLET: Body = {
-  ...PIP,
-  id: "pip-droplet",
-  headFit: "translate(100 150) scale(0.95) translate(-100 -150)",
-  headVB: "34 4 132 132",
-};
+function BeadAntennae({ mood }: Ctx) {
+  return (
+    <g>
+      {(
+        [
+          [
+            "L",
+            "M90 56 L82 30",
+            [
+              [88, 48],
+              [85, 39],
+            ],
+            [81, 27],
+          ],
+          [
+            "R",
+            "M110 56 L118 30",
+            [
+              [112, 48],
+              [115, 39],
+            ],
+            [119, 27],
+          ],
+        ] as const
+      ).map(([side, d, beads, [x, y]]) => (
+        <Antenna key={side} side={side} base={[side === "L" ? 90 : 110, 56]} mood={mood}>
+          <path d={d} stroke={pal.ink} strokeWidth={3} strokeLinecap="round" />
+          {beads.map(([bx, by]) => (
+            <circle
+              key={by}
+              cx={bx}
+              cy={by}
+              r={2.8}
+              fill={C.deep}
+              stroke={pal.ink}
+              strokeWidth={1}
+            />
+          ))}
+          <ellipse
+            cx={x}
+            cy={y}
+            rx={4.5}
+            ry={5.5}
+            fill={C.deep}
+            stroke={pal.ink}
+            strokeWidth={1.6}
+          />
+        </Antenna>
+      ))}
+    </g>
+  );
+}
 
-/** One bean whose top rises to a flame's point. */
-const FLAME_TOP =
-  "M54 160 C54 124 58 102 68 88 C80 72 94 64 100 38 C106 64 120 72 132 88 C142 102 146 124 146 160";
+function ClosedCases() {
+  return (
+    <>
+      {sides.map(([side, s]) => (
+        <g key={side}>
+          {/* flying-wing tips, peeking out under the closed cases, fluttering */}
+          <g
+            data-joint={`hind${side}`}
+            style={pivot(`hind${side}`, { ...PIP.j, hindL: [58, 236], hindR: [142, 236] })}
+          >
+            <ellipse
+              cx={100 + 50 * s}
+              cy={252}
+              rx={8}
+              ry={15}
+              transform={`rotate(${34 * s} ${100 + 50 * s} 252)`}
+              fill={C.tint}
+              fillOpacity={0.9}
+              stroke={pal.ink}
+              strokeWidth={2}
+            />
+          </g>
+          {/* the closed wing cases: a split cape down the back, cream-edged; they don't flap */}
+          <path
+            d={`M${100 + 30 * s} 94 C${100 + 60 * s} 104 ${100 + 68 * s} 160 ${100 + 64 * s} 212 C${100 + 62 * s} 234 ${100 + 52 * s} 244 ${100 + 40 * s} 246 C${100 + 46 * s} 204 ${100 + 44 * s} 140 ${100 + 30 * s} 94 Z`}
+            fill={C.deep}
+            stroke={pal.ink}
+            strokeWidth={2.4}
+            strokeLinejoin="round"
+          />
+          <path
+            d={`M${100 + 38 * s} 106 C${100 + 58 * s} 126 ${100 + 62 * s} 180 ${100 + 58 * s} 222`}
+            stroke="#fff3de"
+            strokeOpacity={0.8}
+            strokeWidth={2.2}
+            fill="none"
+            strokeLinecap="round"
+          />
+        </g>
+      ))}
+    </>
+  );
+}
 
-const HYBRID_PAL = (shade: string, clothes: string) =>
-  palette(shade, shade, "#fff6ee", "#eed9c8", {
-    eye: "#2a2350",
-    glow: "#ffd23f",
-    top: clothes,
-    bottom: clothes,
-    shoe: clothes,
-    accent: clothes,
-    blush: "#ffa3b5",
-  });
-
-const palDroplet = HYBRID_PAL("#9a93dc", "#f58a6c");
-const palFlame = HYBRID_PAL("#5a8fc8", "#f2a93b");
-const palComet = HYBRID_PAL("#5c4088", "#f2b134");
-
-export const FIREFLY_PIP: Candidate[] = [
-  ...COLOURWAYS.map(refined),
+export const PIP_FAMILY: Candidate[] = [
   {
-    id: "firefly-pipwisp-droplet",
-    kind: "animal",
-    frame: PIP_DROPLET,
-    label: "Pip × Wisp · Droplet",
-    signature: "Wisp's droplet head on Pip's legged bean, with a glowing bottom",
-    pitch:
-      "Wisp's most distinctive feature — the droplet head — on a body that stands, so the whole wardrobe works again. The glow stays in Pip's place, through any outfit. Lavender rather than Wisp's white, so it holds on the light ground and at 16px. Smoke-thin antennae rise from the point.",
-    risk: "Two stacked rounded shapes read more like a snowman than Pip's single bean did.",
-    pal: palDroplet,
-    body: "#c3bff2",
-    face: {
-      eyes: "anime",
-      eyeY: 110,
-      eyeGap: 18,
-      eyeSize: 1.1,
-      mouthY: 128,
-      nose: "none",
-      brows: true,
-      lid: palDroplet.skin,
-    },
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => (
-      <g>
-        <RibbonWings pal={c.pal} tint="#f1efff" frame={PIP_DROPLET} />
-        <GlowHalo {...c} />
-      </g>
-    ),
-    head: (c) => <DropletHead pal={c.pal} body="#c3bff2" />,
-    top: (c) => <SmokeAntennae {...c} base={[100, 50]} />,
-    pendant: (c) => <PipGlow {...c} />,
-  },
-  {
-    id: "firefly-pipwisp-flame",
+    id: "firefly-pip",
     kind: "animal",
     frame: PIP,
-    label: "Pip × Wisp · Flame-top",
-    signature: "One bean that rises to a flame's point, lit at the bottom",
+    label: "Pip",
+    signature: "A bean whose bottom glows, with coiled-spring antennae",
     pitch:
-      "The truest merge: still one shape like Pip, but the top draws up into Wisp's point, so the whole character is a little upturned flame — light at the bottom, flame at the top. The point gives the silhouette a direction and a face-forward eagerness Pip lacked. Sky blue, with smoke antennae from the tip.",
-    risk: "The point sits where every hat goes; hats must be authored to sit on or around it.",
-    pal: palFlame,
-    body: "#7fb2e6",
-    face: face(palFlame),
+      "The original: head and body are one bean, so it reads at any size and could be a logo on its own. The glow is its whole lower half and shines through any outfit. Spring antennae boing with every mood.",
+    risk: "Reads as a bean more than a firefly; the tiny wings are a joke that has to land.",
+    pal,
+    body: C.primary,
+    face: face(),
     outfit: "bare",
     outfits: OUTFITS,
     behind: (c) => (
       <g>
-        <FireflyWings pal={c.pal} cases="#3f6fa8" frame={PIP} />
-        <GlowHalo {...c} />
+        <PipWings />
+        <Halo {...c} />
       </g>
     ),
-    head: (c) => <BeanHead pal={c.pal} body="#7fb2e6" top={FLAME_TOP} />,
-    top: (c) => <SmokeAntennae {...c} base={[100, 44]} />,
-    pendant: (c) => <PipGlow {...c} />,
+    head: () => <BeanTop />,
+    top: (c) => <SpringAntennae {...c} />,
+    pendant: (c) => <BottomGlow {...c} />,
   },
   {
-    id: "firefly-pipwisp-comet",
+    id: "firefly-pip-cases",
     kind: "animal",
-    frame: PIP_DROPLET,
-    label: "Pip × Wisp · Comet",
-    signature: "A droplet head on a bean body, with Wisp's flame streaming behind as a tail",
+    frame: PIP,
+    label: "Pip · Wing cases",
+    signature: "Wing cases lifted over clear flying wings, and a glowing bottom",
     pitch:
-      "Takes the most from Wisp while keeping Pip's legs: the droplet head, the ribbon wings, and Wisp's flame — now a comet tail that streams out behind, so it looks in motion even standing still. The glow moves from Pip's bottom to the tail, which stays visible whatever it wears. Plum.",
-    risk: "The busiest of the three; the tail widens it to one side and competes with material for space.",
-    pal: palComet,
-    body: "#7a5aa8",
-    face: {
-      eyes: "anime",
-      eyeY: 110,
-      eyeGap: 18,
-      eyeSize: 1.1,
-      mouthY: 128,
-      nose: "none",
-      brows: true,
-      lid: palComet.skin,
-    },
+      "Pip with a firefly's real wings: hard cases lifted up and out, cream-edged, over clear flying wings spread below. The two pairs move apart — the cases stroke slowly, the flying wings beat twice to each stroke — so it reads as flight. Rings above the glow make the lower bean an abdomen.",
+    risk: "The lifted cases widen it; they will need a folded rest pose for sitting beside material.",
+    pal,
+    body: C.primary,
+    face: face(),
     outfit: "bare",
     outfits: OUTFITS,
     behind: (c) => (
       <g>
-        <RibbonWings pal={c.pal} tint="#efe6ff" frame={PIP_DROPLET} />
-        <CometTail {...c} />
+        <CaseWings />
+        <Halo {...c} />
       </g>
     ),
-    head: (c) => <DropletHead pal={c.pal} body="#7a5aa8" />,
-    top: (c) => <SmokeAntennae {...c} base={[100, 50]} />,
-    belly: () => (
-      <path
-        d="M62 214 Q100 226 138 214 M60 230 Q100 242 140 230"
-        stroke="#5c4088"
-        strokeWidth={2.6}
-        fill="none"
-        strokeLinecap="round"
-      />
+    head: () => <BeanTop />,
+    top: (c) => <SpringAntennae {...c} />,
+    belly: () => RINGS(206),
+    pendant: (c) => <BottomGlow {...c} />,
+  },
+  {
+    id: "firefly-pip-plump",
+    kind: "animal",
+    frame: PLUMP,
+    label: "Pip · Plump",
+    signature: "A round egg with a big face, glowing antenna tips and two pairs of clear wings",
+    pitch:
+      "Shorter and rounder, with the biggest face of the family: the most toy-like Pip. The light shows in two places — the bottom of the egg and the tips of its antennae — so the head alone still glows at 16px. Two pairs of clear wings, upper and lower, beat apart.",
+    risk: "The roundest silhouette is the least distinctive; glowing antenna tips spread the signature thinner.",
+    pal,
+    body: C.primary,
+    face: face({ eyeY: 112, eyeGap: 17, eyeSize: 1.35, mouthY: 130 }),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: (c) => (
+      <g>
+        <PlumpWings />
+        <Halo {...c} cy={240} />
+      </g>
     ),
+    head: () => <BeanTop d={PLUMP_TOP} faceAt={[100, 116, 38, 30]} shine="M68 100 Q76 86 90 80" />,
+    top: (c) => <GlowAntennae {...c} />,
+    pendant: (c) => <BottomGlow {...c} d={PLUMP_GLOW} />,
+  },
+  {
+    id: "firefly-pip-cap",
+    kind: "animal",
+    frame: PIP,
+    label: "Pip · Cap",
+    signature: "A firefly's head shield worn as a cap, and wing cases closed down its back",
+    pitch:
+      "The most insect-literate Pip: the shield that covers a real firefly's head becomes a cap with an accent rim, beaded antennae rise through it, and the wing cases fold closed down the back like a split cape — with the tips of the flying wings fluttering out below. At rest it looks like a firefly that has landed.",
+    risk: "The cap competes with hats in the wardrobe; closed cases hide the wings, so it reads less as a flyer.",
+    pal,
+    body: C.primary,
+    face: face(),
+    outfit: "bare",
+    outfits: OUTFITS,
+    behind: (c) => (
+      <g>
+        <ClosedCases />
+        <Halo {...c} />
+      </g>
+    ),
+    head: () => <CapTop />,
+    top: (c) => <BeadAntennae {...c} />,
+    belly: () => RINGS(206),
+    pendant: (c) => <BottomGlow {...c} />,
   },
 ];

@@ -41,6 +41,15 @@
   --mascot-tone-5: oklch(0.91 0.032 260);
   --mascot-highlight: oklch(0.99 0.004 260);
 
+  /* Character colours: the header sets primary and accent; the rest follow. */
+  --char-primary: var(--primary);
+  --char-accent: var(--accent);
+  --char-deep: color-mix(in oklab, var(--char-primary) 66%, black);
+  --char-soft: color-mix(in oklab, var(--char-primary) 38%, white);
+  --char-tint: color-mix(in oklab, var(--char-primary) 12%, white);
+  --char-hi: color-mix(in oklab, var(--char-primary) 55%, white);
+  --char-accent-deep: color-mix(in oklab, var(--char-accent) 72%, black);
+
   --guide-ink: oklch(0.249 0.022 354);
   --guide-body: oklch(0.373 0.112 278);
   --guide-shoe: oklch(0.311 0.099 277);
@@ -187,7 +196,8 @@ body {
   color: var(--foreground);
 }
 
-.filter-seg[aria-pressed="true"] {
+.filter-seg[aria-pressed="true"],
+.filter-seg[data-on="true"] {
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--foreground);
