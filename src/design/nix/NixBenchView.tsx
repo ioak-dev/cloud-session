@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The animal cast from Sparkles' `/design/nix` bench: otter, red panda, firefly, chameleon.
+ * The cast studio: firefly variants for the main character, then the side candidates.
  * One rig, one set of poses, expressions and outfits.
  */
 import * as React from "react";
@@ -9,6 +9,7 @@ import * as React from "react";
 import { FilterSegment, FilterSet } from "@/components/ui/filter-segment";
 
 import { CANDIDATES, type Candidate } from "./candidates";
+import { FIREFLY_VARIANTS } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -24,6 +25,9 @@ const TESTS = [
   ["Range", "Warm to a six-year-old, not embarrassing for a teacher."],
   ["Not taken", "No clash with a well-known mascot."],
 ] as const;
+
+/** Main-character variants first, then the side candidates. The original bench firefly stays for reference. */
+const ALL: Candidate[] = [...FIREFLY_VARIANTS, ...CANDIDATES];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -44,8 +48,8 @@ function Tile({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export function NixBenchView() {
-  const [id, setId] = React.useState(CANDIDATES[0].id);
-  const c = CANDIDATES.find((x) => x.id === id) ?? CANDIDATES[0];
+  const [id, setId] = React.useState(ALL[0].id);
+  const c = ALL.find((x) => x.id === id) ?? ALL[0];
   const [pose, setPose] = React.useState<PoseId>("idle");
   const [mood, setMood] = React.useState<Mood | undefined>(undefined);
   const [outfit, setOutfit] = React.useState<OutfitId>(c.outfit);
@@ -63,11 +67,12 @@ export function NixBenchView() {
   return (
     <div>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">The animals</h1>
+      <h1 className="display mt-1">The cast</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        The cast so far: the firefly is the main character; the otter, red panda and chameleon are
-        side characters, with three side slots still open. They share one joint set, the same
-        poses, expressions and wardrobe, so they are compared on design alone.
+        Nothing is final yet. The firefly is the natural main character and is being reworked —
+        three variants below. The chameleon is a confirmed side character; the otter and red panda
+        are backups. Everything shares one joint set, poses, expressions and wardrobe, so they are
+        compared on design alone.
       </p>
 
       <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
@@ -79,21 +84,30 @@ export function NixBenchView() {
         ))}
       </dl>
 
-      <h2 className="material-heading mt-10 text-lg text-foreground">Line-up</h2>
-      <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {CANDIDATES.map((x) => (
-          <button
-            key={x.id}
-            type="button"
-            aria-pressed={x.id === id}
-            onClick={() => pick(x)}
-            className="flex flex-col items-center gap-2 rounded-[var(--radius-surface)] border border-border bg-card p-3 text-left aria-pressed:border-primary aria-pressed:ring-2 aria-pressed:ring-primary"
-          >
-            <NixFigure c={x} className="h-48 w-full" />
-            <span className="material-heading text-sm text-foreground">{x.label}</span>
-          </button>
-        ))}
-      </div>
+      {(
+        [
+          ["Main character — firefly variants", FIREFLY_VARIANTS],
+          ["Side candidates (and the original bench firefly)", CANDIDATES],
+        ] as const
+      ).map(([title, group]) => (
+        <React.Fragment key={title}>
+          <h2 className="material-heading mt-10 text-lg text-foreground">{title}</h2>
+          <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {group.map((x) => (
+              <button
+                key={x.id}
+                type="button"
+                aria-pressed={x.id === id}
+                onClick={() => pick(x)}
+                className="flex flex-col items-center gap-2 rounded-[var(--radius-surface)] border border-border bg-card p-3 text-left aria-pressed:border-primary aria-pressed:ring-2 aria-pressed:ring-primary"
+              >
+                <NixFigure c={x} className="h-48 w-full" />
+                <span className="material-heading text-sm text-foreground">{x.label}</span>
+              </button>
+            ))}
+          </div>
+        </React.Fragment>
+      ))}
 
       <section
         className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,26rem)_1fr]"
@@ -231,7 +245,7 @@ export function NixBenchView() {
         test.
       </p>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {CANDIDATES.map((x) => (
+        {ALL.map((x) => (
           <div key={x.id} className="flex items-end gap-4 rounded-[var(--radius)] bg-muted p-3">
             <NixFigure c={x} still silhouette className="h-24 w-16" />
             <NixFigure c={x} still silhouette className="h-12 w-8" />

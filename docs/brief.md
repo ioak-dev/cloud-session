@@ -37,7 +37,7 @@ The reference shape for the work in this repo is Duolingo’s: one main characte
 
 ### What this studio keeps
 
-The target is one main character (the firefly) and six side characters. Four animals are drawn so far, from Sparkles’ `/design/nix` bench: firefly (main), otter, red panda, chameleon (side). Three side slots are open. See `docs/cast.md`.
+The target is one main character and six side characters, and no character is final yet. The firefly is the natural main character and is being reworked; the chameleon is a confirmed side character; the otter and red panda are backups. Each character has one ability no other character has. See `docs/cast.md`.
 
 The 52 characters that appear beside practice items are not in this studio, and they are not the cast. The human candidates from that same bench — the girls and the young teacher — are not here either, and neither is the later Mabel experiment.
 
@@ -61,10 +61,10 @@ These are the product’s rules. A drawing that breaks one of them cannot move b
 
 **The guide is rigged.** A pose is joint data, not a new drawing. Forward-kinematic joints, pivot on the joint each piece hangs from. Motion is declared keyframes on one clock. No canvas, no WebGL, no physics engine. Under reduced motion, and when a person stills the guide, it holds a rest pose. Expressions may still change.
 
-**No large field in a status hue.** A green body must not read as “correct”. The animals keep the palettes they were drawn with on the bench.
+**No large field in a status hue.** A green body must not read as “correct”. The one exception is the chameleon’s colour change, which is semantic on purpose. It is paired with words or a status mark, and it follows the conditions in `docs/cast.md`.
 
 **Decorative by default.** `aria-hidden`. A speech line is real text beside the figure, never drawn onto it.
 
 ## Where the drawings are
 
-`src/design/nix/candidates.tsx` draws the animals drawn so far. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.
+`src/design/nix/firefly-variants.tsx` draws the main-character variants; `src/design/nix/candidates.tsx` draws the bench animals. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.

@@ -495,7 +495,7 @@ export const CANDIDATES: Candidate[] = [
   {
     id: "firefly",
     kind: "animal",
-    label: "Firefly",
+    label: "Firefly (bench original)",
     signature: "A tail that glows — it literally sparkles",
     pitch:
       "The most on-brand: Sparkles' guide is a small light. The glow is a built-in stage cue — it can brighten on an unlock, dim when sleepy — and fireflies are almost untouched as a mascot. Round, soft face, big eyes, flutter wings.",
@@ -533,7 +533,7 @@ export const CANDIDATES: Candidate[] = [
     signature: "Turret eyes and a curled spiral tail",
     pitch:
       "The funniest face on the bench — turret eyes that swivel independently are a gag in every expression. A chameleon changes to fit where it is, which is the wardrobe idea made into a character. Violet by default.",
-    risk: "Colour-change is its natural party trick and the one this product cannot let it do freely — a hue names a thing (decision 4), so a green chameleon reads as correct. A reptile is less huggable, like the firefly.",
+    risk: "Confirmed side character. Colour change is its ability and is semantic on purpose — green for correct, a gentle hue for not yet — always paired with words or a status mark (docs/cast.md). A reptile is less huggable, like the firefly.",
     pal: palCham,
     body: palCham.skin,
     face: {

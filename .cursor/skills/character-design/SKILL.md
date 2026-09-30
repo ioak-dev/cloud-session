@@ -1,32 +1,34 @@
 ---
 name: character-design
 description: >-
-  Design and revise the Sparkles characters in the cloud-session studio: one main
-  character (the firefly) and six side characters (otter, red panda, chameleon,
-  and three open slots). Use when drawing, rigging, recolouring, or posing a
-  character, adding a side character, or judging one against the product rules. Read docs/brief.md and
-  docs/cast.md first.
+  Design and revise the Sparkles character cast in the cloud-session studio: one
+  main character (the firefly, being reworked through variants) and six side
+  characters (the chameleon is confirmed; otter and red panda are backups; more
+  are to be proposed). Use when drawing, rigging, recolouring or posing a
+  character, proposing a new one, or judging one against the product rules.
+  Read docs/brief.md and docs/cast.md first.
 ---
 
 # Character design
 
 This repo designs characters for Sparkles. It does not change the Sparkles repo.
 
-The cast is one main character and six side characters, in `docs/cast.md` and `src/design/nix/candidates.tsx`. The firefly is the main character. The otter, red panda and chameleon are side characters; three side slots are open. Do not bring back the koala, the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
+The cast is one main character and six side characters; nothing is final. `docs/cast.md` holds each character’s status. Do not bring back the koala, the 52 practice-item characters, the human Nix-bench candidates, or Mabel.
 
 Read `docs/brief.md` for audience, use case, and the bounds.
 
 ## Main and side
 
-- The main character is the face of the product. Keep its silhouette, palette and signature fixed; vary only pose, expression and authored wardrobe.
-- A side character has its own stable identity and is never the larger presence when it shares a surface with the main character.
-- Each character must read apart from the others by silhouette alone, at small size. Do not reuse the firefly’s glow-yellow as a body field, and do not use a status hue.
-- Fill an open side slot only when the user names the animal. Add it as a new entry in `candidates.tsx`, on the shared rig, and record it in `docs/cast.md`.
-- Roles in the product are undecided; do not assign them unprompted.
+- **One ability each.** Every character has one special feature or ability no other character has: the firefly’s glow and fire sparkles, the chameleon’s colour change. A new candidate is not drawn until it has an ability, and it must not overlap one that is already taken.
+- **Main character (firefly).** The work is variants: A Lantern, B Spark and C Fuzzy in `firefly-variants.tsx`. Until the user picks one, draw only the static figure on the shared rig. Do not spend effort on new poses, motion or expression sets. After the pick, the silhouette, palette and ability stay fixed across contexts.
+- **Side characters.** The chameleon is confirmed. Its colour change may use status hues, under the conditions in `docs/cast.md`. The otter and red panda are backups. New side candidates are welcome; propose them with an ability and a silhouette distinct from the rest of the cast.
+- Each character must read apart from the others by silhouette alone, at small size. Only the chameleon may take a status hue, and only through its ability.
+- Record every decision in `docs/cast.md`. Do not assign product roles unprompted.
 
 ## Where to work
 
-- A character’s head, tail, and signature: `src/design/nix/candidates.tsx`.
+- Main-character variants: `src/design/nix/firefly-variants.tsx`.
+- Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 
@@ -42,7 +44,7 @@ Run the studio with `npm start` (`node studio.mjs`) and look at the drawing on b
 - Never reacts to an editor’s approval, a count, or an emptied queue, and never states that material is approved.
 - Speech is fixed copy, rendered as text beside the figure. Never generated text, never lettering inside the SVG.
 - Clothes are authored for the moment. They are not bought or earned.
-- No large field in a status hue. A green body must not read as correct.
+- No large field in a status hue — a green body must not read as correct — except through the chameleon’s colour-change ability.
 - Motion is declared keyframes. No canvas, WebGL, or physics. Reduced motion holds a rest pose; the expression may still change.
 - Figures are `aria-hidden`.
 

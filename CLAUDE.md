@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character (the firefly) and six side characters, of which the otter, red panda and chameleon are drawn and three slots are open. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The firefly is being reworked as the main character; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -19,12 +19,13 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/candidates.tsx` | Firefly (main), otter, red panda, chameleon (side) |
+| `src/design/nix/firefly-variants.tsx` | Main-character variants A–C |
+| `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
-| `docs/cast.md` | Main character, six side slots, what is decided |
+| `docs/cast.md` | Status of every character, the one-ability rule |
 
 The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel.
 
