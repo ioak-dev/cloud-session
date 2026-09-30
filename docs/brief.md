@@ -37,7 +37,7 @@ The reference shape for the work in this repo is Duolingo’s: one main characte
 
 ### What this studio keeps
 
-The target is one main character and six side characters, and no character is final yet. The firefly is the natural main character and is being reworked; the chameleon is a confirmed side character; the otter and red panda are backups. Each character has one ability no other character has. See `docs/cast.md`.
+The target is one main character and six side characters, and no character is final yet. The firefly is the natural main character and is being reworked; the chameleon is a confirmed side character; the other candidates are listed in `docs/cast.md`. Each character has one ability no other character has, and it comes from the character itself, never from a prop. See `docs/cast.md`.
 
 The 52 characters that appear beside practice items are not in this studio, and they are not the cast. The human candidates from that same bench — the girls and the young teacher — are not here either, and neither is the later Mabel experiment.
 

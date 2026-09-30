@@ -670,6 +670,10 @@ export const SIDE_CANDIDATES: Candidate[] = [
     head: () => <BatHead />,
     pendant: () => <BatRuff />,
   },
+];
+
+/** Kept as reference: the penguin, from Pip. */
+export const SIDE_REFERENCE: Candidate[] = [
   {
     id: "side-penguin",
     kind: "animal",

@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly; the chameleon is a confirmed side character; the otter is a backup; the red panda is a candidate. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -30,8 +30,8 @@ npm start
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
-| `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
-| `src/design/nix/side-candidates.tsx`, `side-jelly.tsx`, `side-puff.tsx`, `side-humans.tsx`, `side-girls.tsx`, `side-abilities.tsx` | Side candidates (octopus, fruit bat, penguin; jellyfish; chick; the girls, and more of Lulu's line) and their ability previews |
+| `src/design/nix/candidates.tsx` | Bench animals: chameleon and red panda (candidates), otter and original firefly (reference) |
+| `src/design/nix/side-candidates.tsx`, `side-jelly.tsx`, `side-puff.tsx`, `side-humans.tsx`, `side-abilities.tsx` | Side candidates (octopus, fruit bat; jellyfish; chick; Juno, Lulu), the penguin as reference, and every candidate's ability preview |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
 | `src/design/nix/NixBenchView.tsx` | The studio page |
 | `src/styles/studio.css` | The surface colour tokens |

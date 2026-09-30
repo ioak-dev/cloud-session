@@ -20,8 +20,7 @@ import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
-import { SIDE_CANDIDATES } from "./side-candidates";
-import { LULU_LINE } from "./side-girls";
+import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
 import { SIDE_HUMANS } from "./side-humans";
 import { JELLY_FAMILY } from "./side-jelly";
 import { PUFF_FAMILY } from "./side-puff";
@@ -48,22 +47,41 @@ const FIREFLIES = new Map(
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
+const byId = (list: Candidate[], id: string) => list.find((x) => x.id === id)!;
+const ANIMAL_POOL = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...CANDIDATES];
+
+/** The side candidates still in the running, with the confirmed chameleon first. */
+const CAST: Candidate[] = [
+  byId(CANDIDATES, "chameleon"),
+  byId(ANIMAL_POOL, "side-octopus"),
+  byId(ANIMAL_POOL, "side-bat"),
+  byId(ANIMAL_POOL, "side-jellyfish"),
+  byId(ANIMAL_POOL, "side-chick"),
+  byId(SIDE_HUMANS, "side-juno"),
+  byId(SIDE_HUMANS, "side-lulu"),
+  byId(CANDIDATES, "panda"),
+];
+
+/** Animal drawings kept as reference: the penguin, the otter and the bench's original firefly. */
+const ANIMAL_REFERENCE: Candidate[] = [
+  ...SIDE_REFERENCE,
+  byId(CANDIDATES, "otter"),
+  byId(CANDIDATES, "firefly"),
+];
+
 const ALL: Candidate[] = [
   WISP_MAIN,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
   ...REFERENCE,
-  ...SIDE_CANDIDATES,
-  ...JELLY_FAMILY,
-  ...PUFF_FAMILY,
-  ...SIDE_HUMANS,
-  ...LULU_LINE,
-  ...CANDIDATES,
+  ...CAST,
+  ...ANIMAL_REFERENCE,
 ];
 
 /** Every character with eyes of its own. */
-const EYED = [...SIDE_CANDIDATES, ...JELLY_FAMILY, ...PUFF_FAMILY, ...SIDE_HUMANS, ...LULU_LINE, CANDIDATES.find((x) => x.id === "chameleon")!];
+/** Every candidate has eyes and a mouth of its own. */
+const EYED = CAST;
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -81,15 +99,26 @@ function AbilityTile({ a }: { a: Ability }) {
   return (
     <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
       <div className="relative h-56 w-full">
+        {a.behind && (
+          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
+            {a.fx()}
+          </svg>
+        )}
         <div
           className="absolute inset-0"
-          style={a.turn || a.scale ? { transform: `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` } : undefined}
+          style={{
+            transform: a.turn || a.scale ? `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` : undefined,
+            opacity: a.fade,
+            filter: a.hue ? `hue-rotate(${a.hue}deg)` : undefined,
+          }}
         >
           <NixFigure c={c} mood={a.mood} pose={a.pose} viewBox={vb} className="h-full w-full" />
         </div>
-        <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
-          {a.fx()}
-        </svg>
+        {!a.behind && (
+          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
+            {a.fx()}
+          </svg>
+        )}
       </div>
       <figcaption className="text-sm">
         <span className="material-heading text-foreground">
@@ -193,12 +222,9 @@ export function NixBenchView() {
         Side candidates and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Every side candidate with its ability — what it naturally does, not a prop it holds.
-        Animals from the reference body plans (the octopus and jellyfish from Jelly, the chick from
-        Puff, the penguin from Pip, the fruit bat from Fuzzy), and girls after Juno and, most, after
-        Lulu: a tiny girl with a big head and a rubbery face. None glows, carries antennae or leaves
-        sparks, and none changes colour but the chameleon. The red panda is given an ability to
-        compete.
+        The side candidates still in the running, each with its ability — something that comes
+        from the character itself, its body and its nature, never a prop or an outside object. The
+        chameleon is confirmed; the rest compete for the other five places.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {SIDE_ABILITIES.map((a) => (
@@ -246,11 +272,8 @@ export function NixBenchView() {
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
-          ["Side candidates — animals", SIDE_CANDIDATES],
-          ["Side candidates — from Jelly and Puff", [...JELLY_FAMILY, ...PUFF_FAMILY]],
-          ["Side candidates — people", SIDE_HUMANS],
-          ["Side candidates — more of Lulu's line", LULU_LINE],
-          ["Side candidates from the bench (and the original bench firefly)", CANDIDATES],
+          ["Side candidates", CAST],
+          ["Reference — other animals", ANIMAL_REFERENCE],
         ] as const
       ).map(([title, group]) => (
         <React.Fragment key={title}>

@@ -12,24 +12,15 @@ Every character has **one special feature or ability that no other character in 
 |---|---|
 | Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
 | Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
-| Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) to show where to look |
-| Fruit bat *(proposed)* | Upside-down: hangs from anything and sees it the other way round |
-| Penguin *(proposed)* | Slide: drops onto its belly and slides to where it is going |
-| Jellyfish *(proposed)* | See-through: its bell is clear, so whatever it carries shows through |
-| Chick *(proposed)* | Shell: ducks down into its eggshell when shy, and pops out |
+| Octopus *(proposed)* | Ink: draws a mark in the air (an arrow, a circle, an underline) with its own ink, to show where to look |
+| Fruit bat *(proposed)* | Upside-down: hangs by its feet from anything and sees it the other way round |
+| Jellyfish *(proposed)* | See-through: it goes clear, fading until you can see through its bell, and comes back |
+| Chick *(proposed)* | Fluff up: fluffs every feather out into a round ball, twice its size |
 | Juno *(proposed)* | Cartwheel: arrives, and leaves, with a cartwheel |
-| Lulu *(proposed)* | Peekaboo: peeks over the edge of anything |
-| Mimi *(proposed)* | Tiptoe: sneaks in on tiptoe, and is suddenly there |
-| Pia *(proposed)* | Statue: freezes mid-move, like the game, until it is her turn |
-| Nell *(proposed)* | Twirl: spins on the spot, twin tails flying |
-| Koko *(proposed)* | Hiccup: gets the hiccups, and hops a little with each one |
-| Tami *(proposed)* | Daydream: drifts off, and a small cloud of a thought appears |
-| Suki *(proposed)* | Whistle: purses her lips and whistles a little tune |
-| Rue *(proposed)* | Pout: puffs out her cheeks and side-eyes you |
-| Momo *(proposed)* | Giggle: gets the giggles and can't stop |
-| Tess *(proposed)* | Salute: snaps to attention with a salute |
-| Bibi *(proposed)* | Skip: skips along instead of walking |
-| Red panda *(proposed)* | Balance: balances anything on its head and tail |
+| Lulu *(proposed)* | Puppy eyes: her eyes swell huge, glossy and brimming |
+| Red panda *(proposed)* | Stand tall: rears up on its hind legs, arms wide, tail fluffed, to look big |
+
+**Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. The chameleon changes its own colour; the octopus draws with its own ink; the fruit bat hangs by its own feet; the red panda rears up on its own legs. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
 
 ## Main character: Wisp (decided)
 
@@ -144,57 +135,38 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 |---|---|---|---|
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
-| — | Red panda | Balance *(proposed)*: the ringed tail is a look, so it is given an ability to compete | Backup, competing |
-| 2–6 | See round four below | | **Proposed**, not decided |
+| — | Red panda | Stand tall *(proposed)* | Candidate, competing |
+| 2–6 | Octopus, fruit bat, jellyfish, chick, Juno, Lulu (and the red panda) | See below | **Candidates**, not decided |
 
 ### Rules for every side character
 
 - **No outlines, as far as possible.** Parts are told apart by colour and tone alone. A side character's palette sets `line: "none"`, which the rig's clothes and shoes follow too. The chameleon has had its black outlines removed.
 - **Its own eyes and its own mouth.** No two characters share either. Each side character has an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) of its own (`rig/eyes.tsx`): its own eye shape, colour, shine, lids and brows, and its own lips, beak or muzzle, drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The studio shows them side by side under “Eyes and mouths — each character's own”.
-- **The ability is what it naturally does.** Not a prop it holds: a squid jets, a poodle fetches, a chick ducks into its shell. (Round two's headphones are gone for this reason.)
+- **The ability comes from the character itself** — its body and its nature — never a prop or an outside object.
 - **Legible small and on both grounds.** Check the recognition sheet (silhouettes at 96, 48 and 32px, the head at 32, 24 and 16px) on the light and the dark ground.
 
-### Round four: side candidates
+### The candidates
 
-Removed after round three: the mushroom, poodle, pufferfish, squid, flower, cloud and Wren (and, before them, the axolotl, lamb, Amara and Sloane). The chick is redrawn. Juno, Lulu and Mimi are liked, Lulu most, so four more girls follow their line. The red panda stays a backup.
+Eight characters are in the running for the six places: the chameleon (confirmed) and seven more. Everything else from rounds one to four is removed or kept as reference.
 
-Files, all in `src/design/nix/`: the octopus, fruit bat and penguin in `side-candidates.tsx`, the jellyfish in `side-jelly.tsx`, the chick in `side-puff.tsx`, the girls in `side-humans.tsx`, the ability previews in `side-abilities.tsx`.
+| Candidate | Where | From | Look | Ability | Eyes | Mouth |
+|---|---|---|---|---|---|---|
+| **Chameleon** | `candidates.tsx` | Nix bench | Casque, turret eyes, curled tail; no outlines | Colour change | Turret eyes that look their own ways | A long lizard mouth; its tongue curls out |
+| **Octopus** | `side-candidates.tsx` | Jelly | Mantle and six curling arms with suckers | Ink | White, with an octopus's bar pupil | Small and puckered |
+| **Fruit bat** | `side-candidates.tsx` | Fuzzy | Fuzz, a ruff, tall ears, wings folded as a cape | Upside-down | Huge and glossy, fur-tuft brows | A “ω” with two fangs |
+| **Jellyfish** | `side-jelly.tsx` | Jelly | A moon jelly: scalloped bell, four rings, frilly oral arms | See-through | Half-moons, flat on top | A tiny cat's “w” |
+| **Chick** | `side-puff.tsx` | Puff | A ball of fluff with a feathery tuft, in the bottom of its eggshell | Fluff up | Big and round, the shine set high | A round beak that opens to cheep |
+| **Juno** | `side-humans.tsx` | After Zari | A girl with a high puff of curls and a headband | Cartwheel | Big round, a warm brown iris, thick mobile brows | Full lips; a wide grin with top teeth |
+| **Lulu** | `side-humans.tsx` | Anya's spirit | A tiny girl with a big head, caramel hair in a side pony | Puppy eyes | Huge, a violet iris that shrinks to a dot when startled; smug flat lids | Gag mouths: “:3”, a chin-wide grin, the smug “heh” |
+| **Red panda** | `candidates.tsx` | Nix bench | Ringed tail, cream tear marks, dark legs; redrawn with no outlines | Stand tall | Dark and glossy; cream brow marks that lift and knit | A split lip under its dark nose |
 
-**Animals:**
+**Removed:** every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
 
-| Candidate | From | Body plan | Ability | Eyes | Mouth |
-|---|---|---|---|---|---|
-| **Octopus** | Jelly | Mantle and six curling arms with suckers | Ink | White, with an octopus's bar pupil | Small and puckered |
-| **Jellyfish** | Jelly | A moon jelly: scalloped bell, four rings on its crown, frilly oral arms | See-through | Half-moons, flat on top | A tiny cat's “w” |
-| **Chick** *(redrawn)* | Puff | One soft ball of fluff, fluffier on top, with a paler face and front; a tuft of three feathers; standing in the bottom of its eggshell, wings resting on the rim | Shell | Big round black eyes with the shine set high; they pinch to “^” | A round beak in the accent that opens to cheep |
-| **Penguin** | Pip | The standing bean in a dark coat, a white heart of a face | Slide | Tall black ovals, a capsule of shine, thick brows | A beak that opens |
-| **Fruit bat** | Fuzzy | Fuzz, a ruff, tall ears, wings folded as a cape | Upside-down | Huge glossy eyes, fur-tuft brows | A “ω” with two fangs |
+**Reference — other animals** (shown in the studio, not candidates): the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
 
-**Girls** — the line that is liked. All but Juno and Tami are *Lulu's line*: a tiny girl with a big head (`BIG`, the chibi frame with the head at 114%) and a rubbery gag face for every mood. Each has her own hair (her silhouette), eyes, mouth and ability.
+**Anya.** Lulu takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
 
-| Candidate | Line | Hair | Ability | Eyes | Mouth |
-|---|---|---|---|---|---|
-| **Juno** | Juno (after Zari) | A high puff of curls, a headband | Cartwheel | Big round, a warm brown iris, thick mobile brows | Full lips; a wide grin with top teeth |
-| **Lulu** | Lulu (Anya's spirit) | Caramel, choppy fringe, a side pony | Peekaboo | Huge; violet iris shrinks to a dot when startled; smug flat lids | “:3”, a chin-wide grin, the smug “heh”, a gritted fright |
-| **Mimi** | Lulu | Chestnut space buns, curtain fringe | Tiptoe | Dark, all iris, lower lashes; blank white when shocked | A tiny triangle that opens huge |
-| **Pia** | Lulu | A round cocoa bob, a blunt fringe and one cowlick that springs up when delighted and flops when worried | Statue | A two-tone honey iris and a square shine; hollow rings when startled | One snaggletooth; gritted teeth when frozen |
-| **Nell** | Lulu | Long auburn twin tails, a swept fringe | Twirl | Tall, blue iris, big oval shine, three lashes; they well up when worried, swirl when flustered | A gap-toothed grin |
-| **Koko** | Lulu | A short lilac-grey bob, a scalloped fringe, a big bow | Hiccup | Big black pupils on white with three shines; round dot brows; a hiccup squeezes one eye and pops the other | A tiny “u” with the tip of her tongue; a round “o” to hiccup |
-| **Tami** | Juno (normal head) | Two long braids with ribbons, a middle parting | Daydream | Soft and dreamy under a lowered lid, hazel, long lower lashes | Soft full lips; a small “o” when miles away |
-
-**More of Lulu's line** (`src/design/nix/side-girls.tsx`). Five more girls on the big-head frame. Their eyes come from one recipe (`bigEyes`) so the line reads as a family, but each sets her own eye shape, iris, shine, lashes and brows, and replaces the moods that are her gags.
-
-| Candidate | Hair | Ability | Eyes | Mouth |
-|---|---|---|---|---|
-| **Suki** | Navy low bunches with pompom ties, a blunt fringe, straight side-locks | Whistle | Round, a rose iris with a pale band, three lashes; pinprick pupils when startled; shut and content as she whistles | A cat's “v”; a round pucker to whistle |
-| **Rue** | Long plum hair cut blunt, straight side-locks, a headband | Pout | Soft, the outer corners drooping, a gold iris, a heavy lash line; she side-eyes you when she pouts | Small and soft; the pout puffs both cheeks past her face |
-| **Momo** | A cloud of strawberry curls and a little beret | Giggle | The biggest and glossiest: a teal iris with four shines; giggling, crescents with a tear of laughter | A small “ω”, and a laugh never far off |
-| **Tess** | A thick braid over one shoulder, a swept fringe, a clip | Salute | Round and level, a grey-blue iris, a thick lid line, dash brows that set hard | A wide flat grin with teeth |
-| **Bibi** | A high ponytail with a scrunchie, long side-bangs | Skip | Wider than tall, a chocolate iris, twin shines, bouncing dot brows; happy tents mid-skip | A bright smile with a dimple |
-
-**Anya.** Lulu's line takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
-
-With the chameleon, six of these make the cast; the red panda competes for any slot. **Next step:** pick which to keep, then refine each.
+**Next step:** choose six from the eight (the chameleon is one), then refine each.
 
 ## Cast structure: recommended, not decided
 

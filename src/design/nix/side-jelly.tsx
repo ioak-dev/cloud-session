@@ -197,7 +197,7 @@ export const JELLY_FAMILY: Candidate[] = [
     label: "Jellyfish",
     signature: "A moon jelly: a scalloped bell with four rings on its crown, frilly arms beneath",
     pitch:
-      "Jelly as the animal itself: a moon jelly's bell with a scalloped rim and the four rings on its crown, four frilly oral arms and fine tentacles beneath. No wings, no antennae, no light. Its ability is See-through: its bell is clear, so whatever it carries shows through it. Half-moon eyes, sleepy and content at rest, and a tiny cat's mouth.",
+      "Jelly as the animal itself: a moon jelly's bell with a scalloped rim and the four rings on its crown, four frilly oral arms and fine tentacles beneath. No wings, no antennae, no light. Its ability is See-through, which is what a jellyfish is: it can go clear, fading until you can see right through its bell, and come back. Half-moon eyes, sleepy and content at rest, and a tiny cat's mouth.",
     risk: "Jellyfish can read as stinging; the soft half-moon eyes and round rim keep it gentle. It floats, like Wisp; the bell's silhouette is its own.",
     pal: pal(C.mid, C.mid),
     body: C.mid,

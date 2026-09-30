@@ -15,6 +15,12 @@ export type Ability = {
   name: string;
   line: string;
   mood?: Mood;
+  /** Fades the figure, for an ability that is transparency. */
+  fade?: number;
+  /** Turns the figure's hue, for a colour change. */
+  hue?: number;
+  /** Draws the preview behind the figure rather than over it. */
+  behind?: boolean;
   /** A pose from the rig, when the ability is a gesture. */
   pose?: PoseId;
   /** Turns the figure (degrees) and scales it, for a cartwheel, a slide, hanging. */
@@ -28,6 +34,14 @@ export type Ability = {
 const TALL = "0 -40 200 340";
 
 export const SIDE_ABILITIES: Ability[] = [
+  {
+    id: "chameleon",
+    name: "Colour change",
+    line: "Takes the colour of what it lands on — here, the colour for correct, always with words or a status mark beside it.",
+    mood: "delighted",
+    hue: -115,
+    fx: () => null,
+  },
   {
     id: "side-octopus",
     name: "Ink",
@@ -47,19 +61,6 @@ export const SIDE_ABILITIES: Ability[] = [
     turn: 180,
     mood: "happy",
     fx: () => <rect x={36} y={12} width={128} height={7} rx={3.5} fill={C.deep} opacity={0.6} />,
-  },
-  {
-    id: "side-penguin",
-    name: "Slide",
-    line: "Drops onto its belly and slides to where it is going.",
-    turn: 90,
-    scale: 0.8,
-    mood: "delighted",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={3.4} strokeLinecap="round">
-        <path d="M18 132 h26 M10 150 h34 M20 168 h24" />
-      </g>
-    ),
   },
   {
     id: "side-juno",
@@ -82,193 +83,64 @@ export const SIDE_ABILITIES: Ability[] = [
   {
     id: "side-jellyfish",
     name: "See-through",
-    line: "Its bell is clear, so whatever it carries shows through.",
+    line: "It goes clear — fading until you can see right through its bell — and comes back.",
     mood: "happy",
+    fade: 0.4,
     fx: () => (
-      <g>
-        <circle cx={100} cy={59} r={15} fill={C.tint} opacity={0.75} />
-        <path
-          d="M100 48 L103.5 55 L111 56 L105.5 61 L107 68.5 L100 65 L93 68.5 L94.5 61 L89 56 L96.5 55 Z"
-          fill={C.accent}
-        />
+      <g stroke={C.hi} strokeWidth={2.4} strokeLinecap="round" fill="none">
+        <path d="M34 70 q-6 10 0 20 M166 70 q6 10 0 20 M26 60 q-10 18 0 36 M174 60 q10 18 0 36" />
       </g>
     ),
   },
   {
     id: "side-chick",
-    name: "Shell",
-    line: "When it is shy, it ducks down into its eggshell until only its eyes show, and pops out again.",
-    mood: "worried",
+    name: "Fluff up",
+    line: "Shakes itself and fluffs every feather out into a round ball, twice its size, then smooths back down.",
+    mood: "delighted",
+    behind: true,
     fx: () => (
-      <g>
-        <path
-          d="M46 132 L56 122 L66 132 L76 122 L86 132 L96 122 L106 132 L116 122 L126 132 L136 122 L146 132 L154 126 C158 190 132 222 100 222 C68 222 42 190 46 132 Z"
-          fill="#f6e7d6"
-        />
-        <circle cx={78} cy={176} r={3} fill={C.hi} />
-        <circle cx={120} cy={186} r={2.6} fill={C.hi} />
+      <g fill={C.hi}>
+        {Array.from({ length: 18 }, (_, i) => {
+          const a = ((170 + i * 11.8) * Math.PI) / 180;
+          return <circle key={i} cx={100 + Math.cos(a) * 60} cy={124 + Math.sin(a) * 58} r={13} />;
+        })}
+        <circle cx={100} cy={124} r={62} />
       </g>
     ),
   },
   {
     id: "side-lulu",
-    name: "Peekaboo",
-    line: "Peeks over the edge of anything — a card, a heading — just her eyes and fingers showing.",
+    name: "Puppy eyes",
+    line: "When she wants something, her eyes swell huge, glossy and brimming — and no one can say no.",
     mood: "curious",
     fx: () => (
       <g>
-        <rect x={10} y={146} width={180} height={160} rx={12} fill={C.soft} />
-        <ellipse cx={74} cy={147} rx={7} ry={5} fill="#f7dcca" />
-        <ellipse cx={126} cy={147} rx={7} ry={5} fill="#f7dcca" />
-      </g>
-    ),
-  },
-  {
-    id: "side-mimi",
-    name: "Tiptoe",
-    line: "Sneaks in, spy-style, on tiptoe — and is suddenly there.",
-    turn: -6,
-    mood: "thinking",
-    fx: () => (
-      <g fill={C.hi}>
-        {[
-          [30, 288],
-          [46, 280],
-          [18, 272],
-          [36, 264],
-        ].map(([x, y]) => (
-          <ellipse key={`${x}${y}`} cx={x} cy={y} rx={4} ry={2.6} />
+        {[79.5, 120.5].map((x) => (
+          <g key={x}>
+            <ellipse cx={x} cy={104} rx={13.5} ry={15} fill="#fffdf8" />
+            <circle cx={x} cy={106} r={11.4} fill="#7b5cc4" />
+            <ellipse cx={x} cy={112} rx={8.4} ry={4.6} fill="#a98ce0" />
+            <circle cx={x} cy={106} r={5} fill="#241a2e" />
+            <circle cx={x - 4.4} cy={101} r={4.2} fill="#fffdf8" />
+            <circle cx={x + 4.4} cy={100.6} r={2.2} fill="#fffdf8" />
+            <circle cx={x + 3.6} cy={111} r={1.8} fill="#fffdf8" />
+            <circle cx={x - 3.4} cy={112.4} r={1.3} fill="#fffdf8" />
+            <path d={`M${x - 11} ${116} Q${x} ${121} ${x + 11} ${116}`} stroke="#9fd4f2" strokeWidth={2.4} fill="none" strokeLinecap="round" />
+            <path d={`M${x - 13.5} ${103} A13.5 15 0 0 1 ${x + 13.5} ${103}`} stroke="#2a1d22" strokeWidth={3} fill="none" strokeLinecap="round" />
+          </g>
         ))}
       </g>
     ),
   },
   {
-    id: "side-pia",
-    name: "Statue",
-    line: "Freezes mid-move, like the game, and holds it until it is her turn: the one for waiting.",
-    mood: "focused",
-    turn: 6,
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
-        <path d="M34 40 v-16 h16 M166 40 v-16 h-16 M34 268 v16 h16 M166 268 v16 h-16" />
-      </g>
-    ),
-  },
-  {
-    id: "side-nell",
-    name: "Twirl",
-    line: "Spins on the spot, twin tails flying.",
-    mood: "delighted",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
-        <path d="M40 226 A60 14 0 0 0 160 226" />
-        <path d="M52 238 A48 11 0 0 0 148 238" strokeDasharray="3 7" />
-        <path d="M20 96 q-8 10 -2 22 M180 96 q8 10 2 22" />
-      </g>
-    ),
-  },
-  {
-    id: "side-koko",
-    name: "Hiccup",
-    line: "Gets the hiccups, and hops a little with each one.",
-    mood: "oops",
-    viewBox: "0 14 200 300",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={3} fill="none" strokeLinecap="round">
-        <path d="M78 300 l-6 8 M100 302 v10 M122 300 l6 8" />
-        <path d="M150 58 l8 -8 M156 72 l11 -2" />
-      </g>
-    ),
-  },
-  {
-    id: "side-tami",
-    name: "Daydream",
-    line: "Drifts off, eyes up and away, and a small cloud of a thought appears — then she is back.",
-    mood: "thinking",
-    viewBox: "0 -20 200 320",
-    fx: () => (
-      <g fill={C.hi}>
-        <circle cx={140} cy={46} r={4} />
-        <circle cx={150} cy={30} r={6} />
-        <circle cx={166} cy={6} r={14} />
-        <circle cx={182} cy={0} r={11} />
-        <circle cx={152} cy={-2} r={10} />
-        <circle cx={170} cy={-12} r={12} />
-      </g>
-    ),
-  },
-  {
-    id: "side-suki",
-    name: "Whistle",
-    line: "Purses her lips and whistles a little tune, eyes shut, content.",
-    mood: "curious",
-    fx: () => (
-      <g fill={C.hi} stroke={C.hi} strokeWidth={2.4} strokeLinecap="round">
-        <ellipse cx={140} cy={128} rx={5} ry={4} stroke="none" />
-        <path d="M144.6 127 V106 q6 2 8 8" fill="none" />
-        <ellipse cx={162} cy={108} rx={4.4} ry={3.6} stroke="none" />
-        <path d="M166 107 V90" fill="none" />
-      </g>
-    ),
-  },
-  {
-    id: "side-rue",
-    name: "Pout",
-    line: "Puffs out both cheeks and side-eyes you until she gets her way.",
-    mood: "focused",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.4} strokeLinecap="round" fill="none">
-        <path d="M40 112 l-8 -3 M40 124 l-9 1 M160 112 l8 -3 M160 124 l9 1" />
-      </g>
-    ),
-  },
-  {
-    id: "side-momo",
-    name: "Giggle",
-    line: "Gets the giggles and can't stop — eyes squeezed shut, a tear of laughter.",
-    mood: "happy",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
-        <path d="M28 96 q-6 6 0 12 M22 90 q-9 11 0 24 M172 96 q6 6 0 12 M178 90 q9 11 0 24" />
-      </g>
-    ),
-  },
-  {
-    id: "side-tess",
-    name: "Salute",
-    line: "Snaps to attention with a salute: ready, reporting for duty.",
-    mood: "wink",
-    pose: "wave",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
-        <path d="M168 60 l10 -6 M172 74 l12 -1 M166 46 l6 -9" />
-      </g>
-    ),
-  },
-  {
-    id: "side-bibi",
-    name: "Skip",
-    line: "Skips along instead of walking, ponytail bouncing.",
-    mood: "happy",
-    turn: -8,
-    viewBox: "0 14 200 300",
-    fx: () => (
-      <g stroke={C.hi} strokeWidth={2.6} strokeLinecap="round" fill="none">
-        <path d="M30 300 q14 -26 28 0 M66 304 q14 -20 28 0" strokeDasharray="3 6" />
-      </g>
-    ),
-  },
-  {
     id: "panda",
-    name: "Balance",
-    line: "Balances anything on its head and tail: a proposal for the backup red panda.",
-    viewBox: TALL,
-    mood: "focused",
+    name: "Stand tall",
+    line: "A red panda's own startle: it rears up on its hind legs, arms thrown wide, tail fluffed, to look as big as it can.",
+    mood: "curious",
+    pose: "cheer",
     fx: () => (
-      <g>
-        <rect x={76} y={26} width={48} height={12} rx={2} fill={C.accent} />
-        <circle cx={100} cy={12} r={13} fill={C.primary} />
-        <rect x={90} y={-20} width={20} height={20} rx={3} fill={C.mid} />
+      <g stroke={C.hi} strokeWidth={2.8} strokeLinecap="round" fill="none">
+        <path d="M30 70 l-10 -6 M26 86 l-12 -1 M170 70 l10 -6 M174 86 l12 -1 M100 22 v-12 M84 26 l-4 -10 M116 26 l4 -10" />
       </g>
     ),
   },

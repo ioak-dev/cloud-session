@@ -168,9 +168,9 @@ export const PUFF_FAMILY: Candidate[] = [
     arms: false,
     outline: false,
     label: "Chick",
-    signature: "A ball of fluff with a feathery tuft, standing in the bottom of its eggshell — it ducks into its shell",
+    signature: "A ball of fluff with a feathery tuft, standing in the bottom of its eggshell — it fluffs up",
     pitch:
-      "From Puff: one soft ball of fluff with a paler face and front, a tuft of three feathers, standing in the bottom half of the eggshell it hatched from on thin legs, its wings resting on the rim. Its ability is Shell: when it is shy it ducks down into its shell until only its eyes show, and pops out again. Big round eyes with the shine set high, a round beak that opens to cheep, and a tuft that droops when it is worried.",
+      "From Puff: one soft ball of fluff with a paler face and front, a tuft of three feathers, standing in the bottom half of the eggshell it hatched from on thin legs, its wings resting on the rim. Its ability is Fluff up: it shakes itself and fluffs every feather out into a perfect round ball, twice its size — cosy, proud or pleased with itself — then smooths back down. Big round eyes with the shine set high, a round beak that opens to cheep, and a tuft that droops when it is worried.",
     risk: "A chick is a baby; it must never make hatching or growing up a reward.",
     pal: palChick,
     body: C.hi,

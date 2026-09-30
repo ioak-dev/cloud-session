@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { arcUp, line, OpenMouth, Orb, TONGUE_PINK, type EyeKit, type MouthKit } from "./rig/eyes";
+import { arcUp, chevron, line, OpenMouth, Orb, TONGUE_PINK, type EyeKit, type MouthKit } from "./rig/eyes";
 import type { FaceStyle, Mood } from "./rig/face";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
@@ -172,6 +172,7 @@ const palPanda: Palette = {
   shoe: MAGENTA,
   accent: TEAL,
   glow: GLOW,
+  line: "none",
 };
 
 const PANDA_EAR = "M52 84 C42 60 50 40 66 36 C80 46 84 62 78 74 Z";
@@ -186,9 +187,6 @@ function PandaHead({ pal }: Ctx) {
             <path
               d={PANDA_EAR}
               fill={pal.skin}
-              stroke={pal.ink}
-              strokeWidth={2.4}
-              strokeLinejoin="round"
             />
             <path d={PANDA_EAR_IN} fill={PANDA_CREAM} />
           </g>
@@ -197,9 +195,6 @@ function PandaHead({ pal }: Ctx) {
       <path
         d="M56 96 C56 64 76 54 100 54 C124 54 144 64 144 96 L154 106 L144 111 L152 121 L139 124 C130 136 116 140 100 140 C84 140 70 136 61 124 L48 121 L56 111 L46 106 Z"
         fill={pal.skin}
-        stroke={pal.ink}
-        strokeWidth={2.5}
-        strokeLinejoin="round"
       />
       <path
         d="M50 112 L58 110 L52 120 L62 122 C66 128 72 132 78 134 C70 122 70 110 64 104 Z"
@@ -209,8 +204,6 @@ function PandaHead({ pal }: Ctx) {
         d="M150 112 L142 110 L148 120 L138 122 C134 128 128 132 122 134 C130 122 130 110 136 104 Z"
         fill={PANDA_CREAM}
       />
-      <ellipse cx={82} cy={82} rx={8.5} ry={5} fill={PANDA_CREAM} />
-      <ellipse cx={118} cy={82} rx={8.5} ry={5} fill={PANDA_CREAM} />
       <path
         d="M76 114 C78 102 90 100 100 104 C110 100 122 102 124 114 C124 128 112 136 100 136 C88 136 76 128 76 114 Z"
         fill={PANDA_CREAM}
@@ -243,10 +236,93 @@ function PandaTail({ pal, uid }: Ctx) {
       <g clipPath={`url(#${id})`} stroke="#ecb48a" strokeWidth={8}>
         <path d="M122 226 L134 186 M146 222 L152 184 M178 200 L154 180 M186 172 L156 166 M180 144 L152 152" />
       </g>
-      <path d={d} fill="none" stroke={pal.ink} strokeWidth={2.5} strokeLinejoin="round" />
     </g>
   );
 }
+
+/** Red panda: dark, round, glossy eyes with a warm brown rim, and its cream brow marks, which lift,
+ *  tilt and knit — the marks are its brows. Startled, the eyes go wide and the marks shoot up. */
+const PANDA_EYE = "#241510";
+const pandaEyes: EyeKit = ({ mood, s, x, y, look, id, pal }) => {
+  const [dx, dy] = look;
+  const mark = (raise: number, tilt: number) => (
+    <ellipse
+      cx={x}
+      cy={y - 16 - raise}
+      rx={8}
+      ry={4.6}
+      fill={PANDA_CREAM}
+      transform={`rotate(${s * tilt} ${x} ${y - 16 - raise})`}
+    />
+  );
+  const open = (k = 1, top = 0, tilt = 0, extra = false) => (
+    <Orb id={id} x={x} y={y} rx={6.8 * k} ry={7.4 * k} s={s} fill={PANDA_EYE} lid={{ top, tilt, color: pal.skin }}>
+      <circle cx={x + dx} cy={y + dy} r={5.2 * k} fill="#6a3a22" />
+      <circle cx={x + dx} cy={y + dy} r={3.4 * k} fill={PANDA_EYE} />
+      <circle cx={x - 2.4 + dx} cy={y - 2.6 + dy} r={2.4 * k} fill={WHITE} />
+      <circle cx={x + 2.4 + dx} cy={y + 2.6 + dy} r={1} fill={WHITE} />
+      {extra && <circle cx={x + 2.6 + dx} cy={y - 2.8 + dy} r={1.2} fill={WHITE} />}
+    </Orb>
+  );
+  const g = (a: ReactNode, b: ReactNode) => (
+    <g>
+      {b}
+      {a}
+    </g>
+  );
+  const shut = (d: string) => <path d={d} {...line(PANDA_EYE, 3.2)} />;
+  switch (mood) {
+    case "happy":
+      return g(shut(arcUp(x, y, 6.5, 4.4)), mark(3, 0));
+    case "delighted":
+      return g(open(1.2, 0, 0, true), mark(8, 0));
+    case "curious":
+      return g(open(1.1), mark(s === 1 ? 7 : 0, s === 1 ? -10 : 4));
+    case "thinking":
+      return g(open(1, 0.34), mark(s === -1 ? 5 : -1, s === -1 ? 10 : -6));
+    case "focused":
+      return g(open(1, 0.44, -8), mark(-2, -14));
+    case "worried":
+      return g(open(1.04, 0.1, 14, true), mark(3, 18));
+    case "oops":
+      return g(shut(chevron(x, y, s, 5, 5)), mark(4, 14));
+    case "wink":
+      return s === 1 ? g(shut(arcUp(x, y, 6.5, 4.4)), mark(1, 0)) : g(open(), mark(3, 0));
+    default:
+      return g(open(), mark(0, 0));
+  }
+};
+
+/** Red panda: a split lip under its dark nose; it opens pink, and gapes when it rears up. */
+const pandaMouth: MouthKit = ({ mood, y, pal }) => {
+  const ink = pal.ink;
+  const lip = (d = 3.4, tilt = 0) => (
+    <g>
+      <path d={`M100 ${y - 8} L100 ${y}`} {...line(ink, 2)} />
+      <path d={`M93 ${y + tilt} Q96.5 ${y + d + tilt} 100 ${y} Q103.5 ${y + d - tilt} 107 ${y - tilt}`} {...line(ink, 2.2)} />
+    </g>
+  );
+  switch (mood) {
+    case "happy":
+      return <g><path d={`M100 ${y - 8} L100 ${y - 2}`} {...line(ink, 2)} /><OpenMouth d={`M92 ${y - 2} Q100 ${y + 12} 108 ${y - 2} Z`} fill="#4a1e1a" tongue={[100, y + 6, 4, 2.6]} /></g>;
+    case "delighted":
+      return <g><path d={`M100 ${y - 8} L100 ${y - 3}`} {...line(ink, 2)} /><OpenMouth d={`M90 ${y - 3} Q100 ${y + 16} 110 ${y - 3} Z`} fill="#4a1e1a" tongue={[100, y + 8, 5, 3.2]} /></g>;
+    case "curious":
+      return <g><path d={`M100 ${y - 8} L100 ${y - 3}`} {...line(ink, 2)} /><ellipse cx={100} cy={y + 1} rx={3.2} ry={4} fill="#4a1e1a" /></g>;
+    case "thinking":
+      return lip(3.4, 1.6);
+    case "focused":
+      return lip(1.4);
+    case "worried":
+      return <g><path d={`M100 ${y - 8} L100 ${y - 1}`} {...line(ink, 2)} /><path d={`M93 ${y + 2} Q96.5 ${y - 1} 100 ${y + 1} Q103.5 ${y + 3} 107 ${y}`} {...line(ink, 2.2)} /></g>;
+    case "oops":
+      return <g>{lip()}<path d={`M101 ${y + 2} q1 6 5 5 q1 -3 -1 -5 Z`} fill={TONGUE_PINK} /></g>;
+    case "wink":
+      return lip(4.4, -1.2);
+    default:
+      return lip();
+  }
+};
 
 /* ——— Firefly ——— */
 
@@ -562,9 +638,10 @@ export const CANDIDATES: Candidate[] = [
     id: "panda",
     kind: "animal",
     label: "Red panda",
-    signature: "A huge ringed tail, tear-mark cheeks and dark legs",
+    outline: false,
+    signature: "A huge ringed tail, tear-mark cheeks and dark legs — it rears up tall",
     pitch:
-      "The strongest silhouette of the animals: the tail alone identifies it at 48px, and the white face markings make every expression read. Universally cute across ages, and the dark legs make any outfit pop.",
+      "The strongest silhouette of the animals: the tail alone identifies it at 48px, and the cream face markings make every expression read. Its ability is Stand tall — a red panda's own startle: it rears up on its hind legs with its arms thrown wide and its tail fluffed, to look as big as it can. A surprise, and a delight, made of its own body. Dark glossy eyes, and cream brow marks that lift and knit; a split lip under its dark nose.",
     risk: "Its rust fur sits between the destructive and warning hues; as a large field it may read as a status (§9.4.3). A Firefox and Turning Red association exists.",
     pal: palPanda,
     body: palPanda.skin,
@@ -576,6 +653,8 @@ export const CANDIDATES: Candidate[] = [
       nose: "none",
       brows: false,
       lid: palPanda.skin,
+      kit: pandaEyes,
+      mouthKit: pandaMouth,
     },
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
