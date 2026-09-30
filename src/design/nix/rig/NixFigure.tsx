@@ -183,8 +183,8 @@ export function NixFigure({
           </g>
         </g>
 
-        {leg("L")}
-        {leg("R")}
+        {c.legs !== false && leg("L")}
+        {c.legs !== false && leg("R")}
 
         <g data-joint="torso" style={pivot("torso", j)}>
           <rect

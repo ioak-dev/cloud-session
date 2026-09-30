@@ -20,7 +20,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 ## Main and side
 
 - **One ability each.** Every character has one special feature or ability no other character has: the firefly’s glow and fire sparkles, the chameleon’s colour change. A new candidate is not drawn until it has an ability, and it must not overlap one that is already taken.
-- **Main character (firefly).** The work is variants in `firefly-variants.tsx` (Spark, Fuzzy, Nightlight, Flicker, Bulb; `docs/cast.md` holds the current list). Until the user picks one, draw only the static figure on the shared rig. Do not spend effort on new poses, motion or expression sets. After the pick, the silhouette, palette and ability stay fixed across contexts.
+- **Main character (firefly).** The work is variants: new body plans in `firefly-bodies.tsx`, and the kept chibi-frame variants in `firefly-variants.tsx`. `docs/cast.md` holds the current list. A variant that needs a different silhouette gets its own `Body` frame (joints, torso, fits, limb widths) rather than a new head on the chibi frame; `legs: false` makes a character float. Until the user picks one, draw only the static figure on the shared rig. Do not spend effort on new poses, motion or expression sets. After the pick, the silhouette, palette and ability stay fixed across contexts.
 - **Side characters.** The chameleon is confirmed. Its colour change may use status hues, under the conditions in `docs/cast.md`. The otter and red panda are backups. New side candidates are welcome; propose them with an ability and a silhouette distinct from the rest of the cast.
 - Each character must read apart from the others by silhouette alone, at small size. Only the chameleon may take a status hue, and only through its ability.
 - Flourishes (sparkle trails, bursts, confetti) are a separate effects layer, applicable to any character. Never draw them into a character.
@@ -29,7 +29,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 ## Where to work
 
-- Main-character variants: `src/design/nix/firefly-variants.tsx`.
+- Main-character variants: `src/design/nix/firefly-bodies.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.

@@ -61,7 +61,8 @@ export type Joints = Record<JointName, P>;
  * one transform, so a hair style or an outfit is drawn once and worn by both.
  */
 export type Body = {
-  id: "chibi" | "adult";
+  /** `chibi` and `adult` are the shared bodies; a candidate may bring its own. */
+  id: string;
   j: Joints;
   headFit?: string;
   torsoFit?: string;

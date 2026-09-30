@@ -30,12 +30,12 @@ const OUTFITS: Candidate["outfits"] = [
 ];
 
 /** A four-point sparkle centred on (x, y). */
-const star = (x: number, y: number, r: number) => {
+export const star = (x: number, y: number, r: number) => {
   const q = r * 0.28;
   return `M${x} ${y - r} L${x + q} ${y - q} L${x + r} ${y} L${x + q} ${y + q} L${x} ${y + r} L${x - q} ${y + q} L${x - r} ${y} L${x - q} ${y - q} Z`;
 };
 
-function palette(
+export function palette(
   body: string,
   bodyHi: string,
   face: string,
@@ -84,10 +84,10 @@ const BRIGHT: Partial<Record<Mood, number>> = {
   worried: 0.6,
   oops: 0.8,
 };
-const bright = (m?: Mood) => (m && BRIGHT[m]) ?? 1;
+export const bright = (m?: Mood) => (m && BRIGHT[m]) ?? 1;
 
 /** An antenna on its joint, turned about its base by the mood. */
-function Antenna({
+export function Antenna({
   side,
   base,
   mood,
@@ -108,7 +108,7 @@ function Antenna({
 }
 
 /** A radial glow fill: a white-hot core, the glow, a warm rim. */
-function GlowGrad({ id, glow, rim }: { id: string; glow: string; rim: string }) {
+export function GlowGrad({ id, glow, rim }: { id: string; glow: string; rim: string }) {
   return (
     <defs>
       <radialGradient id={id} cx="42%" cy="40%" r="65%">
@@ -120,7 +120,7 @@ function GlowGrad({ id, glow, rim }: { id: string; glow: string; rim: string }) 
   );
 }
 
-/* ——— Wings: Spark's long upper pair and short lower pair, shared ——— */
+/* ——— Wings: a long upper pair and a short lower pair ——— */
 
 function LongWings({ pal, tint, vein }: { pal: Palette; tint: string; vein?: string }) {
   return (
@@ -161,111 +161,7 @@ function LongWings({ pal, tint, vein }: { pal: Palette; tint: string; vein?: str
   );
 }
 
-/* ——— B · Spark ——— */
-
-const SPK_BODY = "#4b3aa0";
-const palSpark = palette(SPK_BODY, "#33267a", "#f7e7d4", "#dcc4a6", {
-  eye: "#4b3aa0",
-  glow: "#ffcf3f",
-  accent: "#ff8a4c",
-});
-
-function SparkHead({ pal }: Ctx) {
-  return (
-    <g>
-      <ellipse cx={100} cy={100} rx={45} ry={42} fill={SPK_BODY} />
-      {/* a widow's-peak face: the point makes the head read as pointing forward, eager */}
-      <path
-        d="M61 108 C61 88 76 78 90 76 L100 66 L110 76 C124 78 139 88 139 108 C139 130 122 139 100 139 C78 139 61 130 61 108 Z"
-        fill={pal.skin}
-      />
-      <ellipse cx={100} cy={100} rx={45} ry={42} fill="none" stroke={pal.ink} strokeWidth={2.5} />
-      <path
-        d="M74 66 Q84 60 94 60"
-        stroke="#7a6ad0"
-        strokeWidth={3}
-        fill="none"
-        strokeLinecap="round"
-      />
-      {[
-        [72, 116],
-        [77, 121],
-        [128, 116],
-        [123, 121],
-      ].map(([x, y]) => (
-        <circle
-          key={`${x}${y}`}
-          cx={x}
-          cy={y}
-          r={1.8}
-          fill={pal.glow}
-          stroke={pal.ink}
-          strokeWidth={0.6}
-        />
-      ))}
-    </g>
-  );
-}
-
-function SparkAntennae({ pal, mood }: Ctx) {
-  return (
-    <g>
-      {(
-        [
-          ["L", "M88 60 C80 40 62 36 60 24 C58 14 70 12 72 20", [72, 20]],
-          ["R", "M112 60 C120 40 138 36 140 24 C142 14 130 12 128 20", [128, 20]],
-        ] as const
-      ).map(([side, d, [x, y]]) => (
-        <Antenna key={side} side={side} base={[side === "L" ? 88 : 112, 60]} mood={mood}>
-          <path d={d} stroke={pal.ink} strokeWidth={3} fill="none" strokeLinecap="round" />
-          <circle cx={x} cy={y} r={9} fill={pal.glow} opacity={0.35 * bright(mood)} />
-          <path
-            d={star(x, y, 8)}
-            fill={pal.glow}
-            stroke={pal.ink}
-            strokeWidth={1.6}
-            strokeLinejoin="round"
-          />
-        </Antenna>
-      ))}
-    </g>
-  );
-}
-
-function SparkBehind({ pal, mood }: Ctx) {
-  return (
-    <g>
-      <LongWings pal={pal} tint="#e6dcff" />
-      <g data-joint="tail" style={pivot("tail")}>
-        <circle
-          data-joint="glow"
-          cx={128}
-          cy={232}
-          r={34}
-          fill={pal.glow}
-          opacity={0.35 * bright(mood)}
-        />
-        <path
-          d="M108 212 C126 206 146 218 144 236 C142 252 124 256 114 246 C106 238 104 224 108 212 Z"
-          fill={pal.glow}
-          stroke={pal.ink}
-          strokeWidth={2.5}
-          strokeLinejoin="round"
-        />
-        <path
-          d="M112 220 Q124 214 136 220"
-          stroke={SPK_BODY}
-          strokeWidth={4.5}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path d={star(126, 232, 5)} fill={WHITE} />
-      </g>
-    </g>
-  );
-}
-
-/* ——— C · Fuzzy ——— */
+/* ——— Fuzzy ——— */
 
 const FUZ_BODY = "#6a4d82";
 const FUZ_HI = "#9677ae";
@@ -406,7 +302,7 @@ function FuzzyBehind({ pal, mood }: Ctx) {
   );
 }
 
-/* ——— D · Nightlight: a night-sky firefly, a constellation on its cap ——— */
+/* ——— Nightlight: a night-sky firefly, a constellation on its cap ——— */
 
 const NL_BODY = "#2b2f6e";
 const NL_HI = "#5059b8";
@@ -580,174 +476,7 @@ function NightBehind({ pal, uid, mood }: Ctx) {
   );
 }
 
-/* ——— E · Flicker: all fizz — a flame of a crest, freckles and a gap tooth ——— */
-
-const FL_BODY = "#2f4c9e";
-const FL_HI = "#5474cc";
-const TANGERINE = "#ff8a3d";
-const palFlicker = palette(FL_BODY, "#1f3574", "#fde9d6", "#e4c8ac", {
-  eye: "#1f3574",
-  glow: "#ffc94a",
-  accent: TANGERINE,
-  top: TANGERINE,
-  shoe: TANGERINE,
-});
-
-function FlickerHead({ pal, uid }: Ctx) {
-  const f = `${uid}-flcrest`;
-  const b = `${uid}-flhead`;
-  return (
-    <g>
-      <defs>
-        <linearGradient id={f} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffe27a" />
-          <stop offset="100%" stopColor={TANGERINE} />
-        </linearGradient>
-        <linearGradient id={b} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={FL_HI} />
-          <stop offset="55%" stopColor={FL_BODY} />
-        </linearGradient>
-      </defs>
-      {/* the crest: a three-tongued flame that sways like hair */}
-      <g data-joint="hairSway" style={pivot("hairSway")}>
-        <path
-          d="M84 66 C76 52 84 42 88 30 C92 40 96 44 98 38 C98 28 102 20 108 12 C110 26 118 34 116 44 C122 40 122 34 122 30 C130 42 126 58 118 66 Z"
-          fill={`url(#${f})`}
-          stroke={pal.ink}
-          strokeWidth={2.4}
-          strokeLinejoin="round"
-        />
-        <path d="M96 62 C92 54 98 48 100 42 C104 50 110 54 106 62 Z" fill="#fff1b8" />
-      </g>
-      <ellipse cx={100} cy={100} rx={45} ry={41} fill={`url(#${b})`} />
-      <path
-        d="M60 108 C60 88 78 80 100 80 C122 80 140 88 140 108 C140 130 122 139 100 139 C78 139 60 130 60 108 Z"
-        fill={pal.skin}
-      />
-      {/* tangerine cheek flashes, the only marking on the face */}
-      <path
-        d="M62 104 l8 3 M62 110 l7 1"
-        stroke={TANGERINE}
-        strokeWidth={2.4}
-        strokeLinecap="round"
-      />
-      <path
-        d="M138 104 l-8 3 M138 110 l-7 1"
-        stroke={TANGERINE}
-        strokeWidth={2.4}
-        strokeLinecap="round"
-      />
-      <ellipse cx={100} cy={100} rx={45} ry={41} fill="none" stroke={pal.ink} strokeWidth={2.5} />
-    </g>
-  );
-}
-
-function FlickerAntennae({ pal, mood }: Ctx) {
-  return (
-    <g>
-      {(
-        [
-          ["L", "M76 66 L68 54 L74 48 L64 34", [64, 32]],
-          ["R", "M124 66 L132 54 L126 48 L136 34", [136, 32]],
-        ] as const
-      ).map(([side, d, [x, y]]) => (
-        <Antenna key={side} side={side} base={[side === "L" ? 76 : 124, 66]} mood={mood}>
-          {/* a zig-zag, like a spark jumping */}
-          <path
-            d={d}
-            stroke={pal.ink}
-            strokeWidth={3}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx={x} cy={y} r={9} fill={pal.glow} opacity={0.35 * bright(mood)} />
-          <path
-            d={`M${x} ${y - 8} C${x + 5} ${y - 2} ${x + 5} ${y + 5} ${x} ${y + 5} C${x - 5} ${y + 5} ${x - 5} ${y - 2} ${x} ${y - 8} Z`}
-            fill={pal.glow}
-            stroke={pal.ink}
-            strokeWidth={1.8}
-            strokeLinejoin="round"
-          />
-        </Antenna>
-      ))}
-    </g>
-  );
-}
-
-function FlickerBehind({ pal, uid, mood }: Ctx) {
-  const g = `${uid}-fltail`;
-  return (
-    <g>
-      <GlowGrad id={g} glow={pal.glow} rim={TANGERINE} />
-      {(
-        [
-          ["wingL", -1],
-          ["wingR", 1],
-        ] as const
-      ).map(([j, s]) => (
-        <g key={j} data-joint={j} style={pivot(j)}>
-          {/* swept, pointed wings with a tangerine leading edge */}
-          <path
-            d={`M${100 + 8 * s} 158 C${100 + 30 * s} 134 ${100 + 58 * s} 126 ${100 + 70 * s} 128 C${100 + 64 * s} 148 ${100 + 36 * s} 164 ${100 + 8 * s} 164 Z`}
-            fill="#fff0e2"
-            fillOpacity={0.9}
-            stroke={pal.ink}
-            strokeWidth={2.2}
-            strokeLinejoin="round"
-          />
-          <path
-            d={`M${100 + 14 * s} 156 C${100 + 32 * s} 140 ${100 + 54 * s} 132 ${100 + 66 * s} 131`}
-            stroke={TANGERINE}
-            strokeWidth={2.6}
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d={`M${100 + 8 * s} 170 C${100 + 30 * s} 172 ${100 + 48 * s} 184 ${100 + 52 * s} 198 C${100 + 36 * s} 196 ${100 + 20 * s} 186 ${100 + 8 * s} 176 Z`}
-            fill="#fff0e2"
-            fillOpacity={0.9}
-            stroke={pal.ink}
-            strokeWidth={2.2}
-            strokeLinejoin="round"
-          />
-        </g>
-      ))}
-      <g data-joint="tail" style={pivot("tail")}>
-        <circle
-          data-joint="glow"
-          cx={128}
-          cy={232}
-          r={38}
-          fill={pal.glow}
-          opacity={0.35 * bright(mood)}
-        />
-        {/* a flame-shaped glow: the tip flicks up and back */}
-        <path
-          d="M106 212 C120 208 138 210 150 196 C154 214 154 236 142 250 C130 262 110 256 106 242 C102 232 102 220 106 212 Z"
-          fill={`url(#${g})`}
-          stroke={pal.ink}
-          strokeWidth={2.5}
-          strokeLinejoin="round"
-        />
-        <path
-          d="M108 218 Q120 212 132 214"
-          stroke={FL_BODY}
-          strokeWidth={5}
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M124 248 C116 240 122 230 128 224 C128 234 136 232 134 242 C133 248 128 250 124 248 Z"
-          fill={WHITE}
-          opacity={0.85}
-        />
-      </g>
-    </g>
-  );
-}
-
-/* ——— F · Bulb: a lightbulb for a tail — a bright idea ——— */
+/* ——— Bulb: a lightbulb for a tail — a bright idea ——— */
 
 const BB_BODY = "#5a98d6";
 const BB_NAVY = "#23365e";
@@ -918,50 +647,15 @@ function BulbBehind({ pal, uid, mood }: Ctx) {
   );
 }
 
-export const FIREFLY_VARIANTS: Candidate[] = [
-  {
-    id: "firefly-spark",
-    kind: "animal",
-    label: "Firefly · Spark",
-    signature: "Star-tipped antennae and a comet-shaped glow tail",
-    pitch:
-      "The most magical: the antennae end in stars, so the name Sparkles is literally on the character. Two pairs of long wings give it the most range in motion; the widow's-peak face reads as quick and eager.",
-    risk: "The stars on its antennae may clash with product ornaments that also use a four-point star.",
-    pal: palSpark,
-    body: SPK_BODY,
-    face: {
-      eyes: "anime",
-      eyeY: 104,
-      eyeGap: 17,
-      mouthY: 124,
-      nose: "none",
-      brows: true,
-      lid: palSpark.skin,
-    },
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => <SparkBehind {...c} />,
-    head: (c) => <SparkHead {...c} />,
-    top: (c) => <SparkAntennae {...c} />,
-    belly: ({ pal }) => (
-      <path
-        d="M86 178 L100 186 L114 178 M86 194 L100 202 L114 194"
-        stroke={pal.glow}
-        strokeOpacity={0.8}
-        strokeWidth={3}
-        fill="none"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    ),
-  },
+/** The variants kept from earlier rounds. */
+export const FIREFLY_KEPT: Candidate[] = [
   {
     id: "firefly-fuzzy",
     kind: "animal",
     label: "Firefly · Fuzzy",
     signature: "A fuzzy body, feathery antennae and a round glow-bulb tail",
     pitch:
-      "The most huggable: fuzz, a crown tuft and a ruff take the bug out of the bug, answering the bench's worry that some children dislike insects. It reads as a plush toy, which suits a character a child names. Spark's long wings keep it light.",
+      "The most huggable: fuzz, a crown tuft and a ruff take the bug out of the bug, answering the bench's worry that some children dislike insects. It reads as a plush toy, which suits a character a child names. Long wings keep it light.",
     risk: "The fuzz edge is fiddly at 16px and may read as a bumblebee or a moth.",
     pal: palFuzzy,
     body: FUZ_BODY,
@@ -1018,42 +712,6 @@ export const FIREFLY_VARIANTS: Candidate[] = [
         stroke={pal.skin}
         strokeOpacity={0.5}
         strokeWidth={3}
-        fill="none"
-        strokeLinecap="round"
-      />
-    ),
-  },
-  {
-    id: "firefly-flicker",
-    kind: "animal",
-    label: "Firefly · Flicker",
-    signature: "A flame crest, zig-zag antennae and a flame-shaped glow",
-    pitch:
-      "All energy: the crest is a flame that sways like hair, the antennae zig-zag like a jumping spark and end in tiny flames, and freckles and a gap tooth make every expression cheeky. The fire in fire sparkles, drawn as personality. The crest gives it the strongest silhouette of the set.",
-    risk: "Fire is a hazard sign to some parents; the flames must stay soft and round. The crest disappears under a winter hat, so the zig-zag antennae have to carry it then.",
-    pal: palFlicker,
-    body: FL_BODY,
-    face: {
-      eyes: "anime",
-      eyeY: 106,
-      eyeGap: 18,
-      mouthY: 125,
-      nose: "none",
-      brows: true,
-      freckles: true,
-      gapTooth: true,
-      lid: palFlicker.skin,
-    },
-    outfit: "bare",
-    outfits: OUTFITS,
-    behind: (c) => <FlickerBehind {...c} />,
-    head: (c) => <FlickerHead {...c} />,
-    top: (c) => <FlickerAntennae {...c} />,
-    belly: ({ pal }) => (
-      <path
-        d="M84 178 Q100 184 116 178 M84 194 Q100 200 116 194"
-        stroke={pal.glow}
-        strokeWidth={3.4}
         fill="none"
         strokeLinecap="round"
       />

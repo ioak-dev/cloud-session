@@ -19,6 +19,8 @@ export type Candidate = {
   kind: "animal";
   /** The body it stands on; chibi when absent. */
   frame?: Body;
+  /** `false` for a character that floats: no legs are drawn. */
+  legs?: false;
   label: string;
   signature: string;
   pitch: string;

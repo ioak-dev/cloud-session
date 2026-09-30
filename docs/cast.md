@@ -17,14 +17,24 @@ Every character has **one special feature or ability that no other character in 
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
-Five candidate variants are in `src/design/nix/firefly-variants.tsx`. Lantern was dropped.
+Eight candidates, in two groups. The rest (Lantern, Spark, Flicker) were dropped.
+
+**New bodies**, in `src/design/nix/firefly-bodies.tsx`. Each is built from the ground up on a body frame of its own, not the shared chibi one, so they differ in silhouette, in where the light lives, and in how they stand:
+
+| Variant | Body plan | Where the light is | Antennae |
+|---|---|---|---|
+| Pip | A pink bean: head and body are one shape, stubby limbs | The bean’s whole bottom glows, through any outfit | Coiled springs |
+| Wisp | Floats, with no legs; a droplet-shaped head and ribbon wings | The body ends in a flame of light | Thin as smoke |
+| Chonk | Low and wide, sitting in a domed beetle shell | Two lamps set into the sides of the shell | Short and clubbed |
+| Glowworm | A firefly larva: a segmented body, a bare baby face, no wings | A pair of lights on every ring; the last ring glows | Nubs |
+| Strider | Tall and lanky, long legs, a lopsided cap | The tail arcs over its shoulder like a lantern on a pole | Question marks |
+
+**Kept from earlier rounds**, in `src/design/nix/firefly-variants.tsx`, all on the shared chibi frame:
 
 | Variant | Direction |
 |---|---|
-| Spark | Star-tipped antennae, a comet-shaped glow tail, two pairs of long wings |
-| Fuzzy | The most huggable: fuzzy body, feathery antennae, a round glow bulb; Spark’s wings |
+| Fuzzy | The most huggable: fuzzy body, feathery antennae, a round glow bulb, long wings |
 | Nightlight | Calm and tender: a constellation on its cap, heart-dipped bangs, glowing antenna bulbs, round starry wings |
-| Flicker | All energy: a flame crest that sways like hair, zig-zag antennae with flame tips, freckles, a gap tooth, a flame-shaped glow |
 | Bulb | The learning one: a lightbulb tail with a filament (a bright idea), a striped cap, glass-bead antennae, polka-dot wings |
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.

@@ -9,7 +9,8 @@ import * as React from "react";
 import { FilterSegment, FilterSet } from "@/components/ui/filter-segment";
 
 import { CANDIDATES, type Candidate } from "./candidates";
-import { FIREFLY_VARIANTS } from "./firefly-variants";
+import { FIREFLY_BODIES } from "./firefly-bodies";
+import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -27,7 +28,7 @@ const TESTS = [
 ] as const;
 
 /** Main-character variants first, then the side candidates. The original bench firefly stays for reference. */
-const ALL: Candidate[] = [...FIREFLY_VARIANTS, ...CANDIDATES];
+const ALL: Candidate[] = [...FIREFLY_BODIES, ...FIREFLY_KEPT, ...CANDIDATES];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -69,10 +70,10 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The cast</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Nothing is final yet. The firefly is the natural main character and is being reworked —
-        three variants below. The chameleon is a confirmed side character; the otter and red panda
-        are backups. Everything shares one joint set, poses, expressions and wardrobe, so they are
-        compared on design alone.
+        Nothing is final yet. The firefly is the natural main character: five new variants, each on
+        a body of its own, then the three kept from earlier rounds. The chameleon is a confirmed
+        side character; the otter and red panda are backups. Every figure is rigged, so poses,
+        expressions and wardrobe apply to all of them.
       </p>
 
       <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
@@ -86,7 +87,8 @@ export function NixBenchView() {
 
       {(
         [
-          ["Main character — firefly variants", FIREFLY_VARIANTS],
+          ["Main character — new firefly bodies", FIREFLY_BODIES],
+          ["Main character — kept from earlier rounds", FIREFLY_KEPT],
           ["Side candidates (and the original bench firefly)", CANDIDATES],
         ] as const
       ).map(([title, group]) => (
