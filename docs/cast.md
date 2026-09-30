@@ -16,11 +16,6 @@ Every character has **one special feature or ability that no other character in 
 | Chick | Fluff up: fluffs every feather out into a round ball, twice its size |
 | Juno | Cartwheel: arrives, and leaves, with a cartwheel |
 | Lulu | Puppy eyes: her eyes swell huge, glossy and brimming |
-| Fizz (frog) *(concept)* | Throat balloon: his throat swells up round when he is bursting to say something |
-| Clover (goat) *(concept)* | Climb: scrambles onto the top of anything and stands there, proud |
-| Tuck (tortoise) *(concept)* | Shell spin: flips onto his back and spins on his shell like a breakdancer |
-| Bit (robot) *(concept)* | Screen face: its face is a screen and can become any shape |
-| Remy (boy) *(concept)* | Drama: every feeling at full size — the gasp, the swoon, the bow |
 
 **Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. The chameleon changes its own colour; the octopus draws with its own ink; the fruit bat hangs by its own feet; the red panda rears up on its own legs. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
 
@@ -191,7 +186,7 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | Stand tall | **Dropped** — not expressive enough, no special character; kept as reference |
 | 2–5 | Fruit bat, chick, Juno, Lulu | See below | **Chosen** |
-| 6 | One of five new concepts: Fizz, Clover, Tuck, Bit, Remy | See below | **Open** |
+| 6 | — | — | **Open** — to be chosen with the cast as a whole, once the six are designed as a connected world |
 
 ### Rules for every side character
 
@@ -214,7 +209,7 @@ Duolingo's cast is loved for something the drawings here were missing: each of t
 
 ### The candidates
 
-Five side characters are chosen — the chameleon, the fruit bat, the chick, Juno and Lulu — and the sixth place is open to the five new concepts below.
+Five side characters are chosen — the chameleon, the fruit bat, the chick, Juno and Lulu — and the sixth place is open.
 
 | Candidate | Temperament | At rest | Ability | Refined with |
 |---|---|---|---|---|
@@ -238,19 +233,7 @@ The eyes and mouth of each are as described in their files and on the studio's e
 
 
 
-### New concepts for the sixth place
-
-`src/design/nix/side-new.tsx`. Five concepts unlike anything tried so far — an amphibian, a hoofed animal, an old one, a machine and a boy — each built to act: a temperament readable at rest, a face that does something different in every mood, and an ability from its own body.
-
-| Concept | Temperament | At rest | Ability | Eyes | Mouth |
-|---|---|---|---|---|---|
-| **Fizz**, a blue dart frog | An over-excitable enthusiast: everything is the best thing ever; leaps before he looks | Already delighted, fists at his chest, grinning ear to ear | Throat balloon | Big round eyes on top of his head, huge pupils; frog lids that close from above and below and squint up from beneath | The widest in the cast; grins to show his whole tongue |
-| **Clover**, a goat kid | Stubborn, cheeky, fearless: climbs what she is told not to, nibbles what she shouldn't | Hands on hips, head cocked, winking | Climb | Amber with a goat's flat bar pupil, wide with glee, a slit when plotting; one brown eye patch | A sideways chew, little bottom teeth, a wide-open bleat |
-| **Tuck**, an old tortoise | Old, dry, unhurried; pretends nothing impresses him | Lids half down, mouth turned down, hands folded | Shell spin | Small deep-set eyes with bags, and enormous white eyebrows that do nearly all the talking | A thin beak, grumpy at rest, cracking into a toothless grin |
-| **Bit**, a small robot | Earnest, helpful, still learning feelings — gets them a bit wrong, overjoyed to be right | Head tipped, antenna bobbing, waiting to help | Screen face | Pixel eyes on a screen: blocks, carets, hearts, a loading ring, crosses | A pixel mouth that redraws itself |
-| **Remy**, a boy | A theatrical dreamer who narrates his life like a film; kind underneath | One hand on his heart, the other flung out to an audience | Drama | Hazel with a heavy lash line; enormous brows that fly | A big stage mouth, gap-toothed |
-
-Colours stay the product's where they can (Fizz is a dart frog's blue, never green; Tuck's shell is the primary; Bit is the primary's tones); Clover and Remy take natural colours, as the people do. Bit has no light of its own: glowing is Wisp's. None has practice states yet: they come once one is chosen.
+**Removed from the sixth place:** five concepts — Fizz (frog), Clover (goat), Tuck (tortoise), Bit (robot), Remy (boy). None was liked. The next ideas come as a connected cast, not one-offs: how the characters know each other is decided before any is drawn.
 
 ### Lessons from Duolingo
 
@@ -260,9 +243,9 @@ What the Duolingo cast does that this studio's first rounds did not (a summary o
 - **An archetype with an attitude.** Each is a recognisable type pushed to a caricature, and each is *somebody* at rest: Lily bored, Zari bursting, Oscar pompous, Duo intense. Personality is in the posture before anything moves.
 - **They talk.** In lessons the characters say the sentences, with their mouths moving to the words and their own voices — the strongest single hook. Here speech must stay fixed copy (`docs/brief.md`); lip-sync to fixed lines is still open to us.
 - **They are alive between events**: breathing, blinking, glancing — and they react in real time, because each is a state machine (idle, talking, reacting) rather than a set of clips.
-- **Animation principles, not just motion**: anticipation before an action, overshoot and settle after, squash and stretch, reactions under a second, timed to a sound.
+- **Animation principles, not just motion**: anticipation before an action, overshoot and settle after, squash and stretch, reactions under a second, timed to a sound. The rig now has them (`rig/motion.ts`): `EASE` (overshoot, anticipate, snap, settle), `jump` (crouch, stretch up, squash on landing, rebound — volume kept), `pop` (squash, stretch, overshoot, settle — the correct beat), `sag` (sink, hold, lift with a small overshoot — the gentle incorrect beat) and `action` (wind-up opposite, snap past the mark, settle). The cheer jumps, the wave overshoots, and every practice act that only breathed now pops on correct and sags on incorrect.
 - **A world**: the characters know each other, have running jokes and stories; the absurd sentences are written for them.
-- **Emotional stakes** (Duo's guilt, streaks) — which the brief deliberately rules out for Sparkles.
+- **Emotional stakes.** Duo's cast makes you care: the characters want things, need things from each other and from you, and you feel something when you let them down or come through. That is part of why they are loved, and it is **in scope for Sparkles**. An earlier version of this file said the brief rules it out; it does not, and that was wrong. Stakes here come from the characters — their wants, their relationships with each other and with the learner, their running stories — not from pressure. What the brief does bound is narrower: the practice reactions themselves (three events, the same reaction the first time and the fiftieth, gentle on an incorrect answer, never a scold). Any stake that would need a reaction to a streak, a score or a session is a change to those bounds, and belongs in Sparkles, not here.
 
 ## Practice states
 

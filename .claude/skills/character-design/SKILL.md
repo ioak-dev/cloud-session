@@ -4,7 +4,7 @@ description: >-
   Design and revise the Sparkles character cast in the cloud-session studio: one
   main character (Wisp, a floating firefly that leaves a spark trail, with its
   variants and wispy directions) and six side
-  characters (the chameleon, fruit bat, chick, Juno and Lulu, plus five new concepts for the sixth; each chosen one has five
+  characters (the chameleon, fruit bat, chick, Juno and Lulu, with the sixth place open; each chosen one has five
   variants of four practice states). Use when drawing, rigging, recolouring or posing a
   character, proposing a new one, or judging one against the product rules.
   Read docs/brief.md and docs/cast.md first.
@@ -46,7 +46,7 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 
 - Main-character variants: `src/design/nix/firefly-bodies.tsx` and `firefly-bodies-2.tsx` (own body frames) and `src/design/nix/firefly-variants.tsx` (chibi frame, plus the shared antenna, glow and palette helpers).
 - Bench animals (head, tail, signature): `src/design/nix/candidates.tsx`.
-- Side candidates: the octopus and fruit bat in `src/design/nix/side-candidates.tsx`, the chick in `side-puff.tsx`, the chameleon and red panda in `candidates.tsx`, people (Juno, Lulu) in `side-humans.tsx`, the new concepts in `side-new.tsx`, the practice states in `side-states.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
+- Side candidates: the octopus and fruit bat in `src/design/nix/side-candidates.tsx`, the chick in `side-puff.tsx`, the chameleon and red panda in `candidates.tsx`, people (Juno, Lulu) in `side-humans.tsx`, the practice states in `side-states.tsx`, ability previews in `side-abilities.tsx`. Per-character eyes and mouths: `src/design/nix/rig/eyes.tsx`.
 - Joints, poses, expressions, outfits, props: `src/design/nix/rig/`.
 - The page that shows them: `src/design/nix/NixBenchView.tsx`.
 
@@ -64,6 +64,7 @@ Run the studio with `npm start` (`node studio.mjs`) and look at the drawing on b
 - Clothes are authored for the moment. They are not bought or earned.
 - No large field in a status hue — a green body must not read as correct — except through the chameleon’s colour-change ability.
 - Motion is declared keyframes. No canvas, WebGL, or physics. Reduced motion holds a rest pose; the expression may still change.
+- Motion follows the animation principles: anticipation before an action, overshoot and settle after, squash and stretch that keeps volume. Build acts from the rig's helpers in `rig/motion.ts` (`EASE`, `jump`, `pop`, `sag`, `action`) rather than a bare up-and-down.
 - Figures are `aria-hidden`.
 
 ## Done

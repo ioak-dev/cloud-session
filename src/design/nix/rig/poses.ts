@@ -1,4 +1,4 @@
-import { arms, fade, lift, rot, rotAt, squash, type Hands, type Motion } from "./motion";
+import { arms, EASE, fade, jump, lift, rot, rotAt, squash, type Hands, type Motion } from "./motion";
 import { CHIBI, type Body } from "./skeleton";
 import type { Mood } from "./face";
 
@@ -76,6 +76,7 @@ export const POSES: Pose[] = [
     ],
     motion: {
       duration: 1.1,
+      easing: EASE.overshoot,
       tracks: {
         head: rot(3, 5, 3),
         ...secondary(1.4),
@@ -93,12 +94,11 @@ export const POSES: Pose[] = [
       { L: [62, 120], R: [138, 120] },
     ],
     motion: {
-      duration: 0.9,
-      easing: "cubic-bezier(.3,.7,.4,1)",
+      duration: 1.3,
       still: 1,
       tracks: {
-        root: lift(0, -18, 0),
-        shadow: squash([1, 1], [0.7, 0.8], [1, 1]),
+        /* crouch, stretch up, land squashed, rebound: anticipation, squash and stretch, overshoot */
+        ...jump(20),
         head: rot(-3, 3, -3),
         hipL: rot(0, 8, 0),
         hipR: rot(0, -8, 0),

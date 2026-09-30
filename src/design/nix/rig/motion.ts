@@ -82,6 +82,134 @@ export const rotAt = (...k: [number, number][]): Track =>
   k.map(([offset, v]) => ({ offset, rotate: `${v}deg` }));
 
 /** One keyframe's hand targets, in chibi space. */
+/* ——— The principles: anticipation, overshoot, squash and stretch ———
+ * Still declared keyframes on one clock — nothing simulates. An action winds up the other way
+ * before it goes (anticipation), passes its mark and comes back (overshoot and settle), and a body
+ * that leaves or meets the ground squashes and stretches, keeping its volume. */
+
+/** Easings. `overshoot` passes the target and settles back; `anticipate` pulls back before it
+ *  goes; `snap` arrives fast and eases in; `settle` is a gentle finish. */
+export const EASE = {
+  overshoot: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+  anticipate: "cubic-bezier(0.36, 0, 0.66, -0.56)",
+  snap: "cubic-bezier(0.2, 0.9, 0.3, 1)",
+  settle: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+} as const;
+
+/** Scale that keeps volume: stretch one way and the other gives. */
+const vol = (y: number): [number, number] => [Math.round((1 / Math.sqrt(y)) * 1000) / 1000, y];
+const sc = ([x, y]: [number, number]) => `${x} ${y}`;
+
+type ActionOpts = {
+  /** Where in the loop the wind-up starts (0–1). */
+  at?: number;
+  /** How far the wind-up pulls the other way, as a share of the move. */
+  wind?: number;
+  /** How far it passes its mark before settling, as a share of the move. */
+  over?: number;
+  /** Where in the loop it lets go and returns to rest. */
+  back?: number;
+};
+
+/**
+ * One action on one channel, with the principles built in: rest → a wind-up the other way → a
+ * snap past the mark → back to the mark → hold → return. `rotate` in degrees, `lift` in px (negative
+ * is up).
+ */
+export function action(
+  channel: "rotate" | "lift",
+  from: number,
+  to: number,
+  { at = 0.12, wind = 0.25, over = 0.18, back = 0.8 }: ActionOpts = {},
+): Track {
+  const d = to - from;
+  const v = (x: number) => (channel === "rotate" ? { rotate: `${x}deg` } : { translate: `0px ${x}px` });
+  return [
+    { ...v(from), offset: 0 },
+    { ...v(from), offset: at, easing: EASE.anticipate },
+    { ...v(from - d * wind), offset: at + 0.1, easing: EASE.snap },
+    { ...v(to + d * over), offset: at + 0.2, easing: EASE.settle },
+    { ...v(to), offset: at + 0.3 },
+    { ...v(to), offset: back, easing: EASE.settle },
+    { ...v(from), offset: 1 },
+  ];
+}
+
+/**
+ * A jump with squash and stretch, on the root (whose pivot is the feet, so the body squashes into
+ * the ground): crouch and squash (anticipation), launch and stretch, round at the top, stretch as
+ * it falls, squash on landing, rebound past round (overshoot), settle. The shadow shrinks as it
+ * rises. `n` jumps share the loop.
+ */
+export function jump(height: number, { at = 0.08, n = 1 }: { at?: number; n?: number } = {}): Partial<Record<Target, Track>> {
+  const root: Keyframe[] = [{ translate: "0px 0px", scale: "1 1", offset: 0 }];
+  const shadow: Keyframe[] = [{ scale: "1 1", offset: 0 }];
+  const span = (1 - at) / n;
+  for (let i = 0; i < n; i++) {
+    const t = (k: number) => Math.min(1, at + i * span + span * k);
+    const h = height;
+    root.push(
+      { translate: "0px 0px", scale: "1 1", offset: t(0), easing: EASE.anticipate },
+      { translate: "0px 3px", scale: sc(vol(0.82)), offset: t(0.14), easing: EASE.snap },
+      { translate: `0px ${-h * 0.55}px`, scale: sc(vol(1.16)), offset: t(0.26), easing: "ease-out" },
+      { translate: `0px ${-h}px`, scale: "1 1", offset: t(0.42), easing: "ease-in" },
+      { translate: `0px ${-h * 0.4}px`, scale: sc(vol(1.12)), offset: t(0.56), easing: "ease-in" },
+      { translate: "0px 2px", scale: sc(vol(0.8)), offset: t(0.64), easing: EASE.snap },
+      { translate: "0px 0px", scale: sc(vol(1.06)), offset: t(0.74), easing: EASE.settle },
+      { translate: "0px 0px", scale: "1 1", offset: t(0.86) },
+    );
+    shadow.push(
+      { scale: "1 1", offset: t(0) },
+      { scale: "1.08 1", offset: t(0.14) },
+      { scale: "0.72 0.8", offset: t(0.42) },
+      { scale: "1.12 1", offset: t(0.64) },
+      { scale: "1 1", offset: t(0.86) },
+    );
+  }
+  root.push({ translate: "0px 0px", scale: "1 1", offset: 1 });
+  shadow.push({ scale: "1 1", offset: 1 });
+  return { root, shadow };
+}
+
+/**
+ * A pop: a sudden feeling taken in the body without leaving the ground — a quick squash (the
+ * breath in), a stretch taller than rest (the feeling), a small overshoot back through round, and
+ * settle. On the torso, whose pivot is its base.
+ */
+export function pop(amount = 1, { at = 0.1 }: { at?: number } = {}): Partial<Record<Target, Track>> {
+  const a = amount;
+  return {
+    torso: [
+      { scale: "1 1", offset: 0 },
+      { scale: "1 1", offset: at, easing: EASE.anticipate },
+      { scale: sc(vol(1 - 0.12 * a)), offset: at + 0.08, easing: EASE.snap },
+      { scale: sc(vol(1 + 0.14 * a)), offset: at + 0.2, easing: EASE.settle },
+      { scale: sc(vol(1 - 0.04 * a)), offset: at + 0.32, easing: EASE.settle },
+      { scale: "1 1", offset: at + 0.44 },
+      { scale: "1 1", offset: 1 },
+    ],
+  };
+}
+
+/**
+ * A sag: a let-down taken gently — the body sinks and widens a little, holds, then lifts back with a
+ * small overshoot, as if taking a breath and trying again. For an incorrect answer: soft, never a
+ * collapse.
+ */
+export function sag({ at = 0.1 }: { at?: number } = {}): Partial<Record<Target, Track>> {
+  return {
+    torso: [
+      { scale: "1 1", translate: "0px 0px", offset: 0 },
+      { scale: "1 1", translate: "0px 0px", offset: at, easing: EASE.settle },
+      { scale: sc(vol(0.93)), translate: "0px 2px", offset: at + 0.2, easing: EASE.settle },
+      { scale: sc(vol(0.93)), translate: "0px 2px", offset: at + 0.45, easing: EASE.overshoot },
+      { scale: sc(vol(1.03)), translate: "0px -1px", offset: at + 0.62, easing: EASE.settle },
+      { scale: "1 1", translate: "0px 0px", offset: at + 0.74 },
+      { scale: "1 1", translate: "0px 0px", offset: 1 },
+    ],
+  };
+}
+
 export type Hands = { L?: P; R?: P; outL?: boolean; outR?: boolean };
 
 const armLen = (j: Body["j"], s: "L" | "R") =>
