@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Candidate, Ctx } from "./candidates";
+import type { Mood } from "./rig/face";
 import { palette } from "./firefly-variants";
 import {
   arcDown,
@@ -287,8 +288,6 @@ const palLulu = human(LULU_SKIN, "#e6bca6", LULU_HAIR, "#e0a868");
 function LuluBack() {
   return (
     <g>
-      {/* two strands that never lie down */}
-      <path d="M100 50 C96 36 104 30 110 34 M102 50 C104 40 114 38 118 44" stroke={LULU_HAIR} strokeWidth={4} fill="none" strokeLinecap="round" />
       <Taper
         segs={[
           [
@@ -310,9 +309,25 @@ function LuluBack() {
   );
 }
 
-function LuluHead() {
+/** Her two stray strands give her away: they curl up when she is plotting, spring tall when she is
+ *  delighted, hook into a question when she is curious, and flop when she is worried. */
+function LuluStrands({ mood }: { mood?: Mood }) {
+  const d =
+    mood === "delighted" || mood === "happy"
+      ? "M98 52 C92 30 100 18 106 24 M102 52 C106 32 118 26 122 34"
+      : mood === "worried" || mood === "oops"
+        ? "M98 52 C88 52 80 58 76 66 M102 52 C112 52 120 58 124 66"
+        : mood === "curious"
+          ? "M100 52 C96 34 108 26 114 32 C118 38 110 44 106 40"
+          : "M98 52 C94 38 102 32 108 36 M102 52 C104 42 114 40 118 46";
+  return <path d={d} stroke={LULU_HAIR} strokeWidth={4.4} fill="none" strokeLinecap="round" />;
+}
+
+function LuluHead({ mood }: Ctx) {
+  const glee = mood === "happy" || mood === "delighted" || mood === "wink" || mood === "thinking";
   return (
     <g>
+      <LuluStrands mood={mood} />
       {/* two tones: her skin's shade to the lower right, and the fringe's shadow on her brow */}
       <ellipse cx={101.5} cy={109.5} rx={42} ry={40} fill="#e6bca6" />
       <ellipse cx={99.5} cy={107} rx={40.5} ry={38.5} fill={LULU_SKIN} />
@@ -324,6 +339,12 @@ function LuluHead() {
       />
       {/* the shine across her crown */}
       <path d="M70 66 Q84 56 100 56 M108 56 Q118 57 126 62" stroke="#e8b27a" strokeWidth={4} fill="none" strokeLinecap="round" />
+      {/* rosy cheeks, always; blush marks when she is pleased with herself */}
+      <ellipse cx={70} cy={126} rx={9} ry={5.4} fill="#f4a0a8" opacity={0.55} />
+      <ellipse cx={130} cy={126} rx={9} ry={5.4} fill="#f4a0a8" opacity={0.55} />
+      {glee && (
+        <path d="M65 124 l-2 4 M70 123 l-2 5 M75 124 l-2 4 M125 124 l-2 4 M130 123 l-2 5 M135 124 l-2 4" stroke="#e57f92" strokeWidth={1.6} strokeLinecap="round" />
+      )}
     </g>
   );
 }
@@ -387,7 +408,11 @@ const luluMouth: MouthKit = ({ mood, y, pal: p }) => {
     case "curious":
       return <ellipse cx={100} cy={y + 2} rx={3} ry={3.8} fill={ink} />;
     case "thinking":
-      return <path d={`M88 ${y + 1} Q100 ${y + 3.5} 112 ${y - 1.5} l2 -2.5`} {...line(ink, 2.6)} />;
+      /* the smug “heh”, with one small fang at the corner */
+      return g2(
+        <path d={`M88 ${y + 1} Q100 ${y + 3.5} 112 ${y - 1.5} l2 -2.5`} {...line(ink, 2.6)} />,
+        <path d={`M106.5 ${y + 0.6} L110 ${y - 0.4} L108.6 ${y + 3.6} Z`} fill={EYE_WHITE} />,
+      );
     case "focused":
       return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(ink, 2.6)} />;
     case "worried":
@@ -430,13 +455,13 @@ export const SIDE_HUMANS: Candidate[] = [
     id: "side-lulu",
     kind: "human",
     frame: BIG,
-    attitude: { mood: "thinking", tilt: 7, hands: { L: [97, 198], R: [103, 198], outL: false, outR: false } },
+    attitude: { mood: "thinking", tilt: 7, hands: { L: [96, 166], R: [104, 166], outL: false, outR: false } },
     outline: false,
     hands: "mitten",
     label: "Lulu",
     signature: "A tiny girl with a big head, caramel hair in a side pony — her eyes go huge and shiny",
     pitch:
-      "A small schemer with a big face: smug when she is plotting, huge-eyed when she wants something, never as sneaky as she thinks — at rest she wears the smug look, hands clasped sweetly in front. Refined: a shine across her hair, two strands that won't lie down, a bow on her side pony, the fringe's shadow. Anya-spirited: a tiny girl with a big head and the most rubbery face in the cast — a smug scheming look, a gritted fright, a grin that takes her chin. Caramel hair with a choppy fringe and a side pony tied in the accent. Her ability is Puppy eyes, from the face she is made of: when she wants something, her eyes swell huge, glossy and brimming, and no one can say no. Huge round eyes with a violet iris that shrinks to a dot when she is startled.",
+      "A small schemer with a big face: smug when she is plotting, huge-eyed when she wants something, never as sneaky as she thinks — at rest she wears the smug look with her hands pressed together under her chin, all sweetness, which is how you know she is up to something. Her two stray strands give her away: they curl up when she plots, spring tall when she is delighted, hook into a question when she is curious and flop when she is worried. Rosy cheeks always, blush marks when she is pleased with herself, one small fang in the smug grin. Refined: a shine across her hair, two strands that won't lie down, a bow on her side pony, the fringe's shadow. Anya-spirited: a tiny girl with a big head and the most rubbery face in the cast — a smug scheming look, a gritted fright, a grin that takes her chin. Caramel hair with a choppy fringe and a side pony tied in the accent. Her ability is Puppy eyes, from the face she is made of: when she wants something, her eyes swell huge, glossy and brimming, and no one can say no. Huge round eyes with a violet iris that shrinks to a dot when she is startled.",
     risk: "Must stay clear of Anya's design: no pink hair, no cone clips, no green eyes, no uniform. Puppy eyes must never be aimed at the learner to get something from them, and never on an incorrect answer.",
     pal: palLulu,
     body: C.clothes,
@@ -444,6 +469,6 @@ export const SIDE_HUMANS: Candidate[] = [
     outfit: "dress",
     outfits: OUTFITS,
     headBack: () => <LuluBack />,
-    head: () => <LuluHead />,
+    head: (c) => <LuluHead {...c} />,
   },
 ];

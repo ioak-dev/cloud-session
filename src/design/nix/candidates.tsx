@@ -31,8 +31,9 @@ export type Candidate = {
    *  Clothes keep their detail lines. */
   outline?: false;
   /** `mitten`: a rounded hand with a thumb on the inside. `wisp`: the forearm tapers like a
-   *  tendril and ends in a soft round tip of the same colour. Default: a ball. */
-  hands?: "mitten" | "wisp";
+   *  tendril and ends in a soft round tip of the same colour. `tong`: a chameleon's two fat toes in a
+   *  V, on the hands and the feet. Default: a ball. */
+  hands?: "mitten" | "wisp" | "tong";
   label: string;
   signature: string;
   pitch: string;
@@ -469,38 +470,67 @@ const palCham: Palette = {
   line: "none",
 };
 
+/* A rounder head, wider at the jaw, rising to a low casque swept back to one side. */
+const CHAM_HEAD =
+  "M52 110 C50 78 70 54 98 48 C110 45 120 38 132 30 C134 48 146 66 148 100 C150 128 128 144 100 144 C72 144 54 134 52 110 Z";
+
+/** A chameleon's crest: small bumps up the middle of the head to the casque's peak. */
+const CHAM_CREST = [
+  [98, 50, 3.6],
+  [106, 46, 3.8],
+  [114, 42, 4],
+  [122, 37, 4],
+  [129, 32, 3.6],
+] as const;
+
+/* A pear of a body on short, bowed legs. */
+const CHAM_TORSO =
+  "M84 152 Q100 146 116 152 Q130 166 128 192 Q126 216 100 218 Q74 216 72 192 Q70 166 84 152 Z";
+const CHAM: Body = {
+  ...CHIBI,
+  id: "chameleon",
+  torso: CHAM_TORSO,
+  j: {
+    ...CHIBI.j,
+    hipL: [90, 208],
+    kneeL: [82, 238],
+    footL: [88, 268],
+    hipR: [110, 208],
+    kneeR: [118, 238],
+    footR: [112, 268],
+  },
+  w: { upper: 11.5, fore: 10.5, thigh: 13, shin: 12, hand: 8.4, cloth: 1 },
+  neck: { x: 100, y: 150, w: 0, h: 0 },
+};
+
 function ChamHead({ pal }: Ctx) {
   return (
     <g>
-      {/* the casque: a darker ridge, the crest scalloped along its top, three stripes */}
-      <path d="M64 78 C62 44 98 24 130 32 C124 48 132 62 140 78 Z" fill={pal.skinShade} />
-      <path d="M68 76 C68 46 98 30 126 36 C120 50 128 62 134 76 Z" fill={pal.skin} />
-      {[
-        [80, 46],
-        [92, 38],
-        [105, 33],
-        [118, 32],
-      ].map(([x, y]) => (
-        <circle key={x} cx={x} cy={y} r={4.2} fill={pal.skin} />
+      {/* two tones: its own shade below and to the right, the head over it */}
+      <path d={CHAM_HEAD} fill={pal.skinShade} transform="translate(2 2.5)" />
+      <path d={CHAM_HEAD} fill={pal.skin} />
+      {CHAM_CREST.map(([x, y, r]) => (
+        <circle key={x} cx={x} cy={y} r={r} fill={pal.skin} />
       ))}
-      <path d="M86 50 L93 70 M101 42 L106 68 M116 40 L120 66" stroke={pal.skinShade} strokeWidth={3.4} strokeLinecap="round" />
-      {/* the head in two tones: its own shade, lower and to the right, reads as form */}
-      <ellipse cx={100} cy={105} rx={47} ry={37} fill={pal.skinShade} />
-      <ellipse cx={98} cy={102} rx={45} ry={34} fill={pal.skin} />
-      <path d="M60 116 C74 138 126 138 140 116 C128 131 72 131 60 116 Z" fill={CHAM_BELLY} />
-      <path d="M76 126 l3 3 M88 130 l2 3 M100 131 l0 3 M112 130 l-2 3 M124 126 l-3 3" stroke="#a99be8" strokeWidth={1.6} strokeLinecap="round" />
-      {[78, 122].map((x) => (
+      {/* the casque's ridge lines, in its shade */}
+      <path d="M90 62 Q108 50 126 40 M84 74 Q106 62 132 52" stroke={pal.skinShade} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+      {/* the pale throat and jaw, finely scaled */}
+      <path d="M58 120 C70 142 130 142 142 120 C130 136 70 136 58 120 Z" fill={CHAM_BELLY} />
+      <path d="M72 130 l3 3 M84 134 l2 3 M100 135 l0 3 M116 134 l-2 3 M128 130 l-3 3" stroke="#a99be8" strokeWidth={1.6} strokeLinecap="round" />
+      {/* the turret eyes bulge past the head: their own shade, a groove, a light on top */}
+      {[76, 124].map((x) => (
         <g key={x}>
-          <circle cx={x + 1.5} cy={99.5} r={15.5} fill={pal.skinShade} />
-          <circle cx={x} cy={98} r={15} fill={pal.skin} />
-          <path d={`M${x - 11} ${92} A13 13 0 0 1 ${x + 4} ${85}`} stroke={pal.hairHi} strokeWidth={2.2} fill="none" strokeLinecap="round" />
+          <circle cx={x + 2} cy={102} r={18.5} fill={pal.skinShade} />
+          <circle cx={x} cy={100} r={18} fill={pal.skin} />
+          <circle cx={x} cy={100} r={15.5} fill="none" stroke={pal.skinShade} strokeWidth={1.6} opacity={0.6} />
+          <path d={`M${x - 13} ${94} A15 15 0 0 1 ${x + 3} ${85}`} stroke={pal.hairHi} strokeWidth={2.4} fill="none" strokeLinecap="round" />
         </g>
       ))}
-      {/* a chameleon's rosettes: little clusters of a paler tone */}
+      {/* rosettes, a paler tone */}
       {[
-        [64, 112],
-        [136, 112],
-        [100, 76],
+        [60, 118],
+        [140, 118],
+        [104, 66],
       ].map(([x, y]) => (
         <g key={`${x}-${y}`} fill={pal.hairHi}>
           <circle cx={x} cy={y} r={2.6} />
@@ -508,8 +538,8 @@ function ChamHead({ pal }: Ctx) {
           <circle cx={x - 3.4} cy={y + 3.6} r={1.5} />
         </g>
       ))}
-      <circle cx={95} cy={112} r={1.4} fill={pal.skinShade} />
-      <circle cx={105} cy={112} r={1.4} fill={pal.skinShade} />
+      <circle cx={95} cy={115} r={1.5} fill={pal.skinShade} />
+      <circle cx={105} cy={115} r={1.5} fill={pal.skinShade} />
     </g>
   );
 }
@@ -519,46 +549,40 @@ function ChamHead({ pal }: Ctx) {
  *  skin closes over the eye as a lid. */
 const chamEyes: EyeKit = ({ mood, s, x, y, id, pal }) => {
   const left = s === -1;
+  const K = 1.3;
   const open = (dx: number, dy: number, r = 4.2, top = 0.18, tilt = 0) => (
-    <Orb
-      id={id}
-      x={x}
-      y={y}
-      rx={11.5}
-      ry={11.5}
-      s={s}
-      fill="#f4f0ff"
-      lid={{ top, tilt, color: pal.skin }}
-    >
-      <circle cx={x + dx} cy={y + dy} r={r} fill={pal.ink} />
-      <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.35} r={r * 0.3} fill={WHITE} />
+    <Orb id={id} x={x} y={y} rx={13.6} ry={13.6} s={s} fill="#f4f0ff" lid={{ top, tilt, color: pal.skin }}>
+      <circle cx={x + dx * K} cy={y + dy * K} r={r * K * 1.7} fill="#e2a33a" />
+      <circle cx={x + dx * K} cy={y + dy * K} r={r * K} fill={pal.ink} />
+      <circle cx={x + dx * K - r * 0.5} cy={y + dy * K - r * 0.5} r={r * 0.42} fill={WHITE} />
+      <circle cx={x + dx * K + r * 0.55} cy={y + dy * K + r * 0.5} r={r * 0.18} fill={WHITE} />
     </Orb>
   );
   const shut = (
     <g>
-      <circle cx={x} cy={y} r={11.5} fill={pal.skin} />
-      <path d={arcUp(x, y + 1, 6, 3.5)} {...line(pal.ink, 2.6)} />
+      <circle cx={x} cy={y} r={13.6} fill={pal.skin} />
+      <path d={arcUp(x, y + 1, 7.5, 4.4)} {...line(pal.ink, 3)} />
     </g>
   );
   switch (mood) {
     case "happy":
       return shut;
     case "delighted":
-      return open(0, 0, 5.4, 0);
+      return open(0, 0, 5.6, 0);
     case "curious":
-      return left ? open(5, -1) : open(5, -1, 5.2, 0);
+      return left ? open(4, -1) : open(4, -1, 5.2, 0);
     case "thinking":
-      return left ? open(-4, -5, 4, 0.2) : open(4, -5, 4, 0.2);
+      return left ? open(-3.4, -4.4, 4, 0.2) : open(3.4, -4.4, 4, 0.2);
     case "focused":
-      return open(-s * 4, 2, 4, 0.45);
+      return open(-s * 3.4, 1.6, 4, 0.45);
     case "worried":
-      return open(0, 2, 3, 0.18, 14);
+      return open(0, 1.6, 3, 0.18, 14);
     case "oops":
-      return left ? open(-4, -4, 3.4, 0.08) : open(4, 4, 3.4, 0.08);
+      return left ? open(-3.4, -3.4, 3.4, 0.08) : open(3.4, 3.4, 3.4, 0.08);
     case "wink":
-      return s === 1 ? shut : open(3, 0);
+      return s === 1 ? shut : open(2.4, 0);
     default:
-      return left ? open(-4, 1) : open(3, -2);
+      return left ? open(-3.4, 1) : open(2.6, -1.6);
   }
 };
 
@@ -596,18 +620,14 @@ const chamMouth: MouthKit = ({ mood, y, pal }) => {
   }
 };
 
+/** A thick tail that tapers into a tight coil, in two tones, with pale rings. */
 function ChamTail({ pal }: Ctx) {
-  const d = "M106 204 C138 210 164 232 154 256 C146 272 120 266 124 250 C127 239 142 240 142 250";
+  const d = "M110 204 C140 206 166 222 164 246 C162 268 136 272 130 256 C125 244 138 236 146 242 C151 246 148 254 142 252";
   return (
     <g data-joint="tail" style={pivot("tail")}>
-      <path d={d} stroke={pal.skinShade} strokeWidth={13} fill="none" strokeLinecap="round" />
-      <path d={d} stroke={pal.skin} strokeWidth={9} fill="none" strokeLinecap="round" transform="translate(-1 -1.5)" />
-      <path
-        d="M130 212 l4 6 M146 226 l6 3 M156 244 l6 0"
-        stroke={pal.skinShade}
-        strokeWidth={2.4}
-        strokeLinecap="round"
-      />
+      <path d={d} stroke={pal.skinShade} strokeWidth={17} fill="none" strokeLinecap="round" />
+      <path d={d} stroke={pal.skin} strokeWidth={12} fill="none" strokeLinecap="round" transform="translate(-1.4 -1.6)" />
+      <path d="M130 207 l2 8 M148 216 l-2 8 M161 232 l-7 3 M163 252 l-8 -1" stroke={pal.hairHi} strokeWidth={3} strokeLinecap="round" />
     </g>
   );
 }
@@ -722,20 +742,20 @@ export const CANDIDATES: Candidate[] = [
     id: "chameleon",
     kind: "animal",
     label: "Chameleon",
-    frame: { ...CHIBI, id: "chameleon", w: CHUNKY },
-    hands: "mitten",
-    attitude: { tilt: 6, hands: { L: [98, 160], R: [124, 206], outL: false } },
-    signature: "Turret eyes and a curled spiral tail — it changes colour",
+    frame: CHAM,
+    hands: "tong",
+    attitude: { tilt: 6, hands: { L: [82, 200], R: [134, 140], outL: true, outR: true } },
+    signature: "Big bulging turret eyes, a swept-back casque and a coiled tail — it changes colour",
     pitch:
-      "Shy, thoughtful and easily flustered — it blushes, literally, and would rather blend in than stand out; at rest its two eyes look two ways at once, one at you and one at something it has just noticed, and one hand rests at its chin while it thinks. The funniest face on the bench: turret eyes that swivel independently are a gag in every expression. Its ability is its colour. Refined: a two-tone head and casque with a scalloped crest, turret eyes with their own shading, rosettes, a scaled belly and jaw, nostrils.",
+      "A small, fierce, loyal best friend who says everything with its face and its hands: it mimes, it points, it sulks, it cheers, it rolls one eye at you. Brave far beyond its size — and it blushes, literally, when you catch it caring. At rest it stands with one hand on its hip and the other up, mid-gesture, as if it were about to tell you something, its two eyes looking two ways. Inspired by the spirit of the sidekick chameleon in Tangled, not its look: violet, not green, its own casque and eyes. Drawn with a rounder head that rises to a low casque swept back to one side, a crest of small bumps, big turret eyes that bulge past the head with an amber ring round each pupil, a pale scaled throat, a pear of a body with a scaled belly and pale flank stripes, a chameleon's two-toed grips on its hands and feet, short bowed legs, and a thick tail that coils tight, in two tones with pale rings. Its ability is its colour.",
     risk: "Confirmed side character. Colour change is its ability and is semantic on purpose — green for correct, a gentle hue for not yet — always paired with words or a status mark (docs/cast.md). A reptile is less huggable, like the firefly.",
     pal: palCham,
     body: palCham.skin,
     face: {
       eyes: "bead",
-      eyeY: 98,
-      eyeGap: 22,
-      mouthY: 123,
+      eyeY: 100,
+      eyeGap: 24,
+      mouthY: 124,
       nose: "none",
       brows: false,
       lid: palCham.skin,
@@ -747,10 +767,14 @@ export const CANDIDATES: Candidate[] = [
     outfits: ANIMAL_OUTFITS,
     behind: (c) => <ChamTail {...c} />,
     head: (c) => <ChamHead {...c} />,
-    belly: () => (
+    belly: ({ pal }) => (
       <g>
-        <path d="M92 156 L108 156 L110 214 L90 214 Z" fill={CHAM_BELLY} />
-        <path d="M93 168 l7 4 l7 -4 M92 182 l8 4 l8 -4 M91 196 l9 4 l9 -4" stroke="#a99be8" strokeWidth={1.6} fill="none" strokeLinecap="round" />
+        {/* its own shade down one side of the pear */}
+        <path d={CHAM_TORSO} fill={pal.skinShade} transform="translate(3 2)" opacity={0.7} />
+        <path d="M92 156 Q100 154 108 156 L112 208 Q100 214 88 208 Z" fill={CHAM_BELLY} />
+        <path d="M92 168 l8 4 l8 -4 M90 182 l10 4 l10 -4 M90 196 l10 4 l10 -4" stroke="#a99be8" strokeWidth={1.6} fill="none" strokeLinecap="round" />
+        {/* the pale flank stripe chameleons carry */}
+        <path d="M80 174 Q78 190 82 204 M120 174 Q122 190 118 204" stroke={pal.hairHi} strokeWidth={3} fill="none" strokeLinecap="round" />
       </g>
     ),
   },
