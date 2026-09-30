@@ -143,7 +143,7 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
 | — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
 | — | Red panda | Balance *(proposed)*: the ringed tail is a look, so it is given an ability to compete | Backup, competing |
-| 2–6 | See round two below | | **Proposed**, not decided |
+| 2–6 | See round three below | | **Proposed**, not decided |
 
 ### Rules for every side character
 
