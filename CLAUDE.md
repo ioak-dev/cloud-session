@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The firefly is being reworked as the main character; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is a firefly, shortlisted to Pip, Wisp and Fuzzy; the chameleon is a confirmed side character; the otter and red panda are backups. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -19,9 +19,9 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-bodies.tsx` | Round one on their own bodies: Pip, Wisp, Chonk, Glowworm, Strider |
-| `src/design/nix/firefly-bodies-2.tsx` | Round two on their own bodies: Flutter, Lampion, Trio, Cube, Hood |
-| `src/design/nix/firefly-variants.tsx` | Fuzzy (chibi frame); shared antenna, glow and palette helpers |
+| `src/design/nix/firefly-bodies.tsx` | Pip, Wisp (shortlist) and Chonk (reference), each on its own body |
+| `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
+| `src/design/nix/firefly-variants.tsx` | Fuzzy (shortlist, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
 | `src/design/nix/NixBenchView.tsx` | The studio page |

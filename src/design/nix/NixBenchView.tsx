@@ -29,7 +29,14 @@ const TESTS = [
 ] as const;
 
 /** Main-character variants first, then the side candidates. The original bench firefly stays for reference. */
-const ALL: Candidate[] = [...FIREFLY_BODIES_2, ...FIREFLY_BODIES, ...FIREFLY_KEPT, ...CANDIDATES];
+const FIREFLIES = new Map(
+  [...FIREFLY_BODIES, ...FIREFLY_BODIES_2, ...FIREFLY_KEPT].map((c) => [c.id, c]),
+);
+const byIds = (ids: string[]) => ids.map((id) => FIREFLIES.get(id)!);
+/** The main-character shortlist, and the drawings kept only as inspiration. */
+const SHORTLIST = byIds(["firefly-pip", "firefly-wisp", "firefly-fuzzy"]);
+const REFERENCE = byIds(["firefly-chonk", "firefly-cube", "firefly-hood"]);
+const ALL: Candidate[] = [...SHORTLIST, ...REFERENCE, ...CANDIDATES];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -71,8 +78,8 @@ export function NixBenchView() {
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">The cast</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Nothing is final yet. The firefly is the natural main character: ten candidates, each on a
-        body of its own, then Fuzzy from the shared chibi frame. The chameleon is a confirmed side
+        Nothing is final yet. The main character is a firefly, shortlisted to Pip, Wisp and Fuzzy.
+        Chonk, Cube and Hood stay as reference for ideas. The chameleon is a confirmed side
         character; the otter and red panda are backups. Every figure is rigged, so poses,
         expressions and wardrobe apply to all of them.
       </p>
@@ -88,9 +95,8 @@ export function NixBenchView() {
 
       {(
         [
-          ["Main character — firefly bodies, round two", FIREFLY_BODIES_2],
-          ["Main character — firefly bodies, round one", FIREFLY_BODIES],
-          ["Main character — kept from the chibi frame", FIREFLY_KEPT],
+          ["Main character — shortlist", SHORTLIST],
+          ["Reference — inspiration for the main or a side character", REFERENCE],
           ["Side candidates (and the original bench firefly)", CANDIDATES],
         ] as const
       ).map(([title, group]) => (

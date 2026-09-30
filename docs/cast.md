@@ -17,35 +17,31 @@ Every character has **one special feature or ability that no other character in 
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
-Eleven candidates. Dropped so far: Lantern, Spark, Flicker, Nightlight, Bulb.
+### Shortlist
 
-Ten are built from the ground up, each on a body frame of its own rather than the shared chibi one. They differ in silhouette, in where the light lives, and in how they stand.
-
-**Round two**, in `src/design/nix/firefly-bodies-2.tsx`:
-
-| Variant | Body plan | Where the light is | Antennae |
+| Variant | File | Body plan | Where the light is |
 |---|---|---|---|
-| Flutter | A slight body under four great wings | Glowing eyespots on the wings | Long and willowy, drooping like whiskers |
-| Lampion | The body is a ribbed paper lantern, with a hanging loop on its head | The whole body, lit from inside | Short, tasselled |
-| Trio | Three spheres: head, thorax, a big round abdomen; wings folded along the back | The last abdominal segment, as on a real firefly | Elbowed and beaded |
-| Cube | Square head, square body, panel wings | A four-paned window in its chest | Right-angled, with square lights |
-| Hood | A cone of a cloak and a floppy pointed hood | Spilling from where the cloak parts at the front | Curled, poking out through slits in the hood |
+| Pip | `firefly-bodies.tsx` | A bean: head and body are one shape, stubby limbs, spring antennae | The bean’s whole bottom, through any outfit |
+| Wisp | `firefly-bodies.tsx` | Floats with no legs; a droplet head, ribbon wings | The body ends in a flame of light |
+| Fuzzy | `firefly-variants.tsx` | Shared chibi frame; fuzzy head, ruff, feathery antennae, long wings | A round glow bulb tail |
 
-**Round one**, in `src/design/nix/firefly-bodies.tsx`:
+**Recommendation (not decided):** Pip first, Wisp second, Fuzzy third.
 
-| Variant | Body plan | Where the light is | Antennae |
-|---|---|---|---|
-| Pip | A pink bean: head and body are one shape, stubby limbs | The bean’s whole bottom glows, through any outfit | Coiled springs |
-| Wisp | Floats, with no legs; a droplet-shaped head and ribbon wings | The body ends in a flame of light | Thin as smoke |
-| Chonk | Low and wide, sitting in a domed beetle shell | Two lamps set into the sides of the shell | Short and clubbed |
-| Glowworm | A firefly larva: a segmented body, a bare baby face, no wings | A pair of lights on every ring; the last ring glows | Nubs |
-| Strider | Tall and lanky, long legs, a lopsided cap | The tail arcs over its shoulder like a lantern on a pole | Question marks |
+- **Pip** passes the most of the brief’s tests. It has the simplest shape to keep consistent and to animate. Its glow shows through every outfit, so the signature survives wardrobe. Its head reads at 16px. Before it is final, two things need work: it reads as a bean more than a firefly, and the pink leans young for secondary-school learners and teachers. Fixes to try: bigger, more firefly wings; a less candy colour.
+- **Wisp** has the most distinctive silhouette, and floating suits a guide that appears across the product. It has no legs, though, so trousers, shoes and dungarees are lost. Its pale body is the weakest at 16px and on the light ground, and it can read as a ghost or a candle flame.
+- **Fuzzy** reads most clearly as a firefly and is the most huggable. It is also the most generic (a child in a bug suit). Its glow tail hides behind a leg from the front, so the signature is weakest, and the fuzz edge is busy at small sizes.
 
-**Kept from the chibi frame**, in `src/design/nix/firefly-variants.tsx`:
+### Reference
 
-| Variant | Direction |
-|---|---|
-| Fuzzy | The most huggable: fuzzy body, feathery antennae, a round glow bulb, long wings |
+Kept as inspiration for the main character or a side character, not as candidates. If one inspires a side character, redraw it as a different species with its own ability.
+
+| Variant | File | Idea worth keeping |
+|---|---|---|
+| Chonk | `firefly-bodies.tsx` | A low, wide body in a domed shell; lamps set into the shell |
+| Cube | `firefly-bodies-2.tsx` | Everything square; a lit window in the chest |
+| Hood | `firefly-bodies-2.tsx` | A cone of a cloak, a floppy hood, light from inside the cloak |
+
+Dropped: Lantern, Spark, Flicker, Nightlight, Bulb, Glowworm, Strider, Flutter, Lampion, Trio.
 
 The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
 
