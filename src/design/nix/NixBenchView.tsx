@@ -16,6 +16,7 @@ import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
+import { WISP_WARM } from "./wisp-warm";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
@@ -70,6 +71,7 @@ const ANIMAL_REFERENCE: Candidate[] = [
 
 const ALL: Candidate[] = [
   WISP_MAIN,
+  ...WISP_WARM,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
@@ -304,6 +306,52 @@ export function NixBenchView() {
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
+        Wisp, warmer — proposals
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Wisp itself is unchanged. Beside the side characters it is the only one who is nobody at
+        rest: all cool blue with its warmth at its tail, a small face on a perfectly symmetric drop,
+        a stick body, no temperament. Each of the first four changes one thing — warmth, attitude,
+        face, softness — so it can be judged alone; the last puts them together. Each is shown at
+        rest, then in every expression.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {[WISP_MAIN, ...WISP_WARM].map((x) => (
+          <Tile key={x.id} title={x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}>
+            <NixFigure c={x} className="h-56 w-full" />
+          </Tile>
+        ))}
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[WISP_MAIN, ...WISP_WARM].map((x) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}
+                </th>
+                {MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
         Side candidates and their abilities
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
@@ -356,6 +404,7 @@ export function NixBenchView() {
       {(
         [
           ["Main character — Wisp", [WISP_MAIN]],
+          ["Wisp, warmer — proposals", WISP_WARM],
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
           ["Reference — inspiration for the main or a side character", REFERENCE],
