@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { FaceStyle } from "./rig/face";
+import type { FaceStyle, Mood } from "./rig/face";
 import type { HairId } from "./rig/hair";
 import type { OutfitId } from "./rig/outfit";
 import { WHITE, type Palette } from "./rig/palette";
@@ -11,7 +11,8 @@ import { pivot, type Body } from "./rig/skeleton";
  * The animal candidates from Sparkles' /design/nix bench: otter, red panda, firefly, chameleon.
  * One rig, one expression set, one wardrobe kit. Each carries the signature its species gives it.
  */
-export type Ctx = { pal: Palette; uid: string };
+/** `mood` lets a signature react to the expression — an antenna that droops when worried. */
+export type Ctx = { pal: Palette; uid: string; mood?: Mood };
 
 export type Candidate = {
   id: string;

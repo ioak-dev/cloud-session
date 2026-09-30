@@ -20,9 +20,11 @@ Read `docs/brief.md` for audience, use case, and the bounds.
 ## Main and side
 
 - **One ability each.** Every character has one special feature or ability no other character has: the firefly’s glow and fire sparkles, the chameleon’s colour change. A new candidate is not drawn until it has an ability, and it must not overlap one that is already taken.
-- **Main character (firefly).** The work is variants: A Lantern, B Spark and C Fuzzy in `firefly-variants.tsx`. Until the user picks one, draw only the static figure on the shared rig. Do not spend effort on new poses, motion or expression sets. After the pick, the silhouette, palette and ability stay fixed across contexts.
+- **Main character (firefly).** The work is variants in `firefly-variants.tsx` (Spark, Fuzzy, Nightlight, Flicker, Bulb; `docs/cast.md` holds the current list). Until the user picks one, draw only the static figure on the shared rig. Do not spend effort on new poses, motion or expression sets. After the pick, the silhouette, palette and ability stay fixed across contexts.
 - **Side characters.** The chameleon is confirmed. Its colour change may use status hues, under the conditions in `docs/cast.md`. The otter and red panda are backups. New side candidates are welcome; propose them with an ability and a silhouette distinct from the rest of the cast.
 - Each character must read apart from the others by silhouette alone, at small size. Only the chameleon may take a status hue, and only through its ability.
+- Flourishes (sparkle trails, bursts, confetti) are a separate effects layer, applicable to any character. Never draw them into a character.
+- A signature part may read `Ctx.mood` to react to the expression, as the firefly antennae do. That is expression, not motion, so it is allowed before a variant is chosen.
 - Record every decision in `docs/cast.md`. Do not assign product roles unprompted.
 
 ## Where to work

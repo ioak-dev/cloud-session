@@ -17,15 +17,21 @@ Every character has **one special feature or ability that no other character in 
 
 The firefly is the natural fit for the main character, because Sparkles’ guide is a small light. The bench drawing is too plain. It needs a heavy rework into a more detailed, sturdier character that holds up under costumes, props and movement.
 
-Three variants are in `src/design/nix/firefly-variants.tsx`:
+Five candidate variants are in `src/design/nix/firefly-variants.tsx`. Lantern was dropped.
 
 | Variant | Direction |
 |---|---|
-| A · Lantern | Closest to a real firefly: a rosy head shield, striped wing cases and a lantern tail |
-| B · Spark | Makes the ability visible: a comet tail that sheds sparkles, antennae tipped with stars, two pairs of wings |
-| C · Fuzzy | The most huggable: fuzzy body, feathery antennae, petal wings, a round glow bulb |
+| Spark | Star-tipped antennae, a comet-shaped glow tail, two pairs of long wings |
+| Fuzzy | The most huggable: fuzzy body, feathery antennae, a round glow bulb; Spark’s wings |
+| Nightlight | Calm and tender: a constellation on its cap, heart-dipped bangs, glowing antenna bulbs, round starry wings |
+| Flicker | All energy: a flame crest that sways like hair, zig-zag antennae with flame tips, freckles, a gap tooth, a flame-shaped glow |
+| Bulb | The learning one: a lightbulb tail with a filament (a bright idea), a striped cap, glass-bead antennae, polka-dot wings |
 
-The original bench firefly stays in `candidates.tsx` for reference. **Next step:** pick one variant, or combine parts of several. Motion, extra poses and extra expressions wait until a variant is chosen.
+The antennae and glow follow the expression: they droop and dim when worried, perk up and brighten when delighted, and one antenna lifts when curious. The rig passes the mood to each character’s parts through `Ctx.mood`.
+
+The original bench firefly stays in `candidates.tsx` for reference. **Next step:** pick one variant, or combine parts of several. Motion and extra poses wait until a variant is chosen.
+
+**Flourishes are not part of any character.** Sparkle trails, bursts, confetti and similar effects are a separate layer (props or animation), to be designed later. When they are, they can be applied to any character. Do not draw them into a character.
 
 Once one is chosen, the main character’s silhouette, palette and ability stay fixed across every context. Only pose, expression and authored wardrobe change. The glow is its signature, not a status.
 

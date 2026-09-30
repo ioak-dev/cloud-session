@@ -19,7 +19,7 @@ npm start
 
 | Path | Owns |
 |---|---|
-| `src/design/nix/firefly-variants.tsx` | Main-character variants A–C |
+| `src/design/nix/firefly-variants.tsx` | Main-character variants: Spark, Fuzzy, Nightlight, Flicker, Bulb |
 | `src/design/nix/candidates.tsx` | Bench animals: otter, red panda, original firefly, chameleon |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props |
 | `src/design/nix/NixBenchView.tsx` | The studio page |

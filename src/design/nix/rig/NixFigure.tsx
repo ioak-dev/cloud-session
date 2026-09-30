@@ -78,11 +78,11 @@ export function NixFigure({
 
   const pal = c.pal;
   const ink = pal.ink;
-  const ctx = { pal, uid };
   const o = outfitParts(outfit ?? c.outfit, pal, f.torso);
   const on = new Set<PropId>([...(c.props ?? []), ...props, ...(o.brings ?? [])]);
   const h = c.kind === "animal" ? null : Hair({ id: hair ?? c.hair ?? "bob", pal });
   const face = mood ?? p.mood;
+  const ctx = { pal, uid, mood: face };
   const k = f.w.cloth;
   const scaled = (cl: Cloth): Cloth => (cl ? { ...cl, w: cl.w * k } : null);
 
