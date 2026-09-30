@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { WISP_MAIN } from "./firefly-wisp";
+import { NixFigure } from "./rig/NixFigure";
 import { C } from "./theme";
 
 /**
@@ -283,66 +285,242 @@ export function WispBack() {
   );
 }
 
+/* ——— three-quarter: facing right, between front and side ——— */
+
+const FRONT_UPPER = (s: number) =>
+  `M${100 + 10 * s} 154 C${100 + 26 * s} 128 ${100 + 56 * s} 106 ${100 + 74 * s} 112 C${100 + 88 * s} 118 ${100 + 78 * s} 146 ${100 + 52 * s} 162 C${100 + 36 * s} 172 ${100 + 20 * s} 168 ${100 + 10 * s} 162 Z`;
+const FRONT_LOWER = (s: number) =>
+  `M${100 + 12 * s} 166 C${100 + 30 * s} 166 ${100 + 50 * s} 178 ${100 + 55 * s} 194 C${100 + 58 * s} 206 ${100 + 42 * s} 208 ${100 + 32 * s} 198 C${100 + 22 * s} 188 ${100 + 14 * s} 178 ${100 + 12 * s} 172 Z`;
+const FRONT_FLAME =
+  "M84 170 C84 164 116 164 116 170 C126 200 126 232 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C76 234 74 202 84 170 Z";
+const FRONT_TORSO =
+  "M84 150 Q100 146 116 150 Q124 156 122 172 Q121 186 112 192 Q100 197 88 192 Q79 186 78 172 Q76 156 84 150 Z";
+
+function WingPair({ s }: { s: number }) {
+  return (
+    <g>
+      <path d={FRONT_LOWER(s)} {...wingProps} />
+      <path d={FRONT_UPPER(s)} {...wingProps} />
+      <path
+        d={`M${100 + 12 * s} 158 Q${100 + 42 * s} 132 ${100 + 72 * s} 118`}
+        stroke={C.hi}
+        strokeWidth={HAIR}
+        fill="none"
+      />
+      {[
+        [62, 124, 4.2],
+        [52, 136, 2.8],
+        [70, 138, 2],
+        [44, 190, 2.8],
+      ].map(([dx, y, r]) => (
+        <circle key={`${dx}${y}`} cx={100 + dx * s} cy={y} r={r} fill={C.hi} />
+      ))}
+    </g>
+  );
+}
+
+function Tip({ x, y }: { x: number; y: number }) {
+  return (
+    <g>
+      <circle cx={x} cy={y} r={6} fill={GLOW} opacity={0.35} />
+      <circle cx={x} cy={y} r={3} fill={GLOW} stroke={AMBER} strokeWidth={HAIR} />
+    </g>
+  );
+}
+
+export function WispThreeQuarter({ uid: given }: { uid?: string }) {
+  const own = useUid();
+  const uid = given ?? own;
+  /* the flame sweeps a little back, the far side is foreshortened, the face turns toward us */
+  const sweep = "matrix(1 0 -0.16 1 27.2 0)";
+  return (
+    <g>
+      <defs>
+        <HeadFill id={`${uid}-qh`} cx="58%" />
+        <FlameFill id={`${uid}-qf`} x1={100} x2={92} />
+      </defs>
+      <g transform="translate(100 0) scale(0.62 1) translate(-100 0)" opacity={0.85}>
+        <WingPair s={1} />
+      </g>
+      <g transform="translate(-4 0)">
+        <WingPair s={-1} />
+      </g>
+      <g stroke={C.primary} strokeLinecap="round" fill="none">
+        <path d="M112 160 L118 178" strokeWidth={9} />
+        <path d="M118 178 L120 194" strokeWidth={6} />
+      </g>
+      <circle cx={120.5} cy={196} r={5.8} fill={C.primary} />
+      <g transform={sweep}>
+        <path d={FRONT_FLAME} fill={`url(#${uid}-qf)`} />
+        <path
+          d="M84 214 Q102 222 122 212 M88 231 Q102 237 116 228"
+          stroke={AMBER}
+          strokeWidth={2.2}
+          fill="none"
+          strokeLinecap="round"
+        />
+      </g>
+      <path
+        d={FRONT_TORSO}
+        transform="translate(102 0) scale(0.9 1) translate(-100 0)"
+        fill={C.mid}
+      />
+      <rect x={96} y={134} width={11} height={20} rx={4} fill={C.mid} />
+      <g transform={HEAD_FIT}>
+        <path
+          d="M100 58 C96 46 86 42 82 36"
+          stroke={C.thin}
+          strokeWidth={2.8}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Tip x={81} y={34} />
+        <path
+          d="M108 58 C112 44 124 40 128 32"
+          stroke={C.thin}
+          strokeWidth={2.6}
+          fill="none"
+          strokeLinecap="round"
+          opacity={0.85}
+        />
+        <Tip x={129} y={30} />
+        <path
+          d={DROPLET}
+          transform="translate(102 0) scale(0.94 1) translate(-100 0)"
+          fill={`url(#${uid}-qh)`}
+        />
+        <path
+          d="M96 92 Q103 88 110 92"
+          stroke={C.primary}
+          strokeWidth={2.4}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          d="M122 93 Q127 90 132 93"
+          stroke={C.primary}
+          strokeWidth={2.2}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <ellipse cx={104} cy={108} rx={7} ry={9} fill={EYE} />
+        <ellipse cx={128} cy={108} rx={5.2} ry={8.6} fill={EYE} />
+        <circle cx={106.5} cy={104.5} r={2.4} fill="#fff" />
+        <circle cx={130} cy={104.5} r={1.8} fill="#fff" />
+        <ellipse cx={96} cy={120} rx={6.5} ry={3.6} fill="#ffb3c4" opacity={0.7} />
+        <ellipse cx={136} cy={120} rx={3.6} ry={3} fill="#ffb3c4" opacity={0.7} />
+        <path
+          d="M112 124 Q118 129 124 123"
+          stroke={EYE}
+          strokeWidth={2.4}
+          fill="none"
+          strokeLinecap="round"
+        />
+      </g>
+      <g stroke={C.primary} strokeLinecap="round" fill="none">
+        <path d="M86 160 L80 178" strokeWidth={9} />
+        <path d="M80 178 L76 194" strokeWidth={6} />
+      </g>
+      <circle cx={75.5} cy={196} r={5.8} fill={C.primary} />
+    </g>
+  );
+}
+
 /** One of the views as a standalone figure. */
-export function WispView({ view, className }: { view: "side" | "back"; className?: string }) {
+export function WispView({
+  view,
+  className,
+}: {
+  view: "side" | "back" | "three-quarter";
+  className?: string;
+}) {
   return (
     <svg viewBox="0 0 200 300" className={className} aria-hidden xmlns="http://www.w3.org/2000/svg">
       <ellipse cx={100} cy={282} rx={42} ry={6} fill="#2a1d22" opacity={0.12} />
-      {view === "side" ? <WispSide /> : <WispBack />}
+      {view === "side" ? <WispSide /> : view === "back" ? <WispBack /> : <WispThreeQuarter />}
     </svg>
   );
 }
 
 /* ——— flight ——— */
 
+/*
+ * The choreography, on one clock. Wisp hovers facing us at A; turns — front, three-quarter,
+ * side, a drawing at a time, rising a little as it sets off; flies to B; turns back through
+ * three-quarter to face us, settling as it arrives; hovers; then turns the other way and flies
+ * home, where it faces us again. Facing is mirrored only while the front is showing, so the
+ * swap is never seen. Sparks are left only in flight; hovering, the rig's own trail falls.
+ */
+
 const W = 800;
 const H = 260;
-const K = 0.34; // Wisp's scale on the stage
-const LOOP = 9000;
+const K = 0.36; // Wisp's scale on the stage
+const LOOP = 12000;
+const A = { x: 140, y: 138 };
+const B = { x: W - 140, y: 138 };
+const RISE = 8;
+
+type View = "front" | "q" | "side";
+const TIMELINE: [number, View][] = [
+  [0, "front"],
+  [0.08, "q"],
+  [0.1, "side"],
+  [0.4, "q"],
+  [0.42, "front"],
+  [0.52, "q"],
+  [0.54, "side"],
+  [0.84, "q"],
+  [0.86, "front"],
+];
+/** When the facing flips: both moments fall while the front is showing. */
+const FLIP = [0.47, 0.93];
 
 const ease = (u: number) => (1 - Math.cos(Math.PI * u)) / 2;
+const bob = (t: number) => 3 * Math.sin(t * Math.PI * 2 * 8);
 
-/** Where Wisp is at loop time t (0–1), and which way it faces (1 right, −1 left). */
-function at(t: number): { x: number; y: number; f: number; tilt: number } {
-  const L = 90;
-  const R = W - 90;
-  if (t < 0.45) {
-    const u = t / 0.45;
-    return { x: L + (R - L) * ease(u), y: 140 + 42 * Math.sin(u * Math.PI * 4), f: 1, tilt: 8 };
-  }
-  if (t < 0.5) {
-    const u = (t - 0.45) / 0.05;
-    return {
-      x: R + 16 * Math.sin(u * Math.PI),
-      y: 140 - 26 * Math.sin(u * Math.PI),
-      f: Math.cos(u * Math.PI),
-      tilt: 0,
-    };
-  }
-  if (t < 0.95) {
-    const u = (t - 0.5) / 0.45;
-    return { x: R - (R - L) * ease(u), y: 140 - 42 * Math.sin(u * Math.PI * 4), f: -1, tilt: -8 };
-  }
-  const u = (t - 0.95) / 0.05;
-  return {
-    x: L - 16 * Math.sin(u * Math.PI),
-    y: 140 - 26 * Math.sin(u * Math.PI),
-    f: -Math.cos(u * Math.PI),
-    tilt: 0,
-  };
+function at(t: number): { x: number; y: number; tilt: number; f: 1 | -1 } {
+  const fly = (u: number, from: typeof A, to: typeof A, f: 1 | -1) => ({
+    x: from.x + (to.x - from.x) * ease(u),
+    y: from.y - RISE - 30 * Math.sin(u * Math.PI * 3),
+    tilt: 8 * f * Math.sin(u * Math.PI),
+    f,
+  });
+  if (t < 0.08) return { ...A, y: A.y + bob(t), tilt: 0, f: 1 };
+  if (t < 0.1) return { ...A, y: A.y - RISE * ease((t - 0.08) / 0.02), tilt: 0, f: 1 };
+  if (t < 0.4) return fly((t - 0.1) / 0.3, A, B, 1);
+  if (t < 0.42) return { ...B, y: B.y - RISE * (1 - ease((t - 0.4) / 0.02)), tilt: 0, f: 1 };
+  if (t < 0.52) return { ...B, y: B.y + bob(t), tilt: 0, f: t < FLIP[0] ? 1 : -1 };
+  if (t < 0.54) return { ...B, y: B.y - RISE * ease((t - 0.52) / 0.02), tilt: 0, f: -1 };
+  if (t < 0.84) return fly((t - 0.54) / 0.3, B, A, -1);
+  if (t < 0.86) return { ...A, y: A.y - RISE * (1 - ease((t - 0.84) / 0.02)), tilt: 0, f: -1 };
+  return { ...A, y: A.y + bob(t), tilt: 0, f: t < FLIP[1] ? -1 : 1 };
 }
 
 const place = (t: number) => {
   const p = at(t);
-  const fx = Math.abs(p.f) < 0.05 ? 0.05 * Math.sign(p.f || 1) : p.f;
-  return `translate(${p.x}px, ${p.y}px) rotate(${p.tilt}deg) scale(${fx * K}, ${K}) translate(-100px, -170px)`;
+  return `translate(${p.x}px, ${p.y}px) rotate(${p.tilt}deg) scale(${K}) translate(-100px, -170px)`;
 };
+
+/** Hard switches between values at the given moments. */
+function steps<T>(
+  points: [number, T][],
+  key: string,
+  value: (v: T) => string | number,
+): Keyframe[] {
+  const out: Keyframe[] = [{ offset: 0, [key]: value(points[0][1]) }];
+  for (let i = 1; i < points.length; i++) {
+    const [o, v] = points[i];
+    out.push({ offset: o, [key]: value(points[i - 1][1]) });
+    out.push({ offset: Math.min(1, o + 0.0005), [key]: value(v) });
+  }
+  out.push({ offset: 1, [key]: value(points[points.length - 1][1]) });
+  return out;
+}
 
 /** Where the flame's tip is in stage space at loop time t: that is where a spark is left. */
 function tip(t: number) {
   const p = at(t);
-  const f = Math.sign(p.f) || 1;
-  const dx = f * K * (72 - 100);
+  const dx = p.f * K * (72 - 100);
   const dy = K * (266 - 170);
   const r = (p.tilt * Math.PI) / 180;
   return {
@@ -351,48 +529,52 @@ function tip(t: number) {
   };
 }
 
-const SPARKS = Array.from({ length: 44 }, (_, i) => {
-  const t = (i + 0.5) / 44;
-  return { t, ...tip(t), r: [3.2, 2.2, 2.8, 1.8][i % 4], star: i % 3 === 1 };
-});
-const LIFE = 0.16;
+const SPARKS = [0.1, 0.54].flatMap((start, leg) =>
+  Array.from({ length: 30 }, (_, i) => {
+    const t = start + ((i + 0.5) / 30) * 0.3;
+    return { t, ...tip(t), r: [3.2, 2.2, 2.8, 1.8][(i + leg) % 4], star: i % 3 === 1 };
+  }),
+);
+const LIFE = 0.1;
 
 function sparkFrames(t: number): Keyframe[] {
-  const end = t + LIFE;
-  const on = (o: number) => ({ offset: o, opacity: 1, transform: "translate(0px, 0px) scale(1)" });
-  const off = (o: number, drift: boolean) => ({
-    offset: o,
-    opacity: 0,
-    transform: drift ? "translate(0px, 22px) scale(0.3)" : "translate(0px, 0px) scale(1)",
-  });
-  if (end <= 1) {
-    return [
-      off(0, false),
-      off(Math.max(0, t - 0.001), false),
-      on(t),
-      off(end, true),
-      off(1, false),
-    ];
-  }
-  // wraps past the end of the loop: fading from the start, lit again at t
-  const e = end - 1;
-  const mid = (1 - t) / LIFE;
-  const part = (k: number) => ({
-    opacity: 1 - k,
-    transform: `translate(0px, ${22 * k}px) scale(${1 - 0.7 * k})`,
-  });
+  const hide = { opacity: 0, transform: "translate(0px, 0px) scale(1)" };
   return [
-    { offset: 0, ...part(mid) },
-    off(e, true),
-    off(Math.max(e, t - 0.001), false),
-    on(t),
-    { offset: 1, ...part(mid) },
+    { offset: 0, ...hide },
+    { offset: t - 0.0005, ...hide },
+    { offset: t, opacity: 1, transform: "translate(0px, 0px) scale(1)" },
+    { offset: t + LIFE, opacity: 0, transform: "translate(0px, 22px) scale(0.3)" },
+    { offset: 1, ...hide },
   ];
+}
+
+function Spark({ x, y, r, star }: { x: number; y: number; r: number; star: boolean }) {
+  return (
+    <>
+      <circle cx={x} cy={y} r={r * 2.4} fill={GLOW} opacity={0.3} />
+      {star ? (
+        <path
+          d={`M${x} ${y - r * 1.9} L${x + r * 0.35} ${y - r * 0.35} L${x + r * 1.9} ${y} L${x + r * 0.35} ${y + r * 0.35} L${x} ${y + r * 1.9} L${x - r * 0.35} ${y + r * 0.35} L${x - r * 1.9} ${y} L${x - r * 0.35} ${y - r * 0.35} Z`}
+          fill={GLOW}
+          stroke={AMBER}
+          strokeWidth={0.8}
+        />
+      ) : (
+        <circle cx={x} cy={y} r={r} fill={GLOW} stroke={AMBER} strokeWidth={0.8} />
+      )}
+    </>
+  );
 }
 
 export function WispFlight() {
   const uid = useUid();
   const wisp = React.useRef<SVGGElement>(null);
+  const face = React.useRef<SVGGElement>(null);
+  const layers = React.useRef<Record<View, SVGGElement | null>>({
+    front: null,
+    q: null,
+    side: null,
+  });
   const sparks = React.useRef<SVGGElement>(null);
   const [reduce, setReduce] = React.useState(false);
 
@@ -401,65 +583,100 @@ export function WispFlight() {
   }, []);
 
   React.useEffect(() => {
-    if (reduce || !wisp.current || !sparks.current) return;
-    const frames = Array.from({ length: 121 }, (_, i) => ({
-      offset: i / 120,
-      transform: place(i / 120),
+    if (reduce || !wisp.current || !face.current || !sparks.current) return;
+    const timing = { duration: LOOP, iterations: Infinity };
+    const running: Animation[] = [];
+    const path = Array.from({ length: 481 }, (_, i) => ({
+      offset: i / 480,
+      transform: place(i / 480),
     }));
-    const running = [wisp.current.animate(frames, { duration: LOOP, iterations: Infinity })];
-    Array.from(sparks.current.children).forEach((el, i) => {
+    running.push(wisp.current.animate(path, timing));
+    running.push(
+      face.current.animate(
+        steps<number>(
+          [
+            [0, 1],
+            [FLIP[0], -1],
+            [FLIP[1], 1],
+          ],
+          "transform",
+          (f) => `translate(100px, 0px) scale(${f}, 1) translate(-100px, 0px)`,
+        ),
+        timing,
+      ),
+    );
+    (Object.keys(layers.current) as View[]).forEach((v) => {
+      const el = layers.current[v];
+      if (!el) return;
       running.push(
-        (el as SVGGElement).animate(sparkFrames(SPARKS[i].t), {
-          duration: LOOP,
-          iterations: Infinity,
-        }),
+        el.animate(
+          steps<View>(TIMELINE, "opacity", (x) => (x === v ? 1 : 0)),
+          timing,
+        ),
       );
+    });
+    Array.from(sparks.current.children).forEach((el, i) => {
+      running.push((el as SVGGElement).animate(sparkFrames(SPARKS[i].t), timing));
     });
     return () => running.forEach((a) => a.cancel());
   }, [reduce]);
 
-  const still = 0.3;
+  const still = 0.25;
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
       className="h-auto w-full rounded-[var(--radius)] bg-muted"
       role="img"
-      aria-label="Wisp flies across the stage and back, leaving glowing sparks behind it"
+      aria-label="Wisp hovers facing us, turns, flies across the stage, turns to face us again, then flies back, leaving glowing sparks behind it"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d={`M90 ${H - 20} L${W - 90} ${H - 20}`}
-        stroke="var(--border)"
-        strokeWidth={1}
-        strokeDasharray="3 6"
-      />
+      {[A, B].map((p) => (
+        <ellipse key={p.x} cx={p.x} cy={H - 22} rx={26} ry={4} fill="#2a1d22" opacity={0.08} />
+      ))}
       <g ref={sparks}>
-        {SPARKS.map((s, i) => {
-          const age = still - s.t;
-          const visible = reduce && age >= 0 && age < LIFE * 1.4;
+        {SPARKS.map((sp, i) => {
+          const age = still - sp.t;
+          const on = reduce && age >= 0 && age < LIFE * 1.6;
           return (
             <g
               key={i}
               style={{ transformBox: "fill-box", transformOrigin: "center" }}
-              opacity={reduce ? (visible ? 1 - age / (LIFE * 1.4) : 0) : 0}
+              opacity={reduce ? (on ? 1 - age / (LIFE * 1.6) : 0) : 0}
             >
-              <circle cx={s.x} cy={s.y} r={s.r * 2.4} fill={GLOW} opacity={0.3} />
-              {s.star ? (
-                <path
-                  d={`M${s.x} ${s.y - s.r * 1.9} L${s.x + s.r * 0.35} ${s.y - s.r * 0.35} L${s.x + s.r * 1.9} ${s.y} L${s.x + s.r * 0.35} ${s.y + s.r * 0.35} L${s.x} ${s.y + s.r * 1.9} L${s.x - s.r * 0.35} ${s.y + s.r * 0.35} L${s.x - s.r * 1.9} ${s.y} L${s.x - s.r * 0.35} ${s.y - s.r * 0.35} Z`}
-                  fill={GLOW}
-                  stroke={AMBER}
-                  strokeWidth={0.8}
-                />
-              ) : (
-                <circle cx={s.x} cy={s.y} r={s.r} fill={GLOW} stroke={AMBER} strokeWidth={0.8} />
-              )}
+              <Spark {...sp} />
             </g>
           );
         })}
       </g>
       <g ref={wisp} style={{ transform: place(reduce ? still : 0) }}>
-        <WispSide flap={!reduce} uid={`${uid}-fly`} />
+        <g
+          ref={(el) => {
+            layers.current.front = el;
+          }}
+          opacity={reduce ? 0 : 1}
+        >
+          <svg x={0} y={0} width={200} height={300} overflow="visible">
+            <NixFigure c={WISP_MAIN} still={reduce} />
+          </svg>
+        </g>
+        <g ref={face}>
+          <g
+            ref={(el) => {
+              layers.current.q = el;
+            }}
+            opacity={0}
+          >
+            <WispThreeQuarter uid={`${uid}-q`} />
+          </g>
+          <g
+            ref={(el) => {
+              layers.current.side = el;
+            }}
+            opacity={reduce ? 1 : 0}
+          >
+            <WispSide flap={!reduce} uid={`${uid}-s`} />
+          </g>
+        </g>
       </g>
     </svg>
   );

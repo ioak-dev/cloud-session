@@ -20,7 +20,7 @@ npm start
 | Path | Owns |
 |---|---|
 | `src/design/nix/firefly-wisp.tsx` | Wisp, the main character (one drawing, `WISP_MAIN`) |
-| `src/design/nix/wisp-views.tsx` | Wisp's side and back views, and Wisp in flight |
+| `src/design/nix/wisp-views.tsx` | Wisp's three-quarter, side and back views, and Wisp in flight |
 | `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
 | `src/design/nix/firefly-spirits-2.tsx` | Wispy directions (reference): Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |

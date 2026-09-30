@@ -104,10 +104,13 @@ export function NixBenchView() {
         ))}
       </dl>
 
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — front, side, back</h2>
-      <div className="mt-2 grid grid-cols-3 gap-4 sm:max-w-[40rem]">
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — turnaround</h2>
+      <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
         <Tile title="Front">
           <NixFigure c={WISP_MAIN} still className="h-56 w-full" />
+        </Tile>
+        <Tile title="Three-quarter">
+          <WispView view="three-quarter" className="h-56 w-full" />
         </Tile>
         <Tile title="Side">
           <WispView view="side" className="h-56 w-full" />
@@ -119,8 +122,10 @@ export function NixBenchView() {
 
       <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — in flight</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Across the stage and back, seen from the side: it turns at each end, its wings beat as two
-        pairs, and it leaves sparks where it has been. Under reduced motion, one still frame.
+        It hovers facing us, turns — front, three-quarter, side, a drawing at a time — and flies to
+        the other side, where it turns back to face us and hovers; then home the same way. Its wings
+        beat as two pairs in flight, and it leaves sparks where it has been. Under reduced motion,
+        one still frame.
       </p>
       <div className="mt-3">
         <WispFlight />

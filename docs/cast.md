@@ -55,7 +55,17 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 | Edges | Only the translucent parts (wings) and the antenna tips keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
 | Props | A backpack sits behind the wings and flame, fitted to the short body (`packFit`) |
 
-**Views and flight** are in `src/design/nix/wisp-views.tsx`: a side view (facing right) and a back view, drawn in the rig’s space to the same rules, and a flight across a stage and back. In the flight, Wisp is seen from the side, turns at each end, beats its wings as two pairs, and leaves sparks where it has been. It is declared keyframes on one clock: the path, the turn, and each spark’s moment. Under reduced motion it shows one still frame with the trail.
+**Views and flight** are in `src/design/nix/wisp-views.tsx`. The turnaround has front (the rig), three-quarter (facing right), side (facing right) and back, all drawn in the rig’s space to the same rules. Left-facing views are the right-facing ones mirrored.
+
+**How Wisp moves between places** (the rule for the product):
+
+1. At rest, and wherever it arrives, Wisp **faces front**.
+2. To travel, it **turns** through the drawings: front, three-quarter, side. The head leads, and it rises a little as it sets off. It is never a mirror flip on screen.
+3. It **flies in side view** toward where it is going, banking gently, wings beating as two pairs. It leaves sparks where it has been.
+4. On arrival it settles and **turns back** through three-quarter to front.
+5. Facing is only mirrored while the front is showing, so the swap is never seen.
+
+The flight demo plays this across a stage and back on one clock of declared keyframes: the path, the view swaps, the facing, and each spark’s moment. Under reduced motion it shows one still frame with the trail.
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
