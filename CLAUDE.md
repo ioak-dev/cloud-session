@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. Light, dark, and system change the ground only. The colour schemes in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -20,7 +20,8 @@ npm start
 | Path | Owns |
 |---|---|
 | `src/design/nix/firefly-wisp.tsx` | Wisp, the main character (one drawing, `WISP_MAIN`) |
-| `src/design/nix/wisp-views.tsx` | Wisp's three-quarter, side and back views, and Wisp in flight |
+| `src/design/nix/wisp-turn.tsx` | Wisp as a 2.5D puppet that turns continuously from left profile to right |
+| `src/design/nix/wisp-views.tsx` | Wisp's turnaround (with a turn slider), back view, and Wisp in flight |
 | `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
 | `src/design/nix/firefly-spirits-2.tsx` | Wispy directions (reference): Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |

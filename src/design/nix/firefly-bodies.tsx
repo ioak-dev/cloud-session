@@ -28,10 +28,10 @@ const CHONK_BELLY = "#f3d7a8";
 const palChonk = palette(C.deep, C.deep, "#fbe6cc", "#e5c9a6", {
   eye: "#2a1d22",
   glow: "#ffc83d",
-  top: C.accent,
-  bottom: C.accent,
-  shoe: C.accent,
-  accent: C.accent,
+  top: C.clothes,
+  bottom: C.clothes,
+  shoe: C.clothes,
+  accent: C.clothes,
   blush: "#f2a08a",
 });
 

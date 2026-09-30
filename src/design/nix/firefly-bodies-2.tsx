@@ -25,11 +25,11 @@ const CUBE_DARK = C.deep;
 const palCube = palette(CUBE_DARK, C.deep, "#fff4e4", "#ead6bd", {
   eye: "#10384a",
   glow: "#ffd23f",
-  top: C.accent,
+  top: C.clothes,
   topAlt: "#fff3de",
-  bottom: C.accent,
-  shoe: C.accent,
-  accent: C.accent,
+  bottom: C.clothes,
+  shoe: C.clothes,
+  accent: C.clothes,
   blush: "#ff9fb0",
 });
 
@@ -180,11 +180,11 @@ const HOOD_LINE = C.primary;
 const palHood = palette(HOOD_CLOAK, C.deep, "#fdeede", "#e8cdb4", {
   eye: "#173a52",
   glow: "#ffd23f",
-  top: C.accent,
+  top: C.clothes,
   topAlt: "#fff3de",
-  bottom: C.accent,
-  shoe: C.accent,
-  accent: C.accent,
+  bottom: C.clothes,
+  shoe: C.clothes,
+  accent: C.clothes,
   blush: "#f7a3a3",
 });
 

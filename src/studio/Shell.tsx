@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 
-import { SCHEMES } from "@/design/nix/theme";
+import { CLOTHES, SCHEMES } from "@/design/nix/theme";
 
 type Theme = "light" | "dark" | "system";
 
@@ -15,6 +15,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("system");
   const [scheme, setScheme] = useState(SCHEMES[0].id);
   const [custom, setCustom] = useState({ primary: "#5b5fc7", accent: "#ff8f7a" });
+  const [clothes, setClothes] = useState(CLOTHES[0].id);
 
   useEffect(() => {
     applyTheme(theme);
@@ -26,6 +27,11 @@ export function Shell({ children }: { children: ReactNode }) {
     root.setProperty("--char-primary", s.primary);
     root.setProperty("--char-accent", s.accent);
   }, [scheme, custom]);
+
+  useEffect(() => {
+    const c = CLOTHES.find((x) => x.id === clothes)!;
+    document.documentElement.style.setProperty("--char-clothes", c.value);
+  }, [clothes]);
 
   return (
     <div className="min-h-screen bg-canvas text-foreground">
@@ -76,6 +82,22 @@ export function Shell({ children }: { children: ReactNode }) {
               />
               Custom
             </label>
+          </fieldset>
+          <fieldset className="m-0 flex flex-wrap items-center gap-1 border-0 p-0">
+            <legend className="sr-only">Clothes</legend>
+            <span className="instrument mr-1 text-xs text-muted-foreground">Clothes</span>
+            {CLOTHES.map((x) => (
+              <button
+                key={x.id}
+                type="button"
+                aria-pressed={clothes === x.id}
+                className="filter-seg inline-flex items-center gap-1.5"
+                onClick={() => setClothes(x.id)}
+              >
+                <span aria-hidden className="size-3 rounded-full" style={{ background: x.value }} />
+                {x.label}
+              </button>
+            ))}
           </fieldset>
           <div>
             <fieldset className="m-0 flex gap-1 border-0 p-0">

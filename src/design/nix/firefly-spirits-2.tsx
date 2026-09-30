@@ -26,10 +26,10 @@ const pal: Palette = palette(C.primary, C.deep, C.mid, C.primary, {
   line: C.line,
   eye: "#1f1a36",
   glow: "#ffd23f",
-  top: C.accent,
-  bottom: C.accent,
-  shoe: C.accent,
-  accent: C.accent,
+  top: C.clothes,
+  bottom: C.clothes,
+  shoe: C.clothes,
+  accent: C.clothes,
   blush: "#ffa3b5",
 });
 

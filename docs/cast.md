@@ -21,7 +21,7 @@ The firefly is the natural fit for the main character, because Sparkles’ guide
 
 A character has no colours of its own. Every firefly draws with the product’s **primary** and **accent** (`src/design/nix/theme.ts`), and in Sparkles those are the product’s own tokens. The studio header switches the scheme for every character at once, and a custom pair can be picked. *Sparkles* is the product’s light-mode primary and accent, fixed, so a character keeps its colour on both grounds instead of following the lighter dark-mode primary. Deeper and lighter shades are derived from the primary in `studio.css`. **The glow is the one fixed colour**, because it is the firefly’s ability. Never make per-character colourways.
 
-The product’s current accent is a yellow close to the glow. In the Sparkles scheme, clothes drawn in it sit right against the light and the two blur, so the glow stops standing apart. Deciding what clothes are drawn in (the accent, a deep primary, or a neutral) is still open.
+**Clothes** have their own global switch in the header: the accent, a deep primary, stone or charcoal (`CLOTHES` in `theme.ts`, drawn with `C.clothes`). Trims keep the accent. The product’s current accent is a yellow close to the glow, so in the Sparkles scheme accent clothes sit against the light. Which option the product uses is still open.
 
 ### Outlines
 
@@ -55,17 +55,16 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 | Edges | Only the translucent parts (wings) and the antenna tips keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
 | Props | A backpack sits behind the wings and flame, fitted to the short body (`packFit`) |
 
-**Views and flight** are in `src/design/nix/wisp-views.tsx`. The turnaround has front (the rig), three-quarter (facing right), side (facing right) and back, all drawn in the rig’s space to the same rules. Left-facing views are the right-facing ones mirrored.
+**Turning, views and flight.** Wisp turns continuously. `src/design/nix/wisp-turn.tsx` is Wisp as a 2.5D puppet: every part (face, antennae, wings, arms, flame) has a place on a simple body in depth, and is projected for any yaw from −90° (left profile) through 0° (front) to 90° (right profile). The face slides round the head and the far eye foreshortens and fades. The wings sweep back in depth, and parts swap in front of or behind the body by depth. The head can lead the body. At 0° it matches the front rig. The turnaround (`wisp-views.tsx`) shows the front rig, the puppet at 40° and 90°, and the back view, plus a slider to scrub the turn.
 
 **How Wisp moves between places** (the rule for the product):
 
 1. At rest, and wherever it arrives, Wisp **faces front**.
-2. To travel, it **turns** through the drawings: front, three-quarter, side. The head leads, and it rises a little as it sets off. It is never a mirror flip on screen.
-3. It **flies in side view** toward where it is going, banking gently, wings beating as two pairs. It leaves sparks where it has been.
-4. On arrival it settles and **turns back** through three-quarter to front.
-5. Facing is only mirrored while the front is showing, so the swap is never seen.
+2. To travel, it **turns continuously**, head first, to face its way, rising a little as it sets off. It never flips.
+3. It **flies side-on** toward where it is going, banking gently, wings beating as two pairs, and leaves sparks where it has been.
+4. On arrival it settles and **turns back** to face front.
 
-The flight demo plays this across a stage and back on one clock of declared keyframes: the path, the view swaps, the facing, and each spark’s moment. Under reduced motion it shows one still frame with the trail.
+The flight demo plays this across a stage and back. Every frame is a pure function of one loop clock: position, yaw (the head a beat ahead), wing beats and each spark. Under reduced motion it shows one still frame with the trail.
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 

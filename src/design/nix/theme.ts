@@ -21,6 +21,8 @@ export const C = {
   /** Clothes and small trims. */
   accent: "var(--char-accent)",
   accentDeep: "var(--char-accent-deep)",
+  /** Clothes: set for every character at once by the header (`CLOTHES`). */
+  clothes: "var(--char-clothes)",
   /** Outlines where one is needed: a translucent dark, read as a deeper shade of what it is on. */
   line: "var(--char-line)",
   /** Thin parts drawn as a line (antennae): the body colour on light, lighter on dark. */
@@ -44,4 +46,14 @@ export const SCHEMES: Scheme[] = [
   { id: "indigo", label: "Indigo · coral", primary: "#5b5fc7", accent: "#ff8f7a" },
   { id: "sea", label: "Sea · tangerine", primary: "#2f8fb0", accent: "#ff9a4d" },
   { id: "plum", label: "Plum · pink", primary: "#7a4fa3", accent: "#f06a9a" },
+];
+
+export type Clothes = { id: string; label: string; value: string };
+
+/** What clothes are drawn in, for every character at once. */
+export const CLOTHES: Clothes[] = [
+  { id: "accent", label: "Accent", value: "var(--char-accent)" },
+  { id: "deep", label: "Deep primary", value: "var(--char-deep)" },
+  { id: "stone", label: "Stone", value: "#d9d1c3" },
+  { id: "charcoal", label: "Charcoal", value: "#46434f" },
 ];

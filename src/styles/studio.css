@@ -50,6 +50,7 @@
   --char-hi: color-mix(in oklab, var(--char-primary) 55%, white);
   --char-mid: color-mix(in oklab, var(--char-primary) 72%, white);
   --char-accent-deep: color-mix(in oklab, var(--char-accent) 72%, black);
+  --char-clothes: var(--char-accent);
   /* No black outlines. Where an edge is needed it is a translucent dark, so it reads as a deeper
      shade of whatever it lies on; thin parts (antennae) use a tone that holds on either ground. */
   --char-line: oklch(0.2 0.04 262 / 0.3);
@@ -266,30 +267,5 @@ svg[data-still="true"] .spark-still {
 
   .spark-still {
     display: inline;
-  }
-}
-
-/* Wisp's wings in flight (wisp-views.tsx): the upper pair strokes, the lower beats twice as fast. */
-@keyframes wisp-flap-upper {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(16deg);
-  }
-}
-
-@keyframes wisp-flap-lower {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-20deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [style*="wisp-flap"] {
-    animation: none !important;
   }
 }

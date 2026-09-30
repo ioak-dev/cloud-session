@@ -170,11 +170,11 @@ const FUZ_CORAL = C.accent;
 const palFuzzy = palette(FUZ_BODY, C.deep, "#fbe8d8", "#e2c6ae", {
   eye: "#4a3657",
   glow: "#ffd35a",
-  accent: C.accent,
+  accent: C.clothes,
   blush: "#f59c8c",
-  top: C.accent,
+  top: C.clothes,
   bottom: C.deep,
-  shoe: C.accent,
+  shoe: C.clothes,
 });
 
 /** A scalloped fuzz edge round an ellipse: stroked puffs, then the fill laid over their seams. */

@@ -16,7 +16,7 @@ import { PIP_FAMILY } from "./firefly-pip";
 import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
-import { WispFlight, WispView } from "./wisp-views";
+import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -120,12 +120,16 @@ export function NixBenchView() {
         </Tile>
       </div>
 
+      <div className="mt-4 sm:max-w-[16rem]">
+        <WispTurnScrub />
+      </div>
+
       <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — in flight</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        It hovers facing us, turns — front, three-quarter, side, a drawing at a time — and flies to
-        the other side, where it turns back to face us and hovers; then home the same way. Its wings
-        beat as two pairs in flight, and it leaves sparks where it has been. Under reduced motion,
-        one still frame.
+        It hovers facing us, turns — continuously, head first — to face its way, and flies to the
+        other side, where it turns back to face us and hovers; then home the same way. It never
+        flips. Its wings beat as two pairs, and it leaves sparks where it has been. Under reduced
+        motion, one still frame.
       </p>
       <div className="mt-3">
         <WispFlight />
