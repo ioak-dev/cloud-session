@@ -27,6 +27,55 @@ export const lift = (...y: number[]): Track => y.map((v) => ({ translate: `0px $
 export const squash = (...k: [number, number][]): Track =>
   k.map(([x, y]) => ({ scale: `${x} ${y}` }));
 export const fade = (...o: number[]): Track => o.map((v) => ({ opacity: v }));
+/** One keyframe of a whole-joint move: offset, rotation, scale and opacity. */
+export type Key = { x?: number; y?: number; r?: number; sx?: number; sy?: number; o?: number; e?: string };
+
+/**
+ * A track with its timing declared — [offset 0–1, key] pairs — so a joint can hold, snap and
+ * overshoot rather than ease evenly. `e` is the easing of the segment that starts at that key.
+ */
+export const keys = (...k: [number, Key][]): Track =>
+  k.map(([offset, v]) => ({
+    offset,
+    translate: `${v.x ?? 0}px ${v.y ?? 0}px`,
+    rotate: `${v.r ?? 0}deg`,
+    scale: `${v.sx ?? 1} ${v.sy ?? 1}`,
+    ...(v.o !== undefined ? { opacity: v.o } : {}),
+    ...(v.e ? { easing: v.e } : {}),
+  }));
+
+/** Opacity with its timing declared: [offset, opacity] pairs. */
+export const fadeAt = (...k: [number, number][]): Track => k.map(([offset, opacity]) => ({ offset, opacity }));
+
+/** Easings for acting: a snap that overshoots, a sudden start, a sudden stop. */
+export const SNAP = "cubic-bezier(.2,1.6,.4,1)";
+export const SUDDEN = "cubic-bezier(.1,.9,.2,1)";
+export const DROP = "cubic-bezier(.6,0,.9,.4)";
+
+/**
+ * Hand targets over time: [offset, hands] keys sampled into `n` evenly spaced frames for `arms`,
+ * moving straight between keys and holding where two keys repeat.
+ */
+export function handsAt(k: [number, Required<Pick<Hands, "L" | "R">> & Hands][], n = 24): Hands[] {
+  const out: Hands[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    let a = k[0];
+    let b = k[k.length - 1];
+    for (let q = 0; q < k.length - 1; q++) {
+      if (t >= k[q][0] && t <= k[q + 1][0]) {
+        a = k[q];
+        b = k[q + 1];
+        break;
+      }
+    }
+    const u = b[0] === a[0] ? 0 : (t - a[0]) / (b[0] - a[0]);
+    const mix = (p: P, q: P): P => [p[0] + (q[0] - p[0]) * u, p[1] + (q[1] - p[1]) * u];
+    out.push({ ...a[1], L: mix(a[1].L, b[1].L), R: mix(a[1].R, b[1].R) });
+  }
+  return out;
+}
+
 /** A rotation track with its timing declared: [offset 0–1, degrees] pairs, so a joint can lag
  *  another, hold, or flick. */
 export const rotAt = (...k: [number, number][]): Track =>

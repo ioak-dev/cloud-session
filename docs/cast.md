@@ -113,6 +113,32 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 | Lidded | White eyes, small pupils, heavy lids in its own colour | Sly, proud, professional; rests cooler |
 | Starry | Dark eyes with a spark of its own light for a catchlight | Ties the eyes to the glow; the eye becomes a spark at a party |
 
+The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference.
+
+**Wisp, warmer — acting (proposals).** What kept Wisp laid back, and what the acting does about it:
+
+| What was missing | What the warmer does now |
+|---|---|
+| It floated level and centred | It leans; it sinks and peeks round an edge; it is never dead level at rest |
+| One slow, even beat (a 1.4px bob over 4 s, every move eased the same) | Holds, then something sudden: snaps, drops and overshoots (`keys` with per-segment easing, `SNAP`, `SUDDEN`, `DROP` in `rig/motion.ts`) |
+| It always looked straight at you | Its eyes wander — a side-glance, a look up — and snap back; it gets caught looking |
+| It never changed shape | It gathers into a squash before it pops, stretches in surprise, squashes as it lands |
+| Its light only dimmed and brightened with the mood | It plays with it: tucks its flame in and goes dark, hiccups flashes of it, flares |
+| Its job was only polite | A few harmless gags with a place on the sign-up form (below) |
+
+At rest the warmer now leans in, drifts up and hangs, then drops with a squash and pops back with an overshoot (`ALIVE_IDLE`), while its stalks twitch and boing. The acts are in `src/design/nix/wisp-acts.tsx` (`WISP_ACTS`); each is declared keyframes on one clock, and its face changes on that same clock (`ActFigure` reads the expression off the act's own animation time). Stilled or under reduced motion each holds its first frame and a resting face.
+
+| Act | What happens | Where it could play on the sign-up form (proposed) |
+|---|---|---|
+| At rest — never still | The alive idle, with glances away and back | Beside a field nobody is typing in |
+| Surprise take | Gathers, pops up stretched with arms thrown up and wings buzzing, hangs, lands with a squash, laughs at itself | The first time focus lands in the form |
+| Sneak peek | Leans right over the form's edge with side-eye, freezes when caught, snaps back upright looking innocent | While the learner reads, before anything is typed |
+| Hiccup | Off-beat jolts, each with a stretch and a flash of its glow; a silly face after the last | Now and then while nothing is happening |
+| Lights out | Tucks its flame in with its hands and goes dark, then throws its arms wide and flares | Once, when the last field is filled in |
+| Password — eyes shut | Ducks its head into its ruff, hands over its eyes, antennae drooped, giggles; pops back out | An alternative to turning its back; it never peeks |
+
+None of them reacts to what is typed, and none says anything about a valid or an invalid entry. "Lights out" plays on the form being complete, not on the entries being right. These are proposals: the form's rules (hops, turning into the field, turning its back at the password) are unchanged until chosen.
+
 None of them is in the turn puppet, the views, the flight or the form: that waits until one, or a mix, is picked into `WISP_MAIN`.
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:

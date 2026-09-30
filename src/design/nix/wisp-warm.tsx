@@ -5,7 +5,7 @@ import { Antenna, bright } from "./firefly-variants";
 import { DROPLET, Flame, HAIR, pal as WISP_PAL, WISP, WISP_MAIN, Wings } from "./firefly-wisp";
 import { EYE_STYLES, HONEY_EYES } from "./wisp-eyes";
 import { line, OpenMouth, type MouthKit } from "./rig/eyes";
-import { rotAt } from "./rig/motion";
+import { keys, rotAt, SNAP } from "./rig/motion";
 import type { FaceStyle } from "./rig/face";
 import type { Palette } from "./rig/palette";
 import { pivot, type Body } from "./rig/skeleton";
@@ -216,7 +216,7 @@ const DROOP_OF = (mood: Ctx["mood"], side: "L" | "R") => {
  * springs back — boing — settling in smaller and smaller bounces. Declared keyframes; stilled or
  * under reduced motion they hold the first frame.
  */
-const STALK_IDLE: NonNullable<NonNullable<Candidate["attitude"]>["motion"]> = {
+export const STALK_IDLE: NonNullable<NonNullable<Candidate["attitude"]>["motion"]> = {
   antL: rotAt([0, -4], [0.3, 6], [0.56, -1], [0.6, -13], [0.68, 3], [0.76, -5], [1, -4]),
   antMidL: rotAt([0, 3], [0.36, -6], [0.64, 9], [0.72, -5], [0.8, 2], [1, 3]),
   antTipL: rotAt([0, 3], [0.42, -6], [0.67, 12], [0.76, -6], [0.84, 3], [1, 3]),
@@ -400,6 +400,25 @@ const sideMouth: MouthKit = ({ mood, y, pal }) => {
   }
 };
 
+/**
+ * The warmer at rest is never level and never on an even beat. It leans in, drifts up and hangs
+ * there a moment, then drops a little with a squash and pops back with an overshoot — a rhythm
+ * with a hold and a snap in it, not a slow breath. The shadow answers the height.
+ */
+export const ALIVE_IDLE: NonNullable<NonNullable<Candidate["attitude"]>["motion"]> = {
+  torso: keys(
+    [0, { r: 4 }],
+    [0.34, { r: 6, y: -3.5 }],
+    [0.5, { r: 6, y: -3.5, e: "cubic-bezier(.6,0,.9,.4)" }],
+    [0.56, { r: 2, y: 2, sx: 1.06, sy: 0.94, e: SNAP }],
+    [0.64, { r: 5, y: -1.5, sx: 0.98, sy: 1.03 }],
+    [0.72, { r: 4 }],
+    [1, { r: 4 }],
+  ),
+  head: rotAt([0, -2], [0.5, 3], [0.56, -3], [0.66, 1], [1, -2]),
+  shadow: keys([0, {}], [0.34, { sx: 0.9, sy: 0.9 }], [0.5, { sx: 0.9, sy: 0.9 }], [0.56, { sx: 1.04, sy: 1 }], [0.7, {}], [1, {}]),
+};
+
 /* ——— bodies ——— */
 
 /** Snug's body: rounder and wider, a tummy under the chest; chunkier arms with bigger tips. The
@@ -494,6 +513,7 @@ const WARMER_PARTS: Parts = {
   attitude: {
     tilt: 6,
     hands: { L: [99, 200], R: [142, 148], outR: true },
+    motion: ALIVE_IDLE,
   },
   signature: "A flame for a heart, a curl, a flopped antenna, honey eyes, a ruff",
   pitch:

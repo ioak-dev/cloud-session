@@ -18,6 +18,7 @@ import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { EYE_STYLES } from "./wisp-eyes";
+import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
@@ -402,6 +403,30 @@ export function NixBenchView() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp, warmer — acting</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        What kept it laid back: it floated level and centred, on one slow even beat, always looking
+        straight at you, never changing shape, and never playing with its own light. Each act
+        breaks one of those — off balance, holds and snaps, glances, squash and stretch, its light as
+        a toy. Its face changes on the act's own clock. Shown in both eye styles still in the
+        running: Bean on the left, Gumdrop on the right.
+      </p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {WISP_ACTS.map((a) => (
+          <figure key={a.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <div className="grid grid-cols-2 gap-1">
+              {["wisp-warmer-eyes-bean", "wisp-warmer-eyes-gumdrop"].map((id) => (
+                <ActFigure key={id} c={WISP_EYES.find((x) => x.id === id)!} a={a} className="h-56" />
+              ))}
+            </div>
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{a.title}</span>
+              <span className="material mt-1 block text-muted-foreground">{a.line}</span>
+            </figcaption>
+          </figure>
+        ))}
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
