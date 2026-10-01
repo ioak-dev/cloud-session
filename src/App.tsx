@@ -43,8 +43,11 @@ export function App() {
         </nav>
       }
     >
-      {/* keyed so each page starts with its own bench state */}
-      <React.Fragment key={current.hash}>{current.page()}</React.Fragment>
+      {/* keyed so each page starts with its own bench state; `studio-page` lets the browser skip
+          the blocks of the page that are off screen (studio.css) */}
+      <div key={current.hash} className="studio-page">
+        {current.page()}
+      </div>
     </Shell>
   );
 }

@@ -761,7 +761,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
 /** The side characters' page. */
 export function SidePage() {
   return (
-    <div>
+    <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">Side characters</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
@@ -827,6 +827,6 @@ export function SidePage() {
           ["Reference — other animals", ANIMAL_REFERENCE],
         ]}
       />
-    </div>
+    </>
   );
 }

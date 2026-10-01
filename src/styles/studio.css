@@ -257,6 +257,18 @@ svg[data-still="true"] .spark-live {
   display: none;
 }
 
+/* A figure off screen (rig/motion.ts) draws no live sparks. Hiding the group is not enough:
+   Chrome keeps running CSS animations inside a hidden SVG group, so wherever the live trail is
+   not shown its animation is switched off too. */
+svg[data-offscreen="true"] .spark-live {
+  display: none;
+}
+
+svg[data-offscreen="true"] .spark-live .spark,
+svg[data-still="true"] .spark-live .spark {
+  animation: none;
+}
+
 svg[data-still="true"] .spark-still {
   display: inline;
 }
@@ -264,6 +276,10 @@ svg[data-still="true"] .spark-still {
 @media (prefers-reduced-motion: reduce) {
   .spark-live {
     display: none;
+  }
+
+  .spark-live .spark {
+    animation: none;
   }
 
   .spark-still {
@@ -330,4 +346,13 @@ svg[data-still="true"] .spark-still {
 
 @media (prefers-reduced-motion: reduce) {
   .fx { animation: none !important; }
+}
+
+/* A studio page holds hundreds of figures. Each block of a page (a grid of tiles, a table, the
+   bench) is skipped while it is off screen, so the browser spends its frames on what is in view:
+   the flight and the form redraw every frame, and every SVG left on the page otherwise costs
+   them time. The remembered size keeps the scrollbar steady once a block has been seen. */
+.studio-page > :is(div, section, figure) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
 }

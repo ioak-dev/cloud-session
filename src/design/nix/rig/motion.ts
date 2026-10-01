@@ -301,16 +301,25 @@ export function useJointMotion(
       });
     }
 
+    /* Off screen, nothing moves: the joints pause, and the figure is marked so CSS stops its
+       live spark trail too (`studio.css`). A page holds hundreds of figures; without this every
+       one of their sparks keeps animating and starves what is on screen. */
     const io = new IntersectionObserver(([entry]) => {
+      const on = entry.isIntersecting && document.visibilityState === "visible";
+      /* cancelled rather than paused: a paused animation still holds its element as a layer of
+         its own, and the browser re-checks every layer on the page each frame */
       for (const a of running) {
-        if (entry.isIntersecting && document.visibilityState === "visible") a.play();
-        else a.pause();
+        if (on) a.play();
+        else a.cancel();
       }
+      if (on) svg.removeAttribute("data-offscreen");
+      else svg.setAttribute("data-offscreen", "true");
     });
     io.observe(svg);
 
     return () => {
       io.disconnect();
+      svg.removeAttribute("data-offscreen");
       running.forEach((a) => a.cancel());
       touched.forEach((el) => apply(el, {}));
     };
