@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, the main character as drawn), **Wisp · Ribbon** (`#/ribbon`, the same page with the ribbon wings as the main character in the chosen variant, Clean, which every figure on the page wears, and proposals on Clean: two tail patterns and two head shapes), **Side characters** (`#/side`) and **References** (`#/references`, the ribbon variants not chosen, Glow tips and Spirit, then the wispy directions, Pip and the earlier fireflies, moved off the two Wisp pages). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, the main character as drawn), **Wisp · Ribbon** (`#/ribbon`, the same page with the ribbon wings as the main character in the chosen variant, Clean, which every figure on the page wears, and proposals on Clean: two tail patterns, two head shapes and Snug's thicker arms), **Side characters** (`#/side`) and **References** (`#/references`, the ribbon variants not chosen, Glow tips and Spirit, then the wispy directions, Pip and the earlier fireflies, moved off the two Wisp pages). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -24,7 +24,7 @@ npm start
 | `src/design/nix/wisp-views.tsx` | Wisp's turnaround (with a turn slider), back view, and Wisp in flight |
 | `src/design/nix/wisp-warm.tsx` | Wisp, warmer: five proposed variations (Hearth, Scamp, Moony, Snug, and the four combined); Wisp itself unchanged |
 | `src/design/nix/wisp-ribbon.tsx` | Wisp · Ribbon (proposal): the three kept ribbon variants (Clean, chosen; Glow tips and Spirit, reference) and `withRibbon`, which puts them on any Wisp |
-| `src/design/nix/wisp-clean.tsx` | Proposals on Clean: tail patterns (Lantern, Core) and head shapes (Candle, Dewdrop) |
+| `src/design/nix/wisp-clean.tsx` | Proposals on Clean: tail patterns (Lantern, Core), head shapes (Candle, Dewdrop) and Snug's thicker arms |
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |

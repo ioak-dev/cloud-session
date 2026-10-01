@@ -20,7 +20,7 @@ import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon";
-import { CLEAN_HEADS, CLEAN_TAILS } from "./wisp-clean";
+import { CLEAN_ARMS, CLEAN_HEADS, CLEAN_TAILS } from "./wisp-clean";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -582,7 +582,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </p>
 
           <h2 className="material-heading mt-10 text-lg text-foreground">
-            Clean — tail patterns and head shapes (proposals)
+            Clean — tail patterns, head shapes and arms (proposals)
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
             Clean as it is, then four that each change one thing on it. Two tail patterns drawn from
@@ -590,10 +590,11 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             rings is lit brightest, as on a real firefly; and Core, a paler heart inside the flame,
             following its curl. Two head shapes that move the drop’s tip toward one of the things a
             wisp is — Candle, a taller tip that leans like a candle’s flame; and Dewdrop, a short
-            rounded tip, a drop about to fall. Front only. Shown at rest, then in every expression.
+            rounded tip, a drop about to fall. Last, Snug arms: Snug’s thicker arms and bigger soft
+            hand tips on Clean’s slim body. Front only. Shown at rest, then in every expression.
           </p>
           <MoodSheet
-            list={[RIBBON_LINES.clean.main, ...CLEAN_TAILS, ...CLEAN_HEADS]}
+            list={[RIBBON_LINES.clean.main, ...CLEAN_TAILS, ...CLEAN_HEADS, ...CLEAN_ARMS]}
             name={(x) => (x.id === RIBBON_LINES.clean.main.id ? "Clean (as is)" : x.label.replace("Clean · ", ""))}
           />
         </>

@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
 import type { Candidate, Ctx } from "./candidates";
-import { FLAME, Flame, Head, WISP_MAIN } from "./firefly-wisp";
+import { FLAME, Flame, Head, WISP, WISP_MAIN } from "./firefly-wisp";
+import type { Body } from "./rig/skeleton";
 import { FinishedRibbons, RIBBON_VARIANTS, withRibbon } from "./wisp-ribbon";
 
 /**
@@ -20,6 +21,10 @@ import { FinishedRibbons, RIBBON_VARIANTS, withRibbon } from "./wisp-ribbon";
  * - Candle — the tip rises a little taller and leans, as a candle's flame does in still air.
  * - Dewdrop — the tip is short and softly rounded, the drop heavier below: a drop of light about
  *   to fall.
+ *
+ * Arms:
+ * - Snug arms — Snug's thicker arms and bigger soft tips on Clean's slim body: Wisp's own joints
+ *   and torso, only the limb widths change.
  *
  * Front only: the turn puppet, back view, flight and form still draw Clean.
  */
@@ -78,11 +83,19 @@ const CANDLE =
 const DEWDROP =
   "M100 48 C108 48 116 58 124 68 C138 84 148 92 148 112 C148 134 126 146 100 146 C74 146 52 134 52 112 C52 92 62 84 76 68 C84 58 92 48 100 48 Z";
 
+/** Clean's frame with Snug's limb widths: the same joints and torso, thicker arms, bigger tips. */
+const SNUG_ARMS: Body = {
+  ...WISP,
+  id: "wisp-clean-snug-arms",
+  w: { ...WISP.w, upper: 11.5, fore: 11, hand: 8.4 },
+};
+
 type Change = {
   id: string;
   label: string;
   pattern?: (c: Ctx) => ReactNode;
   head?: string;
+  frame?: Body;
   signature: string;
   pitch: string;
   risk: string;
@@ -95,10 +108,11 @@ const clean = (x: Change): Candidate => ({
   signature: x.signature,
   pitch: x.pitch,
   risk: x.risk,
+  frame: x.frame ?? BASE.frame,
   head: x.head ? (c) => <Head {...c} d={x.head} /> : BASE.head,
   behind: (c) => (
     <g>
-      <FinishedRibbons uid={c.uid} form={CLEAN.form} />
+      <FinishedRibbons frame={x.frame} uid={c.uid} form={CLEAN.form} />
       <Flame {...c}>{x.pattern?.(c)}</Flame>
     </g>
   ),
@@ -143,5 +157,17 @@ export const CLEAN_HEADS: Candidate[] = [
     pitch:
       "The other thing a wisp is: a drop. The point is gone; the tip is short and round, and the drop is a little fuller below, as a dewdrop hangs heavy before it falls. Softer and younger than the base, with the face unchanged.",
     risk: "Without its point the head loses some of its flame; the flame tail and the ribbons must carry the wisp. Close to Snug's rounder drop, so judge them side by side.",
+  }),
+];
+
+export const CLEAN_ARMS: Candidate[] = [
+  clean({
+    id: "snug-arms",
+    label: "Snug arms",
+    frame: SNUG_ARMS,
+    signature: "Clean's slim body with Snug's thicker arms and bigger soft hand tips",
+    pitch:
+      "Wisp's stick arms are its weakest part at small sizes: at 32px they thin to a hairline and the hands vanish. These are Snug's arms — a little thicker at the shoulder and forearm, with bigger round tips — on Clean's own slim body, at Wisp's own shoulders and elbows, so the figure keeps its taper and its neck and only the arms carry more weight. Gestures (a wave, a point, hands under its heart) read from further away.",
+    risk: "Thicker arms on a narrow body can look borrowed; check the shoulders join cleanly and that the arms do not crowd the ribbons at the sides.",
   }),
 ];

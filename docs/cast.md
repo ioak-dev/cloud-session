@@ -112,7 +112,7 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 
 **The smoke's colour** (`--char-smoke` in `studio.css`) is set per ground so it is seen on both and never competes with the glow and the sparks: on light, a mid tint of the product colour (42%) peaking at 0.5 opacity, so it shows on the pale ground; on dark, a paler tint (30%) held to 0.38, so it does not shine. It stays smaller and fainter than a spark's halo. Glow tips' puffs keep the glow's gold.
 
-**Clean — proposals** (`wisp-clean.tsx`, on the ribbon page; front only, the puppet still draws Clean). Each changes one thing on Clean.
+**Clean — proposals** (`wisp-clean.tsx`, on the ribbon page; tail, head and arms; front only, the puppet still draws Clean). Each changes one thing on Clean.
 
 | Proposal | What changes |
 |---|---|
@@ -120,6 +120,7 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 | Core (tail) | A paler tongue inside the flame, narrowing into its curl, as a flame is palest at its heart. Fixed anatomy, not a highlight: it follows the flame's shape, never the light's direction |
 | Candle (head) | The drop's tip rises a few units taller and leans to Wisp's left with a soft S, as a candle's flame does in still air. The bulb and face are unchanged |
 | Dewdrop (head) | The point goes: a short, rounded tip with straight flanks and a fuller drop below, a drop of light about to fall. Close to Snug's rounder drop; judge them side by side |
+| Snug arms (arms) | Snug's limb widths (upper arm 11.5, forearm 11, hand tip 8.4) on Clean's own frame: Wisp's joints and slim torso, so only the arms change. Gestures read from further away; Wisp's stick arms are its weakest part at 32px |
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 
