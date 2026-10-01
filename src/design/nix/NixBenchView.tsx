@@ -20,6 +20,7 @@ import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
+import { LOGOS, LogoMark, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
@@ -220,6 +221,35 @@ function PracticeStates() {
   );
 }
 
+/** One app icon proposal: large, then at the sizes a browser and a phone use, on both grounds. */
+function LogoCard({ logo }: { logo: Logo }) {
+  return (
+    <figure className="m-0 flex flex-col gap-3 rounded-[var(--radius)] bg-muted p-3">
+      <div className="flex items-end gap-3">
+        <LogoMark logo={logo} px={128} />
+        <div className="flex flex-col gap-2">
+          {(["#ffffff", "#15171c"] as const).map((ground) => (
+            <div
+              key={ground}
+              className="flex items-end gap-2 rounded-md p-2"
+              style={{ background: ground }}
+            >
+              <LogoMark logo={logo} px={64} />
+              <LogoMark logo={logo} px={32} />
+              <LogoMark logo={logo} px={16} />
+            </div>
+          ))}
+        </div>
+      </div>
+      <figcaption className="text-sm">
+        <span className="material-heading text-foreground">{logo.label}</span>
+        <span className="material mt-1 block text-muted-foreground">{logo.line}</span>
+        <span className="material mt-1 block text-xs text-muted-foreground">{logo.note}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
 function Tile({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <figure className="m-0 flex flex-col items-center gap-1.5 rounded-[var(--radius)] bg-muted p-2">
@@ -264,6 +294,19 @@ export function NixBenchView() {
           </div>
         ))}
       </dl>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — app icon (proposals)</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Marks made from Wisp's shape, not the full character. Each is shown as the app icon and at
+        32 and 16px, where it switches to a simplified drawing (no mouth, rings or spots, nothing
+        thinner than a pixel), on the light and the dark ground. Standalone files:{" "}
+        <code>docs/logo/</code>.
+      </p>
+      <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+        {LOGOS.map((l) => (
+          <LogoCard key={l.id} logo={l} />
+        ))}
+      </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — turnaround</h2>
       <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
