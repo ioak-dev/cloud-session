@@ -108,7 +108,66 @@ function bez(pts: { x: number; y: number }[]) {
   return `${d} Z`;
 }
 
+/** The original ribbon wing (`wisp-ribbon.tsx`): out from the shoulder, then trailing to a point. */
+const ribbon = (s: number): P[] => [
+  [100 + 10 * s, 156],
+  [100 + 40 * s, 136],
+  [100 + 66 * s, 146],
+  [100 + 62 * s, 172],
+  [100 + 60 * s, 192],
+  [100 + 44 * s, 204],
+  [100 + 44 * s, 228],
+  [100 + 34 * s, 206],
+  [100 + 32 * s, 180],
+  [100 + 10 * s, 166],
+];
+/** The fold the ribbon turns on. */
+const fold = (s: number): P[] => [
+  [100 + 16 * s, 160],
+  [100 + 40 * s, 150],
+  [100 + 56 * s, 160],
+  [100 + 50 * s, 186],
+];
+
+/**
+ * Which wings the puppet and the back view draw: Wisp's two spotted pairs, or the single pair of
+ * ribbons proposed in `wisp-ribbon.tsx`. A page sets it once for every view inside it.
+ */
+export type WingStyle = "pairs" | "ribbon";
+export const WingStyleContext = React.createContext<WingStyle>("pairs");
+
 type Part = { d: number; el: React.ReactNode };
+
+/** The ribbons: one pair, flapped as the upper pair is, swept back in depth like the others. */
+function ribbons(yaw: number, flap: number): Part[] {
+  return [-1, 1].map((s) => {
+    const root: P = [100 + 10 * s, 158];
+    const r = ribbon(s).map((p) => wingPoint(p, root, flap * s, yaw));
+    const [f0, f1, f2, f3] = fold(s).map((p) => wingPoint(p, root, flap * s, yaw));
+    return {
+      d: r.reduce((a, p) => a + p.d, 0) / r.length,
+      el: (
+        <g key={`r${s}`}>
+          <path
+            d={bez(r)}
+            fill={C.tint}
+            fillOpacity={0.82}
+            stroke={C.hi}
+            strokeWidth={HAIR}
+            strokeLinejoin="round"
+          />
+          <path
+            d={`M${f0.x} ${f0.y} C${f1.x} ${f1.y} ${f2.x} ${f2.y} ${f3.x} ${f3.y}`}
+            stroke={C.hi}
+            strokeWidth={HAIR}
+            fill="none"
+            strokeLinecap="round"
+          />
+        </g>
+      ),
+    };
+  });
+}
 
 function wings(yaw: number, flapU: number, flapL: number): Part[] {
   const parts: Part[] = [];
@@ -316,7 +375,8 @@ export type TurnProps = {
   yaw: number;
   /** The head's own yaw, to let it lead the body. Defaults to `yaw`. */
   headYaw?: number;
-  /** Wing angles in their own plane, degrees: the upper pair and the lower pair. */
+  /** Wing angles in their own plane, degrees: the upper pair and the lower pair. Ribbons take
+   *  the upper pair's. */
   flapU?: number;
   flapL?: number;
   uid: string;
@@ -336,7 +396,11 @@ export function WispTurn({
   const fw = 1 - 0.25 * Math.abs(s);
   // the flame narrows a little side-on and sweeps back from where it is heading
   const flame = `matrix(${fw} 0 ${-0.16 * s} 1 ${100 - 100 * fw + 0.16 * s * 170} 0)`;
-  const parts = [...wings(yaw, flapU, flapL), ...arms(yaw)];
+  const style = React.useContext(WingStyleContext);
+  const parts = [
+    ...(style === "ribbon" ? ribbons(yaw, flapU) : wings(yaw, flapU, flapL)),
+    ...arms(yaw),
+  ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
   const front = parts.filter((p) => p.d >= 0).sort((a, b) => a.d - b.d);
   return (

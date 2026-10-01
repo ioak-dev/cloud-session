@@ -1,6 +1,6 @@
 import type { Candidate, Ctx } from "./candidates";
 import { Flame, HAIR, WISP, WISP_MAIN } from "./firefly-wisp";
-import { WISP_WARM } from "./wisp-warm";
+import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { pivot, type Body } from "./rig/skeleton";
 import { C } from "./theme";
 
@@ -19,8 +19,8 @@ import { C } from "./theme";
  * as the current wings are, a hairline edge in `C.hi`, no ink outline, one fold line as fixed
  * anatomy. A ribbon is one pair, so it rides `wingL`/`wingR` alone; `hindL`/`hindR` carry nothing.
  *
- * Static figure only, as the skill asks until a variant is picked: the turn puppet, the back view,
- * the flight and the form still draw the two pairs.
+ * The studio's ribbon page shows this line as the main character: the turn puppet, back view,
+ * flight and form draw ribbons there too (`WingStyleContext` in `wisp-turn.tsx`).
  */
 
 const sides = [
@@ -57,34 +57,47 @@ export function RibbonWings({ frame = WISP }: { frame?: Body }) {
   );
 }
 
-const ribbon = (c: Candidate): Candidate["behind"] => (x: Ctx) => (
-  <g>
-    <RibbonWings frame={c.frame} />
-    <Flame {...x} />
-  </g>
-);
+/** Any Wisp with its wings swapped for the ribbons, and nothing else changed. */
+export function withRibbon(c: Candidate, more: Partial<Candidate> = {}): Candidate {
+  return {
+    ...c,
+    id: `${c.id}-ribbon`,
+    label: `${c.label} · Ribbon`,
+    behind: (x: Ctx) => (
+      <g>
+        <RibbonWings frame={c.frame} />
+        <Flame {...x} />
+      </g>
+    ),
+    ...more,
+  };
+}
 
 const WARMER = WISP_WARM.find((x) => x.id === "wisp-warmer")!;
 
+/** The two recommended pairings: today's Wisp, and Wisp, warmer, each on the ribbons. */
 export const WISP_RIBBON: Candidate[] = [
-  {
-    ...WISP_MAIN,
+  withRibbon(WISP_MAIN, {
     id: "wisp-ribbon",
     label: "Wisp · Ribbon",
     signature: "Today's Wisp with its first wings: ribbons that trail like a ghost's hem",
     pitch:
       "Wisp exactly as it is, with one change: the two pairs of spotted wings go back to the single pair of ribbon wings it started with. They leave the shoulders, swell out, then trail down beside the flame to a point, so the whole figure tapers — drop head, ribbons, flame — and it reads as a little spirit rather than a bug with butterfly wings.",
     risk: "One pair, not two: the flight loses the two-pair beat, and the ribbons must still read as wings (they flap) and not as a cape or arms. Check at 32px that the ribbon tips and the flame do not merge into one skirt.",
-    behind: ribbon(WISP_MAIN),
-  },
-  {
-    ...WARMER,
-    id: "wisp-warmer-ribbon",
+  }),
+  withRibbon(WARMER, {
     label: "Warmer · Ribbon",
     signature: "Wisp, warmer, with the ribbon wings",
     pitch:
       "The warmer proposal (curl, flopped antenna, honey eyes, ruff, a flame for a heart) on the ribbon wings, to see whether the ghostly line survives the rounder, softer body.",
     risk: "The ruff and the rounder body already soften the silhouette; the ribbons may have to carry all of the wispiness on their own.",
-    behind: ribbon(WARMER),
-  },
+  }),
 ];
+
+/** The warmer proposals on the ribbons; the combined warmer is the second pairing above. */
+export const WISP_WARM_RIBBON: Candidate[] = WISP_WARM.map((c) =>
+  c.id === WARMER.id ? WISP_RIBBON[1] : withRibbon(c),
+);
+
+/** The warmer's eye styles on the ribbons. */
+export const WISP_EYES_RIBBON: Candidate[] = WISP_EYES.map((c) => withRibbon(c));

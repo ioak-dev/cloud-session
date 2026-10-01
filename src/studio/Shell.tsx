@@ -11,7 +11,7 @@ function applyTheme(theme: Theme) {
   if (theme === "dark") root.classList.add("dark");
 }
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({ children, nav }: { children: ReactNode; nav?: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("system");
   const [scheme, setScheme] = useState(SCHEMES[0].id);
   const [custom, setCustom] = useState({ primary: "#5b5fc7", accent: "#ff8f7a" });
@@ -38,6 +38,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-10 border-b border-border bg-canvas/95 backdrop-blur">
         <div className="mx-auto flex max-w-[76rem] flex-wrap items-center gap-3 px-5 py-3">
           <p className="instrument m-0 text-foreground">Character studio</p>
+          {nav}
           <fieldset className="m-0 ml-auto flex flex-wrap items-center gap-1 border-0 p-0">
             <legend className="sr-only">Character colours</legend>
             <span className="instrument mr-1 text-xs text-muted-foreground">Colours</span>

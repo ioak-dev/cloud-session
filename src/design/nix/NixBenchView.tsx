@@ -1,9 +1,11 @@
 "use client";
 
 /**
- * The cast studio: Wisp (the main character) and its variants, new wispy directions, reference
- * drawings, then the side candidates.
- * One rig, one set of poses, expressions and outfits.
+ * The cast studio, as three pages on one rig, one set of poses, expressions and outfits:
+ * - Wisp: the main character as drawn, its warmer proposals, and the wispy reference drawings.
+ * - Wisp · Ribbon: the same page with the ribbon wings (`wisp-ribbon.tsx`) as the main character,
+ *   in its two recommended pairings; every view, the flight and the form draw ribbons.
+ * - Side characters: the side candidates, their abilities, practice states, eyes and mouths.
  */
 import * as React from "react";
 
@@ -17,11 +19,12 @@ import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
-import { WISP_RIBBON } from "./wisp-ribbon";
+import { WISP_EYES_RIBBON, WISP_RIBBON, WISP_WARM_RIBBON } from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
+import { WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { PRACTICE, STATES, type Variant } from "./side-states";
@@ -72,11 +75,14 @@ const ANIMAL_REFERENCE: Candidate[] = [
   byId(CANDIDATES, "firefly"),
 ];
 
+/** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
   WISP_MAIN,
   ...WISP_WARM,
   ...WISP_RIBBON,
+  ...WISP_WARM_RIBBON,
   ...WISP_EYES,
+  ...WISP_EYES_RIBBON,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
@@ -231,9 +237,17 @@ function Tile({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-export function NixBenchView() {
-  const [id, setId] = React.useState(ALL[0].id);
-  const c = ALL.find((x) => x.id === id) ?? ALL[0];
+type Group = readonly [title: string, list: Candidate[]];
+
+/**
+ * The bench: pick a drawing from the page's groups, then pose it, change its expression, outfit
+ * and props, and see its expressions, wardrobe and the recognition test for the page's drawings.
+ */
+function Bench({ groups }: { groups: Group[] }) {
+  /* a drawing may sit in two groups (the ribbon page's warmer is a pairing and a proposal) */
+  const all = [...new Map(groups.flatMap(([, list]) => list).map((x) => [x.id, x])).values()];
+  const [id, setId] = React.useState(all[0].id);
+  const c = all.find((x) => x.id === id) ?? all[0];
   const [pose, setPose] = React.useState<PoseId>("idle");
   const [mood, setMood] = React.useState<Mood | undefined>(undefined);
   const [outfit, setOutfit] = React.useState<OutfitId>(c.outfit);
@@ -249,266 +263,8 @@ export function NixBenchView() {
     setProps((cur) => (cur.includes(p) ? cur.filter((x) => x !== p) : [...cur, p]));
 
   return (
-    <div>
-      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">The cast</h1>
-      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
-        flies. Colours come from the scheme in the header; only its flame and sparks are its own.
-        The other wispy directions, Pip and the earlier fireflies stay as reference.
-      </p>
-
-      <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
-        {TESTS.map(([t, d]) => (
-          <div key={t}>
-            <dt className="instrument text-foreground">{t}</dt>
-            <dd className="material m-0 text-muted-foreground">{d}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — turnaround</h2>
-      <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
-        <Tile title="Front">
-          <NixFigure c={WISP_MAIN} still className="h-56 w-full" />
-        </Tile>
-        <Tile title="Three-quarter">
-          <WispView view="three-quarter" className="h-56 w-full" />
-        </Tile>
-        <Tile title="Side">
-          <WispView view="side" className="h-56 w-full" />
-        </Tile>
-        <Tile title="Back">
-          <WispView view="back" className="h-56 w-full" />
-        </Tile>
-      </div>
-
-      <div className="mt-4 sm:max-w-[16rem]">
-        <WispTurnScrub />
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — in flight</h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        It hovers facing us, turns — continuously, head first — to face its way, and flies to the
-        other side, where it turns back to face us and hovers; then home the same way. It never
-        flips. Its wings beat as two pairs, and it leaves sparks where it has been. Under reduced
-        motion, one still frame.
-      </p>
-      <div className="mt-3">
-        <WispFlight />
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp — on the sign-up form</h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The one place Wisp appears. It waits in the gutter to the left, turned toward the form.
-        Between fields it hops rather than flies; while you type it turns into the field and its
-        eyes follow the text; at the password it turns its back until you leave the field. Click
-        into a field and type, or let the demo play. Under reduced motion it reappears rather than
-        travels.
-      </p>
-      <div className="mt-3">
-        <WispForm />
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">
-        Wisp, warmer — proposals
-      </h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Wisp itself is unchanged. Beside the side characters it is the only one who is nobody at
-        rest: all cool blue with its warmth at its tail, a small face on a perfectly symmetric drop,
-        a stick body, no temperament. Each of the first four changes one thing — warmth, attitude,
-        face, softness — so it can be judged alone; the last puts them together. Each is shown at
-        rest, then in every expression.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {[WISP_MAIN, ...WISP_WARM].map((x) => (
-          <Tile key={x.id} title={x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}>
-            <NixFigure c={x} className="h-56 w-full" />
-          </Tile>
-        ))}
-      </div>
-      <div className="mt-3 overflow-x-auto">
-        <table className="border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th />
-              {MOODS.map((m) => (
-                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
-                  {m.title}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[WISP_MAIN, ...WISP_WARM].map((x) => (
-              <tr key={x.id}>
-                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
-                  {x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}
-                </th>
-                {MOODS.map((m) => (
-                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
-                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">
-        Wisp · Ribbon wings — proposal
-      </h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Wisp started with one pair of ribbon wings that trailed down like a scarf or a ghost’s hem;
-        “Finalise Wisp” swapped them for two pairs of spotted wings. Here the current Wisp, and the
-        warmer, keep everything they have and take the ribbons back, redrawn in the scheme with a
-        hairline edge. Static figures only.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[WISP_MAIN, WISP_RIBBON[0], byId(WISP_WARM, "wisp-warmer"), WISP_RIBBON[1]].map((x) => (
-          <Tile key={x.id} title={x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}>
-            <NixFigure c={x} className="h-56 w-full" />
-          </Tile>
-        ))}
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">
-        Wisp, warmer — eye styles
-      </h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The warmer in five eye styles, each drawn for the shared nine expressions and five of
-        Wisp's own — sly, silly, surprised, proud, party — so its range runs from composed to
-        clowning. Everything but the eyes is the warmer as drawn. Its stalks sway, and once a loop
-        the left one twitches and the flopped one boings.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {WISP_EYES.map((x, i) => (
-          <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-            <NixFigure c={x} className="h-56 w-full" />
-            <figcaption className="text-sm">
-              <span className="material-heading text-foreground">{EYE_STYLES[i].label}</span>
-              <span className="material mt-1 block text-muted-foreground">{EYE_STYLES[i].note}</span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-      <div className="mt-3 overflow-x-auto">
-        <table className="border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th />
-              {ALL_MOODS.map((m) => (
-                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
-                  {m.title}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {WISP_EYES.map((x, i) => (
-              <tr key={x.id}>
-                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
-                  {EYE_STYLES[i].label}
-                </th>
-                {ALL_MOODS.map((m) => (
-                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
-                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp, warmer — acting</h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        What kept it laid back: it floated level and centred, on one slow even beat, always looking
-        straight at you, never changing shape, and never playing with its own light. Each act
-        breaks one of those — off balance, holds and snaps, glances, squash and stretch, its light as
-        a toy. Its face changes on the act's own clock. Shown in both eye styles still in the
-        running: Bean on the left, Gumdrop on the right.
-      </p>
-      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {WISP_ACTS.map((a) => (
-          <figure key={a.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-            <div className="grid grid-cols-2 gap-1">
-              {["wisp-warmer-eyes-bean", "wisp-warmer-eyes-gumdrop"].map((id) => (
-                <ActFigure key={id} c={WISP_EYES.find((x) => x.id === id)!} a={a} className="h-56" />
-              ))}
-            </div>
-            <figcaption className="text-sm">
-              <span className="material-heading text-foreground">{a.title}</span>
-              <span className="material mt-1 block text-muted-foreground">{a.line}</span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">
-        Side candidates and their abilities
-      </h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The side candidates still in the running, each with its ability — something that comes
-        from the character itself, its body and its nature, never a prop or an outside object. The
-        chameleon is confirmed; the rest compete for the other five places.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {SIDE_ABILITIES.map((a) => (
-          <AbilityTile key={a.id} a={a} />
-        ))}
-      </div>
-
-      <PracticeStates />
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        No two characters share eyes or a mouth. Each has its own eye shape, colour, shine, lids
-        and brows, and its own mouth or lips, beak or muzzle, and draws every expression with them.
-      </p>
-      <div className="mt-3 overflow-x-auto">
-        <table className="border-separate border-spacing-1">
-          <thead>
-            <tr>
-              <th />
-              {MOODS.map((m) => (
-                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
-                  {m.title}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {EYED.map((x) => (
-              <tr key={x.id}>
-                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
-                  {x.label}
-                </th>
-                {MOODS.map((m) => (
-                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
-                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {(
-        [
-          ["Main character — Wisp", [WISP_MAIN]],
-          ["Wisp, warmer — proposals", WISP_WARM],
-          ["Wisp · Ribbon wings — proposal", WISP_RIBBON],
-          ["Wisp, warmer — eye styles", WISP_EYES],
-          ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
-          ["Reference — Pip", PIP_FAMILY],
-          ["Reference — inspiration for the main or a side character", REFERENCE],
-          ["Side candidates", CAST],
-          ["Reference — other animals", ANIMAL_REFERENCE],
-        ] as const
-      ).map(([title, group]) => (
+    <>
+      {groups.map(([title, group]) => (
         <React.Fragment key={title}>
           <h2 className="material-heading mt-10 text-lg text-foreground">{title}</h2>
           <div className="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
@@ -664,7 +420,7 @@ export function NixBenchView() {
         test.
       </p>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {ALL.map((x) => (
+        {all.map((x) => (
           <div key={x.id} className="flex items-end gap-4 rounded-[var(--radius)] bg-muted p-3">
             <NixFigure c={x} still silhouette className="h-24 w-16" />
             <NixFigure c={x} still silhouette className="h-12 w-8" />
@@ -677,6 +433,346 @@ export function NixBenchView() {
           </div>
         ))}
       </div>
+    </>
+  );
+}
+
+function Tests() {
+  return (
+    <dl className="mt-5 grid max-w-[64rem] gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      {TESTS.map(([t, d]) => (
+        <div key={t}>
+          <dt className="instrument text-foreground">{t}</dt>
+          <dd className="material m-0 text-muted-foreground">{d}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** Figures at rest, then each in every expression. */
+function MoodSheet({ list, name }: { list: Candidate[]; name: (x: Candidate) => string }) {
+  return (
+    <>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {list.map((x) => (
+          <Tile key={x.id} title={name(x)}>
+            <NixFigure c={x} className="h-56 w-full" />
+          </Tile>
+        ))}
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((x) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {name(x)}
+                </th>
+                {MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+/** What differs between the Wisp page and its ribbon clone. */
+type Line = {
+  wings: WingStyle;
+  /** The main character: one drawing, or the recommended pairings side by side. */
+  main: Candidate[];
+  warm: Candidate[];
+  eyes: Candidate[];
+};
+
+const LINES: Record<WingStyle, Line> = {
+  pairs: { wings: "pairs", main: [WISP_MAIN], warm: WISP_WARM, eyes: WISP_EYES },
+  ribbon: { wings: "ribbon", main: WISP_RIBBON, warm: WISP_WARM_RIBBON, eyes: WISP_EYES_RIBBON },
+};
+
+const REFERENCE_GROUPS: Group[] = [
+  ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
+  ["Reference — Pip", PIP_FAMILY],
+  ["Reference — inspiration for the main or a side character", REFERENCE],
+];
+
+/** The main character's page: Wisp as drawn (`pairs`), or its ribbon clone (`ribbon`). */
+export function WispPage({ wings }: { wings: WingStyle }) {
+  const line = LINES[wings];
+  const ribbon = wings === "ribbon";
+  const [front] = line.main;
+  const asIs = (x: Candidate) => (x.id === front.id ? `${front.label} (as is)` : x.label);
+  const actEyes = ["wisp-warmer-eyes-bean", "wisp-warmer-eyes-gumdrop"].map(
+    (id) => line.eyes.find((x) => x.id === (ribbon ? `${id}-ribbon` : id))!,
+  );
+  return (
+    <WingStyleContext.Provider value={wings}>
+      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
+      <h1 className="display mt-1">{ribbon ? "Wisp · Ribbon wings" : "Wisp"}</h1>
+      {ribbon ? (
+        <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+          The Wisp page again, with the ribbon wings as the main character. Wisp started with one
+          pair of ribbon wings that left the shoulders and trailed down past the body to a point,
+          like a scarf or a ghost’s hem; “Finalise Wisp” swapped them for two pairs of spotted
+          wings. Everything else is Wisp as drawn. Every figure here — the warmer proposals, the eye
+          styles, the acting, the turnaround, the flight and the form — wears the ribbons.
+          Proposal, not adopted.
+        </p>
+      ) : (
+        <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+          The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
+          flies. Colours come from the scheme in the header; only its flame and sparks are its own.
+          The other wispy directions, Pip and the earlier fireflies stay as reference. The same
+          page with Wisp’s original ribbon wings is{" "}
+          <a href="#/ribbon" className="text-foreground underline">
+            Wisp · Ribbon
+          </a>
+          .
+        </p>
+      )}
+      <Tests />
+
+      {ribbon && (
+        <>
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            Main character — the two pairings
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            The ribbons on Wisp as it is, and on Wisp, warmer. Shown at rest, then in every
+            expression.
+          </p>
+          <MoodSheet list={line.main} name={(x) => x.label} />
+        </>
+      )}
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">{front.label} — turnaround</h2>
+      <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
+        <Tile title="Front">
+          <NixFigure c={front} still className="h-56 w-full" />
+        </Tile>
+        <Tile title="Three-quarter">
+          <WispView view="three-quarter" className="h-56 w-full" />
+        </Tile>
+        <Tile title="Side">
+          <WispView view="side" className="h-56 w-full" />
+        </Tile>
+        <Tile title="Back">
+          <WispView view="back" className="h-56 w-full" />
+        </Tile>
+      </div>
+
+      <div className="mt-4 sm:max-w-[16rem]">
+        <WispTurnScrub />
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">{front.label} — in flight</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        It hovers facing us, turns — continuously, head first — to face its way, and flies to the
+        other side, where it turns back to face us and hovers; then home the same way. It never
+        flips. {ribbon ? "Its ribbons beat as one pair" : "Its wings beat as two pairs"}, and it
+        leaves sparks where it has been. Under reduced motion, one still frame.
+      </p>
+      <div className="mt-3">
+        <WispFlight />
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        {front.label} — on the sign-up form
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The one place Wisp appears. It waits in the gutter to the left, turned toward the form.
+        Between fields it hops rather than flies; while you type it turns into the field and its
+        eyes follow the text; at the password it turns its back until you leave the field. Click
+        into a field and type, or let the demo play. Under reduced motion it reappears rather than
+        travels.
+      </p>
+      <div className="mt-3">
+        <WispForm />
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Wisp, warmer — proposals{ribbon ? " on the ribbons" : ""}
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Wisp itself is unchanged. Beside the side characters it is the only one who is nobody at
+        rest: all cool blue with its warmth at its tail, a small face on a perfectly symmetric drop,
+        a stick body, no temperament. Each of the first four changes one thing — warmth, attitude,
+        face, softness — so it can be judged alone; the last puts them together. Each is shown at
+        rest, then in every expression.
+      </p>
+      <MoodSheet list={[front, ...line.warm]} name={asIs} />
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Wisp, warmer — eye styles
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The warmer in five eye styles, each drawn for the shared nine expressions and five of
+        Wisp's own — sly, silly, surprised, proud, party — so its range runs from composed to
+        clowning. Everything but the eyes is the warmer as drawn. Its stalks sway, and once a loop
+        the left one twitches and the flopped one boings.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {line.eyes.map((x, i) => (
+          <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={x} className="h-56 w-full" />
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{EYE_STYLES[i].label}</span>
+              <span className="material mt-1 block text-muted-foreground">{EYE_STYLES[i].note}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {ALL_MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {line.eyes.map((x, i) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {EYE_STYLES[i].label}
+                </th>
+                {ALL_MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp, warmer — acting</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        What kept it laid back: it floated level and centred, on one slow even beat, always looking
+        straight at you, never changing shape, and never playing with its own light. Each act
+        breaks one of those — off balance, holds and snaps, glances, squash and stretch, its light as
+        a toy. Its face changes on the act's own clock. Shown in both eye styles still in the
+        running: Bean on the left, Gumdrop on the right.
+      </p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {WISP_ACTS.map((a) => (
+          <figure key={a.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <div className="grid grid-cols-2 gap-1">
+              {actEyes.map((x) => (
+                <ActFigure key={x.id} c={x} a={a} className="h-56" />
+              ))}
+            </div>
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{a.title}</span>
+              <span className="material mt-1 block text-muted-foreground">{a.line}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <Bench
+        groups={[
+          [ribbon ? "Main character — Wisp · Ribbon, both pairings" : "Main character — Wisp", line.main],
+          [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
+          ["Wisp, warmer — eye styles", line.eyes],
+          ...REFERENCE_GROUPS,
+        ]}
+      />
+    </WingStyleContext.Provider>
+  );
+}
+
+/** The side characters' page. */
+export function SidePage() {
+  return (
+    <div>
+      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
+      <h1 className="display mt-1">Side characters</h1>
+      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+        Six places beside Wisp, each a different species or a person, each with one ability no
+        other character has. The chameleon is confirmed; the fruit bat, chick, Juno and Lulu are
+        chosen so far, and the sixth place is open.
+      </p>
+      <Tests />
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Side candidates and their abilities
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The side candidates still in the running, each with its ability — something that comes
+        from the character itself, its body and its nature, never a prop or an outside object. The
+        chameleon is confirmed; the rest compete for the other five places.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {SIDE_ABILITIES.map((a) => (
+          <AbilityTile key={a.id} a={a} />
+        ))}
+      </div>
+
+      <PracticeStates />
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        No two characters share eyes or a mouth. Each has its own eye shape, colour, shine, lids
+        and brows, and its own mouth or lips, beak or muzzle, and draws every expression with them.
+      </p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {EYED.map((x) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {x.label}
+                </th>
+                {MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Bench
+        groups={[
+          ["Side candidates", CAST],
+          ["Reference — other animals", ANIMAL_REFERENCE],
+        ]}
+      />
     </div>
   );
 }

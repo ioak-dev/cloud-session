@@ -206,7 +206,8 @@ body {
 }
 
 .filter-seg[aria-pressed="true"],
-.filter-seg[data-on="true"] {
+.filter-seg[data-on="true"],
+.filter-seg[aria-current="page"] {
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--foreground);
