@@ -45,6 +45,7 @@ npm start
 | `src/design/nix/side-pond.tsx` | Ines and Mina; `POND`, the pond four with Bun and Bean |
 | `src/design/nix/side-shortlist.tsx` | Ada, Kai, Thistle (`SHORTLISTED`); Mischa and Bodhi (`BACKUP`) |
 | `src/design/nix/side-fresh.tsx` | Fresh candidates (`FRESH`): Arjun, Tilly, Theo |
+| `src/design/nix/side-people.tsx` | Elders (`ELDERS`: Ada · Bun, Ezra, Grace) and teachers in their twenties (`TEACHERS`: Lena, Noor, June) to shortlist |
 | `src/design/nix/side-abilities.tsx` | Ability previews for the shortlist |
 | `src/design/nix/lip-sync.tsx` | The lip-sync demo: a fixed line said with Web Speech, word-synced (or flap, or silent and timed) |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, the spark trail, and the talking shapes (`visemes.ts`) |
