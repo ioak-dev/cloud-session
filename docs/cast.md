@@ -100,6 +100,16 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 
 The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): a clone of the Wisp page with the ribbons as the main character, shown in the recommended pairings (Wisp · Ribbon, Warmer · Ribbon, and Warmer · Ribbon, no ruff). Every figure on that page wears the ribbons — the warmer proposals, the eye styles and the acting (`WISP_WARM_RIBBON`, `WISP_EYES_RIBBON`), and the turn puppet, back view, flight and form, which read `WingStyleContext` (`wisp-turn.tsx`). In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. **Warmer · Ribbon, no ruff** (recommended) is the warmer slimmed back to Wisp's line so the ribbons carry it: no ruff, Wisp's own drop with the curl (`CURL`) instead of the rounder one, and Wisp's narrow body, neck and arms instead of Snug's. It keeps the warmer's temperament: the chest flame and the warmth in the face, the curl, the stalks with the flopped antenna, honey eyes and talking brows, the lopsided smile, the tipped head and the hey, and the alive idle. At 48 and 32px its silhouette keeps a neck and the ribbons flare to points, where the ruffed warmer reads as one rounder mass. It is drawn facing front only; the puppet, flight and form on that page still show plain Wisp · Ribbon.
 
+**Ribbon finishes — proposals** (`WISP_RIBBON_FINISHES`, on Warmer · Ribbon, no ruff; facing front only):
+
+| Finish | What changes |
+|---|---|
+| No outline · dots | The hairline edge goes. The ribbon is shaded instead — `C.soft` at the shoulder, frost (`C.tint`) through the middle, `C.soft` again at the point — so its own colour is its edge on both grounds. Five fixed dots in `C.hi` |
+| No outline · sparkles | The same shaded ribbon with four small fixed four-point stars in the glow's colour: the firefly's light caught in its wings. Never animated, never a highlight |
+| Spirit | The ribbons dissolve: longer, the tails curling out like smoke, a thinner strand trailing inside each, fading from `C.soft` through frost to a last `C.hi` wisp and then nothing. A few motes fade with them. Every edge below the head now dissolves |
+
+Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
+
 The Wisp page (`#/wisp`) still shows Wisp as drawn, with two pairs; the side characters have their own page (`#/side`).
 
 **Wisp's own expressions.** The shared nine cannot say mischief, surprise or clowning. `MORE_MOODS` (`rig/face.tsx`) adds five for the main character only: sly, silly, surprised, proud, party. Side characters' kits are not asked to draw them.

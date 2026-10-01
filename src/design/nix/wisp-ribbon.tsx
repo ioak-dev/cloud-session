@@ -1,5 +1,5 @@
 import type { Candidate, Ctx } from "./candidates";
-import { Flame, HAIR, WISP, WISP_MAIN } from "./firefly-wisp";
+import { Flame, HAIR, pal as WISP_PAL, WISP, WISP_MAIN } from "./firefly-wisp";
 import { CURL, variant, WARMER_PARTS, WISP_EYES, WISP_WARM, withStalks } from "./wisp-warm";
 import { pivot, type Body } from "./rig/skeleton";
 import { C } from "./theme";
@@ -22,6 +22,8 @@ import { C } from "./theme";
  * The studio's ribbon page shows this line as the main character: the turn puppet, back view,
  * flight and form draw ribbons there too (`WingStyleContext` in `wisp-turn.tsx`).
  */
+
+const GLOW = WISP_PAL.glow;
 
 const sides = [
   ["L", -1],
@@ -53,6 +55,114 @@ export function RibbonWings({ frame = WISP }: { frame?: Body }) {
           />
         </g>
       ))}
+    </>
+  );
+}
+
+/* ——— ribbon finishes: no outline, and the ribbon moving toward a spirit ——— */
+
+/**
+ * - `dots`: no edge; the ribbon is shaded instead, its colour at the shoulder fading to frost and
+ *   back to the soft shade at the point, so it still separates from a pale ground. A few dots in `C.hi`, fixed like the
+ *   current wings' spots.
+ * - `sparkles`: the same, with four small four-point stars in the glow's colour: fixed anatomy, the
+ *   firefly's light caught in its wings, never animated, never a highlight.
+ * - `spirit`: the ribbon dissolves. It runs longer, its tail curls out like smoke, a thinner strand
+ *   trails beside it, and it fades from its colour at the shoulder to nothing at the tips; a few
+ *   motes inside fade with it.
+ */
+export type RibbonFinish = "dots" | "sparkles" | "spirit";
+
+/** Dots and stars on the ribbon: outward offset, height, size. */
+const RIBBON_DOTS = [
+  [44, 160, 2.6],
+  [55, 170, 1.8],
+  [40, 182, 1.5],
+  [49, 192, 2.1],
+  [42, 212, 1.3],
+] as const;
+const RIBBON_STARS = [
+  [46, 162, 4.4],
+  [52, 186, 3],
+  [40, 176, 1.8],
+  [43, 210, 2.4],
+] as const;
+const SPIRIT_MOTES = [
+  [46, 164, 2.2, 1],
+  [55, 176, 1.4, 0.9],
+  [44, 196, 1.6, 0.7],
+  [50, 220, 1.2, 0.45],
+  [30, 222, 1.1, 0.4],
+] as const;
+
+const star = (x: number, y: number, r: number) => {
+  const k = r * 0.28;
+  return `M${x} ${y - r} Q${x + k} ${y - k} ${x + r} ${y} Q${x + k} ${y + k} ${x} ${y + r} Q${x - k} ${y + k} ${x - r} ${y} Q${x - k} ${y - k} ${x} ${y - r} Z`;
+};
+
+/** The ribbons in one of the finishes, on whichever frame they are hung from. */
+export function FinishedRibbons({
+  frame = WISP,
+  uid,
+  finish,
+}: {
+  frame?: Body;
+  uid: string;
+  finish: RibbonFinish;
+}) {
+  const spirit = finish === "spirit";
+  return (
+    <>
+      {sides.map(([side, s]) => {
+        const X = (dx: number) => 100 + dx * s;
+        const g = `${uid}-ribbon-${finish}-${side}`;
+        return (
+          <g key={side} data-joint={`wing${side}`} style={pivot(`wing${side}`, frame.j)}>
+            <defs>
+              {/* shaded from the shoulder down: the colour is the edge */}
+              <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={X(14)} y1={150} x2={X(44)} y2={spirit ? 256 : 228}>
+                <stop offset="0" stopColor={C.soft} stopOpacity={0.95} />
+                <stop offset={spirit ? 0.35 : 0.45} stopColor={C.tint} stopOpacity={0.88} />
+                {/* toward the tip it turns back to the product colour, so a fade still reads on a
+                    pale ground */}
+                {spirit && <stop offset="0.72" stopColor={C.hi} stopOpacity={0.5} />}
+                <stop offset="1" stopColor={spirit ? C.hi : C.soft} stopOpacity={spirit ? 0 : 0.7} />
+              </linearGradient>
+            </defs>
+            {spirit ? (
+              <>
+                {/* a thinner strand trailing inside the ribbon, fading sooner */}
+                <path
+                  d={`M${X(30)} 182 C${X(28)} 204 ${X(20)} 222 ${X(24)} 240 C${X(26)} 248 ${X(32)} 250 ${X(34)} 247 C${X(29)} 243 ${X(29)} 230 ${X(33)} 216 C${X(36)} 204 ${X(36)} 192 ${X(30)} 182 Z`}
+                  fill={`url(#${g})`}
+                />
+                {/* the ribbon, longer, its tail curling out like smoke */}
+                <path
+                  d={`M${X(10)} 156 C${X(40)} 136 ${X(66)} 146 ${X(64)} 172 C${X(62)} 194 ${X(50)} 208 ${X(48)} 226 C${X(46)} 240 ${X(52)} 250 ${X(60)} 254 C${X(48)} 258 ${X(38)} 248 ${X(38)} 232 C${X(37)} 210 ${X(32)} 182 ${X(10)} 166 Z`}
+                  fill={`url(#${g})`}
+                />
+                {SPIRIT_MOTES.map(([dx, y, r, o]) => (
+                  <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} opacity={o} />
+                ))}
+              </>
+            ) : (
+              <>
+                <path
+                  d={`M${X(10)} 156 C${X(40)} 136 ${X(66)} 146 ${X(62)} 172 C${X(60)} 192 ${X(44)} 204 ${X(44)} 228 C${X(34)} 206 ${X(32)} 180 ${X(10)} 166 Z`}
+                  fill={`url(#${g})`}
+                />
+                {finish === "dots"
+                  ? RIBBON_DOTS.map(([dx, y, r]) => (
+                      <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} />
+                    ))
+                  : RIBBON_STARS.map(([dx, y, r]) => (
+                      <path key={`${dx}${y}`} d={star(X(dx), y, r)} fill={GLOW} />
+                    ))}
+              </>
+            )}
+          </g>
+        );
+      })}
     </>
   );
 }
@@ -126,3 +236,45 @@ export const WISP_WARM_RIBBON: Candidate[] = WISP_WARM.map((c) =>
 
 /** The warmer's eye styles on the ribbons. */
 export const WISP_EYES_RIBBON: Candidate[] = WISP_EYES.map((c) => withRibbon(c));
+
+const SLIM = WISP_RIBBON[2];
+
+/** The recommended pairing in the ribbon finishes: no outline with dots or sparkles, and a spirit. */
+export const WISP_RIBBON_FINISHES: Candidate[] = (
+  [
+    [
+      "dots",
+      "No outline · dots",
+      "The ribbon without its edge: shaded from its colour at the shoulder through frost, with a few dots",
+      "The hairline edge goes. To keep the ribbon apart from a pale ground without it, the ribbon is shaded: the product colour's soft shade where it leaves the shoulder, frost through the middle, and the soft shade again at the point, so its own colour is its edge — as the head's is. A few dots in a mid shade, fixed in place like the current wings' spots, give it a little pattern.",
+      "Without an edge the tip fades toward the ground; check the light ground at 32px.",
+    ],
+    [
+      "sparkles",
+      "No outline · sparkles",
+      "The same shaded ribbon with four small stars in the glow's colour",
+      "As the dots, but the pattern is four small four-point stars in the firefly's own glow: its light caught in its wings, so the ribbons belong to the same creature as the flame and the sparks. Fixed anatomy, never animated.",
+      "Stars can read as shine; they must stay fixed and few, and never twinkle, or they become highlights and compete with the spark trail.",
+    ],
+    [
+      "spirit",
+      "Spirit",
+      "Ribbons that dissolve: longer, curling out like smoke, fading to nothing at the tips",
+      "Further toward a spirit. The ribbons run longer and their tails curl out like smoke; a thinner strand trails inside each; they fade from the product colour at the shoulder, through frost, to a last blue wisp and then nothing at the tips, so Wisp seems to be made of light and mist from the shoulders down. A few motes in the ribbon fade with it. With the wispy hands and the flame, every edge of the figure below the head now dissolves.",
+      "The most ghostly: check it stays a friendly spirit, never a spooky one, at the incorrect face; the faded tips vanish at small sizes, so the silhouette is shorter than it looks.",
+    ],
+  ] as const
+).map(([finish, label, signature, pitch, risk]) => ({
+  ...SLIM,
+  id: `wisp-ribbon-${finish}`,
+  label: `Ribbon, no ruff · ${label}`,
+  signature,
+  pitch,
+  risk,
+  behind: (x: Ctx) => (
+    <g>
+      <FinishedRibbons frame={SLIM.frame} uid={x.uid} finish={finish} />
+      <Flame {...x} />
+    </g>
+  ),
+}));

@@ -19,7 +19,7 @@ import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
-import { WISP_EYES_RIBBON, WISP_RIBBON, WISP_WARM_RIBBON } from "./wisp-ribbon";
+import { WISP_EYES_RIBBON, WISP_RIBBON, WISP_RIBBON_FINISHES, WISP_WARM_RIBBON } from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -81,6 +81,7 @@ const ALL: Candidate[] = [
   ...WISP_WARM,
   ...WISP_RIBBON,
   ...WISP_WARM_RIBBON,
+  ...WISP_RIBBON_FINISHES,
   ...WISP_EYES,
   ...WISP_EYES_RIBBON,
   ...SPIRITS,
@@ -560,6 +561,29 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             flame. Shown at rest, then in every expression.
           </p>
           <MoodSheet list={line.main} name={(x) => x.label} />
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            Ribbon finishes — on the warmer without its ruff
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            The recommended pairing, then the ribbons with no outline — shaded from the product
+            colour at the shoulder through frost, so the colour is the edge — with a few dots,
+            or with small stars in the glow’s colour; then a spirit, whose ribbons run longer, curl
+            out like smoke and fade to nothing. Facing front only.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[line.main[2], ...WISP_RIBBON_FINISHES].map((x) => (
+              <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+                <NixFigure c={x} className="h-64 w-full" />
+                <figcaption className="text-sm">
+                  <span className="material-heading text-foreground">
+                    {x.id === line.main[2].id ? "With its edge (as above)" : x.label.split(" · ").slice(1).join(" · ")}
+                  </span>
+                  <span className="material mt-1 block text-muted-foreground">{x.signature}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </>
       )}
 
@@ -696,6 +720,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       <Bench
         groups={[
           [ribbon ? "Main character — Wisp · Ribbon, the pairings" : "Main character — Wisp", line.main],
+          ...(ribbon ? ([["Ribbon finishes", WISP_RIBBON_FINISHES]] as Group[]) : []),
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
           ...REFERENCE_GROUPS,
