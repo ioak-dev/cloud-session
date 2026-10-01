@@ -37,6 +37,7 @@ import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { LipSyncDemo } from "./lip-sync";
 import { POND } from "./side-pond";
+import { SHORTLIST } from "./side-shortlist";
 import { OBSERVATORY_ABILITIES, type Ability } from "./observatory-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -77,6 +78,7 @@ const ALL: Candidate[] = [
   ...REFERENCE,
   ...CANDIDATES,
   ...CLUB,
+  ...SHORTLIST,
 ];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -1092,7 +1094,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {CLUB.map((x) => (
+            {[...CLUB, ...SHORTLIST].map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {MOODS.map((m) => (
@@ -1125,7 +1127,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {CLUB.map((x) => (
+            {[...CLUB, ...SHORTLIST].map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {VISEMES.map((v) => (
@@ -1139,7 +1141,12 @@ export function SidePage() {
         </table>
       </div>
 
-      <Bench groups={[["The club", CLUB]]} />
+      <Bench
+        groups={[
+          ["The Lantern Pond six", CLUB],
+          ["More candidates to shortlist — four animals, three people", SHORTLIST],
+        ]}
+      />
     </>
   );
 }
