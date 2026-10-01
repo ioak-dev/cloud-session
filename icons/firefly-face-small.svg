@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sparkles — firefly face (small sizes)">
+<title>Sparkles — firefly face (small sizes)</title>
+<defs><radialGradient id="glow"><stop offset="0" stop-color="#ffe25a" stop-opacity=".75"/><stop offset=".45" stop-color="#ffd34d" stop-opacity=".35"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
+<rect width="512" height="512" rx="96" fill="#1e2052"/>
+<clipPath id="t"><rect width="512" height="512" rx="96"/></clipPath><g clip-path="url(#t)"><g transform="translate(256 256) scale(1.2) translate(-256 -256)"><g transform="translate(256 256) scale(3.1) translate(-100 -80)">
+<path d="M88 62 C84 44 74 32 64 28" stroke="#f6e6cc" stroke-width="5.4" fill="none" stroke-linecap="round"/><circle cx="63" cy="26" r="17" fill="url(#glow)"/><circle cx="63" cy="26" r="7.5" fill="#ffe25a" stroke="#2a1d22" stroke-width="3.9"/><path d="M112 62 C116 44 126 32 136 28" stroke="#f6e6cc" stroke-width="5.4" fill="none" stroke-linecap="round"/><circle cx="137" cy="26" r="17" fill="url(#glow)"/><circle cx="137" cy="26" r="7.5" fill="#ffe25a" stroke="#2a1d22" stroke-width="3.9"/>
+<ellipse cx="100" cy="98" rx="44" ry="40" fill="#34377a"/>
+<path d="M60 106 C60 82 78 72 100 72 C122 72 140 82 140 106 C140 128 122 138 100 138 C78 138 60 128 60 106 Z" fill="#f6e6cc"/>
+<ellipse cx="100" cy="98" rx="44" ry="40" fill="none" stroke="#f6e6cc" stroke-opacity=".35" stroke-width="5.4"/>
+
+
+<ellipse cx="83" cy="104" rx="7.6" ry="9.4" fill="#2a1d22"/><ellipse cx="83" cy="106.4" rx="5.4" ry="5.8" fill="#6d4fc2"/><circle cx="80.6" cy="100.6" r="2.8" fill="#fffdf8"/><circle cx="85.6" cy="107.2" r="1.2" fill="#fffdf8"/><ellipse cx="117" cy="104" rx="7.6" ry="9.4" fill="#2a1d22"/><ellipse cx="117" cy="106.4" rx="5.4" ry="5.8" fill="#6d4fc2"/><circle cx="114.6" cy="100.6" r="2.8" fill="#fffdf8"/><circle cx="119.6" cy="107.2" r="1.2" fill="#fffdf8"/>
+
+<path d="M93 122 Q100 128 107 122" stroke="#2a1d22" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+</g></g></g>
+</svg>

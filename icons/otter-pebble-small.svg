@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sparkles — otter with glowing pebble (small sizes)">
+<title>Sparkles — otter with glowing pebble (small sizes)</title>
+<defs><radialGradient id="glow"><stop offset="0" stop-color="#ffe25a" stop-opacity=".75"/><stop offset=".45" stop-color="#ffd34d" stop-opacity=".35"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
+<rect width="512" height="512" rx="96" fill="#7c5cc4"/>
+<clipPath id="t"><rect width="512" height="512" rx="96"/></clipPath><g clip-path="url(#t)"><g transform="translate(256 256) scale(1.22) translate(-256 -256)"><g transform="translate(256 256) scale(2.95) translate(-100 -113)">
+<path d="M84 136 Q100 160 116 136" stroke="#2a1d22" stroke-width="3.9" fill="none"/>
+<circle cx="62" cy="70" r="11" fill="#8a5a3b" stroke="#2a1d22" stroke-width="5.4"/><circle cx="62" cy="71" r="5.5" fill="#5b3a26"/><circle cx="138" cy="70" r="11" fill="#8a5a3b" stroke="#2a1d22" stroke-width="5.4"/><circle cx="138" cy="71" r="5.5" fill="#5b3a26"/>
+<path d="M92 62 Q95 48 100 60 Q104 46 109 62 Z" fill="#8a5a3b" stroke="#2a1d22" stroke-width="4.5" stroke-linejoin="round"/>
+<ellipse cx="100" cy="100" rx="46" ry="40" fill="#8a5a3b"/>
+<path d="M64 114 C64 100 82 96 100 100 C118 96 136 100 136 114 C136 132 120 140 100 140 C80 140 64 132 64 114 Z" fill="#f1dfc6"/>
+<ellipse cx="100" cy="100" rx="46" ry="40" fill="none" stroke="#2a1d22" stroke-width="5.4"/>
+
+<ellipse cx="82" cy="94" rx="7" ry="8.4" fill="#2a1d22"/><circle cx="79.6" cy="90.8" r="2.7" fill="#fffdf8"/><ellipse cx="118" cy="94" rx="7" ry="8.4" fill="#2a1d22"/><circle cx="115.6" cy="90.8" r="2.7" fill="#fffdf8"/>
+<path d="M89 106 Q100 100 111 106 Q109 116 100 117 Q91 116 89 106 Z" fill="#2a1d22"/>
+
+<path d="M100 117 V121 M93 121 Q96.5 125.5 100 121 Q103.5 125.5 107 121" stroke="#2a1d22" stroke-width="3.3" fill="none" stroke-linecap="round"/>
+<g stroke="#2a1d22" stroke-width="3" stroke-linecap="round" opacity=".7"><path d="M77 116 L57 112 M77 121 L57 124 M123 116 L143 112 M123 121 L143 124"/></g>
+<circle cx="100" cy="164" r="20" fill="url(#glow)"/>
+<ellipse cx="100" cy="164" rx="11" ry="9.4" fill="#ffd34d" stroke="#2a1d22" stroke-width="4.5"/>
+<path d="M97 157.4 L98.288 160.712 L101.6 162 L98.288 163.288 L97 166.6 L95.712 163.288 L92.4 162 L95.712 160.712 Z" fill="#fffdf8"/>
+</g></g></g>
+</svg>
