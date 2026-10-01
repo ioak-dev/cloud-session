@@ -385,9 +385,19 @@ export const dashBrow =
 
 /** A mouth for every mood, in a character's own colours and quirks — teeth, a gap, a fang, buck
  *  teeth — and the talking shapes. */
-export function mouthOf(o: { lip: string; W: number; H: number; teeth?: boolean; gap?: boolean; fang?: boolean; buck?: boolean; rest?: (y: number) => ReactNode }): MouthKit {
+export function mouthOf(o: { lip: string; W: number; H: number; teeth?: boolean; gap?: boolean; fang?: boolean; buck?: boolean; braces?: boolean; rest?: (y: number) => ReactNode }): MouthKit {
   return ({ mood, y, viseme }) => {
     if (viseme) return talk(viseme, mood, y, { W: o.W, H: o.H, inside: MOUTH_IN, lip: o.lip, lipW: 2.6, teeth: o.teeth || o.buck ? EYE_WHITE : undefined, gap: o.gap });
+    /* braces: a fine wire with small brackets across the top teeth */
+    const braces = (w: number, dy = 0) =>
+      o.braces && (
+        <g>
+          <path d={`M${100 - w * 0.62} ${y + dy + 0.6} L${100 + w * 0.62} ${y + dy + 0.6}`} {...line("#9aa3b0", 1)} />
+          {[-0.42, -0.14, 0.14, 0.42].map((t) => (
+            <rect key={t} x={100 + w * t * 1.3 - 0.9} y={y + dy - 0.3} width={1.8} height={1.8} rx={0.3} fill="#9aa3b0" />
+          ))}
+        </g>
+      );
     const extra = (dy = 0) =>
       g2(
         o.fang && <path d={`M${104} ${y + dy - 0.6} l1.2 3.4 l1.6 -3.4 Z`} fill={EYE_WHITE} />,
@@ -401,9 +411,9 @@ export function mouthOf(o: { lip: string; W: number; H: number; teeth?: boolean;
     const w = o.W;
     switch (mood) {
       case "happy":
-        return g2(<OpenMouth d={dMouth(y, w * 0.95, w * 0.62)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.7, y - 1.2, w * 1.4, 3.2] : undefined} tongue={[100, y + w * 0.85, w * 0.45, w * 0.28]} />, extra());
+        return g2(<OpenMouth d={dMouth(y, w * 0.95, w * 0.62)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.7, y - 1.2, w * 1.4, 3.2] : undefined} tongue={[100, y + w * 0.85, w * 0.45, w * 0.28]} />, extra(), braces(w));
       case "delighted":
-        return g2(<OpenMouth d={dMouth(y - 1, w * 1.2, w)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.9, y - 2, w * 1.8, 3.6] : undefined} tongue={[100, y + w * 1.3, w * 0.55, w * 0.34]} />, extra(-1));
+        return g2(<OpenMouth d={dMouth(y - 1, w * 1.2, w)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.9, y - 2, w * 1.8, 3.6] : undefined} tongue={[100, y + w * 1.3, w * 0.55, w * 0.34]} />, extra(-1), braces(w * 1.3, -1));
       case "curious":
         return <ellipse cx={101} cy={y + 2.2} rx={w * 0.3} ry={w * 0.38} fill={MOUTH_IN} />;
       case "thinking":

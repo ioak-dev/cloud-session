@@ -40,6 +40,7 @@ import { POND } from "./side-pond";
 import { BACKUP, SHORTLISTED } from "./side-shortlist";
 import { FRESH } from "./side-fresh";
 import { ELDERS, TEACHERS } from "./side-people";
+import { BOYS, SCIENTISTS, TEENS, WOMEN } from "./side-more";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -69,7 +70,7 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
  *  (`side-shortlist.tsx`). */
 const CLUB: Candidate[] = [...POND, ...SHORTLISTED];
 /** Every side character on the page: the shortlist, the backup and the fresh candidates. */
-const EVERY_SIDE: Candidate[] = [...CLUB, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS];
+const EVERY_SIDE: Candidate[] = [...CLUB, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS];
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -1150,6 +1151,10 @@ export function SidePage() {
           ["Fresh candidates to shortlist against", FRESH],
           ["Elders — Ada in a second look, and two more", ELDERS],
           ["Teachers in their twenties", TEACHERS],
+          ["Scientists", SCIENTISTS],
+          ["More women in their twenties", WOMEN],
+          ["Boys under ten", BOYS],
+          ["Young teen boys", TEENS],
         ]}
       />
     </>

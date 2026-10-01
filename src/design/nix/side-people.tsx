@@ -103,43 +103,37 @@ const EZRA = cute("ezra", {
 function EzraHead() {
   return (
     <g>
-      <ellipse cx={57} cy={118} rx={8} ry={9} fill={EZRA_SKIN} />
-      <ellipse cx={143} cy={118} rx={8} ry={9} fill={EZRA_SKIN} />
-      {/* a round bald dome, a fringe of white round the sides, a big soft nose */}
-      <Two d={blob(100, 112, 42, 41, 1.06)} fill={EZRA_SKIN} shade={EZRA_SHADE} k={2.2} />
-      <path d="M78 76 Q90 70 100 72" {...line(EZRA_SHADE, 2)} opacity={0.6} />
-      {sides.map(([side, s]) => (
-        <path key={side} d={`M${mirror(s, 60)} 118 Q${mirror(s, 54)} 98 ${mirror(s, 64)} 86 Q${mirror(s, 70)} 96 ${mirror(s, 66)} 104 Q${mirror(s, 72)} 108 ${mirror(s, 68)} 120 Z`} fill={EZRA_WHITE} />
-      ))}
-      <ellipse cx={100} cy={128} rx={7.6} ry={6.4} fill={EZRA_SHADE} />
-      <ellipse cx={99} cy={127} rx={6.6} ry={5.6} fill={mix(EZRA_SKIN, "#e48a7a", 70)} />
+      <ellipse cx={57} cy={120} rx={8} ry={9} fill={EZRA_SKIN} />
+      <ellipse cx={143} cy={120} rx={8} ry={9} fill={EZRA_SKIN} />
+      <Two d={blob(100, 114, 41, 39, 1.06)} fill={EZRA_SKIN} shade={EZRA_SHADE} k={2.2} />
+      {/* a soft white beard round his jaw, rosy cheeks above it */}
+      <path d="M60 116 Q58 156 100 162 Q142 156 140 116 Q134 140 118 142 Q110 134 100 136 Q90 134 82 142 Q66 140 60 116 Z" fill={EZRA_WHITE_SHADE} transform="translate(1.6 1.6)" />
+      <path d="M60 116 Q58 156 100 162 Q142 156 140 116 Q134 140 118 142 Q110 134 100 136 Q90 134 82 142 Q66 140 60 116 Z" fill={EZRA_WHITE} />
+      <ellipse cx={76} cy={128} rx={8} ry={5} fill="#f0a0a0" opacity={0.5} />
+      <ellipse cx={124} cy={128} rx={8} ry={5} fill="#f0a0a0" opacity={0.5} />
+      {/* a tweed flat cap, its peak pulled down to one side */}
+      <path d="M58 100 C56 70 80 60 102 60 C126 60 146 72 142 100 Z" fill={C.accentDeep} />
+      <path d="M58 100 Q60 108 92 106 Q118 104 142 100 Q120 94 100 94 Q78 94 58 100 Z" fill={mix(C.accentDeep, "black", 80)} />
+      <path d="M72 74 Q96 64 122 70" {...line(C.accent, 2)} opacity={0.7} />
+      <ellipse cx={100} cy={126} rx={6.4} ry={5.4} fill={mix(EZRA_SKIN, "#e48a7a", 70)} />
       <path d="M62 112 l-6 -2 M62 118 l-6 0 M138 112 l6 -2 M138 118 l6 0" {...line(EZRA_SHADE, 1.8)} />
     </g>
   );
 }
 
 const ezraEyes = eyesOf({
-  rx: 6.8,
-  ry: 7.6,
-  fill: INK,
-  iris: { r: 5, color: "#3e5a6a" },
-  pupil: { r: 0 },
+  rx: 7,
+  ry: 7.8,
+  fill: EYE_WHITE,
+  iris: { r: 5.4, color: "#3e5a6a" },
+  pupil: { r: 2.6 },
   shine: 2.2,
   lid: EZRA_SKIN,
   closed: INK,
-  browY: 14,
-  /* big, bushy white brows with a will of their own */
-  brow: ({ x, y, s, raise, tilt }) => {
-    const by = y - raise;
-    return (
-      <path
-        d={`M${x - 11} ${by + 3} Q${x - 8} ${by - 5} ${x} ${by - 4} Q${x + 8} ${by - 6} ${x + 12} ${by + 1} L${x + 14} ${by - 3} Q${x + 10} ${by + 3} ${x} ${by + 2} Q${x - 7} ${by + 4} ${x - 11} ${by + 3} Z`}
-        fill={EZRA_WHITE_SHADE}
-        transform={`rotate(${s * tilt} ${x} ${by}) ${s === 1 ? `translate(${2 * x} 0) scale(-1 1)` : ""}`}
-      />
-    );
-  },
-  rest: { bottom: 0.14, top: 0.1, raise: 2, browTilt: 4 },
+  browY: 13,
+  brow: arcBrow(EZRA_WHITE_SHADE, 5, 7),
+  /* crinkled with a laugh that is never far off */
+  rest: { bottom: 0.22, raise: 3, browTilt: 6 },
 });
 
 /* ——— Grace, a grandmother: regal, a dancer once and still ——— */
@@ -416,12 +410,12 @@ export const ELDERS: Candidate[] = [
     hands: "mitten",
     attitude: { mood: "happy", tilt: -6, hands: { L: [92, 200], R: [108, 200], outL: false, outR: false } },
     label: "Ezra",
-    signature: "A round grandfather, bald on top with a white fringe, huge bushy white brows and a big soft nose — he wiggles his ears",
-    pitch: "The pond's oldest regular, with a terrible joke for every occasion and a laugh that starts before the punchline. Wants to make someone laugh every day; the flaw is that he tells the same joke twice. At rest, hands clasped over his tummy, eyes crinkled. Ability: Ear wiggle — both ears, on command, every time.",
-    risk: "A grandfather with no moustache, so he never reads as anyone's famous professor or teacher.",
+    signature: "A round grandfather with a soft white beard, rosy cheeks and a tweed flat cap — he wiggles his ears",
+    pitch: "The pond's oldest regular, with a terrible joke for every occasion and a laugh that starts before the punchline. Wants to make someone laugh every day; the flaw is that he tells the same joke twice. At rest, hands clasped over his tummy, eyes crinkled. A soft white beard, rosy cheeks, a tweed flat cap pulled down at one side, thick white brows. Ability: Ear wiggle — both ears, on command, every time.",
+    risk: "A beard and cap, no moustache alone, so he never reads as a famous professor or Duolingo's Oscar.",
     pal: person(EZRA_SKIN, EZRA_SHADE, EZRA_WHITE, "#ffffff"),
     body: C.clothes,
-    face: face({ eyes: "anime", eyeY: 114, eyeGap: 18, mouthY: 142, nose: "none", lid: EZRA_SKIN, kit: ezraEyes, mouthKit: mouthOf({ lip: "#a85a50", W: 9, H: 7, teeth: true }) }),
+    face: face({ eyes: "anime", eyeY: 114, eyeGap: 18, mouthY: 146, nose: "none", lid: EZRA_SKIN, kit: ezraEyes, mouthKit: mouthOf({ lip: "#a85a50", W: 9, H: 7, teeth: true }) }),
     outfit: "blazer",
     outfits: PERSON_OUTFITS,
     head: () => <EzraHead />,
