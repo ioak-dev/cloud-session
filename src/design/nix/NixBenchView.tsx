@@ -35,7 +35,7 @@ import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { LipSyncDemo } from "./lip-sync";
-import { OBSERVATORY } from "./observatory";
+import { GARDEN } from "./side-garden";
 import { OBSERVATORY_ABILITIES, type Ability } from "./observatory-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -61,8 +61,8 @@ const FIREFLIES = new Map(
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
-/** The side characters: the club at the Observatory on the hill (`observatory.tsx`). */
-const CLUB: Candidate[] = OBSERVATORY;
+/** The side characters being refined: Bun and Bean (`side-garden.tsx`). */
+const CLUB: Candidate[] = GARDEN;
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -116,7 +116,7 @@ function AbilityTile({ a }: { a: Ability }) {
           </svg>
         )}
         <div className={`absolute inset-0 ${a.move ?? ""}`}>
-          <NixFigure c={c} mood={a.mood} act={a.act} still={a.still} viseme={viseme} className="h-full w-full" />
+          <NixFigure c={c} mood={a.mood} act={a.act} still={a.still} viseme={viseme ?? a.mouth} className="h-full w-full" />
         </div>
         {a.over && (
           <svg viewBox="0 0 200 300" className="absolute inset-0 h-full w-full" aria-hidden>
@@ -1020,13 +1020,12 @@ export function SidePage() {
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters — the Observatory on the hill</h1>
+      <h1 className="display mt-1">Side characters — round three</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Above the town is a hill, and on it an old round observatory with a dome that creaks open.
-        When the sky darkens a club meets there to look — at stars, at the town, at anything they are
-        curious about. Wisp lights the path up and is the first light in the sky. Six members, each a
-        different kind, each with one ability of its own, and each with its own voice: Hob the
-        keeper, Tavi, Grit, Lyra, Nox, and Pim, the newest. Proposals; none is final.
+        Two characters picked for expression first — Bun, a bossy rabbit whose ears are a second
+        face, and Bean, a sleepy baby hippo with the widest mouth in the cast — drawn to
+        docs/character-guidelines.md: two heads tall, big low eyes, brows on both, nub limbs. They are
+        refined before the world and the rest of the cast are chosen.
       </p>
       <Tests />
 

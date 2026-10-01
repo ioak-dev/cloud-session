@@ -25,21 +25,21 @@ import { C } from "./theme";
 
 /* ——— Shared ——— */
 
-const FACE = "#fff4e8";
-const INK = "#231c33";
-const MOUTH_IN = "#3a1d2c";
-const PINK = "#f29ab0";
-const PINK_SHADE = "#d9718f";
+export const FACE = "#fff4e8";
+export const INK = "#231c33";
+export const MOUTH_IN = "#3a1d2c";
+export const PINK = "#f29ab0";
+export const PINK_SHADE = "#d9718f";
 
 /** Chunky limbs: rounder reads softer at small sizes. */
 const CHUNKY = { upper: 13.5, fore: 12.5, thigh: 15, shin: 14, hand: 8.6, cloth: 1.15 };
 
-const ANIMAL_OUTFITS: Candidate["outfits"] = ["bare", "dungarees", "hoodie", "raincoat", "winter", "party"];
-const PERSON_OUTFITS: Candidate["outfits"] = ["hoodie", "dungarees", "raincoat", "dress", "winter", "party"];
+export const ANIMAL_OUTFITS: Candidate["outfits"] = ["bare", "dungarees", "hoodie", "raincoat", "winter", "party"];
+export const PERSON_OUTFITS: Candidate["outfits"] = ["hoodie", "dungarees", "raincoat", "dress", "winter", "party"];
 
-const mix = (a: string, b: string, k: number) => `color-mix(in oklab, ${a} ${k}%, ${b})`;
+export const mix = (a: string, b: string, k: number) => `color-mix(in oklab, ${a} ${k}%, ${b})`;
 
-const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
+export const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
   palette(body, paw, FACE, "#efd8c6", {
     line: "none",
     eye: INK,
@@ -52,7 +52,7 @@ const pal = (body: string, paw: string, over: Partial<Palette> = {}): Palette =>
     ...over,
   });
 
-const face = (over: Partial<Candidate["face"]> & { lid: string }): Candidate["face"] => ({
+export const face = (over: Partial<Candidate["face"]> & { lid: string }): Candidate["face"] => ({
   eyes: "bead",
   eyeY: 104,
   eyeGap: 18,
@@ -62,16 +62,16 @@ const face = (over: Partial<Candidate["face"]> & { lid: string }): Candidate["fa
   ...over,
 });
 
-const g2 = (...a: ReactNode[]) => createElement("g", null, ...a);
-const sides = [
+export const g2 = (...a: ReactNode[]) => createElement("g", null, ...a);
+export const sides = [
   ["L", -1],
   ["R", 1],
 ] as const;
-const mirror = (s: number, x: number) => 100 + (x - 100) * s;
+export const mirror = (s: number, x: number) => 100 + (x - 100) * s;
 
-type Cubic = readonly [P, P, P, P];
+export type Cubic = readonly [P, P, P, P];
 
-function bez([a, b, c, d]: Cubic, t: number): P {
+export function bez([a, b, c, d]: Cubic, t: number): P {
   const u = 1 - t;
   return [
     u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * d[0],
@@ -80,7 +80,7 @@ function bez([a, b, c, d]: Cubic, t: number): P {
 }
 
 /** One filled shape along cubics, narrowing from `w0` to `w1`, with round ends. */
-function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; fill: string }) {
+export function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; fill: string }) {
   const pts: P[] = [segs[0][0]];
   for (const s of segs) for (let i = 1; i <= 12; i++) pts.push(bez(s, i / 12));
   const last = pts.length - 1;
@@ -106,7 +106,7 @@ function Taper({ segs, w0, w1, fill }: { segs: Cubic[]; w0: number; w1: number; 
 }
 
 /** A shape in two tones: its shade, then itself offset up and to the left. */
-function Two({ d, fill, shade, k = 2 }: { d: string; fill: string; shade: string; k?: number }) {
+export function Two({ d, fill, shade, k = 2 }: { d: string; fill: string; shade: string; k?: number }) {
   return (
     <g>
       <path d={d} fill={shade} />
@@ -115,20 +115,20 @@ function Two({ d, fill, shade, k = 2 }: { d: string; fill: string; shade: string
   );
 }
 
-const dMouth = (y: number, w: number, h: number, cx = 100) =>
+export const dMouth = (y: number, w: number, h: number, cx = 100) =>
   `M${cx - w} ${y} Q${cx} ${y + h * 1.6} ${cx + w} ${y} Q${cx} ${y + h * 0.15} ${cx - w} ${y} Z`;
-const curve = (y: number, w: number, d: number, cx = 100) => `M${cx - w} ${y} Q${cx} ${y + d} ${cx + w} ${y}`;
-const wave = (y: number, w: number, a: number, cx = 100) =>
+export const curve = (y: number, w: number, d: number, cx = 100) => `M${cx - w} ${y} Q${cx} ${y + d} ${cx + w} ${y}`;
+export const wave = (y: number, w: number, a: number, cx = 100) =>
   `M${cx - w} ${y} Q${cx - w / 2} ${y - a} ${cx} ${y} Q${cx + w / 2} ${y + a} ${cx + w} ${y}`;
 
 /** How far a mood lifts the corners of a talking mouth: a happy line is said smiling. */
-const SMILE: Partial<Record<Mood, number>> = { happy: 3, delighted: 4, wink: 2, curious: 1, worried: -2.5, oops: -1.5, focused: -0.5 };
+export const SMILE: Partial<Record<Mood, number>> = { happy: 3, delighted: 4, wink: 2, curious: 1, worried: -2.5, oops: -1.5, focused: -0.5 };
 
 /**
  * A talking mouth with lips: `W` its widest half-width and `H` its most open depth, drawn in the
  * kit's own colours. `teeth` is the top row's colour; `gap` leaves a tooth out.
  */
-function talk(
+export function talk(
   v: Viseme,
   mood: Mood,
   y: number,
@@ -190,9 +190,9 @@ function talk(
 
 const TORSO_FIT = "translate(100 196) scale(1.18 0.9) translate(-100 -148)";
 /** Undoes `TORSO_FIT`, so a tail or wings behind the body are authored in figure space. */
-const UNFIT = "translate(100 148) scale(0.8475 1.1111) translate(-100 -196)";
+export const UNFIT = "translate(100 148) scale(0.8475 1.1111) translate(-100 -196)";
 
-function cute(
+export function cute(
   id: string,
   o: { k?: number; neck?: number; torso: string; headVB?: string; w?: Partial<Body["w"]>; j?: Partial<Body["j"]> },
 ): Body {
@@ -236,7 +236,7 @@ function cute(
 }
 
 /** A soft head: rounder at the top, a little fuller at the cheeks. */
-const blob = (cx: number, cy: number, rx: number, ry: number, jowl = 1.04) =>
+export const blob = (cx: number, cy: number, rx: number, ry: number, jowl = 1.04) =>
   `M${cx - rx} ${cy} C${cx - rx} ${cy - ry * 0.78} ${cx - rx * 0.56} ${cy - ry} ${cx} ${cy - ry} C${cx + rx * 0.56} ${cy - ry} ${cx + rx} ${cy - ry * 0.78} ${cx + rx} ${cy} C${cx + rx * jowl} ${cy + ry * 0.62} ${cx + rx * 0.62} ${cy + ry} ${cx} ${cy + ry} C${cx - rx * 0.62} ${cy + ry} ${cx - rx * jowl} ${cy + ry * 0.62} ${cx - rx} ${cy} Z`;
 
 /* ——— Eyes: one acting table, each character's own drawing ———
@@ -245,7 +245,7 @@ const blob = (cx: number, cy: number, rx: number, ry: number, jowl = 1.04) =>
  * lids, worry lifts the brows' inner ends and shrinks the pupils, a fright squeezes them shut, a
  * wink closes one. How an eye, its pupil, its shine and its brow are drawn is each character's own. */
 
-type Brow = (a: { x: number; y: number; s: -1 | 1; raise: number; tilt: number }) => ReactNode;
+export type Brow = (a: { x: number; y: number; s: -1 | 1; raise: number; tilt: number }) => ReactNode;
 
 type EyeStyle = {
   rx: number;
@@ -268,7 +268,7 @@ type EyeStyle = {
   rest?: { top?: number; bottom?: number; tilt?: number; look?: P; raise?: number; browTilt?: number; k?: [number, number] };
 };
 
-function eyesOf(st: EyeStyle): EyeKit {
+export function eyesOf(st: EyeStyle): EyeKit {
   return ({ mood, s, x, y, look, id }) => {
     const b = (raise: number, tilt: number) => st.brow({ x, y: y - st.browY, s, raise, tilt });
     const open = (o: { top?: number; bottom?: number; tilt?: number; k?: number; look?: P; pupil?: number; sparkle?: boolean } = {}) => {
@@ -336,7 +336,7 @@ function eyesOf(st: EyeStyle): EyeKit {
 }
 
 /** A brow as a thick rounded stroke, an arc that tilts about its middle. */
-const arcBrow =
+export const arcBrow =
   (color: string, w: number, len: number): Brow =>
   ({ x, y, s, raise, tilt }) => {
     const by = y - raise;
@@ -344,7 +344,7 @@ const arcBrow =
   };
 
 /** A short pill of a brow: a floating dash, for an animal. */
-const dashBrow =
+export const dashBrow =
   (color: string, w: number, len: number): Brow =>
   ({ x, y, s, raise, tilt }) => {
     const by = y - raise;

@@ -26,6 +26,8 @@ type Voice = { pitch: number; rate: number; prefer: string[] };
 
 /** Each character's voice: a preference among the device's voices, a pitch and a rate. */
 const VOICES: Record<string, Voice> = {
+  "garden-bun": { pitch: 1.3, rate: 1.12, prefer: ["Samantha", "Karen", "Google US English", "Female"] },
+  "garden-bean": { pitch: 1.6, rate: 0.82, prefer: ["Victoria", "Female"] },
   "obs-hob": { pitch: 0.7, rate: 0.88, prefer: ["Daniel", "Arthur", "Fred", "Google UK English Male", "Male"] },
   "obs-tavi": { pitch: 1.35, rate: 1.22, prefer: ["Samantha", "Karen", "Google US English", "Female"] },
   "obs-grit": { pitch: 0.45, rate: 0.82, prefer: ["Ralph", "Fred", "Male"] },
@@ -38,6 +40,16 @@ type Line = { text: string; mood: Mood; as?: string };
 
 /** Fixed lines for the demo, one set per character. Lyra's last is in Hob's voice. */
 const LINES: Record<string, Line[]> = {
+  "garden-bun": [
+    { text: "Right, everyone, listen up! Watering first, then questions.", mood: "focused" },
+    { text: "Hmph. Fine. That one was very, very good.", mood: "happy" },
+    { text: "Oh no. Oh no, no. Let's try that again — properly.", mood: "worried" },
+  ],
+  "garden-bean": [
+    { text: "Is it snack time? It feels like snack time.", mood: "curious" },
+    { text: "You did it! I'm so happy I could have a nap.", mood: "delighted" },
+    { text: "Oopsie. That's all right. Mmm… one more go?", mood: "oops" },
+  ],
   "obs-hob": [
     { text: "Welcome back to the hill. Mind the third step, it creaks.", mood: "happy" },
     { text: "Not quite. Have another look — closer. Closer still.", mood: "curious" },

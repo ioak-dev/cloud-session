@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 import type { Mood } from "./rig/face";
-import { rotAt, type Hands } from "./rig/motion";
+import { keys, rotAt, type Hands } from "./rig/motion";
 import type { Pose } from "./rig/poses";
+import type { Viseme } from "./rig/visemes";
 import { C } from "./theme";
 
 /**
@@ -21,6 +22,8 @@ export type Ability = {
   still?: boolean;
   /** Its beak or mouth flaps while the preview plays: it is talking. */
   talk?: boolean;
+  /** A mouth shape held for the whole preview (a yawn). */
+  mouth?: Viseme;
   act?: Pose;
   behind?: () => ReactNode;
   over?: () => ReactNode;
@@ -48,7 +51,75 @@ function Mound({ x }: { x: number }) {
 
 const PIM_LISTEN: Hands = { L: [97, 192], R: [104, 184], outL: false, outR: false };
 
+const BUN_STAND: Hands = { L: [78, 200], R: [122, 200], outL: true, outR: true };
+
 export const OBSERVATORY_ABILITIES: Ability[] = [
+  {
+    id: "garden-bun",
+    name: "Thump",
+    line: "One stamp of her foot and everything round her jumps — here, the leaves.",
+    behind: () => (
+      <g fill={C.hi}>
+        {[
+          [40, 250, -20],
+          [160, 246, 24],
+          [56, 222, 10],
+          [148, 218, -12],
+        ].map(([x, y, r]) => (
+          <path key={x} className="fx fx-hop" d={`M${x} ${y} q8 -10 16 0 q-8 10 -16 0 Z`} transform={`rotate(${r} ${x} ${y})`} />
+        ))}
+      </g>
+    ),
+    over: () => (
+      <g className="fx fx-impact" {...{ stroke: C.hi, strokeWidth: 3, fill: "none", strokeLinecap: "round" }}>
+        <path d="M118 286 L132 278 M122 290 L140 290 M82 286 L68 278 M78 290 L60 290" />
+      </g>
+    ),
+    act: {
+      id: "idle",
+      title: "Thump",
+      mood: "focused",
+      use: "Its ability preview.",
+      hands: [BUN_STAND, BUN_STAND],
+      motion: {
+        duration: 1.6,
+        tracks: {
+          /* the foot lifts (anticipation), stamps past the ground, and the body jolts and settles */
+          hipR: rotAt([0, 0], [0.18, -34], [0.36, -38], [0.44, 4], [0.5, 0], [1, 0]),
+          kneeR: rotAt([0, 0], [0.18, 30], [0.36, 34], [0.44, -2], [0.5, 0], [1, 0]),
+          torso: keys([0, {}], [0.36, { y: -3 }], [0.44, { y: 1.5, sy: 0.96 }], [0.56, {}], [1, {}]),
+          earL: rotAt([0, 0], [0.44, 0], [0.5, -16], [0.62, 8], [0.74, 0], [1, 0]),
+          earR: rotAt([0, 0], [0.44, 0], [0.5, 16], [0.62, -8], [0.74, 0], [1, 0]),
+        },
+      },
+    },
+  },
+  {
+    id: "garden-bean",
+    name: "Yawn",
+    line: "A yawn so big everyone round it yawns too.",
+    mood: "happy",
+    mouth: "ai",
+    act: {
+      id: "idle",
+      title: "Yawn",
+      mood: "happy",
+      use: "Its ability preview.",
+      hands: [
+        { L: [92, 204], R: [108, 200], outL: false, outR: false },
+        { L: [60, 140], R: [140, 140], outL: true, outR: true },
+        { L: [60, 140], R: [140, 140], outL: true, outR: true },
+        { L: [92, 204], R: [108, 200], outL: false, outR: false },
+      ],
+      motion: {
+        duration: 3.2,
+        tracks: {
+          head: keys([0, {}], [0.3, { r: -10, y: -3 }], [0.7, { r: -10, y: -3 }], [0.85, { r: 2 }], [1, {}]),
+          torso: keys([0, {}], [0.3, { sy: 1.05, sx: 0.97 }], [0.7, { sy: 1.05, sx: 0.97 }], [0.85, { sy: 0.97, sx: 1.02 }], [1, {}]),
+        },
+      },
+    },
+  },
   {
     id: "obs-hob",
     name: "Burrow",

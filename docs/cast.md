@@ -352,7 +352,13 @@ Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperl
 
 **Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 
-## Side characters: the club at the Observatory on the hill
+## Side characters — round three (2026-10-01)
+
+The Observatory cast was set aside: the user asked for a different world and characters. Three worlds were proposed (the Night Garden, the Moonlight Caravan, the Sky Harbour; none chosen), and two characters were picked from their casts for expression first: **Bun**, a bossy rabbit whose ears act (one folds over at the tip; ability: Thump), and **Bean**, a sleepy baby hippo with a big snout and the widest mouth (ability: Yawn). They are drawn in `src/design/nix/side-garden.tsx` (`GARDEN`) to `docs/character-guidelines.md`, with ability previews, eyes, mouths, talking shapes and lip-sync lines, and are the only side characters shown in the studio. The world and the other four are chosen after these two are agreed.
+
+The Observatory six below are kept in `observatory.tsx` (not shown) as reference.
+
+## Side characters: the club at the Observatory on the hill (set aside)
 
 **Approved (2026-10-01) and drawn.** The six are new; none of the earlier side characters carries over (the chameleon, fruit bat, chick, Juno, Lulu, the otter, red panda, octopus and penguin were removed from the studio; they are in git history). The world, the relationships, the running jokes and the stakes are in `docs/world.md`. The drawings are in `src/design/nix/observatory.tsx` (`OBSERVATORY`), the ability previews in `observatory-abilities.tsx`, and they speak in the lip-sync demo (`lip-sync.tsx`). They are proposals in the sense that nothing is final; the cast itself is decided.
 
