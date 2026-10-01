@@ -26,27 +26,30 @@ type Voice = { pitch: number; rate: number; prefer: string[] };
 
 /** Each character's voice: a preference among the device's voices, a pitch and a rate. */
 const VOICES: Record<string, Voice> = {
-  "pond-otis": { pitch: 0.55, rate: 0.78, prefer: ["Daniel", "Arthur", "Google UK English Male", "Male"] },
+  "cand-ada": { pitch: 1.05, rate: 0.9, prefer: ["Moira", "Tessa", "Google UK English Female", "Female"] },
+  "cand-kai": { pitch: 0.9, rate: 0.92, prefer: ["Alex", "Aaron", "Google US English", "Male"] },
+  "cand-thistle": { pitch: 1.35, rate: 1.08, prefer: ["Karen", "Female"] },
   "pond-ines": { pitch: 1.2, rate: 1.15, prefer: ["Karen", "Moira", "Female"] },
   "pond-mina": { pitch: 1.55, rate: 1.05, prefer: ["Samantha", "Google US English", "Female"] },
-  "pond-noodle": { pitch: 1.5, rate: 0.95, prefer: ["Victoria", "Female"] },
   "garden-bun": { pitch: 1.3, rate: 1.12, prefer: ["Samantha", "Karen", "Google US English", "Female"] },
   "garden-bean": { pitch: 1.6, rate: 0.82, prefer: ["Victoria", "Female"] },
-  "obs-hob": { pitch: 0.7, rate: 0.88, prefer: ["Daniel", "Arthur", "Fred", "Google UK English Male", "Male"] },
-  "obs-tavi": { pitch: 1.35, rate: 1.22, prefer: ["Samantha", "Karen", "Google US English", "Female"] },
-  "obs-grit": { pitch: 0.45, rate: 0.82, prefer: ["Ralph", "Fred", "Male"] },
-  "obs-lyra": { pitch: 1.15, rate: 1.0, prefer: ["Moira", "Tessa", "Google UK English Female", "Female"] },
-  "obs-nox": { pitch: 0.85, rate: 0.84, prefer: ["Alex", "Aaron", "Male"] },
-  "obs-pim": { pitch: 1.75, rate: 0.95, prefer: ["Victoria", "Female"] },
 };
 
 type Line = { text: string; mood: Mood; as?: string };
 
 /** Fixed lines for the demo, one set per character. Lyra's last is in Hob's voice. */
 const LINES: Record<string, Line[]> = {
-  "pond-otis": [
-    { text: "No hurry. The answer is usually just below the surface.", mood: "neutral" },
-    { text: "Not quite. Have another look, slowly. There.", mood: "curious" },
+  "cand-ada": [
+    { text: "Well, look at you! Come and have a cup of something warm.", mood: "delighted" },
+    { text: "Never mind, love. Everyone gets that one wrong the first time.", mood: "happy" },
+  ],
+  "cand-kai": [
+    { text: "Yeah. That was… actually really good.", mood: "neutral" },
+    { text: "No rush. I'll wait.", mood: "thinking" },
+  ],
+  "cand-thistle": [
+    { text: "Oh dear, oh dear. Let's try that one again — gently.", mood: "worried" },
+    { text: "Oh! Oh, that's lovely. That's just right.", mood: "delighted" },
   ],
   "pond-ines": [
     { text: "Ta-da! Now you try. Don't worry, I'll spot you.", mood: "delighted" },
@@ -55,10 +58,6 @@ const LINES: Record<string, Line[]> = {
   "pond-mina": [
     { text: "That was so good I can't stop giggling!", mood: "delighted" },
     { text: "Will you sit with me? Bean saved us a spot.", mood: "happy" },
-  ],
-  "pond-noodle": [
-    { text: "Um, hello. I'm new too. Is there room for one more?", mood: "worried" },
-    { text: "My bill's tingling. I think you've got this!", mood: "delighted" },
   ],
   "garden-bun": [
     { text: "Right, everyone, listen up! Watering first, then questions.", mood: "focused" },
@@ -69,31 +68,6 @@ const LINES: Record<string, Line[]> = {
     { text: "Is it snack time? It feels like snack time.", mood: "curious" },
     { text: "You did it! I'm so happy I could have a nap.", mood: "delighted" },
     { text: "Oopsie. That's all right. Mmm… one more go?", mood: "oops" },
-  ],
-  "obs-hob": [
-    { text: "Welcome back to the hill. Mind the third step, it creaks.", mood: "happy" },
-    { text: "Not quite. Have another look — closer. Closer still.", mood: "curious" },
-    { text: "There it is. A new star, right where I said it would be.", mood: "delighted" },
-  ],
-  "obs-tavi": [
-    { text: "Race you to the top! Last one up names the comet!", mood: "delighted" },
-    { text: "Oops. Wrong one. I do that all the time — try again!", mood: "oops" },
-  ],
-  "obs-grit": [
-    { text: "Hmph. I was not waiting for you. I was just sitting here.", mood: "neutral" },
-    { text: "That was good. Very good. Don't tell the others I said so.", mood: "happy" },
-  ],
-  "obs-lyra": [
-    { text: "Ladies and gentlemen, the moon! Please, hold your applause.", mood: "delighted" },
-    { text: "Mind the third step, it creaks.", mood: "happy", as: "obs-hob" },
-  ],
-  "obs-nox": [
-    { text: "Oh. It's you. Fine. You can sit there. Not there.", mood: "neutral" },
-    { text: "Correct. I suppose that was impressive.", mood: "thinking" },
-  ],
-  "obs-pim": [
-    { text: "Um, hello. I'm new too. Can I sit next to you?", mood: "worried" },
-    { text: "You got it! I heard it from all the way over here.", mood: "happy" },
   ],
 };
 

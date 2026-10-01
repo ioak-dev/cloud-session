@@ -20,7 +20,7 @@ import {
   Two,
   UNFIT,
   wave,
-} from "./observatory";
+} from "./side-kit";
 import type { Mood } from "./rig/face";
 import { EYE_WHITE, line, OpenMouth, TONGUE_PINK, type MouthKit } from "./rig/eyes";
 import { pivot } from "./rig/skeleton";

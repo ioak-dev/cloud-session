@@ -24,74 +24,20 @@ import {
   Two,
   UNFIT,
   wave,
-} from "./observatory";
+  mouthOf,
+  person,
+} from "./side-kit";
 import { EYE_WHITE, line, OpenMouth, TONGUE_PINK, type MouthKit } from "./rig/eyes";
 import type { Palette } from "./rig/palette";
 import { pivot } from "./rig/skeleton";
 import { C } from "./theme";
 
 /**
- * More candidates to shortlist against the Lantern Pond six: four animals (Mischa, a raccoon;
- * Thistle, a hedgehog; Cappy, a capybara; Pebble, a seal pup) and three people (Bodhi, a boy of
- * about nine; Ada, a grandmother; Kai, a boy of about fourteen). Drawn on the cute frame to
+ * Candidates from the second shortlist round: Ada, a grandmother; Kai, a boy of about fourteen;
+ * Thistle, a hedgehog (shortlisted); Mischa, a raccoon, and Bodhi, a boy of about nine (backup). Drawn on the cute frame to
  * `docs/character-guidelines.md`, each with its own eyes and mouth (which also talks). Static
  * figures and faces only, until some are picked.
  */
-
-/** A mouth for every mood, in a character's own colours and quirks — teeth, a gap, a fang, buck
- *  teeth — and the talking shapes. */
-function mouthOf(o: { lip: string; W: number; H: number; teeth?: boolean; gap?: boolean; fang?: boolean; buck?: boolean; rest?: (y: number) => ReactNode }): MouthKit {
-  return ({ mood, y, viseme }) => {
-    if (viseme) return talk(viseme, mood, y, { W: o.W, H: o.H, inside: MOUTH_IN, lip: o.lip, lipW: 2.6, teeth: o.teeth || o.buck ? EYE_WHITE : undefined, gap: o.gap });
-    const extra = (dy = 0) =>
-      g2(
-        o.fang && <path d={`M${104} ${y + dy - 0.6} l1.2 3.4 l1.6 -3.4 Z`} fill={EYE_WHITE} />,
-        o.buck && (
-          <g fill={EYE_WHITE}>
-            <rect x={97} y={y + dy - 0.6} width={2.8} height={3.8} rx={0.8} />
-            <rect x={100.2} y={y + dy - 0.6} width={2.8} height={3.8} rx={0.8} />
-          </g>
-        ),
-      );
-    const w = o.W;
-    switch (mood) {
-      case "happy":
-        return g2(<OpenMouth d={dMouth(y, w * 0.95, w * 0.62)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.7, y - 1.2, w * 1.4, 3.2] : undefined} tongue={[100, y + w * 0.85, w * 0.45, w * 0.28]} />, extra());
-      case "delighted":
-        return g2(<OpenMouth d={dMouth(y - 1, w * 1.2, w)} fill={MOUTH_IN} teeth={o.teeth ? [100 - w * 0.9, y - 2, w * 1.8, 3.6] : undefined} tongue={[100, y + w * 1.3, w * 0.55, w * 0.34]} />, extra(-1));
-      case "curious":
-        return <ellipse cx={101} cy={y + 2.2} rx={w * 0.3} ry={w * 0.38} fill={MOUTH_IN} />;
-      case "thinking":
-        return <path d={`M${100 - w * 0.6} ${y + 1.6} Q101 ${y + 2.6} ${100 + w * 0.8} ${y - 1.6}`} {...line(o.lip, 2.6)} />;
-      case "focused":
-        return <path d={`M${100 - w * 0.6} ${y + 1} L${100 + w * 0.6} ${y + 1}`} {...line(o.lip, 2.6)} />;
-      case "worried":
-        return <path d={wave(y + 2, w * 0.7, 2.4)} {...line(o.lip, 2.6)} />;
-      case "oops":
-        return <OpenMouth d={`M${100 - w * 0.75} ${y + 4} Q100 ${y - 3} ${100 + w * 0.75} ${y + 4} Q100 ${y + 2} ${100 - w * 0.75} ${y + 4} Z`} fill={MOUTH_IN} />;
-      case "wink":
-        return g2(<path d={`M${100 - w * 0.8} ${y} Q100 ${y + 5} ${100 + w * 0.9} ${y - 2}`} {...line(o.lip, 2.6)} />, <ellipse cx={104} cy={y + 3.6} rx={2.4} ry={2} fill={TONGUE_PINK} />);
-      default:
-        return o.rest ? o.rest(y) : g2(<path d={`M${100 - w * 0.7} ${y} Q100 ${y + 4.6} ${100 + w * 0.7} ${y}`} {...line(o.lip, 2.6)} />, extra(1.2));
-    }
-  };
-}
-
-const person = (skin: string, shade: string, hair: string, hairHi: string, over: Partial<Palette> = {}): Palette =>
-  palette(skin, skin, skin, shade, {
-    line: "none",
-    ink: INK,
-    hair,
-    hairHi,
-    eye: INK,
-    top: C.clothes,
-    topAlt: "#fff3de",
-    bottom: C.deep,
-    shoe: C.deep,
-    accent: C.accent,
-    blush: "#ee8f8f",
-    ...over,
-  });
 
 /* ——— Mischa, a raccoon: the night visitor who "borrows" things ——— */
 
@@ -218,120 +164,6 @@ const thistleEyes = eyesOf({
   brow: arcBrow(SPINE, 3, 5),
   /* fussing: brows knitted up at the middle */
   rest: { raise: 2, browTilt: 14 },
-});
-
-/* ——— Cappy, a capybara: unbothered by anything ——— */
-
-const CAPY = mix(C.accentDeep, "#9a6e4c", 40);
-const CAPY_SHADE = mix(C.deep, "#6a4a34", 35);
-const CAPY_NOSE = mix(C.deep, "#4a3426", 40);
-
-const CAPPY = cute("cappy", {
-  k: 1.4,
-  neck: 206,
-  torso: "M74 154 Q100 144 126 154 Q140 168 138 196 Q134 224 100 224 Q66 224 62 196 Q60 168 74 154 Z",
-  w: { upper: 14, fore: 13, thigh: 18, shin: 17, hand: 8.6, cloth: 1.2 },
-  j: { earL: [72, 74], earR: [128, 74] },
-});
-
-/** A rounded box of a head: the capybara's square snout is its silhouette. */
-const CAPY_HEAD = "M60 92 C60 70 76 64 100 64 C124 64 140 70 140 92 L142 132 C142 152 124 158 100 158 C76 158 58 152 58 132 Z";
-
-function CappyHead() {
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, CAPPY.j)}>
-          <ellipse cx={mirror(s, 70)} cy={70} rx={8} ry={7} fill={CAPY_SHADE} />
-        </g>
-      ))}
-      <Two d={CAPY_HEAD} fill={CAPY} shade={CAPY_SHADE} k={2.4} />
-      {/* a broad, dark nose with nostrils at the very top of the snout */}
-      {/* a lighter snout end, and two nostrils set high on it */}
-      <path d={blob(100, 136, 30, 18, 1.04)} fill={mix(CAPY, "#e9cdb0", 55)} />
-      <path d="M90 126 q-3 3 0 6 M110 126 q3 3 0 6" {...line(CAPY_NOSE, 3)} />
-    </g>
-  );
-}
-
-const cappyEyes = eyesOf({
-  rx: 6.4,
-  ry: 7,
-  fill: INK,
-  pupil: { r: 0 },
-  shine: 2,
-  lid: CAPY,
-  closed: INK,
-  browY: 12,
-  brow: dashBrow(CAPY_SHADE, 3, 4.4),
-  /* perfectly at peace: lids nearly shut */
-  rest: { top: 0.52, raise: 0 },
-});
-
-/* ——— Pebble, a seal pup: round, soft, delighted by everything ——— */
-
-const SEAL = mix(C.soft, "#e9ecef", 40);
-const SEAL_SHADE = mix(C.hi, "#b9c0c8", 40);
-const SEAL_SPOT = mix(C.mid, "#a8b0ba", 40);
-
-const PEBBLE = cute("pebble", {
-  k: 1.46,
-  neck: 222,
-  torso: "M76 156 Q100 146 124 156 Q140 170 138 196 Q134 224 100 224 Q66 224 62 196 Q60 170 76 156 Z",
-  w: { upper: 16, fore: 15, thigh: 16, shin: 15, hand: 10, cloth: 1.2 },
-  j: { shoulderL: [80, 226], elbowL: [72, 240], wristL: [68, 252], shoulderR: [120, 226], elbowR: [128, 240], wristR: [132, 252], tail: [100, 262] },
-  headVB: "16 46 168 168",
-});
-
-function PebbleHead() {
-  return (
-    <g>
-      <Two d={blob(100, 112, 44, 40, 1.1)} fill={SEAL} shade={SEAL_SHADE} k={2.4} />
-      {[
-        [74, 84, 3],
-        [124, 80, 2.4],
-        [132, 94, 1.8],
-      ].map(([x, y, r]) => (
-        <circle key={x} cx={x} cy={y} r={r} fill={SEAL_SPOT} />
-      ))}
-      {/* two puffy whisker pads and a little dark nose */}
-      <ellipse cx={92} cy={134} rx={9} ry={7} fill={EYE_WHITE} />
-      <ellipse cx={108} cy={134} rx={9} ry={7} fill={EYE_WHITE} />
-      {[88, 92, 96, 104, 108, 112].map((x) => (
-        <circle key={x} cx={x} cy={x < 100 ? 136 : 136} r={0.9} fill={SEAL_SHADE} />
-      ))}
-      <path d="M95 126 Q100 123 105 126 Q103 131 100 131 Q97 131 95 126 Z" fill={INK} />
-      <g {...line(SEAL_SHADE, 1.4)}>
-        <path d="M82 134 L64 130 M82 138 L66 142 M118 134 L136 130 M118 138 L134 142" />
-      </g>
-    </g>
-  );
-}
-
-function PebbleBehind() {
-  return (
-    <g transform={UNFIT}>
-      <g data-joint="tail" style={pivot("tail", PEBBLE.j)}>
-        {/* hind flippers fanned behind, in place of legs */}
-        <path d="M100 262 Q78 272 70 286 Q88 286 100 274 Q112 286 130 286 Q122 272 100 262 Z" fill={SEAL_SHADE} />
-      </g>
-    </g>
-  );
-}
-
-const pebbleEyes = eyesOf({
-  rx: 11,
-  ry: 12.4,
-  fill: INK,
-  iris: { r: 8.4, color: mix(C.deep, INK, 50) },
-  pupil: { r: 0 },
-  shine: 4,
-  lid: SEAL,
-  closed: INK,
-  browY: 18,
-  brow: dashBrow(SEAL_SPOT, 3, 4),
-  /* wide open to the world */
-  rest: { raise: 3, look: [0, -0.6] },
 });
 
 /* ——— Bodhi, a boy of about nine: muddy knees, first into everything ——— */
@@ -538,7 +370,7 @@ const kaiEyes = eyesOf({
 
 /* ——— The candidates ——— */
 
-export const SHORTLIST: Candidate[] = [
+const ALL_FIVE: Candidate[] = [
   {
     id: "cand-mischa",
     kind: "animal",
@@ -578,43 +410,6 @@ export const SHORTLIST: Candidate[] = [
     headBack: () => <ThistleBack />,
     belly: () => <ellipse cx={100} cy={188} rx={18} ry={22} fill={HOG_FACE} />,
     head: () => <ThistleHead />,
-  },
-  {
-    id: "cand-cappy",
-    kind: "animal",
-    frame: CAPPY,
-    outline: false,
-    hands: "mitten",
-    attitude: { mood: "neutral", tilt: 3, hands: { L: [86, 206], R: [114, 206], outL: true, outR: true } },
-    label: "Cappy",
-    signature: "A square-snouted capybara, eyes nearly shut, perfectly at peace — it floats",
-    pitch: "Unbothered by anything: wants everyone to calm down, and somehow they do. At rest, eyes nearly shut, a tiny content smile. A rounded box of a head (its silhouette), small round ears, a broad dark nose. Ability: Float — lies back and drifts on anything, and others climb aboard.",
-    risk: "Calm, never bored or dismissive.",
-    pal: pal(CAPY, CAPY_SHADE, { skin: CAPY, skinShade: CAPY_SHADE, limb: CAPY, paw: CAPY_SHADE }),
-    body: CAPY,
-    face: face({ eyeY: 104, eyeGap: 22, mouthY: 142, lid: CAPY, kit: cappyEyes, mouthKit: mouthOf({ lip: CAPY_NOSE, W: 7, H: 6, buck: true, rest: (y) => <path d={`M96 ${y} Q100 ${y + 3} 104 ${y}`} {...line(CAPY_NOSE, 2.4)} /> }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    head: () => <CappyHead />,
-  },
-  {
-    id: "cand-pebble",
-    kind: "animal",
-    frame: PEBBLE,
-    legs: false,
-    outline: false,
-    attitude: { mood: "happy", tilt: -6, hands: { L: [70, 196], R: [130, 196], outL: true, outR: true } },
-    label: "Pebble",
-    signature: "A round pale seal pup with huge dark eyes and flippers — it slides",
-    pitch: "Delighted by everything, every time: wants to play. At rest, flippers out, beaming. Huge glossy eyes, whisker pads, a few spots, hind flippers fanned behind. Ability: Slide — whooshes along on its belly.",
-    risk: "Pale on a pale ground: its shade must carry it. Delight never escalates.",
-    pal: pal(SEAL, SEAL_SHADE, { skin: SEAL, skinShade: SEAL_SHADE, limb: SEAL, paw: SEAL_SHADE }),
-    body: SEAL,
-    face: face({ eyeY: 110, eyeGap: 20, mouthY: 142, lid: SEAL, kit: pebbleEyes, mouthKit: mouthOf({ lip: SEAL_SHADE, W: 6.4, H: 6 }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    behind: () => <PebbleBehind />,
-    head: () => <PebbleHead />,
   },
   {
     id: "cand-bodhi",
@@ -676,3 +471,9 @@ export const SHORTLIST: Candidate[] = [
   },
 ];
 
+const pick = (...ids: string[]) => ids.map((id) => ALL_FIVE.find((c) => c.id === id)!);
+
+/** Shortlisted with the pond four: Ada, Kai, Thistle. */
+export const SHORTLISTED: Candidate[] = pick("cand-ada", "cand-kai", "cand-thistle");
+/** Kept as backup: Mischa, Bodhi. */
+export const BACKUP: Candidate[] = pick("cand-mischa", "cand-bodhi");

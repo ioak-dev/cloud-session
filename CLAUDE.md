@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the six side characters are the Lantern Pond cast (`docs/world.md`): Otis (a moose), Bun (a rabbit), Ines (a girl acrobat), Mina (a girl), Bean (a baby hippo) and Noodle (a platypus kit); the Observatory cast is set aside. Side characters speak fixed lines, lip-synced, and are drawn to `docs/character-guidelines.md`. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the side characters are a shortlist (`docs/cast.md`): Bun (a rabbit), Ines (a girl acrobat), Mina (a girl), Bean (a baby hippo), Ada (a grandmother), Kai (a teenage boy) and Thistle (a hedgehog), with Mischa (a raccoon) and Bodhi (a boy) as backup and fresh candidates to shortlist against; the world is Lantern Pond (`docs/world.md`). Side characters speak fixed lines, lip-synced, and are drawn to `docs/character-guidelines.md`. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -40,10 +40,12 @@ npm start
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | The `Candidate` type every drawing uses; the bench's original firefly (reference) |
-| `src/design/nix/side-pond.tsx` | The Lantern Pond cast: Otis, Ines, Mina, Noodle, and `POND`, all six in order |
-| `src/design/nix/side-garden.tsx` | Round three, the side characters shown now: Bun (a rabbit) and Bean (a baby hippo), `GARDEN`, drawn to `docs/character-guidelines.md` |
-| `src/design/nix/observatory.tsx` | The side characters, the club at the Observatory: Hob, Tavi, Grit, Lyra, Nox, Pim (`OBSERVATORY`), each with its own eyes and a mouth that also draws the talking shapes |
-| `src/design/nix/observatory-abilities.tsx` | Each club member's ability, previewed |
+| `src/design/nix/side-kit.tsx` | What every side character is drawn with: the cute frame, head shapes, the eye builder, brows, the talking mouth, `mouthOf` and `person` |
+| `src/design/nix/side-garden.tsx` | Bun (a rabbit) and Bean (a baby hippo), `GARDEN` |
+| `src/design/nix/side-pond.tsx` | Ines and Mina; `POND`, the pond four with Bun and Bean |
+| `src/design/nix/side-shortlist.tsx` | Ada, Kai, Thistle (`SHORTLISTED`); Mischa and Bodhi (`BACKUP`) |
+| `src/design/nix/side-fresh.tsx` | Fresh candidates (`FRESH`): Crumb, Willow, Biscuit, Hazel, Arjun, Tilly, Theo |
+| `src/design/nix/side-abilities.tsx` | Ability previews for the shortlist |
 | `src/design/nix/lip-sync.tsx` | The lip-sync demo: a fixed line said with Web Speech, word-synced (or flap, or silent and timed) |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, the spark trail, and the talking shapes (`visemes.ts`) |
 | `src/design/nix/NixBenchView.tsx` | The studio pages: `WispPage` (the chosen Wisp only, or the full butterfly reference page), `SidePage` and `ReferencesPage` (the backup, with `CleanProposals`, `BeanSofter` and `WarmerSections`), sharing one bench |
@@ -51,9 +53,9 @@ npm start
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
 | `docs/cast.md` | Status of every character, the one-ability rule, speech and lip-sync |
-| `docs/world.md` | The world (the Observatory on the hill), the six, how they fit, their running jokes and stakes |
+| `docs/world.md` | The world (Lantern Pond), how the characters fit, and the bounds on speech |
 
-The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel. Tavi is a new character.
+The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel. The people among the side characters are new characters.
 
 ## What this repo does not do
 

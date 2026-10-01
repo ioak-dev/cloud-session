@@ -37,8 +37,9 @@ import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { LipSyncDemo } from "./lip-sync";
 import { POND } from "./side-pond";
-import { SHORTLIST } from "./side-shortlist";
-import { OBSERVATORY_ABILITIES, type Ability } from "./observatory-abilities";
+import { BACKUP, SHORTLISTED } from "./side-shortlist";
+import { FRESH } from "./side-fresh";
+import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
@@ -63,9 +64,11 @@ const FIREFLIES = new Map(
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
-/** The side characters: the Lantern Pond cast (`side-pond.tsx`, with Bun and Bean from
- *  `side-garden.tsx`). */
-const CLUB: Candidate[] = POND;
+/** The shortlist: the pond four (`side-pond.tsx`, `side-garden.tsx`) and Ada, Kai and Thistle
+ *  (`side-shortlist.tsx`). */
+const CLUB: Candidate[] = [...POND, ...SHORTLISTED];
+/** Every side character on the page: the shortlist, the backup and the fresh candidates. */
+const EVERY_SIDE: Candidate[] = [...CLUB, ...BACKUP, ...FRESH];
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -77,8 +80,7 @@ const ALL: Candidate[] = [
   ...PIP_FAMILY,
   ...REFERENCE,
   ...CANDIDATES,
-  ...CLUB,
-  ...SHORTLIST,
+  ...EVERY_SIDE,
 ];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -1052,13 +1054,12 @@ export function SidePage() {
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters — Lantern Pond</h1>
+      <h1 className="display mt-1">Side characters — shortlist</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        A pond at the edge of town where everyone gathers at dusk; Wisp lights the lily lanterns
-        along the bank, and a level unlock is a lily opening, lit. Marlowe the heron keeps the pond
-        school; Bun the rabbit runs it, she says; Ines tumbles; Mina giggles; Bean the hippo naps in
-        the water; Ollie the snail is new. Drawn to docs/character-guidelines.md. Proposals; none is
-        final.
+        The shortlist — Bun, Ines, Mina, Bean, Ada, Kai and Thistle — then Mischa and Bodhi as
+        backup, then fresh candidates to shortlist against. All drawn to
+        docs/character-guidelines.md. The world is still Lantern Pond, a pond at the edge of town
+        where Wisp lights the lily lanterns. Proposals; none is final.
       </p>
       <Tests />
 
@@ -1068,7 +1069,7 @@ export function SidePage() {
         glows, flies or leaves a trail: that is Wisp's.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {OBSERVATORY_ABILITIES.filter((a) => CLUB.some((c) => c.id === a.id)).map((a) => (
+        {SIDE_ABILITIES.filter((a) => CLUB.some((c) => c.id === a.id)).map((a) => (
           <AbilityTile key={a.id} a={a} />
         ))}
       </div>
@@ -1094,7 +1095,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {[...CLUB, ...SHORTLIST].map((x) => (
+            {EVERY_SIDE.map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {MOODS.map((m) => (
@@ -1127,7 +1128,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {[...CLUB, ...SHORTLIST].map((x) => (
+            {EVERY_SIDE.map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {VISEMES.map((v) => (
@@ -1143,8 +1144,9 @@ export function SidePage() {
 
       <Bench
         groups={[
-          ["The Lantern Pond six", CLUB],
-          ["More candidates to shortlist — four animals, three people", SHORTLIST],
+          ["Shortlist", CLUB],
+          ["Backup", BACKUP],
+          ["Fresh candidates to shortlist against", FRESH],
         ]}
       />
     </>
