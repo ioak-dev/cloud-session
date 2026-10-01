@@ -1,6 +1,6 @@
 import type { Candidate, Ctx } from "./candidates";
 import { Flame, HAIR, WISP, WISP_MAIN } from "./firefly-wisp";
-import { WISP_EYES, WISP_WARM } from "./wisp-warm";
+import { CURL, variant, WARMER_PARTS, WISP_EYES, WISP_WARM, withStalks } from "./wisp-warm";
 import { pivot, type Body } from "./rig/skeleton";
 import { C } from "./theme";
 
@@ -75,7 +75,26 @@ export function withRibbon(c: Candidate, more: Partial<Candidate> = {}): Candida
 
 const WARMER = WISP_WARM.find((x) => x.id === "wisp-warmer")!;
 
-/** The two recommended pairings: today's Wisp, and Wisp, warmer, each on the ribbons. */
+/**
+ * The warmer, slimmed back to Wisp's line so the ribbons carry it: no ruff, Wisp's own drop (with
+ * the curl) rather than the rounder one, and Wisp's narrow body, neck and arms rather than Snug's.
+ * It keeps the warmer's character: the flame in its chest and the warmth in its face, the curl, the
+ * stalks with the flopped antenna, the honey eyes and talking brows, the lopsided smile, the
+ * tipped head and the hey, and its alive idle.
+ */
+const WARMER_SLIM = variant({
+  ...WARMER_PARTS,
+  id: "wisp-warmer-slim",
+  label: "Wisp · warmer, slim",
+  frame: withStalks(WISP, "wisp-warmer-slim", "26 0 148 152"),
+  head: CURL,
+  ruff: false,
+  signature: "A flame for a heart, a curl, a flopped antenna, honey eyes — on Wisp's own slim line",
+  pitch: "",
+  risk: "",
+});
+
+/** The recommended pairings: today's Wisp, Wisp, warmer, and the warmer without its ruff, each on the ribbons. */
 export const WISP_RIBBON: Candidate[] = [
   withRibbon(WISP_MAIN, {
     id: "wisp-ribbon",
@@ -91,6 +110,12 @@ export const WISP_RIBBON: Candidate[] = [
     pitch:
       "The warmer proposal (curl, flopped antenna, honey eyes, ruff, a flame for a heart) on the ribbon wings, to see whether the ghostly line survives the rounder, softer body.",
     risk: "The ruff and the rounder body already soften the silhouette; the ribbons may have to carry all of the wispiness on their own.",
+  }),
+  withRibbon(WARMER_SLIM, {
+    label: "Warmer · Ribbon, no ruff",
+    pitch:
+      "The warmer's character on Wisp's line. The ruff, the rounder drop and Snug's fuller body and chunky arms are gone, so the neck shows again and the figure tapers from the curl's tip through the ribbons to the flame, as the first Wisp did. Everything that gave the warmer a temperament stays: the small flame in its chest and the warmth it throws on the face, the curl, the stalks with one antenna flopped, honey eyes and talking brows, the lopsided smile, the tipped head and the little hey, and its alive idle. Temperament: warm-hearted, curious and a bit cheeky.",
+    risk: "Without the ruff and the softer body it is less huggable than the warmer; the face and the chest flame now carry all of the warmth. The thin neck and arms are Wisp's, so check the arms still read at 32px against the ribbons.",
   }),
 ];
 

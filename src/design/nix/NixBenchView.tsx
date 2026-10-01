@@ -552,11 +552,12 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       {ribbon && (
         <>
           <h2 className="material-heading mt-10 text-lg text-foreground">
-            Main character — the two pairings
+            Main character — the pairings
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            The ribbons on Wisp as it is, and on Wisp, warmer. Shown at rest, then in every
-            expression.
+            The ribbons on Wisp as it is, on Wisp, warmer, and on the warmer without its ruff —
+            Wisp’s own slim drop, neck and body with the warmer’s face, curl, stalks and chest
+            flame. Shown at rest, then in every expression.
           </p>
           <MoodSheet list={line.main} name={(x) => x.label} />
         </>
@@ -694,7 +695,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
 
       <Bench
         groups={[
-          [ribbon ? "Main character — Wisp · Ribbon, both pairings" : "Main character — Wisp", line.main],
+          [ribbon ? "Main character — Wisp · Ribbon, the pairings" : "Main character — Wisp", line.main],
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
           ...REFERENCE_GROUPS,

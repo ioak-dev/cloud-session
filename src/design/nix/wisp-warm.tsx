@@ -42,7 +42,7 @@ const sides = [
 /* ——— heads ——— */
 
 /** The base drop with its tip swept over to one side in a curl, like a lick of flame. */
-const CURL =
+export const CURL =
   "M100 144 C74 144 54 130 54 106 C54 78 82 66 92 54 C98 44 110 36 120 42 C112 42 106 48 108 58 C118 70 146 80 146 106 C146 130 126 144 100 144 Z";
 /** A rounder, softer drop: a shorter tip, a fuller cheek. */
 const ROUND =
@@ -146,7 +146,7 @@ const STALK = {
 } as const;
 
 /** A frame with the stalk joints placed on this character's antennae. */
-const withStalks = (b: Body, id: string, headVB?: string): Body => ({
+export const withStalks = (b: Body, id: string, headVB?: string): Body => ({
   ...b,
   id,
   headVB: headVB ?? b.headVB,
@@ -447,7 +447,7 @@ const WARMER = withStalks(SNUG, "wisp-warmer", "26 0 148 152");
 
 /* ——— assembling a variant ——— */
 
-type Parts = {
+export type Parts = {
   id: string;
   label: string;
   frame?: Body;
@@ -465,7 +465,7 @@ type Parts = {
   risk: string;
 };
 
-function variant(p: Parts): Candidate {
+export function variant(p: Parts): Candidate {
   const pal: Palette = { ...WISP_PAL, ...p.pal };
   const frame = p.frame ?? WISP;
   const Head = (c: Ctx): ReactNode => (
@@ -499,7 +499,7 @@ function variant(p: Parts): Candidate {
   };
 }
 
-const WARMER_PARTS: Parts = {
+export const WARMER_PARTS: Parts = {
   id: "wisp-warmer",
   label: "Wisp · warmer",
   frame: WARMER,

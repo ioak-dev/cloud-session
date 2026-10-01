@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has three pages, switched in the header: **Wisp** (`#/wisp`, the main character as drawn), **Wisp · Ribbon** (`#/ribbon`, the same page with the ribbon wings as the main character, in both pairings) and **Side characters** (`#/side`). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has three pages, switched in the header: **Wisp** (`#/wisp`, the main character as drawn), **Wisp · Ribbon** (`#/ribbon`, the same page with the ribbon wings as the main character, in its pairings) and **Side characters** (`#/side`). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -23,7 +23,7 @@ npm start
 | `src/design/nix/wisp-turn.tsx` | Wisp as a 2.5D puppet that turns continuously from left profile to right; `WingStyleContext` picks its wings (two pairs, or ribbons) |
 | `src/design/nix/wisp-views.tsx` | Wisp's turnaround (with a turn slider), back view, and Wisp in flight |
 | `src/design/nix/wisp-warm.tsx` | Wisp, warmer: five proposed variations (Hearth, Scamp, Moony, Snug, and the four combined); Wisp itself unchanged |
-| `src/design/nix/wisp-ribbon.tsx` | Wisp · Ribbon (proposal): today's Wisp, and Wisp, warmer, on the original ribbon wings; the warmer proposals and eye styles on ribbons for the ribbon page |
+| `src/design/nix/wisp-ribbon.tsx` | Wisp · Ribbon (proposal): today's Wisp, Wisp, warmer, and the warmer without its ruff, on the original ribbon wings; the warmer proposals and eye styles on ribbons for the ribbon page |
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |
