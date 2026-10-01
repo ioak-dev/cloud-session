@@ -287,6 +287,56 @@ svg[data-still="true"] .spark-still {
   }
 }
 
+/* The ribbons' smoke (wisp-ribbon.tsx, Spirit and Glow tips): puffs peel off each tip, drift out
+   and up, swell and thin to nothing; the motes in the ribbon rise slowly and fade. The ribbon
+   paths' own drift is SMIL, which the figure's motion pauses (rig/motion.ts). Stilled, off screen
+   or under reduced motion, the puffs are gone and the motes hold where they are drawn. */
+.smoke-puff {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.spirit-mote {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  svg:not([data-still]):not([data-offscreen]) .smoke-puff {
+    animation: smoke-puff 4.2s cubic-bezier(0.2, 0.6, 0.35, 1) infinite both;
+  }
+
+  svg:not([data-still]):not([data-offscreen]) .spirit-mote {
+    animation: spirit-mote 5.2s ease-in-out infinite;
+  }
+}
+
+@keyframes smoke-puff {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes spirit-mote {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -5px) scale(0.8);
+    opacity: 0.25;
+  }
+}
+
 /* Wisp beside a form, under reduced motion: it does not travel, it reappears (wisp-form.tsx). */
 .wisp-appear {
   animation: wisp-appear 160ms ease-out both;

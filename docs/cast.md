@@ -104,9 +104,11 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 
 | Variant | What it is |
 |---|---|
-| Clean | One ribbon each side, fading to nothing, nothing inside it |
-| Glow tips | Clean, but the mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability |
-| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes fading with it. The trailing edges drift on their own like smoke (`smoke` in `wisp-ribbon.tsx`): drift grows from nothing at the shoulder to full at the tip, every point on its own phase, each ribbon and strand on its own seed, over an 8 s loop, so the edge ripples instead of swinging with the flap. Stands still under reduced motion |
+| Clean | One ribbon each side, fading to nothing, nothing inside it. Its tails sway slowly (`smoke: "calm"`) |
+| Glow tips | Clean, but the mist turns the glow's gold as it fades: its light leaking out through the ribbons, and a little of it drifting off each tip as soft gold puffs. The tails sway as Clean's do. The only Wisp whose wings carry its ability |
+| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes rising slowly through it. The trailing edges drift on their own like smoke (`smoke: "full"`), and soft frost puffs peel off each tip, drift out and up, swell and thin to nothing |
+
+**The drift** (`smoke` in `wisp-ribbon.tsx`). On top of the wing's flap, each ribbon's tail moves on its own: the drift grows from nothing at the shoulder to full at the tip, and runs down the ribbon as a wave (a point's phase follows its height), so the tip lags the middle and the tail rolls and curls instead of swinging stiff, while an anchor and its handles move together and the edge stays smooth. Each point turns a small loop with a second beat at twice the speed, and the tail breathes wider and narrower. Each ribbon and strand has its own seed; one 8 s loop. Spirit drifts wide and lags far; Clean and Glow tips only sway. The puppet (turn, flight, form) drifts the same way but draws no puffs. Every term is zero at rest, so a stilled figure shows the drawing as drawn; the figure's motion pauses the drift off screen, and under reduced motion nothing drifts and the puffs are gone.
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 

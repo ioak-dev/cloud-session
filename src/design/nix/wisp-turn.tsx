@@ -131,7 +131,7 @@ function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string, t: nu
     /* the trailing edge drifts on its own, per ribbon and strand, before the wing is flapped */
     const seed = SEED[s < 0 ? "L" : "R"];
     const project = (pts: readonly Pt[], k = 0) =>
-      onSide(form.smoke ? smoke(pts, t, seed + k) : pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
+      onSide(form.smoke ? smoke(pts, t, seed + k, form.smoke) : pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
     const r = project(RIBBON_TAIL);
     const g = `${uid}-tr${s}`;
     const top = wingPoint([100 + 14 * s, 150], root, flap * s, yaw);
