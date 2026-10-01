@@ -50,10 +50,10 @@ export type SpiritForm = {
   puffs?: boolean;
 };
 
-/** Clean: one ribbon each side, fading to nothing, nothing inside; its tail drifts, calmly. */
-export const CLEAN: SpiritForm = { strands: 1, motes: "none", smoke: "calm" };
+/** Clean: one ribbon each side, fading to nothing, nothing inside; its tail sways and smokes, calmly. */
+export const CLEAN: SpiritForm = { strands: 1, motes: "none", smoke: "calm", puffs: true };
 /** Glow tips: Clean, with the ribbons fading to the glow's gold, and that gold leaving the tips. */
-export const GLOW_TIPS: SpiritForm = { ...CLEAN, glow: true, puffs: true };
+export const GLOW_TIPS: SpiritForm = { ...CLEAN, glow: true };
 /** Spirit: a thinner strand inside each ribbon, a few motes rising through it, and smoke. */
 export const SPIRIT: SpiritForm = { strands: 2, motes: "dots", smoke: "full", puffs: true };
 
@@ -68,13 +68,13 @@ export const RIBBON_VARIANTS: readonly {
     id: "clean",
     label: "Clean",
     form: CLEAN,
-    note: "The simplest spirit: one ribbon each side, fading to nothing, nothing inside it. The fade does all the work; the tails only sway, slowly.",
+    note: "The simplest spirit: one ribbon each side, fading to nothing, nothing inside it. The fade does most of the work; the tails sway slowly and a little mist leaves the tips.",
   },
   {
     id: "glow",
     label: "Glow tips",
     form: GLOW_TIPS,
-    note: "Clean, but as the ribbons fade they turn from the product colour to the glow's gold, as if the firefly's light seeps out through its wings, and a little of it drifts off the tips as soft gold puffs. The tails sway as Clean's do. The only Wisp whose wings carry its ability.",
+    note: "Clean, but as the ribbons fade they turn from the product colour to the glow's gold, as if the firefly's light seeps out through its wings, and drifts off the tips as soft gold puffs. The tails sway as Clean's do. The only Wisp whose wings carry its ability.",
   },
   {
     id: "spirit",
@@ -130,8 +130,8 @@ export type SmokeKind = "full" | "calm";
  * (`swell`). Smoke rolls wide and lags far; calm only lets the tail sway.
  */
 const SMOKE_HOW: Record<SmokeKind, { reach: number; lag: number; swell: number }> = {
-  full: { reach: 6.5, lag: 2.6, swell: 0.1 },
-  calm: { reach: 3.5, lag: 1.5, swell: 0.04 },
+  full: { reach: 15, lag: 3, swell: 0.16 },
+  calm: { reach: 9, lag: 2.2, swell: 0.08 },
 };
 
 /**
@@ -247,13 +247,41 @@ export const SEED = { L: 0, R: 2.1 } as const;
  * The puffs off each tip: where the tail ends (outward offset, height), then each puff's drift,
  * size and start. Drawn with a radial fade, so a puff has no edge. Declared CSS keyframes
  * (`studio.css`, `smoke-puff`), gone when the figure is stilled, off screen or under reduced motion.
+ * The puffs ride the tip as it drifts (`TipPath`), so the smoke always leaves from the end.
  */
-const PUFF_FROM: Pt = [54, 253];
+const TIP = 9;
+const PUFF_FROM: Pt = RIBBON_TAIL[TIP];
 const PUFFS = [
-  { dx: 12, dy: -10, r: 4.2, delay: 0 },
-  { dx: 6, dy: -17, r: 3.4, delay: 1.5 },
-  { dx: 17, dy: -4, r: 3, delay: 2.9 },
+  { dx: 14, dy: -14, r: 5.2, delay: 0 },
+  { dx: 6, dy: -22, r: 4.4, delay: 1 },
+  { dx: 21, dy: -7, r: 4, delay: 2 },
+  { dx: 11, dy: -19, r: 3.6, delay: 3 },
 ] as const;
+
+/** Moves its children with the ribbon's tip as the tail drifts (SMIL, on the ribbon's clock). */
+function TipPath({ seed, kind, s, children }: { seed: number; kind?: SmokeKind; s: number; children: React.ReactNode }) {
+  const live = !!kind && !prefersStill();
+  const values = live
+    ? Array.from({ length: SMOKE_FRAMES + 1 }, (_, k) => {
+        const [dx, y] = smoke(RIBBON_TAIL, (k % SMOKE_FRAMES) * (SMOKE_PERIOD / SMOKE_FRAMES), seed, kind)[TIP];
+        return `${((dx - PUFF_FROM[0]) * s).toFixed(2)} ${(y - PUFF_FROM[1]).toFixed(2)}`;
+      }).join(";")
+    : "";
+  return (
+    <g>
+      {live && (
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          dur={`${SMOKE_PERIOD}s`}
+          repeatCount="indefinite"
+          values={values}
+        />
+      )}
+      {children}
+    </g>
+  );
+}
 
 /** The ribbons in a form, on whichever frame they are hung from. */
 export function FinishedRibbons({
@@ -306,18 +334,22 @@ export function FinishedRibbons({
                 <path d={curve(RIBBON_TAIL, X)} fill={`url(#${g})`} />
               </>
             )}
-            {form.puffs &&
-              PUFFS.map(({ dx, dy, r, delay }) => (
-                <circle
-                  key={delay}
-                  className="smoke-puff"
-                  cx={X(PUFF_FROM[0])}
-                  cy={PUFF_FROM[1]}
-                  r={r}
-                  fill={`url(#${g}-puff)`}
-                  style={{ "--dx": `${dx * s}px`, "--dy": `${dy}px`, animationDelay: `${delay + (s > 0 ? 0.7 : 0)}s` } as React.CSSProperties}
-                />
-              ))}
+            {form.puffs && (
+              /* the smoke leaves from the tip, wherever the drift has taken it */
+              <TipPath seed={SEED[side]} kind={form.smoke} s={s}>
+                {PUFFS.map(({ dx, dy, r, delay }) => (
+                  <circle
+                    key={delay}
+                    className="smoke-puff"
+                    cx={X(PUFF_FROM[0])}
+                    cy={PUFF_FROM[1]}
+                    r={r}
+                    fill={`url(#${g}-puff)`}
+                    style={{ "--dx": `${dx * s}px`, "--dy": `${dy}px`, animationDelay: `${delay + (s > 0 ? 0.5 : 0)}s` } as React.CSSProperties}
+                  />
+                ))}
+              </TipPath>
+            )}
             {form.motes === "dots" &&
               SPIRIT_MOTES.map(([dx, y, r, o], i) => (
                 /* the motes rise slowly through the mist, each on its own beat */

@@ -585,7 +585,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             <div className="flex flex-wrap items-end gap-4">
               {RIBBON_VARIANTS.map((x) => (
                 <figure key={x.id} className="m-0 w-28 shrink-0">
-                  <NixFigure c={RIBBON_LINES[x.id].main} still className="h-36 w-full" />
+                  <NixFigure c={RIBBON_LINES[x.id].main} className="h-36 w-full" />
                 </figure>
               ))}
               <p className="material m-0 max-w-[40ch] text-sm text-muted-foreground">
