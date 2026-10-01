@@ -68,9 +68,15 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
 );
 /** The shortlist: the pond four (`side-pond.tsx`, `side-garden.tsx`) and Ada, Kai and Thistle
  *  (`side-shortlist.tsx`). */
-const CLUB: Candidate[] = [...POND, ...SHORTLISTED];
+const SHORTLIST: Candidate[] = [...POND, ...SHORTLISTED];
+const findSide = (id: string) => [...SHORTLIST, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].find((c) => c.id === id)!;
+/** The top six, picked for range (ages 6 to elder, one animal, people of different backgrounds),
+ *  distinct silhouettes and the strongest hooks; then two runners-up. */
+const TOP_SIX: Candidate[] = ["garden-bun", "fresh-tilly", "pond-ines", "cand-kai", "people-noor", "more-otto"].map(findSide);
+const RUNNERS_UP: Candidate[] = ["more-imani", "cand-ada"].map(findSide);
+const CLUB: Candidate[] = TOP_SIX;
 /** Every side character on the page: the shortlist, the backup and the fresh candidates. */
-const EVERY_SIDE: Candidate[] = [...CLUB, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS];
+const EVERY_SIDE: Candidate[] = [...new Map([...TOP_SIX, ...RUNNERS_UP, ...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].map((c) => [c.id, c])).values()];
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -1056,12 +1062,11 @@ export function SidePage() {
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters — shortlist</h1>
+      <h1 className="display mt-1">Side characters — top six</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        The shortlist — Bun, Ines, Mina, Bean, Ada, Kai and Thistle — then Mischa and Bodhi as
-        backup, then fresh candidates to shortlist against. All drawn to
-        docs/character-guidelines.md. The world is still Lantern Pond, a pond at the edge of town
-        where Wisp lights the lily lanterns. Proposals; none is final.
+        Picked for review: Bun, Tilly, Ines, Kai, Noor and Professor Otto, with Dr Imani and Ada as
+        runners-up. Every other candidate is below them. All drawn to
+        docs/character-guidelines.md; proposals, none final.
       </p>
       <Tests />
 
@@ -1146,7 +1151,9 @@ export function SidePage() {
 
       <Bench
         groups={[
-          ["Shortlist", CLUB],
+          ["Top six (picked)", TOP_SIX],
+          ["Runners-up", RUNNERS_UP],
+          ["Shortlist", SHORTLIST],
           ["Backup", BACKUP],
           ["Fresh candidates to shortlist against", FRESH],
           ["Elders — Ada in a second look, and two more", ELDERS],

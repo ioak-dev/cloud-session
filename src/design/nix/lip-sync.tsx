@@ -26,6 +26,9 @@ type Voice = { pitch: number; rate: number; prefer: string[] };
 
 /** Each character's voice: a preference among the device's voices, a pitch and a rate. */
 const VOICES: Record<string, Voice> = {
+  "fresh-tilly": { pitch: 1.8, rate: 1.05, prefer: ["Samantha", "Google US English", "Female"] },
+  "people-noor": { pitch: 1.05, rate: 0.92, prefer: ["Tessa", "Moira", "Female"] },
+  "more-otto": { pitch: 0.7, rate: 0.86, prefer: ["Daniel", "Arthur", "Google UK English Male", "Male"] },
   "cand-ada": { pitch: 1.05, rate: 0.9, prefer: ["Moira", "Tessa", "Google UK English Female", "Female"] },
   "cand-kai": { pitch: 0.9, rate: 0.92, prefer: ["Alex", "Aaron", "Google US English", "Male"] },
   "cand-thistle": { pitch: 1.35, rate: 1.08, prefer: ["Karen", "Female"] },
@@ -39,6 +42,18 @@ type Line = { text: string; mood: Mood; as?: string };
 
 /** Fixed lines for the demo, one set per character. Lyra's last is in Hob's voice. */
 const LINES: Record<string, Line[]> = {
+  "fresh-tilly": [
+    { text: "Rawr! I'm a dinosaur. Dinosaurs are very good at this.", mood: "delighted" },
+    { text: "Oops. Even dinosaurs get one wrong sometimes.", mood: "oops" },
+  ],
+  "people-noor": [
+    { text: "Take your time. I'm right here.", mood: "neutral" },
+    { text: "That's it. That's exactly it.", mood: "happy" },
+  ],
+  "more-otto": [
+    { text: "Ah! Now there is a good question.", mood: "curious" },
+    { text: "Not quite — but wrong is how we find right. Again!", mood: "happy" },
+  ],
   "cand-ada": [
     { text: "Well, look at you! Come and have a cup of something warm.", mood: "delighted" },
     { text: "Never mind, love. Everyone gets that one wrong the first time.", mood: "happy" },
