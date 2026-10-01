@@ -368,7 +368,11 @@ Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperl
 
 **Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 
-## Side characters — round three (2026-10-01)
+## Side characters — Lantern Pond (2026-10-01)
+
+**The world is Lantern Pond** (`docs/world.md`). The six: **Marlowe**, an old heron, the grown-up who keeps the pond school (Long reach); **Bun**, a rabbit (Thump); **Ines**, a girl acrobat of about twelve (Stretch); **Mina**, a girl of about eight, the learner's friend (Giggle); **Bean**, a baby hippo (Yawn); **Ollie**, a snail, the newcomer (Tuck). All six are drawn on the cute frame to `docs/character-guidelines.md`, each with its own eyes, mouth, talking shapes and lip-sync lines: Bun and Bean in `side-garden.tsx`, the other four in `side-pond.tsx` (`POND` is the cast in order). Ability previews exist for Bun and Bean only so far. Proposals; none final.
+
+### Round three (how Bun and Bean were picked)
 
 The Observatory cast was set aside: the user asked for a different world and characters. Three worlds were proposed (the Night Garden, the Moonlight Caravan, the Sky Harbour; none chosen), and two characters were picked from their casts for expression first: **Bun**, a bossy rabbit whose ears act (one folds over at the tip; ability: Thump), and **Bean**, a sleepy baby hippo with a big snout and the widest mouth (ability: Yawn). They are drawn in `src/design/nix/side-garden.tsx` (`GARDEN`) to `docs/character-guidelines.md`, with ability previews, eyes, mouths, talking shapes and lip-sync lines, and are the only side characters shown in the studio. The world and the other four are chosen after these two are agreed.
 

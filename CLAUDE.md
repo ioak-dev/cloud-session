@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the side characters are being redone: Bun (a rabbit) and Bean (a baby hippo) are being refined first, before a world and the other four are chosen (`docs/cast.md`); the Observatory cast is set aside. Side characters speak fixed lines, lip-synced, and are drawn to `docs/character-guidelines.md`. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the six side characters are the Lantern Pond cast (`docs/world.md`): Marlowe (a heron), Bun (a rabbit), Ines (a girl acrobat), Mina (a girl), Bean (a baby hippo) and Ollie (a snail); the Observatory cast is set aside. Side characters speak fixed lines, lip-synced, and are drawn to `docs/character-guidelines.md`. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -40,6 +40,7 @@ npm start
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
 | `src/design/nix/candidates.tsx` | The `Candidate` type every drawing uses; the bench's original firefly (reference) |
+| `src/design/nix/side-pond.tsx` | The Lantern Pond cast: Marlowe, Ines, Mina, Ollie, and `POND`, all six in order |
 | `src/design/nix/side-garden.tsx` | Round three, the side characters shown now: Bun (a rabbit) and Bean (a baby hippo), `GARDEN`, drawn to `docs/character-guidelines.md` |
 | `src/design/nix/observatory.tsx` | The side characters, the club at the Observatory: Hob, Tavi, Grit, Lyra, Nox, Pim (`OBSERVATORY`), each with its own eyes and a mouth that also draws the talking shapes |
 | `src/design/nix/observatory-abilities.tsx` | Each club member's ability, previewed |

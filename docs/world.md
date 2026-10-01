@@ -1,6 +1,6 @@
 # World
 
-**Status: open again.** The Observatory on the hill (below) was chosen and its six drawn, then set aside: the user asked for a different world and characters. Bun (a rabbit) and Bean (a baby hippo) are kept as candidates (“ok-ok”, `side-garden.tsx`); the world is now chosen together with a full cast of six around them. The proposals are in “Round three” just below; the Observatory sections after it are kept for reference.
+**Status: chosen — Lantern Pond (2026-10-01), with Ines in place of Rory the beaver. Drawn in `side-pond.tsx` (Marlowe, Ines, Mina, Ollie) and `side-garden.tsx` (Bun, Bean); proposals, none final.** Earlier status: open again. The Observatory on the hill (below) was chosen and its six drawn, then set aside: the user asked for a different world and characters. Bun (a rabbit) and Bean (a baby hippo) are kept as candidates (“ok-ok”, `side-garden.tsx`); the world is now chosen together with a full cast of six around them. The proposals are in “Round three” just below; the Observatory sections after it are kept for reference.
 
 ## Round three — worlds for a full cast with Bun and Bean (proposals, none chosen)
 
@@ -15,11 +15,11 @@ A pond at the edge of town where everyone gathers at dusk. Fireflies live by pon
 | **Bun**, a rabbit | Self-appointed captain of the pond; bossy, loud, can't admit she's wrong | Thump |
 | **Bean**, a baby hippo | Lives in the pond; sleepy, sweet, always hungry | Yawn |
 | **Marlowe**, an old heron | The grown-up who keeps the pond school: tall, thin, patient, dry | Long reach: his neck stretches to reach anything |
-| **Rory**, a beaver | The maker; builds a new contraption for every problem, and some that aren't | Gnaw: chews anything into shape |
+| **Ines**, a girl acrobat of about twelve (in place of Rory, a beaver) | Fearless and showy; the oldest of the young ones | Stretch: bends like rubber |
 | **Mina**, a girl of about eight | Comes after school; the learner's age and the learner's friend | Giggle: a laugh so catching everyone joins in |
 | **Ollie**, a snail | The newcomer, slow and careful, carries home everywhere | Tuck: pulls into its shell and peeks out |
 
-Pairs: Bun bosses, Rory ignores her and builds anyway; Bean naps, Mina wakes it with a giggle. Marlowe and Ollie are the slow ones who notice what the fast ones miss.
+Pairs: Bun bosses, Ines ignores her and turns it into a show; Bean naps, Mina wakes it with a giggle. Marlowe and Ollie are the slow ones who notice what the fast ones miss.
 
 ### 2. The Night Garden
 

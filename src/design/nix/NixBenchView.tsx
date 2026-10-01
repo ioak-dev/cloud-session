@@ -36,7 +36,7 @@ import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { LipSyncDemo } from "./lip-sync";
-import { GARDEN } from "./side-garden";
+import { POND } from "./side-pond";
 import { OBSERVATORY_ABILITIES, type Ability } from "./observatory-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
@@ -62,8 +62,9 @@ const FIREFLIES = new Map(
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
-/** The side characters being refined: Bun and Bean (`side-garden.tsx`). */
-const CLUB: Candidate[] = GARDEN;
+/** The side characters: the Lantern Pond cast (`side-pond.tsx`, with Bun and Bean from
+ *  `side-garden.tsx`). */
+const CLUB: Candidate[] = POND;
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -1049,12 +1050,13 @@ export function SidePage() {
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters — round three</h1>
+      <h1 className="display mt-1">Side characters — Lantern Pond</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Two characters picked for expression first — Bun, a bossy rabbit whose ears are a second
-        face, and Bean, a sleepy baby hippo with the widest mouth in the cast — drawn to
-        docs/character-guidelines.md: two heads tall, big low eyes, brows on both, nub limbs. They are
-        refined before the world and the rest of the cast are chosen.
+        A pond at the edge of town where everyone gathers at dusk; Wisp lights the lily lanterns
+        along the bank, and a level unlock is a lily opening, lit. Marlowe the heron keeps the pond
+        school; Bun the rabbit runs it, she says; Ines tumbles; Mina giggles; Bean the hippo naps in
+        the water; Ollie the snail is new. Drawn to docs/character-guidelines.md. Proposals; none is
+        final.
       </p>
       <Tests />
 
