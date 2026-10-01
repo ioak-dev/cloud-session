@@ -12,18 +12,35 @@ import { flameTip, WispTurn } from "./wisp-turn";
  *                    through the gutter (away from the form) with its eyes on where it is going,
  *                    and settles beside the new field. No turn. Moves retarget, never queue.
  *   while typing     it turns further into the field and its eyes follow the text as it grows.
- *   the password     once it lands beside the password field it turns its back — right round,
- *                    continuously — and faces the form again when focus leaves.
+ *   the password     once it lands beside a password field it stops looking, in that field's way
+ *                    (`hide`): `back` turns its back, right round, continuously (as chosen);
+ *                    `hands` lifts its hands over its eyes; `blanket` pulls its ribbons up over
+ *                    its head like a blanket, a little ghost with its antennae poking out, and
+ *                    giggles under there while you type. It never peeks. When focus leaves it
+ *                    faces the form again.
  *
  * Its turn and gaze ease toward their targets frame by frame (the head a little quicker than the
  * body), so every change of attention is a turn, not a cut. Under reduced motion it does not
  * travel or ease: it reappears beside the new field and faces the right way at once.
  */
 
-const FIELDS = [
+/** How Wisp stops looking at a password field. */
+export type Hide = "back" | "hands" | "blanket";
+
+type Field = {
+  id: string;
+  label: string;
+  type: "text" | "email" | "password";
+  auto: string;
+  demo: string;
+  hint?: string;
+  hide?: Hide;
+};
+
+const FIELDS: Field[] = [
   { id: "name", label: "Your name", type: "text", auto: "name", demo: "Asha Rao" },
   { id: "email", label: "Email", type: "email", auto: "email", demo: "asha@school.org" },
-  { id: "password", label: "Password", type: "password", auto: "new-password", demo: "sparkle42" },
+  { id: "password", label: "Password", type: "password", auto: "new-password", demo: "sparkle42", hide: "back" },
   {
     id: "team",
     label: "Team name",
@@ -32,21 +49,52 @@ const FIELDS = [
     demo: "Year 8 Science",
     hint: "A school, a class, a household — or just you.",
   },
-] as const;
+];
+
+/** Three password fields, one for each way of not looking (proposals). */
+export const PASSWORD_FIELDS: Field[] = [
+  {
+    id: "pw-back",
+    label: "Password — turns its back",
+    type: "password",
+    auto: "new-password",
+    demo: "sparkle42",
+    hide: "back",
+    hint: "As chosen: it turns right round, head first, and faces you again when you leave.",
+  },
+  {
+    id: "pw-hands",
+    label: "Password — hands over its eyes",
+    type: "password",
+    auto: "new-password",
+    demo: "glowworm7",
+    hide: "hands",
+    hint: "It faces you and covers its eyes with both hands, like a game of hide and seek.",
+  },
+  {
+    id: "pw-blanket",
+    label: "Password — hides under its ribbons",
+    type: "password",
+    auto: "new-password",
+    demo: "moonbeam3",
+    hide: "blanket",
+    hint: "It pulls its ribbons up over its head like a blanket — a little ghost, antennae poking out — and giggles under there while you type.",
+  },
+];
 
 const SIZE = { w: 46, h: 62 };
 const VIEW = "-10 20 220 280";
 const GUTTER_X = 10;
 const DELAY = 90;
 /** How Wisp holds itself: turned toward the form, further while you type, away for a password. */
-const YAW = { attend: 28, typing: 50, away: 180 };
+const YAW = { attend: 28, typing: 50, away: 180, hands: 10, blanket: 6 };
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const inOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
 type Hop = { from: number; to: number; t0: number; dur: number };
 type Spark = { x: number; y: number; born: number; r: number };
-type Pose = { yaw: number; head: number; lookX: number; t: number };
+type Pose = { yaw: number; head: number; lookX: number; cover: number; blanket: number; t: number };
 
 function along(h: Hop, now: number) {
   const p = clamp((now - h.t0) / h.dur, 0, 1);
@@ -59,11 +107,17 @@ function along(h: Hop, now: number) {
   return { p, y, bow, gather, dir: Math.sign(d) };
 }
 
-export function WispForm() {
+export function WispForm({
+  fields: FORM = FIELDS,
+  title = "Create your account",
+}: {
+  fields?: Field[];
+  title?: string;
+} = {}) {
   const uid = React.useId().replace(/:/g, "");
   const rows = React.useRef<(HTMLDivElement | null)[]>([]);
   const hop = React.useRef<Hop>({ from: 0, to: 0, t0: 0, dur: 1 });
-  const pose = React.useRef<Pose>({ yaw: YAW.attend, head: YAW.attend, lookX: 1, t: 0 });
+  const pose = React.useRef<Pose>({ yaw: YAW.attend, head: YAW.attend, lookX: 1, cover: 0, blanket: 0, t: 0 });
   const sparks = React.useRef<Spark[]>([]);
   const lastSpark = React.useRef(0);
   const typingUntil = React.useRef(0);
@@ -107,12 +161,12 @@ export function WispForm() {
     (async () => {
       for (let round = 0; !cancelled; round++) {
         setValues({});
-        for (let i = 0; i < FIELDS.length && !cancelled; i++) {
+        for (let i = 0; i < FORM.length && !cancelled; i++) {
           setActive(i);
           await wait(800);
-          const text = FIELDS[i].demo;
+          const text = FORM[i].demo;
           for (let k = 1; k <= text.length && !cancelled; k++) {
-            setValues((v) => ({ ...v, [FIELDS[i].id]: text.slice(0, k) }));
+            setValues((v) => ({ ...v, [FORM[i].id]: text.slice(0, k) }));
             typingUntil.current = performance.now() + 700;
             await wait(90);
           }
@@ -126,17 +180,22 @@ export function WispForm() {
     };
   }, [auto]);
 
-  const field = FIELDS[active];
+  const field = FORM[active];
   const target = React.useCallback(
     (t: number) => {
       const h = hop.current;
       const landed = t >= h.t0 + h.dur;
-      if (field.id === "password" && landed) return { yaw: YAW.away, lookX: 0 };
+      const none = { cover: 0, blanket: 0 };
+      if (field.hide && landed) {
+        if (field.hide === "hands") return { yaw: YAW.hands, lookX: 0, cover: 1, blanket: 0 };
+        if (field.hide === "blanket") return { yaw: YAW.blanket, lookX: 0, cover: 0, blanket: 1 };
+        return { yaw: YAW.away, lookX: 0, ...none };
+      }
       if (t < typingUntil.current) {
         const len = (values[field.id] ?? "").length;
-        return { yaw: YAW.typing + Math.min(16, len * 0.8), lookX: 2 + Math.min(4, len * 0.2) };
+        return { yaw: YAW.typing + Math.min(16, len * 0.8), lookX: 2 + Math.min(4, len * 0.2), ...none };
       }
-      return { yaw: YAW.attend, lookX: 1 };
+      return { yaw: YAW.attend, lookX: 1, ...none };
     },
     [field.id, values],
   );
@@ -153,6 +212,9 @@ export function WispForm() {
       p.head += (goal.yaw - p.head) * ease(110);
       p.yaw += (goal.yaw - p.yaw) * ease(170);
       p.lookX += (goal.lookX - p.lookX) * ease(120);
+      /* the hands come up quickly; the blanket is pulled up more slowly */
+      p.cover += (goal.cover - p.cover) * ease(150);
+      p.blanket += (goal.blanket - p.blanket) * ease(260);
       p.t = t;
       if (!reduce) {
         const a = along(hop.current, t);
@@ -201,8 +263,8 @@ export function WispForm() {
         onSubmit={(e) => e.preventDefault()}
         aria-label="Create your account"
       >
-        <h3 className="material-heading m-0 text-base text-foreground">Create your account</h3>
-        {FIELDS.map((f, i) => (
+        <h3 className="material-heading m-0 text-base text-foreground">{title}</h3>
+        {FORM.map((f, i) => (
           <div
             key={f.id}
             ref={(el) => {
@@ -227,7 +289,7 @@ export function WispForm() {
               data-on={active === i}
               className="h-10 rounded-[var(--radius-control)] border border-border bg-canvas px-3 text-sm text-foreground data-[on=true]:border-primary"
             />
-            {"hint" in f && <span className="text-xs text-muted-foreground">{f.hint}</span>}
+            {f.hint && <span className="text-xs text-muted-foreground">{f.hint}</span>}
           </div>
         ))}
         <div className="flex items-center gap-3">
@@ -293,6 +355,10 @@ export function WispForm() {
             flapL={16 * amp * Math.sin((now / 250) * Math.PI * 2 + 1)}
             look={moving ? 5 * a.dir * arc : typing ? 2 : 0}
             lookX={p.lookX}
+            cover={p.cover}
+            blanket={p.blanket}
+            /* under the blanket it giggles, more while you type */
+            wiggle={reduce ? 0 : p.blanket * (typing ? 5 : 1.6) * Math.sin(now / (typing ? 90 : 200))}
             uid={`${uid}-w`}
           />
         </svg>

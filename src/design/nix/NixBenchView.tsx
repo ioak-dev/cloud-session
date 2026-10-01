@@ -26,7 +26,7 @@ import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon
 import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./wisp-clean";
 import { BEAN_STYLES, EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
-import { WispForm } from "./wisp-form";
+import { PASSWORD_FIELDS, WispForm } from "./wisp-form";
 import { APP_ICON, APP_ICON_EYES_REFERENCE, APP_ICON_FACES, APP_ICON_INK, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
@@ -712,6 +712,25 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       <div className="mt-3">
         <WispForm />
       </div>
+
+      {ribbon && (
+        <>
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — three ways not to look at a password (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three password fields, each with its own way of not looking. Click into one and type,
+            or let the demo play. Turning its back is the way chosen so far. Hands over its eyes is
+            hide and seek: it faces you and covers its eyes. The new one is the most Wisp: it pulls
+            its own ribbons up over its head like a blanket — a little ghost with its antennae
+            poking out — and giggles under there while you type. None of them peeks, and none
+            reacts to what is typed.
+          </p>
+          <div className="mt-3">
+            <WispForm fields={PASSWORD_FIELDS} title="Three ways not to look" />
+          </div>
+        </>
+      )}
 
       {!ribbon && <WarmerSections line={line} ribbon={false} />}
 

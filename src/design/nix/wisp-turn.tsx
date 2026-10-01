@@ -221,27 +221,36 @@ function wings(yaw: number, flapU: number, flapL: number): Part[] {
 const ARMS = { upper: 9, w0: 4.25, w1: 3.4, hand: 5.9 };
 const SNUG_ARMS = { upper: 11.5, w0: 5.5, w1: 4.4, hand: 8 };
 
-function arms(yaw: number, { upper, w0, w1, hand } = ARMS): Part[] {
+/**
+ * The arms, hanging (`cover` 0) or raised so the hands cover the eyes (`cover` 1): the elbows
+ * lift out to the sides and the hands come up in front of the face, where the eyes are, and grow
+ * a little, as a hand held close does.
+ */
+function arms(yaw: number, { upper, w0, w1, hand } = ARMS, cover = 0): Part[] {
+  const u = cover * cover * (3 - 2 * cover);
+  const mix = (a: number, b: number) => a + (b - a) * u;
   return [-1, 1].map((s) => {
     const sh = proj(16 * s, 0, yaw);
-    const el = proj(24 * s, 4, yaw);
-    const hd = proj(28.5 * s, 7, yaw);
-    const a: P = [el.x, 178];
-    const b: P = [hd.x, 196];
+    const el = proj(mix(24, 34) * s, mix(4, 16), yaw);
+    const hd = proj(mix(28.5, 22) * s, mix(7, 30), yaw);
+    const a: P = [el.x, mix(178, 138)];
+    const b: P = [hd.x, mix(196, 98)];
+    const r = mix(hand, hand * 1.45);
     const dx = b[0] - a[0];
     const dy = b[1] - a[1];
     const len = Math.hypot(dx, dy) || 1;
     const nx = -dy / len;
     const ny = dx / len;
     return {
-      d: (sh.d + hd.d) / 2,
+      /* raised, the arms are in front of the face */
+      d: Math.max((sh.d + hd.d) / 2, u > 0.2 ? 40 * u : -Infinity),
       el: (
         <g key={`a${s}`} fill={C.primary}>
           <line
             x1={sh.x}
             y1={160}
             x2={el.x}
-            y2={178}
+            y2={a[1]}
             stroke={C.primary}
             strokeWidth={upper}
             strokeLinecap="round"
@@ -249,7 +258,7 @@ function arms(yaw: number, { upper, w0, w1, hand } = ARMS): Part[] {
           <path
             d={`M${a[0] + nx * w0} ${a[1] + ny * w0} L${b[0] + nx * w1} ${b[1] + ny * w1} L${b[0] - nx * w1} ${b[1] - ny * w1} L${a[0] - nx * w0} ${a[1] - ny * w0} Z`}
           />
-          <circle cx={b[0]} cy={b[1]} r={hand} />
+          <ellipse cx={b[0]} cy={b[1]} rx={r} ry={r * (1 + 0.12 * u)} />
         </g>
       ),
     };
@@ -421,8 +430,55 @@ export type TurnProps = {
    *  the upper pair's. */
   flapU?: number;
   flapL?: number;
+  /** 0 → 1: the hands come up over the eyes (a way not to look at a password). */
+  cover?: number;
+  /** 0 → 1: the ribbons sweep up over the head as a blanket, a little ghost under a sheet with its
+   *  antennae poking out (another way not to look). Ribbons only. */
+  blanket?: number;
+  /** The blanket's wiggle, in degrees: it giggles under there. */
+  wiggle?: number;
   uid: string;
 };
+
+/** The blanket: a sheet over the head, peaked where the drop's tip is, hemmed at the chest. */
+const SHEET =
+  "M42 172 C38 126 58 62 88 36 Q100 20 112 36 C142 62 162 126 158 172 Q148 181 138 172 Q129 181 119 172 Q109 181 100 172 Q91 181 81 172 Q71 181 62 172 Q52 181 42 172 Z";
+
+/**
+ * Wisp under its ribbons. The sheet rises from the shoulders over the head as `b` goes 0 → 1
+ * (pulled up, as a child pulls up a blanket); it is the ribbons' own frost, shaded from the head
+ * down, with a hairline edge and two soft folds; the antennae poke out on top.
+ */
+function Blanket({ b, yaw, headYaw, wiggle, uid }: { b: number; yaw: number; headYaw: number; wiggle: number; uid: string }) {
+  const top = 182 - (182 - 14) * b;
+  const k = 1 - 0.1 * Math.abs(Math.sin(rad(yaw)));
+  return (
+    <g>
+      <defs>
+        <clipPath id={`${uid}-blanket`}>
+          <rect x={0} y={top} width={200} height={200} />
+        </clipPath>
+        <linearGradient id={`${uid}-sheet`} gradientUnits="userSpaceOnUse" x1="100" y1="24" x2="100" y2="180">
+          <stop offset="0" stopColor={C.tint} />
+          <stop offset="0.65" stopColor={C.tint} />
+          <stop offset="1" stopColor={C.soft} />
+        </linearGradient>
+      </defs>
+      <g
+        clipPath={`url(#${uid}-blanket)`}
+        transform={`rotate(${wiggle} 100 172) translate(100 0) scale(${k} 1) translate(-100 0)`}
+      >
+        <path d={SHEET} fill={`url(#${uid}-sheet)`} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round" />
+        <path d="M72 70 Q66 120 70 166 M128 70 Q134 120 130 166" stroke={C.hi} strokeWidth={HAIR} fill="none" strokeLinecap="round" />
+      </g>
+      {b > 0.85 && (
+        <g transform={HEAD_FIT} opacity={(b - 0.85) / 0.15}>
+          <Antennae yaw={headYaw} />
+        </g>
+      )}
+    </g>
+  );
+}
 
 export function WispTurn({
   yaw,
@@ -431,6 +487,9 @@ export function WispTurn({
   flapL = 0,
   look = 0,
   lookX = 0,
+  cover = 0,
+  blanket = 0,
+  wiggle = 0,
   uid,
 }: TurnProps) {
   const s = Math.sin(rad(yaw));
@@ -441,10 +500,16 @@ export function WispTurn({
   const style = React.useContext(WingStyleContext);
   const form = React.useContext(RibbonFormContext);
   const t = useSmokeClock(style === "ribbon" && !!form.smoke);
+  /* under the blanket the ribbons are the blanket, so they fade from the sides as it rises */
+  const sheet = style === "ribbon" ? blanket : 0;
   const parts = [
-    ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid, t) : wings(yaw, flapU, flapL)),
+    ...(style === "ribbon"
+      ? ribbons(yaw, flapU, form, uid, t).map((p, i) =>
+          sheet > 0 ? { ...p, el: <g key={`rb${i}`} opacity={1 - sheet}>{p.el}</g> } : p,
+        )
+      : wings(yaw, flapU, flapL)),
     /* the Wisp page (ribbons) draws the picks on Clean: Snug's arms and the Core tail */
-    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS),
+    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS, cover),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
   const front = parts.filter((p) => p.d >= 0).sort((a, b) => a.d - b.d);
@@ -496,6 +561,7 @@ export function WispTurn({
         <Face yaw={headYaw} look={look} lookX={lookX} feather={style === "ribbon"} />
       </g>
       {front.map((p) => p.el)}
+      {sheet > 0 && <Blanket b={sheet} yaw={yaw} headYaw={headYaw} wiggle={wiggle} uid={uid} />}
     </g>
   );
 }

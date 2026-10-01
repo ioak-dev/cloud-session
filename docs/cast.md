@@ -158,6 +158,16 @@ The eye style is between **Bean and Gumdrop**; the user will decide later. Honey
 | Blue brows | Feather's brows in the body's own deep blue (`C.deep`) instead of ink: only the pupils and mouth are dark |
 | Round | A rounder eye with a bigger pupil and a second small shine, rimmed in the face's own blue (`C.hi`), tapered brows. Youngest; the pupil has less room to roam |
 
+**At the password — three ways not to look (proposals)** (`PASSWORD_FIELDS` in `wisp-form.tsx`, a three-field demo under the sign-up form on the Wisp page). Each password field names its way (`hide`); Wisp hops to it, and once it lands it stops looking in that way, and faces the form again when focus leaves. None of them peeks; none reacts to what is typed.
+
+| Way | What it does |
+|---|---|
+| Turns its back (`back`, as chosen) | Turns right round, head first, continuously |
+| Hands over its eyes (`hands`) | Faces you and lifts both hands over its eyes, like hide and seek: the elbows lift out, the soft hand tips come up in front of the eyes and grow a little (`cover` on the turn puppet) |
+| Hides under its ribbons (`blanket`, new) | Pulls its own ribbons up over its head like a blanket: a sheet in the ribbons' frost rises from the shoulders to a peak over the drop's tip, the side ribbons fade into it, the antennae poke out on top, and it wiggles, giggling, while you type (`blanket` and `wiggle` on the turn puppet). A little ghost: the ribbons started as a ghost's hem, so this is its own body doing it |
+
+Under reduced motion each holds its pose without easing or wiggling.
+
 **The studio's pages after the choices.** The Wisp page (`#/wisp`) holds only what is chosen: Wisp (Clean ribbons, Core tail, Snug arms, drop head, Feather eyes) at rest and in every expression; the app icon (Glow · Light with Feather eyes, its circle and one-colour mark); the wordmark (Gabarito 700); the turnaround, flight and sign-up form; and the bench for the main character. Everything it was chosen from is on the References page (`#/references`) as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals not chosen, the wordmark candidates, Glow tips and Spirit, and the warmer proposals with their eye styles and acting (on the ribbons), then the wispy directions, Pip and the earlier fireflies. The butterfly-winged Wisp keeps its own full page (`#/butterfly`).
 
 **Wisp's eyes — chosen: Feather** (`BEAN_FEATHER`). Bean's acting (the roaming pupil, the lids, the brows' tilt and lift) with a translucent hairline rim (`C.line`), a 2.0 lash and tapered ink brows. On the main character (`CLEAN_PICK.face`), and drawn the same by the turn puppet on the Wisp page (`FeatherEye` in `wisp-turn.tsx`), so the turnaround, flight and form match; there the puppet's glance moves the pupil inside the white rather than the whole eye. The butterfly Wisp keeps its own eyes.
