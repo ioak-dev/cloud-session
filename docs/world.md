@@ -81,7 +81,7 @@ Hob wants the club to love the sky; Tavi wants to be first; Grit wants to be bra
 
 ### To settle before drawing
 
-- **Two cats' ears.** Nox and Pim are both small mammals with pointed ears; Pim's ears must be enormous and Nox's small and round-tipped so they part at 32px.
+- **Two sets of pointed ears.** Nox and Pim are both small mammals with pointed ears; Pim's ears must be enormous and Nox's small and round-tipped so they part at 32px.
 - **Hob's eyes.** A mole's eyes are tiny; his brows and nose must carry his expressions.
 - **Lyra's mimicry and the brief.** It only ever mimics fixed lines (another character's own line, in that character's voice); never anything generated.
 - **Tavi's speed.** A blur and a skid, kept small: warmth must not make the product loud.
