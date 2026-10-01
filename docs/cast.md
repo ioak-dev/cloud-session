@@ -2,7 +2,7 @@
 
 Target shape, after Duolingo: **one main character and six side characters**. The product is known by the main character. Each side character has a stable identity of its own and never competes with the main one.
 
-**Nothing is final.** The drawings from Sparkles’ `/design/nix` bench are starting points, not finished characters. The 52 practice-item characters, the human candidates, Mabel and the koala are not part of the cast.
+**Nothing is final.** The drawings from Sparkles’ `/design/nix` bench are starting points, not finished characters. The 52 practice-item characters, the human candidates, Mabel and the koala are not part of the cast. The side characters are the club at the Observatory on the hill (`docs/world.md`).
 
 ## One ability per character
 
@@ -11,13 +11,14 @@ Every character has **one special feature or ability that no other character in 
 | Character | Ability |
 |---|---|
 | Firefly (Wisp line) | Glow, and the sparks it leaves behind as it flies |
-| Chameleon | Colour change: it takes the colour of what it lands on, including semantic colours |
-| Fruit bat | Upside-down: hangs by its feet from anything and sees it the other way round |
-| Chick | Fluff up: fluffs every feather out into a round ball, twice its size |
-| Juno | Cartwheel: arrives, and leaves, with a cartwheel |
-| Lulu | Puppy eyes: her eyes swell huge, glossy and brimming |
+| Hob, a star-nosed mole | Burrow: dives into the ground and pops up anywhere else |
+| Tavi, a girl of about ten | Zoom: runs so fast she blurs, and arrives in a skid |
+| Grit, a small gargoyle | Turn to stone: freezes solid when startled or embarrassed, then cracks back out |
+| Lyra, a lyrebird | Mimic: does any voice or sound — only ever a fixed line, in that character's voice |
+| Nox, a cat | Pour: goes liquid and pours itself into anything |
+| Pim, a fennec fox kit | Radar ears: ears bigger than its head swivel to hear anything, and flatten when it is shy |
 
-**Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. The chameleon changes its own colour; the octopus draws with its own ink; the fruit bat hangs by its own feet; the red panda rears up on its own legs. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
+**Abilities come from the character itself.** An ability is part of the character's body and nature — its spirit — never a prop it holds or an outside object it uses. Hob digs with his own hands; Grit turns its own body to stone; Pim's ears are its own. A pair of headphones, a card to peek over, a thing to balance or carry are not abilities.
 
 ## Main character: Wisp (decided)
 
@@ -313,64 +314,57 @@ Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperl
 
 **Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 
-## Side characters
+## Side characters: the club at the Observatory on the hill
 
-**Reset (2026-10-01): all six side characters are new.** None of the characters below carries over — not species, roles, abilities, faces or jokes; they stay in the studio only until the redraw starts. The new six are designed together around one world, and they speak (fixed lines, lip-synced). The world is chosen: the Observatory on the hill. The proposed six (Hob, Tavi, Grit, Lyra, Nox, Pim) and the lip-sync plan are in `docs/world.md`; none is drawn or confirmed yet.
+**Approved (2026-10-01) and drawn.** The six are new; none of the earlier side characters carries over (the chameleon, fruit bat, chick, Juno, Lulu, the otter, red panda, octopus and penguin were removed from the studio; they are in git history). The world, the relationships, the running jokes and the stakes are in `docs/world.md`. The drawings are in `src/design/nix/observatory.tsx` (`OBSERVATORY`), the ability previews in `observatory-abilities.tsx`, and they speak in the lip-sync demo (`lip-sync.tsx`). They are proposals in the sense that nothing is final; the cast itself is decided.
 
-| # | Character | Ability | Status |
-|---|---|---|---|
-| 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
-| — | Otter | (a glowing pebble; too close to the firefly’s glow — needs its own ability) | Backup, no preference |
-| — | Red panda | Stand tall | **Dropped** — not expressive enough, no special character; kept as reference |
-| 2–5 | Fruit bat, chick, Juno, Lulu | See below | **Chosen** |
-| 6 | — | — | **Open** — to be chosen with the cast as a whole, once the six are designed as a connected world |
+| Character | Temperament (a want and a flaw) | At rest | Ability | Species-true detail, imperfection |
+|---|---|---|---|---|
+| **Hob**, a star-nosed mole — the keeper | Wants everyone to see what he sees; can barely see without the telescope and won't admit it. Fussy, proud, a soft touch | Squints with one eye, one spade hand raised to make a point, head tipped | Burrow | The star of 22 pink rays on his nose; velvet fur standing up on top; digging hands bigger than his head; bushy pale brows that do his acting. His spectacles live pushed up on his forehead, crooked, never worn |
+| **Tavi**, a girl of about ten | Wants to be first to everything; rushes, is wrong out loud and laughs first — the one who makes a wrong answer safe | Arms up and ready to run, grinning, head tipped | Zoom | Auburn hair always blown back in points; a plaster across her nose; one front tooth missing; a jumper too big for her (the hoodie outfit) |
+| **Grit**, a small gargoyle | Wants to see the town; too scared to leave its corner of the dome. Grumpy face, sweetest heart | Crouched, arms folded, stone brows down | Turn to stone | Stubby horns, the left one chipped with a crack; pointed ears; a jutting underbite with two tusks; a spade-tipped tail; spots of lichen; no wings. Alive it is drawn in the scheme; only its ability turns it grey |
+| **Lyra**, a lyrebird — the performer | Wants applause; can do anyone's voice but has never found its own | Chin up, lids half down, one wing flung out mid-flourish | Mimic | Two banded lyre feathers that curl out at the top, filmy plumes between them, long thin legs; a pale mask round the eyes like stage make-up; three long lashes |
+| **Nox**, a cat — owns the roof | Wants company and would rather die than say so. Deadpan | Sits like a loaf, paws together, lids heavy, head on one side | Pour | White muzzle, bib and socks; whiskers; small round-tipped ears, the left one notched; a tail curled into a question mark; slit pupils that open to discs when it is secretly delighted |
+| **Pim**, a fennec fox kit — the newest | Wants to belong; so shy it hides behind its own ears | Looks down and away, one paw holding the other, head on one side | Radar ears | Ears bigger than its head with pale fur inside, a cream face with a fennec's dark tear lines, a black nose, a bushy tail with a dark tip. Its ears follow its mood (`Ctx.mood`): flat when it is shy or startled, tall when delighted |
+
+**Colour.** Every one is drawn with the scheme's tokens (`C`) or a mix of one with a neutral, so the header's scheme recolours them all: Hob in the deep primary, Lyra in the primary with accent lyre feathers, Grit in a stone mixed from the mid tone, Nox in a charcoal mixed from the deep, Pim in a sand mixed from the accent. Tavi is a person: her skin and hair are her own, her clothes follow the clothes switch. The only fixed colours are small species details (Hob's pink star, inner ears, noses). No character has a status hue, and none has a status-colour ability: the brief's one exception (the chameleon's colour change) no longer applies to anyone.
+
+**Silhouettes.** At 32px each is told apart in black: Hob low and wide with a spiked crown; Tavi's hair streaming one way; Grit's horns and ears; Lyra's lyre; Nox's loaf and question-mark tail; Pim's two great ears. Nox's ears are small and round-tipped so it never reads as Pim.
 
 ### Rules for every side character
 
-- **No outlines, as far as possible.** Parts are told apart by colour and tone alone. A side character's palette sets `line: "none"`, which the rig's clothes and shoes follow too. The chameleon has had its black outlines removed.
-- **Its own eyes and its own mouth.** No two characters share either. Each side character has an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) of its own (`rig/eyes.tsx`): its own eye shape, colour, shine, lids and brows, and its own lips, beak or muzzle, drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The studio shows them side by side under “Eyes and mouths — each character's own”.
+- **No outlines.** Parts are told apart by colour and tone alone; the palette sets `line: "none"`, which the rig's clothes and shoes follow too, and `outline: false` on the body.
+- **Its own eyes and its own mouth.** No two characters share either. Each has an eye kit (`face.kit`) and a mouth kit (`face.mouthKit`) of its own (`rig/eyes.tsx`), drawn for every expression — neutral, happy, delighted, curious, thinking, focused, worried, oops, wink. The studio shows them side by side under “Eyes and mouths — each character's own”.
+- **Its mouth talks.** Every mouth kit also draws the eight talking shapes (`viseme` in `MouthArgs`, `rig/visemes.ts`) in its own mouth — lips, a beak, a stone jaw, a cat's ω — coloured by the mood, so a worried character still talks worried. The studio shows them under “Talking mouths”.
 - **The ability comes from the character itself** — its body and its nature — never a prop or an outside object.
-- **Legible small and on both grounds.** Check the recognition sheet (silhouettes at 96, 48 and 32px, the head at 32, 24 and 16px) on the light and the dark ground.
+- **Legible small and on both grounds.** Check the recognition sheet (silhouettes at 96, 48 and 32px, the head at 32, 24 and 16px) on the light and the dark ground. A character whose head is not in the chibi crop gives its frame a `headVB`.
 
 ### What makes a side character loved
 
-Duolingo's cast is loved for something the drawings here were missing: each of them is *somebody* before they do anything. Our candidates had abilities, their own faces and clean shapes, but at rest they stood like mannequins — the same idle stance, arms down, a neutral face, dead level — and they were drawn in flat single tones. The missing quality is **character**: a temperament you can read from across the room, and a finish that makes the shapes feel solid and soft enough to hug. Every side character now has, and every new one must have:
+Duolingo's cast is loved because each of them is *somebody* before they do anything. Every side character has, and every new one must have:
 
-1. **A temperament in one line.** A want and a flaw, not a job: “busy, clever and a little scatterbrained”. It is written first in the character's pitch.
-2. **An attitude at rest** (`attitude` in `candidates.tsx`, applied by the rig in the idle pose): its own resting expression, a habitual head tilt, and a stance of its own. Nobody stands neutral and dead level. Lily slouches; Duo leans in.
-3. **Asymmetry and one imperfection.** An arm that is always up, a head that tips, two strands that won't lie down, a hairline crack in a shell. Perfect symmetry reads as a logo; a small flaw reads as a friend.
-4. **Form, in two tones.** Each main part is drawn in its own shade first, then its colour over it, offset up and to the left, so a crescent of shade sits lower right. Hair casts a shadow on the brow; hair and fluff catch a shine. Still no outlines, and no black: the shade is a tone of the part's own colour.
-5. **Chunky, soft shapes.** Thicker limbs and bigger hands and feet (`CHUNKY`): rounder reads as softer and friendlier at small sizes.
-6. **Species-true detail, a little of it.** The things that make it *that* animal: a flying fox's golden collar and dog's nose, a chameleon's rosettes and scaled belly, the octopus's suckers large to small, the red panda's ear fluff, dark mask and whisker dots. Enough to be precise; never so much it stops reading at 32px.
+1. **A temperament in one line.** A want and a flaw, not a job. It is written first in the character's pitch.
+2. **An attitude at rest** (`attitude`, applied by the rig in the idle pose): its own resting expression, a habitual head tilt, and a stance of its own. Nobody stands neutral and dead level.
+3. **Asymmetry and one imperfection.** Hob's crooked spectacles, Tavi's missing tooth and plaster, Grit's chipped horn, Nox's notched ear. Perfect symmetry reads as a logo; a small flaw reads as a friend.
+4. **Form, in two tones.** Each main part is drawn in its own shade first, then its colour over it, offset up and to the left. No outlines and no black: the shade is a tone of the part's own colour.
+5. **Chunky, soft shapes.** Thick limbs and big hands and feet: rounder reads softer at small sizes.
+6. **Species-true detail, a little of it.** Enough to be precise; never so much it stops reading at 32px.
 7. **Its own face and its own ability** — the rules above still hold.
 
-### The candidates
+**People need to act.** Tavi's brows carry half of every expression, her two eyes may do different things (one widens while the other narrows when she is curious), and her mouth has business: a tongue poked out at the corner when she concentrates, a gap-toothed grin.
 
-Five side characters are chosen — the chameleon, the fruit bat, the chick, Juno and Lulu — and the sixth place is open.
+### Abilities, previewed
 
-| Candidate | Temperament | At rest | Ability | Refined with |
-|---|---|---|---|---|
-| **Chameleon** | A small, fierce, loyal best friend who says everything with its face and hands — mimes, points, sulks, cheers; brave beyond its size, and it blushes, literally, when caught caring | One hand on its hip, the other up mid-gesture, its two eyes looking two ways; head tipped | Colour change | Redrawn in the spirit of the chameleon in *Tangled*, not its look: a rounder head rising to a low casque swept back to one side, a crest of small bumps, big turret eyes bulging past the head with an amber ring round each pupil, a pale scaled throat, a pear-shaped body with a scaled belly and pale flank stripes, two-toed grips on hands and feet (`hands: "tong"`), short bowed legs, a thick tail coiled tight with pale rings. Violet, not green |
-| **Fruit bat** | A night owl: dozy and droll by day, awake at the wrong times, sees things differently | Heavy-lidded, head on one side, hands folded | Upside-down | A flying fox's golden collar, a soft muzzle and dog's nose, ridged ears, two-tone wings with thumb claws |
-| **Chick** | Brand new to everything: earnest, eager, easily overwhelmed, proud of every small thing | Gazing up at you, wide-eyed, head on one side | Fluff up | Two-tone fluff, cheek tufts that stick out, feather marks, a crack in its shell |
-| **Juno** | A big-hearted show-off: first to try, first to cheer someone else on | Hands on hips, a grin, head tipped | Cartwheel | Curl texture in her puff, freckles, two-tone skin, the fringe's shadow on her brow |
-| **Lulu** | A small schemer with a big face: smug when plotting, huge-eyed when she wants something, never as sneaky as she thinks | The smug look with one small fang, hands pressed together under her chin — all sweetness, which is how you know | Puppy eyes | Two stray strands that act: curled when plotting, tall when delighted, hooked into a question when curious, flopped when worried; rosy cheeks always and blush marks when she is pleased with herself; a shine across her hair, a bow on her side pony. Her puppy eyes are drawn on her face now (`headFx`), so they move with her head |
+`observatory-abilities.tsx` shows each ability as its own layer round the figure: a whole-figure move (`.mv-*` in `studio.css`), effects behind or over it (`.fx-*`), or an act for the rig. Every move is declared keyframes with anticipation and overshoot, and stops under reduced motion.
 
-The eyes and mouth of each are as described in their files and on the studio's eyes-and-mouths sheet.
-
-**Removed:** Sunny and Poppy; the jellyfish; every other girl (Mimi, Pia, Nell, Koko, Tami, Suki, Rue, Momo, Tess, Bibi, Wren, Amara, Sloane) and the lamb, axolotl, cloud, flower, squid, mushroom, poodle and pufferfish.
-
-**Reference — other animals** (shown in the studio, not candidates): the red panda (dropped: not expressive enough, no special character of its own), the octopus, the penguin (`SIDE_REFERENCE` in `side-candidates.tsx`), the otter and the bench's original firefly.
-
-**Tangled.** The chameleon takes the spirit of the chameleon sidekick in *Tangled* and none of its look — it is violet, not green, with its own casque and eyes. The same “Not taken” test applies.
-
-**Humans need to act.** What was missing from the earlier people was acting: their faces changed shape but not meaning. Any person in the cast should reach the bar the Rapunzel-inspired studies (since removed) set — brows that carry half of every expression, eyes that do different things from each other (a squint and a widen), mouths with business (a bitten lip, a tongue poked out, a lopsided grin), and hair, freckles or a paint smudge that tell you who she is before she moves.
-
-**Anya.** Lulu takes the spirit of Spy × Family's Anya — a tiny girl with a big head and huge, rubbery gag faces — and none of her look. Anya is a copyrighted character; a drawing of her cannot move into Sparkles and would fail the studio's “Not taken” test. So: no pink hair, no black cone hair clips, no green eyes, no school uniform.
-
-
-
-**Removed from the sixth place:** five concepts — Fizz (frog), Clover (goat), Tuck (tortoise), Bit (robot), Remy (boy). None was liked. The next ideas come as a connected cast, not one-offs: how the characters know each other is decided before any is drawn.
+| Ability | Preview |
+|---|---|
+| Burrow | Crouches, dives into a mound, travels under the hill, pops up past the mark at the other mound and settles; then back |
+| Zoom | Arrives from the left in a blur with speed lines, skids past the mark in a puff of dust and back; leans, and goes |
+| Turn to stone | A jolt, then frozen grey with cracks; a shake, and it cracks back out |
+| Mimic | Talks (its beak flaps) with a speech bubble holding Hob's star: whose voice it is doing |
+| Pour | Stretches up, then pours down into a teacup as a puddle with ears; springs back out |
+| Radar ears | Both ears swing left to a sound, hold, then sweep right to another (the rig's ear joints) |
 
 ### Lessons from Duolingo
 
@@ -378,41 +372,33 @@ What the Duolingo cast does that this studio's first rounds did not (a summary o
 
 - **One style, many silhouettes.** Every character is built from the same kit of simple, rounded geometric shapes in flat colour with a shadow tone, and big heads on small bodies — but each has a silhouette you could name in black (Lily's hair, Eddy's height, Oscar's moustache, Duo's round body).
 - **An archetype with an attitude.** Each is a recognisable type pushed to a caricature, and each is *somebody* at rest: Lily bored, Zari bursting, Oscar pompous, Duo intense. Personality is in the posture before anything moves.
-- **They talk.** In lessons the characters say the sentences, with their mouths moving to the words and their own voices — the strongest single hook. Here speech must stay fixed copy (`docs/brief.md`); lip-sync to fixed lines is still open to us.
+- **They talk.** In lessons the characters say the sentences, with their mouths moving to the words and their own voices — the strongest single hook. Here speech must stay fixed copy (`docs/brief.md`); the club now speaks fixed lines, lip-synced with Web Speech (below).
 - **They are alive between events**: breathing, blinking, glancing — and they react in real time, because each is a state machine (idle, talking, reacting) rather than a set of clips.
 - **Animation principles, not just motion**: anticipation before an action, overshoot and settle after, squash and stretch, reactions under a second, timed to a sound. The rig now has them (`rig/motion.ts`): `EASE` (overshoot, anticipate, snap, settle), `jump` (crouch, stretch up, squash on landing, rebound — volume kept), `pop` (squash, stretch, overshoot, settle — the correct beat), `sag` (sink, hold, lift with a small overshoot — the gentle incorrect beat) and `action` (wind-up opposite, snap past the mark, settle). The cheer jumps, the wave overshoots, and every practice act that only breathed now pops on correct and sags on incorrect.
 - **A world**: the characters know each other, have running jokes and stories; the absurd sentences are written for them.
 - **Emotional stakes.** Duo's cast makes you care: the characters want things, need things from each other and from you, and you feel something when you let them down or come through. That is part of why they are loved, and it is **in scope for Sparkles**. An earlier version of this file said the brief rules it out; it does not, and that was wrong. Stakes here come from the characters — their wants, their relationships with each other and with the learner, their running stories — not from pressure. What the brief does bound is narrower: the practice reactions themselves (three events, the same reaction the first time and the fiftieth, gentle on an incorrect answer, never a scold). Any stake that would need a reaction to a streak, a score or a session is a change to those bounds, and belongs in Sparkles, not here.
 
-## Practice states
+## Speech and lip-sync
 
-Each side character reacts while a learner answers a question and to the answer, in four states, with **five variants each** so the reaction is never the same twice in a row: 120 acts in all. They are data in `src/design/nix/side-states.tsx` (`PRACTICE`) and play in the studio under “Practice states”.
+The characters speak (decided 2026-10-01): fixed lines, each in a voice of its own, with the mouth moving to the words. The line is real text beside the figure. The demo is `src/design/nix/lip-sync.tsx`, under “Lip-sync” on the Side characters page.
 
-| State | When |
+| | |
 |---|---|
-| Still writing | The question is up and the learner is still writing |
-| Correct | The answer is right |
-| Incorrect | The answer is wrong — always gentle, never a scold |
-| Partly correct | Some of it is right: nearly |
+| How Duolingo does it | Phoneme timings for each line, mapped to visemes (20+ mouth shapes per character), blended in a Rive state machine in time with the audio |
+| What Web Speech gives | `start`, `end`, and a `boundary` as each word begins (with `charIndex`). No phoneme timings; its audio cannot be measured. Some voices report no words |
+| What the demo does (**word-synced**) | Each word starts its mouth on its boundary and plays shapes guessed from its letters (`wordVisemes`), spread over its estimated length (syllables ÷ rate); the mouth rests at commas and full stops. A voice that reports no words within 0.7 s falls back to the **flap**. With no voices, or a voice that does not start, or **Silent**, the same words are timed by estimate |
+| The eight shapes | Rest, M B P (pressed), A I (wide), E (wide, teeth), O (round), U W (small, round), F V (lip on teeth), L Th (tongue up) — `SHAPE` in `rig/visemes.ts`; each kit draws them its own way |
+| Each voice | A preference among the device's voices, a pitch and a rate (`VOICES` in `lip-sync.tsx`): Hob low and slow, Tavi high and fast, Grit lowest, Lyra theatrical, Nox flat and slow, Pim highest. The voice itself still varies by device |
+| Exact sync | Needs a voice service that returns viseme timings (Azure Speech, Amazon Polly) instead of Web Speech: a decision for Sparkles |
+| Reduced motion | The body holds its rest pose; the mouth still moves, as an expression may |
 
-Every character mixes three kinds of variant: **its own feature** (what only it has — the chameleon's colour, the bat's hanging and ears, the chick's shell and fluff, Juno's cartwheel, Lulu's puppy eyes and strands, the red panda's tail and standing tall), **face and body** acting, and **a prop**. Motion is the rig's declared joint keyframes on one clock; whole-figure moves and props are declared CSS keyframes (`.fx-*` in `src/styles/studio.css`); everything holds still under reduced motion.
+**Against the brief.** Speech is fixed product copy (`docs/brief.md`). Sparkles' scenarios voiced with Web Speech may be lip-synced only if their text is editor-approved; that widens the brief's rule and is recorded in `docs/world.md` for Sparkles to confirm. Lyra's mimicry only ever repeats another character's fixed line, in that character's voice.
 
-**No two characters share an action or a prop.** Facial expressions may repeat; nothing else does. The ledger, so a new variant can be checked against it:
-
-| Character | Body actions | Props |
-|---|---|---|
-| Chameleon | chin tap, hum and sway, grip clap, fist bump, shrug, so-so hand, hand over a giggle | hourglass, party horn, eraser, puzzle piece |
-| Fruit bat | doze, foot tap, shimmy, hug itself, scratch its head, tap its temple, slow wink, count on its fingers | book, mango, cup of tea, magnifying glass |
-| Chick | on tiptoe, rock on its heels, bounce, wobble, sigh and deflate, head tilts, lean in | pencil, balloon, pillow, glass half full |
-| Juno | arms crossed, thumbs up, fist pump, high five, shake it off, deep breath, kneel, roll shoulders, “this close” pinch, point | water bottle, pom-poms, towel, relay baton |
-| Lulu | hold her breath, peek through fingers, rub her hands, peace signs, blow her fringe, pat her own head, tap her nose, scrunch then grin | peanut, lollipop, sticky note, half a cookie |
-| Red panda | slow blink, knead its paws, wave both paws, bow, paws on its heart, wash its face, “this much”, sniff the air | bamboo, autumn leaf, blanket, kite |
-
-**Against the brief.** `docs/brief.md` allows three practice events — correct, incorrect (gentle), level unlock — “and no fourth”, and says that mid-item the guide is absent and the slot is the practice character's. “Still writing” and “partly correct” are new events, and these side characters would be reacting mid-item. This was asked for here; it has to be reconciled with Sparkles before these states move back. The other bounds still hold: reactions do not escalate (a variant is picked, never built up), the chameleon's green is always paired with words or a status mark, no other character turns a status colour, and incorrect is never a scold. No prop is a reward (no medals, crowns or trophies).
+**Practice states** for the new six are not drawn yet. The earlier set (five variants of four states per character) was removed with the earlier characters; its rule stands for the next round: no two characters share an action or a prop, incorrect is always gentle, no prop is a reward, and “still writing” and “partly correct” are events beyond the brief's three, to be reconciled with Sparkles.
 
 ## Cast structure: recommended, not decided
 
-Recommended: **one firefly as the main character, and every side character a different species.** No second firefly.
+Recommended, and followed by the club: **one firefly as the main character, and every side character a different species or a person.** No second firefly.
 
 - **The ability rule.** Glow is the firefly’s one ability. A second firefly either shares it, which breaks the rule, or glows differently, which weakens what the main character is known for.
 - **Recognition.** A child names the character the product is known by. Two or three fireflies turn “the firefly” into “which firefly?”, and the main one stops being the face of the product.
@@ -424,11 +410,3 @@ One exception is worth keeping open: **a younger firefly-family member** (a glow
 A side character must be told apart from the main character and from every other side character by silhouette alone, at small size.
 
 Which side character plays which role in the product is not decided. Record it here when it is.
-
-### The chameleon’s colour change
-
-Colour change is the chameleon’s ability, and it is meant to be semantic: green for a correct answer, a “not yet” colour for an incorrect one, and other meaningful colours where the product defines them. This is a deliberate exception to the brief’s “no large field in a status hue” rule, and it applies **only** to the chameleon. It carries three conditions:
-
-- The colour is never the only signal. The outcome is also given in words or a status mark (see the brief).
-- An incorrect answer is still gentle. A harsh alarm-red body can read as a scold to a child, so the incorrect colour needs to be tested and may need to be a softer hue.
-- At rest, the chameleon wears its own non-status colour. It changes colour only on one of the three practice events.

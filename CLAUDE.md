@@ -2,7 +2,7 @@
 
 This repo is character design for the sibling product Sparkles. It is not the product. Do not edit the `sparkles` repo from here.
 
-Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the side characters chosen so far are the chameleon, fruit bat, chick, Juno and Lulu, and the sixth place is open; the otter is a backup. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
+Read `docs/brief.md` before drawing anything. The cast is `docs/cast.md`: one main character and six side characters, none final. The main character is Wisp, a floating firefly on one pair of ribbon wings (the butterfly-winged Wisp is kept as an alternate, for reference); the six side characters are the club at the Observatory on the hill (`docs/world.md`): Hob (a star-nosed mole, the keeper), Tavi (a girl), Grit (a gargoyle), Lyra (a lyrebird), Nox (a cat) and Pim (a fennec fox kit). They speak fixed lines, lip-synced. The rules for how a character may behave are `.claude/skills/character-design/SKILL.md`; read that skill before adding or changing a drawing.
 
 ## Run
 
@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, only the chosen: Wisp on its ribbon wings, Clean, with the Core tail, Snug's thicker arms and Feather eyes, at rest and in every expression; its app icon, Glow · Light with Feather eyes, with its circle and one-colour mark in the primary, black and white; its wordmark, Gabarito 700; its turnaround, flight and sign-up form, and three ways not to look at a password (proposals); the old `#/ribbon` link opens it), **Side characters** (`#/side`), **References** (`#/references`, everything the chosen Wisp was picked from, kept as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals and the wordmark candidates not chosen, the ribbon variants Glow tips and Spirit, the warmer proposals with their eye styles and acting, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, only the chosen: Wisp on its ribbon wings, Clean, with the Core tail, Snug's thicker arms and Feather eyes, at rest and in every expression; its app icon, Glow · Light with Feather eyes, with its circle and one-colour mark in the primary, black and white; its wordmark, Gabarito 700; its turnaround, flight and sign-up form, and three ways not to look at a password (proposals); the old `#/ribbon` link opens it), **Side characters** (`#/side`, the club: their abilities, the lip-sync demo, their eyes, mouths and talking mouths, and the bench), **References** (`#/references`, everything the chosen Wisp was picked from, kept as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals and the wordmark candidates not chosen, the ribbon variants Glow tips and Spirit, the warmer proposals with their eye styles and acting, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -37,17 +37,19 @@ npm start
 | `src/design/nix/firefly-bodies.tsx` | Chonk (reference) |
 | `src/design/nix/firefly-bodies-2.tsx` | Cube and Hood (reference), each on its own body |
 | `src/design/nix/firefly-variants.tsx` | Fuzzy (reference, chibi frame); shared antenna, glow and palette helpers |
-| `src/design/nix/candidates.tsx` | Bench animals: the chameleon (side character); red panda, otter and original firefly (reference) |
-| `src/design/nix/side-candidates.tsx`, `side-puff.tsx`, `side-humans.tsx`, `side-abilities.tsx` | The side characters (fruit bat; chick; Juno, Lulu), the octopus and penguin as reference, and every ability preview |
-| `src/design/nix/side-states.tsx` | The practice states: 5 variants × 4 states for each of the six side characters |
-| `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
+| `src/design/nix/candidates.tsx` | The `Candidate` type every drawing uses; the bench's original firefly (reference) |
+| `src/design/nix/observatory.tsx` | The side characters, the club at the Observatory: Hob, Tavi, Grit, Lyra, Nox, Pim (`OBSERVATORY`), each with its own eyes and a mouth that also draws the talking shapes |
+| `src/design/nix/observatory-abilities.tsx` | Each club member's ability, previewed |
+| `src/design/nix/lip-sync.tsx` | The lip-sync demo: a fixed line said with Web Speech, word-synced (or flap, or silent and timed) |
+| `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, the spark trail, and the talking shapes (`visemes.ts`) |
 | `src/design/nix/NixBenchView.tsx` | The studio pages: `WispPage` (the chosen Wisp only, or the full butterfly reference page), `SidePage` and `ReferencesPage` (the backup, with `CleanProposals`, `BeanSofter` and `WarmerSections`), sharing one bench |
 | `src/App.tsx` | Routes the four pages by hash (and `#/ribbon` to the Wisp page) |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
-| `docs/cast.md` | Status of every character, the one-ability rule |
+| `docs/cast.md` | Status of every character, the one-ability rule, speech and lip-sync |
+| `docs/world.md` | The world (the Observatory on the hill), the six, how they fit, their running jokes and stakes |
 
-The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel. The people among the side candidates are new characters.
+The 52 characters used beside practice items are not in this repo. Neither are the human candidates from the Nix bench, nor Mabel. Tavi is a new character.
 
 ## What this repo does not do
 

@@ -37,7 +37,7 @@ The reference shape for the work in this repo is Duolingo’s: one main characte
 
 ### What this studio keeps
 
-The target is one main character and six side characters, and no character is final yet. The firefly is the natural main character and is being reworked; the chameleon is a confirmed side character; the other candidates are listed in `docs/cast.md`. Each character has one ability no other character has, and it comes from the character itself, never from a prop. See `docs/cast.md`.
+The target is one main character and six side characters, and no character is final yet. Wisp, a firefly, is the main character; the six side characters are the club at the Observatory on the hill (`docs/world.md`), listed in `docs/cast.md`. Each character has one ability no other character has, and it comes from the character itself, never from a prop. See `docs/cast.md`.
 
 The 52 characters that appear beside practice items are not in this studio, and they are not the cast. The human candidates from that same bench — the girls and the young teacher — are not here either, and neither is the later Mabel experiment.
 
@@ -65,10 +65,10 @@ These are the product’s rules. A drawing that breaks one of them cannot move b
 
 **Colours are the product’s.** A character is drawn in the product’s primary and accent, the same scheme for every character; only a character’s ability colour (the firefly’s glow) is its own.
 
-**No large field in a status hue.** A green body must not read as “correct”. The one exception is the chameleon’s colour change, which is semantic on purpose. It is paired with words or a status mark, and it follows the conditions in `docs/cast.md`.
+**No large field in a status hue.** A green body must not read as “correct”. (The studio's one exception, the chameleon’s semantic colour change, left with the chameleon; no character in the cast has a status hue.)
 
 **Decorative by default.** `aria-hidden`. A speech line is real text beside the figure, never drawn onto it.
 
 ## Where the drawings are
 
-`src/design/nix/firefly-variants.tsx` draws the main-character variants; `src/design/nix/candidates.tsx` draws the bench animals. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.
+`src/design/nix/firefly-wisp.tsx` and the `wisp-*.tsx` files draw the main character; `src/design/nix/observatory.tsx` draws the side characters. `src/design/nix/rig/` is the shared rig: joints, poses, expressions, outfits, props. The page is `src/design/nix/NixBenchView.tsx`. Surface colours are `src/styles/studio.css`.

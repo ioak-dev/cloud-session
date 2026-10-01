@@ -7,7 +7,8 @@
  *   form draw ribbons.
  * - Wisp · Butterfly (reference): the same page with Wisp's two pairs of spotted wings, kept as an
  *   alternate main character.
- * - Side characters: the side candidates, their abilities, practice states, eyes and mouths.
+ * - Side characters: the club at the Observatory on the hill — the six, their abilities, their
+ *   eyes and mouths, and the lip-sync demo.
  * - References: the ribbon variants not chosen, the wispy directions, Pip and earlier fireflies.
  */
 import * as React from "react";
@@ -32,17 +33,16 @@ import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
-import { SIDE_ABILITIES, type Ability } from "./side-abilities";
-import { PRACTICE, STATES, type Variant } from "./side-states";
-import { SIDE_CANDIDATES, SIDE_REFERENCE } from "./side-candidates";
-import { SIDE_HUMANS } from "./side-humans";
-import { PUFF_FAMILY } from "./side-puff";
+import { LipSyncDemo } from "./lip-sync";
+import { OBSERVATORY } from "./observatory";
+import { OBSERVATORY_ABILITIES, type Ability } from "./observatory-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { OUTFITS, type OutfitId } from "./rig/outfit";
 import { POSES, type PoseId } from "./rig/poses";
 import { PROPS, type PropId } from "./rig/props";
 import { HEAD_VB } from "./rig/skeleton";
+import { flapAt, VISEMES, type Viseme } from "./rig/visemes";
 
 const TESTS = [
   ["Silhouette", "A solid fill at 48px still reads as this character."],
@@ -60,26 +60,8 @@ const FIREFLIES = new Map(
 const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-hood"].map(
   (id) => FIREFLIES.get(id)!,
 );
-const byId = (list: Candidate[], id: string) => list.find((x) => x.id === id)!;
-const ANIMAL_POOL = [...SIDE_CANDIDATES, ...PUFF_FAMILY, ...CANDIDATES];
-
-/** The side candidates still in the running, with the confirmed chameleon first. */
-const CAST: Candidate[] = [
-  byId(CANDIDATES, "chameleon"),
-  byId(ANIMAL_POOL, "side-bat"),
-  byId(ANIMAL_POOL, "side-chick"),
-  byId(SIDE_HUMANS, "side-juno"),
-  byId(SIDE_HUMANS, "side-lulu"),
-];
-
-/** Animal drawings kept as reference: the penguin, the otter and the bench's original firefly. */
-const ANIMAL_REFERENCE: Candidate[] = [
-  byId(CANDIDATES, "panda"),
-  byId(ANIMAL_POOL, "side-octopus"),
-  ...SIDE_REFERENCE,
-  byId(CANDIDATES, "otter"),
-  byId(CANDIDATES, "firefly"),
-];
+/** The side characters: the club at the Observatory on the hill (`observatory.tsx`). */
+const CLUB: Candidate[] = OBSERVATORY;
 
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
@@ -90,13 +72,9 @@ const ALL: Candidate[] = [
   ...SPIRITS_2,
   ...PIP_FAMILY,
   ...REFERENCE,
-  ...CAST,
-  ...ANIMAL_REFERENCE,
+  ...CANDIDATES,
+  ...CLUB,
 ];
-
-/** Every character with eyes of its own. */
-/** Every candidate has eyes and a mouth of its own. */
-const EYED = CAST;
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -107,31 +85,41 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-/** A side candidate with its ability previewed: drawn over the figure, or the figure hung from a bar. */
+/** Flaps a mouth on a loop, for a preview where the character is talking. */
+function useFlap(on: boolean): Viseme | undefined {
+  const [v, setV] = React.useState<Viseme | undefined>(undefined);
+  React.useEffect(() => {
+    if (!on || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t0 = performance.now();
+    const id = window.setInterval(() => {
+      const t = (performance.now() - t0) / 1000;
+      /* two seconds of talking, then a breath */
+      setV(t % 2.8 < 2 ? flapAt(t) : "rest");
+    }, 50);
+    return () => window.clearInterval(id);
+  }, [on]);
+  return v;
+}
+
+/** A club member with its ability previewed: a move round the figure, an effect behind or over
+ *  it, or an act for the rig. */
 function AbilityTile({ a }: { a: Ability }) {
   const c = ALL.find((x) => x.id === a.id)!;
-  const vb = a.viewBox ?? "0 0 200 300";
+  const viseme = useFlap(!!a.talk);
   return (
     <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-      <div className="relative h-56 w-full">
+      <div className="relative h-56 w-full overflow-hidden">
         {a.behind && (
-          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
-            {a.fx()}
+          <svg viewBox="0 0 200 300" className="absolute inset-0 h-full w-full" aria-hidden>
+            {a.behind()}
           </svg>
         )}
-        <div
-          className={`absolute inset-0 ${a.move ?? ""}`}
-          style={{
-            transform: a.turn || a.scale ? `rotate(${a.turn ?? 0}deg) scale(${a.scale ?? 1})` : undefined,
-            opacity: a.fade,
-            filter: a.hue ? `hue-rotate(${a.hue}deg)` : undefined,
-          }}
-        >
-          <NixFigure c={c} mood={a.mood} pose={a.pose} act={a.act} viewBox={vb} headFx={a.head?.()} className="h-full w-full" />
+        <div className={`absolute inset-0 ${a.move ?? ""}`}>
+          <NixFigure c={c} mood={a.mood} act={a.act} still={a.still} viseme={viseme} className="h-full w-full" />
         </div>
-        {!a.behind && (
-          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
-            {a.fx()}
+        {a.over && (
+          <svg viewBox="0 0 200 300" className="absolute inset-0 h-full w-full" aria-hidden>
+            {a.over()}
           </svg>
         )}
       </div>
@@ -142,92 +130,6 @@ function AbilityTile({ a }: { a: Ability }) {
         <span className="material mt-1 block text-muted-foreground">{a.line}</span>
       </figcaption>
     </figure>
-  );
-}
-
-const KIND_LABEL = { feature: "Its own feature", body: "Face and body", prop: "A prop" } as const;
-
-/** One practice-state variant, animated: the rig plays its act; whole-figure moves, the
- *  chameleon's colour and the props and effects are declared keyframes around it. */
-function StateTile({ c, v }: { c: Candidate; v: Variant }) {
-  const vb = v.viewBox ?? "0 0 200 300";
-  return (
-    <figure className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-      <div className="relative h-48 w-full overflow-hidden" style={{ isolation: "isolate" }}>
-        {v.behind && (
-          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
-            {v.behind()}
-          </svg>
-        )}
-        <div
-          className={`absolute inset-0 ${v.move ?? ""}`}
-          style={v.turn || v.scale ? { transform: `rotate(${v.turn ?? 0}deg) scale(${v.scale ?? 1})` } : undefined}
-        >
-          <div
-            className={`h-full w-full ${v.figureClass ?? ""}`}
-            style={v.tint && !v.tint.half ? { filter: v.tint.filter } : undefined}
-          >
-            <NixFigure c={c} act={v.act} viewBox={vb} headFx={v.head?.()} className="h-full w-full" />
-          </div>
-          {v.tint?.half && (
-            <div className="absolute inset-0" style={{ filter: v.tint.filter, clipPath: "inset(0 0 50% 0)" }}>
-              <NixFigure c={c} act={v.act} viewBox={vb} className="h-full w-full" />
-            </div>
-          )}
-        </div>
-        {v.over && (
-          <svg viewBox={vb} className="absolute inset-0 h-full w-full" aria-hidden>
-            {v.over()}
-          </svg>
-        )}
-      </div>
-      <figcaption className="text-sm">
-        <span className="instrument block text-xs text-muted-foreground">{KIND_LABEL[v.kind]}</span>
-        <span className="material-heading text-foreground">{v.title}</span>
-        <span className="material mt-1 block text-muted-foreground">{v.line}</span>
-      </figcaption>
-    </figure>
-  );
-}
-
-function PracticeStates() {
-  const [who, setWho] = React.useState(PRACTICE[0].id);
-  const sheet = PRACTICE.find((x) => x.id === who) ?? PRACTICE[0];
-  const c = ALL.find((x) => x.id === sheet.id)!;
-  return (
-    <section aria-labelledby="practice-states">
-      <h2 id="practice-states" className="material-heading mt-10 text-lg text-foreground">
-        Practice states — five of each, per character
-      </h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        How each side character reacts while a learner answers, and to the answer: still writing,
-        correct, incorrect (always gentle), partly correct. Five variants each, so it is never the
-        same twice in a row. Each character mixes its own feature, face-and-body acting and a prop,
-        and no two characters share an action or a prop — only faces may repeat.
-      </p>
-      <div className="mt-3">
-        <FilterSet className="flex-wrap">
-          {PRACTICE.map((x) => (
-            <FilterSegment key={x.id} pressed={x.id === who} onClick={() => setWho(x.id)}>
-              {ALL.find((y) => y.id === x.id)?.label}
-            </FilterSegment>
-          ))}
-        </FilterSet>
-      </div>
-      {STATES.map((st) => (
-        <div key={st.id} className="mt-5">
-          <h3 className="material-heading text-base text-foreground">{st.title}</h3>
-          <p className="material m-0 text-sm text-muted-foreground">{st.use}</p>
-          <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {sheet.variants
-              .filter((v) => v.state === st.id)
-              .map((v) => (
-                <StateTile key={v.title} c={c} v={v} />
-              ))}
-          </div>
-        </div>
-      ))}
-    </section>
   );
 }
 
@@ -559,6 +461,7 @@ const REFERENCE_GROUPS: Group[] = [
   ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
   ["Reference — Pip", PIP_FAMILY],
   ["Reference — inspiration for the main or a side character", REFERENCE],
+  ["Reference — the bench's original firefly", CANDIDATES],
 ];
 
 /** The main character's page: Wisp as drawn (`pairs`), or its ribbon clone (`ribbon`). */
@@ -1037,34 +940,34 @@ export function SidePage() {
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters</h1>
+      <h1 className="display mt-1">Side characters — the Observatory on the hill</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Six places beside Wisp, each a different species or a person, each with one ability no
-        other character has. The chameleon is confirmed; the fruit bat, chick, Juno and Lulu are
-        chosen so far, and the sixth place is open.
+        Above the town is a hill, and on it an old round observatory with a dome that creaks open.
+        When the sky darkens a club meets there to look — at stars, at the town, at anything they are
+        curious about. Wisp lights the path up and is the first light in the sky. Six members, each a
+        different kind, each with one ability of its own, and each with its own voice: Hob the
+        keeper, Tavi, Grit, Lyra, Nox, and Pim, the newest. Proposals; none is final.
       </p>
       <Tests />
 
-      <h2 className="material-heading mt-10 text-lg text-foreground">
-        Side candidates and their abilities
-      </h2>
+      <h2 className="material-heading mt-10 text-lg text-foreground">The club and their abilities</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The side candidates still in the running, each with its ability — something that comes
-        from the character itself, its body and its nature, never a prop or an outside object. The
-        chameleon is confirmed; the rest compete for the other five places.
+        Each ability comes from the character itself, its body and its nature, never a prop. None
+        glows, flies or leaves a trail: that is Wisp's.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {SIDE_ABILITIES.map((a) => (
+        {OBSERVATORY_ABILITIES.map((a) => (
           <AbilityTile key={a.id} a={a} />
         ))}
       </div>
 
-      <PracticeStates />
+      <LipSyncDemo cast={CLUB} />
 
       <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        No two characters share eyes or a mouth. Each has its own eye shape, colour, shine, lids
-        and brows, and its own mouth or lips, beak or muzzle, and draws every expression with them.
+        No two characters share eyes or a mouth: a squint under bushy brows, keen almond eyes, round
+        eyes under a stone ledge, lashes and stage make-up, slit pupils under heavy lids, shy eyes
+        that look away. Each draws every expression with them.
       </p>
       <div className="mt-3 overflow-x-auto">
         <table className="border-separate border-spacing-1">
@@ -1079,11 +982,9 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {EYED.map((x) => (
+            {CLUB.map((x) => (
               <tr key={x.id}>
-                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
-                  {x.label}
-                </th>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {MOODS.map((m) => (
                   <td key={m.id} className="rounded-[var(--radius)] bg-muted">
                     <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
@@ -1095,12 +996,40 @@ export function SidePage() {
         </table>
       </div>
 
-      <Bench
-        groups={[
-          ["Side candidates", CAST],
-          ["Reference — other animals", ANIMAL_REFERENCE],
-        ]}
-      />
+      <h2 className="material-heading mt-10 text-lg text-foreground">Talking mouths — eight shapes each</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The shapes a mouth makes while it talks, each in the character's own mouth: lips, a beak, a
+        stone jaw that drops on its hinge, a cat's ω. Duolingo draws 20+ per character from phoneme
+        timings; eight are enough for word-synced speech.
+      </p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {VISEMES.map((v) => (
+                <th key={v.id} className="instrument text-xs font-normal text-muted-foreground" title={v.sounds}>
+                  {v.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {CLUB.map((x) => (
+              <tr key={x.id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
+                {VISEMES.map((v) => (
+                  <td key={v.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood="neutral" viseme={v.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Bench groups={[["The club", CLUB]]} />
     </>
   );
 }

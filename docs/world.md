@@ -1,10 +1,10 @@
 # World
 
-**Status: the world is chosen — the Observatory on the hill (2026-10-01).** The six below are a proposal; nothing is drawn.
+**Status: the world is chosen — the Observatory on the hill (2026-10-01).** The six below are approved and drawn (`src/design/nix/observatory.tsx`), with a lip-sync demo (`lip-sync.tsx`); see `docs/cast.md` for how each is drawn.
 
 ## Decided (2026-10-01)
 
-- **All six side characters are new.** None of the existing side characters (drawn or proposed) carries over: not their species, roles, abilities, faces or running jokes. The new six are designed together, around the world, fresh. The old drawings are removed when the redraw starts. Wisp, the main character, is not affected.
+- **All six side characters are new.** None of the existing side characters (drawn or proposed) carries over: not their species, roles, abilities, faces or running jokes. The new six are designed together, around the world, fresh. The old drawings were removed when the six were drawn. Wisp, the main character, is not affected.
 - **The characters speak.** Fixed lines, with their mouths moving to the words (lip-sync), each in a voice of its own. What they may say is bounded below.
 
 The Lantern Tree proposal (a hollow-tree reading room, built around the old five) is superseded by the first decision.
@@ -45,7 +45,7 @@ Why it fits best:
 
 The runner-up was the travelling caravan: the strongest picture of progress, but nowhere to come home to.
 
-## The six — proposal
+## The six (approved 2026-10-01)
 
 Every one is new. Each has one ability from its own body; none glows, flies with a trail, or makes light (that is Wisp's). None is an owl, which is Duolingo's.
 
@@ -79,10 +79,10 @@ Every one is new. Each has one ability from its own body; none glows, flies with
 
 Hob wants the club to love the sky; Tavi wants to be first; Grit wants to be brave enough to leave its corner; Lyra wants to be liked as itself; Nox wants company without asking; Pim wants to belong. From the learner, each wants something that lives in the story, never in a reaction: Hob wants you to look, Tavi a race, Grit a friend to go with, Lyra an audience, Nox someone who doesn't fuss, Pim someone new beside it.
 
-### To settle before drawing
+### Settled in the drawing
 
-- **Two sets of pointed ears.** Nox and Pim are both small mammals with pointed ears; Pim's ears must be enormous and Nox's small and round-tipped so they part at 32px.
-- **Hob's eyes.** A mole's eyes are tiny; his brows and nose must carry his expressions.
+- **Two sets of pointed ears.** Pim's ears are bigger than its head and swept out; Nox's are small and round-tipped, so they part at 32px.
+- **Hob's eyes.** Tiny bead eyes in soft sockets; big bushy pale brows and the star carry his expressions.
 - **Lyra's mimicry and the brief.** It only ever mimics fixed lines (another character's own line, in that character's voice); never anything generated.
 - **Tavi's speed.** A blur and a skid, kept small: warmth must not make the product loud.
 
@@ -108,7 +108,7 @@ So exact, phoneme-level sync is not possible with Web Speech. What is possible, 
 | **Word-synced** (recommended) | On each word `boundary`, play a short run of visemes guessed from the word's letters (open vowels wide, *o*/*u*/*w* round, *m*/*b*/*p* closed, *f*/*v* lip on teeth), spread over the word's estimated length from its syllables and the utterance's rate; close at commas, full stops and `end` | Reads as saying these words; each word starts on time | Falls back to Flap when a voice fires no boundaries |
 | Exact | A cloud voice that returns viseme timings (e.g. Azure Speech viseme events, Amazon Polly speech marks) instead of Web Speech | As Duolingo | A change to Sparkles' voice, with cost and latency; Sparkles' decision |
 
-**What the rig needs.** A mouth kit today draws one shape per mood. Each character's kit gains a small viseme set — about eight to start (rest, closed *m/b/p*, small open, wide open, *e*, round *o/u*, *f/v*, *l/th*) — drawn in that character's own mouth (beak, muzzle, stone jaw, lips) and laid over the current mood, so a worried character still talks worried. The talking track is declared keyframes on the clock, like any motion. Under reduced motion, and when the guide is stilled, the body holds its rest pose; the mouth may still move, as an expression may. Each character's voice is a Web Speech voice preference plus a fixed pitch and rate; the voice itself still varies by device.
+**What the rig does.** Each character's mouth kit draws eight talking shapes — rest, *m/b/p*, *a/i*, *e*, *o*, *u/w*, *f/v*, *l/th* (`rig/visemes.ts`) — in its own mouth (beak, muzzle, stone jaw, lips), coloured by the current mood, so a worried character still talks worried. The demo (`lip-sync.tsx`) plays the word-synced level, falls back to the flap, and can time the words silently. The talking track is declared keyframes on the clock, like any motion. Under reduced motion, and when the guide is stilled, the body holds its rest pose; the mouth may still move, as an expression may. Each character's voice is a Web Speech voice preference plus a fixed pitch and rate; the voice itself still varies by device.
 
 **Against the brief.** The brief says speech is fixed product copy and never generated text, because a character voicing model output would skip the review gate. Sparkles' voiced scenarios can be lip-synced if they are text an editor has approved — then no gate is skipped — but that widens the brief's rule, so it is recorded here and has to be confirmed in Sparkles.
 
