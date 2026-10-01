@@ -1,6 +1,52 @@
 # World
 
-**Status: the world is chosen — the Observatory on the hill (2026-10-01).** The six below are approved and drawn (`src/design/nix/observatory.tsx`), with a lip-sync demo (`lip-sync.tsx`); see `docs/cast.md` for how each is drawn.
+**Status: open again.** The Observatory on the hill (below) was chosen and its six drawn, then set aside: the user asked for a different world and characters. Bun (a rabbit) and Bean (a baby hippo) are kept as candidates (“ok-ok”, `side-garden.tsx`); the world is now chosen together with a full cast of six around them. The proposals are in “Round three” just below; the Observatory sections after it are kept for reference.
+
+## Round three — worlds for a full cast with Bun and Bean (proposals, none chosen)
+
+Each keeps Bun and Bean and adds four. A grown-up, a newcomer like the learner, and two pairs that play off each other, as before.
+
+### 1. Lantern Pond (recommended)
+
+A pond at the edge of town where everyone gathers at dusk. Fireflies live by ponds, so Wisp is at home here: it lights the lily lanterns along the bank. A level unlock is a lily opening, lit, once.
+
+| Character | Role | Ability |
+|---|---|---|
+| **Bun**, a rabbit | Self-appointed captain of the pond; bossy, loud, can't admit she's wrong | Thump |
+| **Bean**, a baby hippo | Lives in the pond; sleepy, sweet, always hungry | Yawn |
+| **Marlowe**, an old heron | The grown-up who keeps the pond school: tall, thin, patient, dry | Long reach: his neck stretches to reach anything |
+| **Rory**, a beaver | The maker; builds a new contraption for every problem, and some that aren't | Gnaw: chews anything into shape |
+| **Mina**, a girl of about eight | Comes after school; the learner's age and the learner's friend | Giggle: a laugh so catching everyone joins in |
+| **Ollie**, a snail | The newcomer, slow and careful, carries home everywhere | Tuck: pulls into its shell and peeks out |
+
+Pairs: Bun bosses, Rory ignores her and builds anyway; Bean naps, Mina wakes it with a giggle. Marlowe and Ollie are the slow ones who notice what the fast ones miss.
+
+### 2. The Night Garden
+
+The rooftop glasshouse: every lesson a seed, an unlock a bloom, Wisp the garden's moon. Bean lives in the greenhouse's lily tank.
+
+| Character | Role | Ability |
+|---|---|---|
+| **Bun** | Runs the vegetable beds like a general | Thump |
+| **Bean** | The lily tank's resident; naps in the warm | Yawn |
+| **Thistle**, a hedgehog | The head gardener and the grown-up: fussy, tender | Curl |
+| **Bodhi**, a boy of about nine | Muddy knees, always first into the beds | Bounce |
+| **Ollie**, a snail | The newest and slowest | Tuck |
+| **Mischa**, a raccoon | The night visitor who “borrows” things | Nimble hands |
+
+### 3. The Moonlight Caravan
+
+A painted wagon touring a town each night; each lesson a stop, an unlock the next town lighting on the map; Wisp the road lamp.
+
+| Character | Role | Ability |
+|---|---|---|
+| **Bun** | The caravan's organiser, clipboard energy without the clipboard | Thump |
+| **Bean** | Rides on the roof; naps between towns | Yawn |
+| **Bo**, a yak | Pulls the wagon; the slow, steady grown-up | Shake |
+| **Ines**, a girl acrobat | Fearless and showy | Stretch |
+| **Coil**, a little snake | The newcomer; shy and clever | Knot |
+| **Duchess**, a goose | Grand and proper — Bun's rival for who is in charge | Honk |
+
 
 ## Decided (2026-10-01)
 
