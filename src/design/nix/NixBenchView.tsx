@@ -768,11 +768,25 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           [ribbon ? `Main character — Wisp · Ribbon, ${v.label}` : "Main character — Wisp", [line.main]],
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
-          ...REFERENCE_GROUPS,
         ]}
       />
     </RibbonFormContext.Provider>
     </WingStyleContext.Provider>
+  );
+}
+
+/** The reference page: the drawings kept beside Wisp, moved off the Wisp pages. */
+export function ReferencesPage() {
+  return (
+    <>
+      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
+      <h1 className="display mt-1">References</h1>
+      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+        Drawings kept as reference, not candidates: the other wispy directions, Pip and the earlier
+        fireflies. Wisp and its ribbon wings are on their own pages.
+      </p>
+      <Bench groups={REFERENCE_GROUPS} />
+    </>
   );
 }
 
