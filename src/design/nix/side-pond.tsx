@@ -1,4 +1,4 @@
-import type { Candidate, Ctx } from "./candidates";
+import type { Candidate } from "./candidates";
 import { palette } from "./firefly-variants";
 import {
   ANIMAL_OUTFITS,
@@ -25,8 +25,8 @@ import {
   wave,
 } from "./observatory";
 import type { Mood } from "./rig/face";
-import { EYE_WHITE, line, OpenMouth, TONGUE_PINK, type MouthKit } from "./rig/eyes";
-import { CHIBI, J, pivot, type Body } from "./rig/skeleton";
+import { EYE_WHITE, line, OpenMouth, TONGUE_PINK, turnAt, type MouthKit } from "./rig/eyes";
+import { pivot } from "./rig/skeleton";
 import { SHAPE } from "./rig/visemes";
 import { GARDEN } from "./side-garden";
 import { C } from "./theme";
@@ -34,145 +34,128 @@ import { C } from "./theme";
 /**
  * Lantern Pond (`docs/world.md`): a pond at the edge of town where everyone gathers at dusk, and
  * Wisp lights the lily lanterns along the bank. Bun and Bean are in `side-garden.tsx`; this file
- * draws the other four — Marlowe, an old heron; Ines, a girl acrobat; Mina, a girl of about eight;
- * Ollie, a snail — on the cute frame, to `docs/character-guidelines.md`.
+ * draws the other four — Otis, a moose; Ines, a girl acrobat; Mina, a girl of about eight; Noodle,
+ * a platypus kit — on the cute frame, to `docs/character-guidelines.md`.
  */
 
-/* ——— Marlowe, an old heron: the grown-up who keeps the pond school. Tall and thin ——— */
+/* ——— Otis, a moose: the grown-up who keeps the pond school. A gentle giant ——— */
 
-const HERON = mix(C.mid, "#8f98a3", 50);
-const HERON_SHADE = mix(C.deep, "#5f6670", 45);
-const HERON_DARK = mix(C.deep, INK, 55);
-const BEAK = C.accent;
-const BEAK_SHADE = C.accentDeep;
+const MOOSE = mix(C.deep, "#86593f", 28);
+const MOOSE_SHADE = mix(C.deep, "#553626", 30);
+const MOOSE_MUZZLE = mix(C.soft, "#d9b496", 35);
+const MOOSE_NOSE = mix(C.deep, "#6e4636", 28);
+const ANTLER = "#ece0c6";
+const ANTLER_SHADE = "#cdbb97";
+const MOOSE_BROW = "#efe4cf";
 
-/** Marlowe stands on his own body: long thin legs, an egg of a body with a tail, an S of a neck,
- *  a head on top — the one tall shape in a cast of round ones. */
-const MARLOWE_TORSO_FIT = "translate(100 176) scale(1.05 0.7) translate(-100 -148)";
-const MARLOWE_UNFIT = "translate(100 148) scale(0.95238 1.42857) translate(-100 -176)";
-
-const MARLOWE: Body = {
-  ...CHIBI,
-  id: "marlowe",
+const OTIS = cute("otis", {
+  k: 1.26,
+  neck: 196,
+  torso: "M72 150 Q100 136 128 150 Q144 166 142 194 Q138 224 100 224 Q62 224 58 194 Q56 166 72 150 Z",
+  w: { upper: 14, fore: 12, thigh: 11, shin: 9.5, hand: 7.6, cloth: 1.2 },
   j: {
-    ...J,
-    root: [100, 284],
-    torso: [100, 212],
-    head: [100, 148],
-    shoulderL: [84, 190],
-    elbowL: [79, 206],
-    wristL: [78, 220],
-    shoulderR: [116, 190],
-    elbowR: [121, 206],
-    wristR: [122, 220],
-    hipL: [95, 222],
-    kneeL: [94, 248],
-    footL: [93, 273],
-    hipR: [105, 222],
-    kneeR: [106, 248],
-    footR: [107, 273],
-    tail: [128, 214],
-    earL: [116, 84],
-    earR: [116, 84],
+    earL: [76, 82],
+    earR: [124, 82],
+    shoulderL: [80, 206],
+    elbowL: [74, 222],
+    wristL: [72, 238],
+    shoulderR: [120, 206],
+    elbowR: [126, 222],
+    wristR: [128, 238],
+    hipL: [88, 244],
+    kneeL: [87, 259],
+    footL: [86, 273],
+    hipR: [112, 244],
+    kneeR: [113, 259],
+    footR: [114, 273],
   },
-  headFit: "translate(100 148) scale(1.22) translate(-100 -150)",
-  torsoFit: MARLOWE_TORSO_FIT,
-  hemFit: MARLOWE_TORSO_FIT,
-  handsFit: "translate(100 196) scale(0.85) translate(-100 -158)",
-  packFit: "translate(0 2)",
-  torso: "M80 152 Q100 140 122 150 Q138 160 142 178 L156 200 Q136 204 126 210 Q112 222 96 222 Q78 218 74 196 Q70 168 80 152 Z",
-  headVB: "30 34 156 156",
-  w: { upper: 12, fore: 11, thigh: 5.2, shin: 4.6, hand: 5.6, cloth: 0.9 },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
-};
-
-function MarloweHead() {
-  return (
-    <g>
-      {/* two long plumes from the back of his crown, on a joint so they lift and droop */}
-      <g data-joint="earL" style={pivot("earL", MARLOWE.j)}>
-        <path d="M112 80 C130 70 150 70 168 80" {...line(HERON_DARK, 5)} />
-        <path d="M114 86 C130 80 146 82 160 92" {...line(HERON_DARK, 3.4)} />
-      </g>
-      <Two d={blob(100, 106, 37, 34, 1.04)} fill={HERON} shade={HERON_SHADE} k={2} />
-      {/* a white face and throat, and the dark stripe over each eye running back into the plumes */}
-      <path d={blob(100, 118, 30, 22, 1.04)} fill={FACE} />
-      {sides.map(([side, s]) => (
-        <path key={side} d={`M${mirror(s, 92)} 94 Q${mirror(s, 78)} 88 ${mirror(s, 64)} 96 Q${mirror(s, 78)} 92 ${mirror(s, 90)} 98 Z`} fill={HERON_DARK} />
-      ))}
-    </g>
-  );
-}
-
-/** In the torso's space: his S of a neck, white down the front, and the long plumes hanging from
- *  its base like a beard. */
-function MarloweNeck() {
-  return (
-    <g transform={MARLOWE_UNFIT}>
-      <path d="M91 194 C84 176 98 166 92 138 L108 138 C114 166 102 176 110 194 Z" fill={HERON} />
-      <path d="M97 192 C92 178 102 168 98 140 L104 140 C108 168 100 178 104 192 Z" fill={FACE} />
-      <g {...line(FACE, 2.4)}>
-        <path d="M96 190 Q94 202 90 212" />
-        <path d="M100 191 Q100 204 98 216" />
-        <path d="M104 190 Q106 202 108 212" />
-      </g>
-    </g>
-  );
-}
-
-const marloweEyes = eyesOf({
-  rx: 7.8,
-  ry: 8.4,
-  fill: mix(C.accent, "white", 35),
-  pupil: { r: 3.6 },
-  shine: 2,
-  lid: HERON,
-  closed: INK,
-  browY: 14,
-  /* long, drooping old-professor brows */
-  brow: ({ x, y, s, raise, tilt }) => {
-    const by = y - raise;
-    return <path d={`M${x - s * 8} ${by - 1} Q${x} ${by - 3.4} ${x + s * 10} ${by + 3.4}`} {...line(FACE, 3.4)} transform={`rotate(${s * tilt} ${x} ${by})`} />;
-  },
-  /* dry: lids half down, the right brow a little higher */
-  rest: { top: 0.36, raise: 1, browTilt: -4, k: [1, 1.05] },
+  headVB: "4 22 192 192",
 });
 
-/** Marlowe: a long beak held off to one side, so his face reads three-quarter; a ridge down the
- *  top, a nostril, and a lower half that drops on its hinge to talk. A smile shows at the gape. */
-const marloweMouth: MouthKit = ({ mood, y, viseme }) => {
-  const beak = (open: number, smile = 0) => (
+/** One broad, flat antler with rounded tines along its top edge; drawn for the left, mirrored. */
+function Antler({ s }: { s: -1 | 1 }) {
+  const m = (x: number) => mirror(s, x);
+  const d = `M${m(82)} 82 C${m(76)} 74 ${m(68)} 68 ${m(60)} 64 C${m(48)} 66 ${m(36)} 62 ${m(30)} 52 C${m(36)} 52 ${m(40)} 50 ${m(40)} 44 C${m(46)} 48 ${m(50)} 46 ${m(50)} 38 C${m(56)} 44 ${m(60)} 42 ${m(62)} 34 C${m(68)} 42 ${m(70)} 50 ${m(70)} 56 C${m(76)} 62 ${m(82)} 70 ${m(88)} 78 Z`;
+  return (
     <g>
-      {open > 0.4 && <path d={`M94 ${y + 1} L144 ${y + 20} L95 ${y + 4 + open}`} fill={MOUTH_IN} />}
-      <path
-        d={`M94 ${y + 2} Q120 ${y + 12 + open * 1.4} 142 ${y + 22 + open * 0.6} Q144 ${y + 24 + open * 0.6} 140 ${y + 24 + open * 0.6} Q118 ${y + 18 + open * 1.4} 95 ${y + 7 + open} Z`}
-        fill={BEAK_SHADE}
-      />
-      <path
-        d={`M90 ${y - 6} Q100 ${y - 10} 110 ${y - 6} Q128 ${y + 2} 148 ${y + 18} Q151 ${y + 22} 146 ${y + 21} Q124 ${y + 10} 92 ${y + 2} Q88 ${y - 2} 90 ${y - 6} Z`}
-        fill={BEAK}
-      />
-      <path d={`M100 ${y - 6} Q122 ${y + 1} 142 ${y + 15}`} {...line(BEAK_SHADE, 1.4)} opacity={0.55} />
-      <path d={`M104 ${y - 3} l6 2`} {...line(BEAK_SHADE, 1.6)} />
-      {smile !== 0 && <path d={`M91 ${y + 1} q-4 ${smile * 1.2} -7 ${smile * 0.4}`} {...line(HERON_SHADE, 2)} />}
+      <path d={d} fill={ANTLER_SHADE} transform={`translate(${s * -1.4} 1.6)`} />
+      <path d={d} fill={ANTLER} />
     </g>
   );
-  if (viseme) return beak(SHAPE[viseme].h * 7, (SMILE[mood] ?? 0) > 1 ? -2 : 0);
+}
+
+function OtisHead() {
+  return (
+    <g>
+      {sides.map(([side, s]) => (
+        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, OTIS.j)}>
+          <Antler s={s} />
+          {/* a long soft ear under each antler */}
+          <path d={`M${mirror(s, 72)} 92 Q${mirror(s, 52)} 86 ${mirror(s, 46)} 96 Q${mirror(s, 56)} 104 ${mirror(s, 72)} 102 Z`} fill={MOOSE_SHADE} />
+          <path d={`M${mirror(s, 70)} 94 Q${mirror(s, 56)} 90 ${mirror(s, 51)} 96 Q${mirror(s, 58)} 100 ${mirror(s, 70)} 100 Z`} fill={MOOSE_MUZZLE} />
+        </g>
+      ))}
+      {/* the brow, then the long drooping muzzle, then the big soft nose that overhangs it */}
+      <Two d={blob(100, 100, 32, 28, 1.02)} fill={MOOSE} shade={MOOSE_SHADE} k={2} />
+      <Two d="M72 100 C70 122 74 140 82 150 C90 158 110 158 118 150 C126 140 130 122 128 100 Z" fill={MOOSE} shade={MOOSE_SHADE} k={1.6} />
+      <path d={blob(100, 146, 23, 14, 1.06)} fill={MOOSE_NOSE} />
+      <path d={blob(99, 144, 21, 12, 1.06)} fill={MOOSE_MUZZLE} />
+      <path d="M90 139 q-3 2 -1 5 M110 139 q3 2 1 5" {...line(MOOSE_NOSE, 2.6)} />
+      {/* the bell of fur under his chin */}
+      <path d="M96 164 Q94 176 100 180 Q106 176 104 164 Z" fill={MOOSE_SHADE} />
+    </g>
+  );
+}
+
+const otisEyes = eyesOf({
+  rx: 7.6,
+  ry: 8.6,
+  fill: INK,
+  iris: { r: 5.8, color: mix(C.accentDeep, "#6b4a3a", 50) },
+  pupil: { r: 0 },
+  shine: 2.4,
+  lid: MOOSE,
+  closed: MOOSE_BROW,
+  browY: 14,
+  /* big shaggy pale brows, easy to read on dark fur */
+  brow: ({ x, y, s, raise, tilt }) => {
+    const by = y - raise;
+    return (
+      <path
+        d={`M${x - 9} ${by + 2.6} Q${x - 4} ${by - 4} ${x + 3} ${by - 3} Q${x + 8} ${by - 3.4} ${x + 10} ${by + 1} Q${x + 2} ${by + 1} ${x - 9} ${by + 2.6} Z`}
+        fill={MOOSE_BROW}
+        transform={turnAt(s, tilt, x, by)}
+      />
+    );
+  },
+  /* calm: lids half down, brows soft */
+  rest: { top: 0.34, raise: 1, browTilt: 6 },
+});
+
+/** Otis: a wide soft mouth under his nose; it talks slowly and smiles with one side first. */
+const otisMouth: MouthKit = ({ mood, y, viseme }) => {
+  if (viseme) return talk(viseme, mood, y, { W: 11, H: 7, inside: MOUTH_IN, lip: MOOSE_NOSE, lipW: 2.6, teeth: EYE_WHITE });
+  const c = MOOSE_NOSE;
   switch (mood) {
     case "happy":
-      return beak(1.6, -2.4);
+      return <OpenMouth d={dMouth(y, 10, 5)} fill={MOUTH_IN} tongue={[100, y + 7, 4.6, 2.4]} />;
     case "delighted":
-      return beak(6, -3);
+      return <OpenMouth d={dMouth(y - 1, 12, 8)} fill={MOUTH_IN} teeth={[92, y - 2, 16, 3]} tongue={[100, y + 11, 5.4, 3]} />;
     case "curious":
-      return beak(2.4);
-    case "oops":
-      return beak(4, 2);
+      return <ellipse cx={101} cy={y + 2} rx={3} ry={3.6} fill={MOUTH_IN} />;
+    case "thinking":
+      return <path d={`M92 ${y + 1} Q100 ${y + 2} 110 ${y - 2}`} {...line(c, 2.6)} />;
+    case "focused":
+      return <path d={`M93 ${y + 1} L107 ${y + 1}`} {...line(c, 2.6)} />;
     case "worried":
-      return beak(0, 2.4);
+      return <path d={wave(y + 2, 8, 2.4)} {...line(c, 2.6)} />;
+    case "oops":
+      return <OpenMouth d={`M92 ${y + 4} Q100 ${y - 3} 108 ${y + 4} Q100 ${y + 2} 92 ${y + 4} Z`} fill={MOUTH_IN} />;
     case "wink":
-      return beak(0, -2.4);
+      return <path d={`M90 ${y} Q100 ${y + 6} 110 ${y - 2}`} {...line(c, 2.6)} />;
     default:
-      return beak(0);
+      /* a slow half-smile, the right side first */
+      return <path d={`M91 ${y + 1} Q100 ${y + 4} 109 ${y - 1.6}`} {...line(c, 2.6)} />;
   }
 };
 
@@ -180,8 +163,8 @@ const marloweMouth: MouthKit = ({ mood, y, viseme }) => {
 
 const INES_SKIN = "#b9774c";
 const INES_SHADE = "#9a5d36";
-const INES_HAIR = "#2b1d2a";
-const INES_HAIR_HI = "#54394d";
+const INES_HAIR = "#3d2636";
+const INES_HAIR_HI = "#7a5670";
 const INES_LIP = "#7a3a33";
 
 const palInes = palette(INES_SKIN, INES_SKIN, INES_SKIN, INES_SHADE, {
@@ -283,8 +266,8 @@ const inesMouth: MouthKit = ({ mood, y, viseme }) => {
 
 const MINA_SKIN = "#ebbd94";
 const MINA_SHADE = "#d49d71";
-const MINA_HAIR = "#4a2a1a";
-const MINA_HAIR_HI = "#7a4a30";
+const MINA_HAIR = "#5c3521";
+const MINA_HAIR_HI = "#94603f";
 const MINA_LIP = "#b0584c";
 
 const palMina = palette(MINA_SKIN, MINA_SKIN, MINA_SKIN, MINA_SHADE, {
@@ -389,91 +372,103 @@ const minaMouth: MouthKit = ({ mood, y, viseme }) => {
   }
 };
 
-/* ——— Ollie, a snail: the newcomer. A spiral ——— */
+/* ——— Noodle, a platypus kit: the newcomer. A bit of everything ——— */
 
-const SNAIL = mix(C.accent, "#d9b8a0", 40);
-const SNAIL_SHADE = mix(C.accentDeep, "#b08d74", 45);
-const SHELL = C.primary;
-const SHELL_SHADE = C.deep;
+const PLAT = mix(C.accentDeep, "#8a5a3c", 40);
+const PLAT_SHADE = mix(C.accentDeep, "#5e3a26", 40);
+const PLAT_LIGHT = mix(C.accent, "#f1dcc0", 35);
+const BILL = mix(C.deep, "#3e4452", 50);
+const BILL_LIGHT = mix(C.primary, "#6a7284", 45);
 
-const OLLIE = cute("ollie", {
-  k: 1.04,
-  neck: 258,
-  torso: "M86 186 Q100 180 114 186 L116 218 Q100 224 84 218 Z",
-  headVB: "22 112 156 156",
+const NOODLE = cute("noodle", {
+  k: 1.42,
+  neck: 206,
+  torso: "M78 152 Q100 142 122 152 Q136 166 134 194 Q130 224 100 224 Q70 224 66 194 Q64 166 78 152 Z",
+  w: { upper: 13, fore: 12, thigh: 15, shin: 14, hand: 8.6, cloth: 1.15 },
+  j: { tail: [100, 256] },
+  headVB: "14 36 172 172",
 });
 
-function OllieBehind() {
-  return (
-    <g transform={UNFIT}>
-      {/* the shell on its back, a spiral, peeking out to the right of its head */}
-      <circle cx={146} cy={214} r={50} fill={SHELL_SHADE} />
-      <circle cx={143} cy={211} r={48} fill={SHELL} />
-      <path d="M143 211 m0 -7 a7 7 0 1 1 -7 7 a14 14 0 1 1 14 14 a24 24 0 1 1 -24 -24 a34 34 0 1 1 34 34" {...line(C.hi, 4.4)} />
-      {/* its foot: a soft puddle with a tail to the right */}
-      <path d="M40 284 Q36 260 66 256 L150 254 Q182 252 192 274 Q194 284 176 284 Z" fill={SNAIL_SHADE} />
-      <path d="M44 282 Q40 262 68 258 L150 256 Q178 255 188 274 Q188 280 176 281 Z" fill={SNAIL} />
-    </g>
-  );
-}
-
-/** Its eyes ride on two stalks; the stalks droop when it is worried and stand up when it is
- *  delighted, the snail's own way of acting. */
-const OLLIE_STALK: Partial<Record<Mood, number>> = { worried: 10, oops: 14, delighted: -6, happy: -3, curious: -4, thinking: 4 };
-
-function OllieHead({ mood }: Ctx) {
-  const d = (mood && OLLIE_STALK[mood]) ?? 2;
+function NoodleHead() {
   return (
     <g>
-      {sides.map(([side, s]) => (
-        <path key={side} d={`M${mirror(s, 90)} 84 Q${mirror(s, 86 - d * 0.4)} ${66 + d * 0.3} ${mirror(s, 84)} ${50 + d * 0.2}`} {...line(SNAIL, 8)} />
-      ))}
-      <Two d={blob(100, 112, 40, 36, 1.08)} fill={SNAIL} shade={SNAIL_SHADE} k={2} />
-      {/* its own blush, low on the cheeks */}
-      <ellipse cx={72} cy={124} rx={7} ry={4.4} fill="#ff9fb5" opacity={0.55} />
-      <ellipse cx={128} cy={124} rx={7} ry={4.4} fill="#ff9fb5" opacity={0.55} />
+      <Two d={blob(100, 108, 41, 37, 1.08)} fill={PLAT} shade={PLAT_SHADE} k={2.2} />
+      {/* a tuft on top, and the pale patches round its eyes */}
+      <path d="M92 74 Q94 64 100 70 Q104 62 108 72" fill={PLAT} />
+      <ellipse cx={81} cy={104} rx={12} ry={11} fill={PLAT_LIGHT} />
+      <ellipse cx={119} cy={104} rx={12} ry={11} fill={PLAT_LIGHT} />
     </g>
   );
 }
 
-const ollieEyes = eyesOf({
-  rx: 11,
-  ry: 12.4,
+function NoodleBehind() {
+  return (
+    <g transform={UNFIT}>
+      <g data-joint="tail" style={pivot("tail", NOODLE.j)}>
+        {/* a flat paddle of a tail, out to the right */}
+        <ellipse cx={142} cy={262} rx={30} ry={14} fill={PLAT_SHADE} transform="rotate(-12 142 262)" />
+        <ellipse cx={140} cy={259} rx={28} ry={12} fill={PLAT} transform="rotate(-12 140 259)" />
+        <path d="M122 260 L156 252 M126 266 L160 258" {...line(PLAT_SHADE, 1.6)} opacity={0.6} />
+      </g>
+    </g>
+  );
+}
+
+const noodleEyes = eyesOf({
+  rx: 8.6,
+  ry: 9.8,
   fill: INK,
-  iris: { r: 8, color: mix(C.primary, INK, 50) },
+  iris: { r: 6.4, color: mix(C.primary, INK, 55) },
   pupil: { r: 0 },
-  shine: 3.6,
-  lid: SNAIL,
+  shine: 3.2,
+  lid: PLAT_LIGHT,
   closed: INK,
-  browY: 18,
-  brow: dashBrow(SNAIL_SHADE, 3, 4),
-  /* shy and careful: brows up at the middle */
-  rest: { raise: 1, browTilt: 14, look: [0, 1] },
+  browY: 15,
+  brow: dashBrow(PLAT_SHADE, 3, 4.4),
+  /* unsure: brows up at the middle, looking up at you */
+  rest: { raise: 1, browTilt: 12, look: [0.6, -1.2] },
 });
 
-/** Ollie: a small soft mouth; it opens round and slow. */
-const ollieMouth: MouthKit = ({ mood, y, viseme }) => {
-  const c = SNAIL_SHADE;
-  if (viseme) return talk(viseme, mood, y, { W: 9, H: 8, inside: MOUTH_IN, lip: c, lipW: 2.6 });
+/** Noodle's bill is its mouth: a wide, flat, rounded duck's bill. It talks by opening it — the
+ *  lower half drops — and smiles at the corners where the bill meets its cheeks. */
+const noodleMouth: MouthKit = ({ mood, y, viseme }) => {
+  const bill = (open: number, smile = 0, wide = 1) => {
+    const w = 26 * wide;
+    return (
+      <g>
+        {open > 0.5 && <path d={`M${100 - w + 3} ${y} Q100 ${y + 2} ${100 + w - 3} ${y} L${100 + w - 6} ${y + open} Q100 ${y + open + 4} ${100 - w + 6} ${y + open} Z`} fill={MOUTH_IN} />}
+        {/* lower bill */}
+        <path d={`M${100 - w + 2} ${y + open} Q100 ${y + open + 12} ${100 + w - 2} ${y + open} Q100 ${y + open + 4} ${100 - w + 2} ${y + open} Z`} fill={BILL} />
+        {/* upper bill, wider at the tip, with its nostrils */}
+        <path d={`M${100 - w} ${y - smile} C${100 - w - 2} ${y - 14} ${100 - w * 0.5} ${y - 18} 100 ${y - 18} C${100 + w * 0.5} ${y - 18} ${100 + w + 2} ${y - 14} ${100 + w} ${y - smile} Q100 ${y + 4} ${100 - w} ${y - smile} Z`} fill={BILL_LIGHT} />
+        <ellipse cx={95} cy={y - 12} rx={1.6} ry={1.2} fill={BILL} />
+        <ellipse cx={105} cy={y - 12} rx={1.6} ry={1.2} fill={BILL} />
+      </g>
+    );
+  };
+  if (viseme) {
+    const sh = SHAPE[viseme];
+    return bill(sh.h * 9, (SMILE[mood] ?? 0) * 0.8, sh.round ? 0.86 : 1);
+  }
   switch (mood) {
     case "happy":
-      return <OpenMouth d={dMouth(y, 8, 6)} fill={MOUTH_IN} tongue={[100, y + 8.4, 4.2, 2.6]} />;
+      return bill(3, 3);
     case "delighted":
-      return <OpenMouth d={dMouth(y - 1, 10, 9)} fill={MOUTH_IN} tongue={[100, y + 12, 5.4, 3.4]} />;
+      return bill(8, 4);
     case "curious":
-      return <ellipse cx={101} cy={y + 2.4} rx={3.2} ry={4} fill={MOUTH_IN} />;
-    case "oops":
-      return <OpenMouth d={`M93 ${y + 4} Q100 ${y - 2} 107 ${y + 4} Q100 ${y + 2} 93 ${y + 4} Z`} fill={MOUTH_IN} />;
-    case "worried":
-      return <path d={wave(y + 2, 6.4, 2.4)} {...line(c, 2.6)} />;
+      return bill(3, 0, 0.9);
     case "thinking":
-      return <path d={`M95 ${y + 2} Q101 ${y + 3} 107 ${y - 1}`} {...line(c, 2.6)} />;
+      return bill(0, -1);
     case "focused":
-      return <path d={`M95 ${y + 1} L105 ${y + 1}`} {...line(c, 2.6)} />;
+      return bill(0, -2);
+    case "worried":
+      return bill(1.6, -3, 0.94);
+    case "oops":
+      return bill(5, -2, 0.94);
     case "wink":
-      return <path d={`M93 ${y} Q100 ${y + 6} 107 ${y - 1}`} {...line(c, 2.6)} />;
+      return bill(1.6, 3);
     default:
-      return <path d={`M94 ${y} Q100 ${y + 5} 106 ${y}`} {...line(c, 2.6)} />;
+      return bill(0, 1);
   }
 };
 
@@ -481,36 +476,23 @@ const ollieMouth: MouthKit = ({ mood, y, viseme }) => {
 
 const NEW_FOUR: Candidate[] = [
   {
-    id: "pond-marlowe",
+    id: "pond-otis",
     kind: "animal",
-    frame: MARLOWE,
+    frame: OTIS,
     outline: false,
-    attitude: {
-      mood: "neutral",
-      tilt: -4,
-      hands: { L: [78, 212], R: [122, 212], outL: true, outR: true },
-    },
-    label: "Marlowe",
-    signature: "A tall, thin old heron with a long yellow beak and two plumes trailing back — his neck stretches",
+    attitude: { mood: "neutral", tilt: -5, hands: { L: [80, 206], R: [120, 206], outL: true, outR: true } },
+    label: "Otis",
+    signature: "A big, gentle moose with broad antlers and a soft drooping nose — he wades",
     pitch:
-      "The grown-up who keeps the pond school: tall, thin, patient and dry, the one tall shape in a cast of round ones. Wants the young ones to slow down and look properly; the flaw is that he takes so long to say it that they've usually run off. At rest he stands with his wings folded, lids half down, one brow a little higher than the other. Species-true: a long dagger of a beak (held off to one side so it reads face-on), a white face and neck front, a black stripe over the eye that runs back into two long plumes, yellow eyes, long thin legs. His ability is Long reach: his neck stretches to reach anything, anywhere.",
-    risk: "Dry, never cold: on an incorrect answer he is the gentlest of all. The beak must never point at the learner.",
-    pal: pal(HERON, HERON, { skin: FACE, skinShade: HERON_SHADE, limb: HERON, paw: HERON, shoe: mix(C.accentDeep, "#8a7a62", 50), blush: "#f3a0b0" }),
-    body: HERON,
-    face: face({ eyeY: 104, eyeGap: 16, mouthY: 122, lid: HERON, kit: marloweEyes, mouthKit: marloweMouth }),
+      "The grown-up who keeps the pond school: the biggest of them, and the gentlest. Wants everyone to take their time; the flaw is that he takes all of his — by the time he has finished a sentence the young ones have run off, so he says the end of it to whoever is left. At rest he stands calm and square, lids half down, a slow half-smile starting on one side. Species-true: two broad flat antlers with rounded tines (his silhouette), long soft ears under them, a long muzzle with a big overhanging nose, the bell of fur under his chin, long legs. Shaggy pale brows do most of his acting. His ability is Wade: he walks out where the water is too deep for anyone else, calm as anything.",
+    risk: "Big, never looming: he crouches to the little ones' height. On an incorrect answer he is the gentlest of all.",
+    pal: pal(MOOSE, MOOSE_SHADE, { skin: MOOSE, skinShade: MOOSE_SHADE, limb: MOOSE, paw: MOOSE_SHADE, shoe: MOOSE_SHADE, blush: "#e98f9c" }),
+    body: MOOSE,
+    face: face({ eyeY: 98, eyeGap: 15, mouthY: 150, lid: MOOSE, kit: otisEyes, mouthKit: otisMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
-    head: () => <MarloweHead />,
-    pendant: () => <MarloweNeck />,
-    /* folded wings down his sides, their flight feathers ending in points; his arms are the same
-       grey, so at rest they lie in the wings and only show when he gestures */
-    belly: () => (
-      <g fill={HERON_SHADE}>
-        {sides.map(([side, s]) => (
-          <path key={side} d={`M${mirror(s, 82)} 156 Q${mirror(s, 72)} 182 ${mirror(s, 78)} 212 L${mirror(s, 84)} 204 L${mirror(s, 88)} 214 L${mirror(s, 92)} 202 Q${mirror(s, 88)} 182 ${mirror(s, 90)} 160 Z`} />
-        ))}
-      </g>
-    ),
+    head: () => <OtisHead />,
+    belly: () => <ellipse cx={100} cy={192} rx={22} ry={24} fill={MOOSE_MUZZLE} opacity={0.6} />,
   },
   {
     id: "pond-ines",
@@ -521,14 +503,14 @@ const NEW_FOUR: Candidate[] = [
     attitude: {
       mood: "neutral",
       tilt: -6,
-      /* balancing on one leg, the other knee up, arms out like on a beam */
-      hands: { L: [36, 150], R: [164, 150], outL: true, outR: true },
-      motion: { hipR: [{ rotate: "-78deg" }, { rotate: "-78deg" }], kneeR: [{ rotate: "128deg" }, { rotate: "128deg" }] },
+      /* a star jump: arms and legs flung out, as if she has just landed it */
+      hands: { L: [24, 150], R: [176, 150], outL: true, outR: true },
+      motion: { hipL: [{ rotate: "24deg" }, { rotate: "24deg" }], hipR: [{ rotate: "-24deg" }, { rotate: "-24deg" }] },
     },
     label: "Ines",
-    signature: "A girl acrobat of about twelve with a high bun and a ribbon, balancing on one leg — she stretches",
+    signature: "A girl acrobat of about twelve with a high bun and a ribbon, arms and legs flung out in a star — she stretches",
     pitch:
-      "Fearless and showy, about twelve: the oldest of the young ones and the first to try anything. Wants to be watched; the flaw is that she can't do anything without turning it into a show. At rest she balances on one leg, the other knee up, arms out as if on a beam — head tipped, a lopsided smirk, brows arched. Her hair is pulled back smooth into a high bun with a ribbon, and one curl has escaped. Her ability is Stretch: she bends like rubber — into a bridge, a knot, a shape no one else can make.",
+      "Fearless and showy, about twelve: the oldest of the young ones and the first to try anything. Wants to be watched; the flaw is that she can't do anything without turning it into a show. At rest she is in a star jump, arms and legs flung out as if she has just landed it — head tipped, a lopsided smirk, brows arched. Her hair is pulled back smooth into a high bun with a ribbon, and one curl has escaped. Her ability is Stretch: she bends like rubber — into a bridge, a knot, a shape no one else can make.",
     risk: "Showy, never showing off at anyone's expense: she spots the others, hands out and ready. Stretching stays playful, never contortion that looks painful.",
     pal: palInes,
     body: C.clothes,
@@ -559,25 +541,25 @@ const NEW_FOUR: Candidate[] = [
     head: () => <MinaHead />,
   },
   {
-    id: "pond-ollie",
+    id: "pond-noodle",
     kind: "animal",
-    frame: OLLIE,
-    legs: false,
-    arms: false,
+    frame: NOODLE,
     outline: false,
-    attitude: { mood: "neutral", tilt: 6 },
-    label: "Ollie",
-    signature: "A small snail with a big spiral shell and eyes on stalks — it tucks in",
+    hands: "mitten",
+    attitude: { mood: "neutral", tilt: 8, hands: { L: [78, 210], R: [122, 210], outL: true, outR: true } },
+    label: "Noodle",
+    signature: "A small round platypus kit with a big flat bill and a paddle tail — its bill tingles",
     pitch:
-      "The newcomer — new to the pond this term, slow and careful, like a learner on the first page. Wants to keep up and to be asked along; the flaw is that it hides in its shell before anyone can ask. At rest it looks up with its head on one side, brows worried in the middle. Its eyes ride on two stalks that stand up when it is delighted and droop when it is worried; a big spiral shell in the scheme's colour with an accent band; a soft foot. Its ability is Tuck: it pulls into its shell and peeks out.",
-    risk: "Slow is never a joke at its expense: the others wait for it. No arms, so its stalks, eyes and brows carry all its acting.",
-    pal: pal(SNAIL, SNAIL, { skin: SNAIL, skinShade: SNAIL_SHADE, limb: SNAIL, paw: SNAIL, blush: "transparent" }),
-    body: SNAIL,
-    face: face({ eyeY: 50, eyeGap: 16, mouthY: 124, lid: SNAIL, kit: ollieEyes, mouthKit: ollieMouth }),
+      "The newcomer — new to the pond this term, like the learner on the first page. A bit of everything: a duck's bill, a beaver's tail, an otter's fur, webbed feet. Wants to know where it fits; the flaw is that it is sure it doesn't, so it asks before it tries. At rest it looks up at you, brows worried in the middle, paws together. Pale patches round its eyes, a tuft on top, a cream belly. Its bill is its mouth: it opens to talk and turns up at the corners to smile. Its ability is Tingle: its bill tingles when something is nearby — it knows before anyone sees.",
+    risk: "Unsure, never sad: its stake is belonging, and the others always make room. Being a mix is the joke it learns to love, never one made at it.",
+    pal: pal(PLAT, BILL, { skin: PLAT, skinShade: PLAT_SHADE, limb: PLAT, paw: BILL, shoe: BILL, blush: "#ff9fb5" }),
+    body: PLAT,
+    face: face({ eyeY: 104, eyeGap: 19, mouthY: 136, lid: PLAT_LIGHT, kit: noodleEyes, mouthKit: noodleMouth }),
     outfit: "bare",
-    outfits: ["bare", "winter", "party"],
-    behind: () => <OllieBehind />,
-    head: (c) => <OllieHead {...c} />,
+    outfits: ANIMAL_OUTFITS,
+    behind: () => <NoodleBehind />,
+    belly: () => <ellipse cx={100} cy={192} rx={20} ry={23} fill={PLAT_LIGHT} />,
+    head: () => <NoodleHead />,
   },
 ];
 

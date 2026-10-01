@@ -53,7 +53,98 @@ const PIM_LISTEN: Hands = { L: [97, 192], R: [104, 184], outL: false, outR: fals
 
 const BUN_STAND: Hands = { L: [78, 200], R: [122, 200], outL: true, outR: true };
 
+const OTIS_STAND: Hands = { L: [80, 206], R: [120, 206], outL: true, outR: true };
+const NOODLE_PAWS: Hands = { L: [78, 210], R: [122, 210], outL: true, outR: true };
+const STAR: Hands = { L: [24, 150], R: [176, 150], outL: true, outR: true };
+const REACH_UP: Hands = { L: [88, 30], R: [112, 30], outL: true, outR: true };
+const GIGGLE: Hands = { L: [96, 186], R: [104, 186], outL: false, outR: false };
+
 export const OBSERVATORY_ABILITIES: Ability[] = [
+  {
+    id: "pond-otis",
+    name: "Wade",
+    line: "Walks out where the water is too deep for anyone else — up to his chest, calm as anything.",
+    mood: "happy",
+    over: () => (
+      <g className="fx fx-wade">
+        <path d="M0 212 Q25 204 50 212 T100 212 T150 212 T200 212 V320 H0 Z" fill={C.soft} opacity={0.82} />
+        <path d="M0 212 Q25 204 50 212 T100 212 T150 212 T200 212" {...{ stroke: C.tint, strokeWidth: 3, fill: "none" }} />
+        <ellipse cx={100} cy={214} rx={46} ry={5} fill="none" stroke={C.tint} strokeWidth={2} opacity={0.8} />
+      </g>
+    ),
+  },
+  {
+    id: "pond-ines",
+    name: "Stretch",
+    line: "Bends like rubber: from a star, up as tall as she goes, then down into a squash, and back.",
+    act: {
+      id: "idle",
+      title: "Stretch",
+      mood: "delighted",
+      use: "Its ability preview.",
+      hands: [STAR, REACH_UP, REACH_UP, STAR, STAR],
+      motion: {
+        duration: 2.4,
+        tracks: {
+          torso: keys([0, {}], [0.25, { sy: 1.16, sx: 0.88, y: -6, e: "cubic-bezier(0.34, 1.56, 0.64, 1)" }], [0.5, { sy: 1.16, sx: 0.88, y: -6 }], [0.66, { sy: 0.84, sx: 1.14, y: 4 }], [0.8, { sy: 1.03, sx: 0.98 }], [1, {}]),
+          head: keys([0, {}], [0.25, { y: -8 }], [0.5, { y: -8 }], [0.66, { y: 4 }], [1, {}]),
+          hipL: rotAt([0, 24], [0.25, 4], [0.5, 4], [0.66, 30], [1, 24]),
+          hipR: rotAt([0, -24], [0.25, -4], [0.5, -4], [0.66, -30], [1, -24]),
+        },
+      },
+    },
+  },
+  {
+    id: "pond-mina",
+    name: "Giggle",
+    line: "A laugh so catching that everyone round her joins in — she shakes with it.",
+    talk: true,
+    over: () => (
+      <g {...{ stroke: C.hi, strokeWidth: 3, fill: "none", strokeLinecap: "round" }}>
+        <path className="fx fx-pulse" d="M30 70 q-6 8 0 16 M18 64 q-8 14 0 28" />
+        <path className="fx fx-pulse fx-slow" d="M170 70 q6 8 0 16 M182 64 q8 14 0 28" />
+      </g>
+    ),
+    act: {
+      id: "idle",
+      title: "Giggle",
+      mood: "delighted",
+      use: "Its ability preview.",
+      hands: [GIGGLE, GIGGLE],
+      motion: {
+        duration: 0.6,
+        tracks: {
+          torso: keys([0, {}], [0.25, { y: -2, sy: 1.02 }], [0.5, {}], [0.75, { y: -2, sy: 1.02 }], [1, {}]),
+          head: rotAt([0, -4], [0.25, 3], [0.5, -4], [0.75, 3], [1, -4]),
+        },
+      },
+    },
+  },
+  {
+    id: "pond-noodle",
+    name: "Tingle",
+    line: "Its bill tingles when something is near — it turns to the left, then the right, and knows before anyone sees.",
+    over: () => (
+      <g {...{ stroke: C.accent, strokeWidth: 2.6, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" }}>
+        <path className="fx fx-hearL" d="M44 150 l-6 -4 l4 -6 l-6 -4 M40 168 l-8 0 l2 -6 l-8 0" />
+        <path className="fx fx-hearR" d="M156 150 l6 -4 l-4 -6 l6 -4 M160 168 l8 0 l-2 -6 l8 0" />
+      </g>
+    ),
+    act: {
+      id: "idle",
+      title: "Tingle",
+      mood: "curious",
+      use: "Its ability preview.",
+      hands: [NOODLE_PAWS, NOODLE_PAWS],
+      motion: {
+        duration: 4,
+        tracks: {
+          head: rotAt([0, 0], [0.12, 2], [0.2, -12], [0.46, -12], [0.54, -8], [0.64, 12], [0.88, 12], [1, 0]),
+          torso: keys([0, {}], [0.2, { y: -2 }], [0.46, { y: -2 }], [0.64, { y: -2 }], [1, {}]),
+        },
+      },
+    },
+  },
   {
     id: "garden-bun",
     name: "Thump",

@@ -373,6 +373,7 @@ svg[data-still="true"] .spark-still {
 .fx-cup { animation-name: fx-cup; animation-duration: 4s; }
 .fx-hearL { animation-name: fx-hearL; animation-duration: 4s; }
 .fx-hop { animation-name: fx-hop; animation-duration: 1.6s; }
+.fx-wade { animation-name: fx-wade; animation-duration: 5s; transform-box: view-box; }
 .fx-impact { animation-name: fx-impact; animation-duration: 1.6s; }
 .fx-hearR { animation-name: fx-hearR; animation-duration: 4s; }
 
@@ -382,6 +383,7 @@ svg[data-still="true"] .spark-still {
 @keyframes fx-skid { 0%, 16% { opacity: 0; transform: scale(0.6); } 22% { opacity: 1; transform: scale(1.1); } 40%, 100% { opacity: 0; transform: scale(1.3); } }
 @keyframes fx-crack { 0%, 30% { opacity: 0; } 36%, 78% { opacity: 1; } 84%, 100% { opacity: 0; } }
 @keyframes fx-cup { 0%, 100% { opacity: 1; } }
+@keyframes fx-wade { 0%, 12% { transform: translateY(80px); } 44%, 70% { transform: translateY(0); } 92%, 100% { transform: translateY(80px); } }
 @keyframes fx-hop { 0%, 42% { transform: translateY(0) rotate(0); } 54% { transform: translateY(-22px) rotate(20deg); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4); } 70%, 100% { transform: translateY(0) rotate(0); } }
 @keyframes fx-impact { 0%, 42% { opacity: 0; transform: scale(0.6); } 46% { opacity: 1; transform: scale(1); } 64%, 100% { opacity: 0; transform: scale(1.2); } }
 @keyframes fx-hearL { 0%, 8% { opacity: 0; transform: translateX(-8px); } 18%, 40% { opacity: 1; transform: translateX(0); } 50%, 100% { opacity: 0; } }

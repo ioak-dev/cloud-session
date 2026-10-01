@@ -26,10 +26,10 @@ type Voice = { pitch: number; rate: number; prefer: string[] };
 
 /** Each character's voice: a preference among the device's voices, a pitch and a rate. */
 const VOICES: Record<string, Voice> = {
-  "pond-marlowe": { pitch: 0.6, rate: 0.8, prefer: ["Daniel", "Arthur", "Google UK English Male", "Male"] },
+  "pond-otis": { pitch: 0.55, rate: 0.78, prefer: ["Daniel", "Arthur", "Google UK English Male", "Male"] },
   "pond-ines": { pitch: 1.2, rate: 1.15, prefer: ["Karen", "Moira", "Female"] },
   "pond-mina": { pitch: 1.55, rate: 1.05, prefer: ["Samantha", "Google US English", "Female"] },
-  "pond-ollie": { pitch: 1.3, rate: 0.78, prefer: ["Victoria", "Female"] },
+  "pond-noodle": { pitch: 1.5, rate: 0.95, prefer: ["Victoria", "Female"] },
   "garden-bun": { pitch: 1.3, rate: 1.12, prefer: ["Samantha", "Karen", "Google US English", "Female"] },
   "garden-bean": { pitch: 1.6, rate: 0.82, prefer: ["Victoria", "Female"] },
   "obs-hob": { pitch: 0.7, rate: 0.88, prefer: ["Daniel", "Arthur", "Fred", "Google UK English Male", "Male"] },
@@ -44,9 +44,9 @@ type Line = { text: string; mood: Mood; as?: string };
 
 /** Fixed lines for the demo, one set per character. Lyra's last is in Hob's voice. */
 const LINES: Record<string, Line[]> = {
-  "pond-marlowe": [
-    { text: "Patience. The answer is usually just below the surface.", mood: "neutral" },
-    { text: "Not quite. Look again, slowly. There.", mood: "curious" },
+  "pond-otis": [
+    { text: "No hurry. The answer is usually just below the surface.", mood: "neutral" },
+    { text: "Not quite. Have another look, slowly. There.", mood: "curious" },
   ],
   "pond-ines": [
     { text: "Ta-da! Now you try. Don't worry, I'll spot you.", mood: "delighted" },
@@ -56,9 +56,9 @@ const LINES: Record<string, Line[]> = {
     { text: "That was so good I can't stop giggling!", mood: "delighted" },
     { text: "Will you sit with me? Bean saved us a spot.", mood: "happy" },
   ],
-  "pond-ollie": [
-    { text: "Oh — hello. I'm new too. Can we go slowly?", mood: "worried" },
-    { text: "I did it! I really, really did it.", mood: "delighted" },
+  "pond-noodle": [
+    { text: "Um, hello. I'm new too. Is there room for one more?", mood: "worried" },
+    { text: "My bill's tingling. I think you've got this!", mood: "delighted" },
   ],
   "garden-bun": [
     { text: "Right, everyone, listen up! Watering first, then questions.", mood: "focused" },
