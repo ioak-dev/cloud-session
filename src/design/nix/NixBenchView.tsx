@@ -1,11 +1,14 @@
 "use client";
 
 /**
- * The cast studio, as three pages on one rig, one set of poses, expressions and outfits:
- * - Wisp: the main character as drawn, its warmer proposals, and the wispy reference drawings.
- * - Wisp · Ribbon: the same page with the ribbon wings (`wisp-ribbon.tsx`) as the main character,
- *   in its two recommended pairings; every view, the flight and the form draw ribbons.
+ * The cast studio, as pages on one rig, one set of poses, expressions and outfits:
+ * - Wisp: the main character on its ribbon wings (Clean, with the picks in `wisp-clean.tsx`), its
+ *   app icon proposals, warmer proposals, eye styles and acting; every view, the flight and the
+ *   form draw ribbons.
+ * - Wisp · Butterfly (reference): the same page with Wisp's two pairs of spotted wings, kept as an
+ *   alternate main character.
  * - Side characters: the side candidates, their abilities, practice states, eyes and mouths.
+ * - References: the ribbon variants not chosen, the wispy directions, Pip and earlier fireflies.
  */
 import * as React from "react";
 
@@ -565,14 +568,19 @@ export function WispPage({ wings }: { wings: WingStyle }) {
     <WingStyleContext.Provider value={wings}>
     <RibbonFormContext.Provider value={v.form}>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">{ribbon ? "Wisp · Ribbon wings" : "Wisp"}</h1>
+      <h1 className="display mt-1">{ribbon ? "Wisp" : "Wisp · Butterfly wings (reference)"}</h1>
       {ribbon ? (
         <>
           <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-            The Wisp page again, with the ribbon wings as the main character. Wisp started with one
-            pair of ribbon wings that trailed down past the body to a point, like a scarf or a
-            ghost’s hem; “Finalise Wisp” swapped them for two pairs of spotted wings. Everything else
-            is Wisp as drawn. The ribbons are Clean: one ribbon each side, fading to nothing, its
+            The main character is Wisp: a floating firefly that leaves glowing sparks behind it as
+            it flies. Colours come from the scheme in the header; only its flame and sparks are its
+            own. Its wings are one pair of ribbons that trail down past the body, like a scarf or a
+            ghost’s hem — the wings it started with. The two pairs of spotted butterfly wings it
+            had since “Finalise Wisp” are kept as an alternate main character on{" "}
+            <a href="#/butterfly" className="text-foreground underline">
+              Wisp · Butterfly
+            </a>
+            . The ribbons are Clean: one ribbon each side, fading to nothing, its
             tail swaying and a little mist leaving the tips. Every figure on the page — the
             turnaround, the flight, the form, the warmer proposals, the eye styles and the acting —
             wears them. The main character, its turnaround, flight and form also carry the picks on
@@ -580,7 +588,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             <a href="#/references" className="text-foreground underline">
               References
             </a>{" "}
-            page. Proposal, not adopted.
+            page.
           </p>
 
           <h2 className="material-heading mt-10 text-lg text-foreground">
@@ -610,19 +618,21 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         </>
       ) : (
         <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-          The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
-          flies. Colours come from the scheme in the header; only its flame and sparks are its own.
-          The other wispy directions, Pip and the earlier fireflies stay as reference. The same
-          page with Wisp’s original ribbon wings is{" "}
-          <a href="#/ribbon" className="text-foreground underline">
-            Wisp · Ribbon
+          Reference: an alternate main character. Wisp with two pairs of spotted butterfly wings,
+          as it was from “Finalise Wisp” until the ribbon wings were chosen. The main character
+          is{" "}
+          <a href="#/wisp" className="text-foreground underline">
+            Wisp
           </a>
-          .
+          , on one pair of ribbon wings. Everything else on this page — the turnaround, flight,
+          form, warmer proposals, eye styles and acting — is the same, on the butterfly wings.
         </p>
       )}
       <Tests />
 
-    <>
+      {/* the app icon is the main character's: on the Wisp page only */}
+      {ribbon && (
+      <>
         <h2 className="material-heading mt-10 text-lg text-foreground">
           Wisp — app icon (proposals)
         </h2>
@@ -646,6 +656,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           ))}
         </div>
       </>
+      )}
 
       <h2 className="material-heading mt-10 text-lg text-foreground">{front.label} — turnaround</h2>
       <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
@@ -779,7 +790,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
 
       <Bench
         groups={[
-          [ribbon ? `Main character — Wisp · Ribbon, ${v.label}` : "Main character — Wisp", [line.main]],
+          [ribbon ? "Main character — Wisp" : "Alternate main character — Wisp · Butterfly (reference)", [line.main]],
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
         ]}
@@ -803,7 +814,7 @@ export function ReferencesPage() {
         Reference — ribbon variants
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The ribbon variants not chosen. Clean is the ribbon page’s main character; these two stay
+        The ribbon variants not chosen. Clean is the main character’s; these two stay
         as reference.
       </p>
       <div className="mt-3 grid gap-4 sm:max-w-[48rem] sm:grid-cols-2">

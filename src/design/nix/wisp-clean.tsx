@@ -194,5 +194,5 @@ export const CLEAN_PICK: Candidate = {
       "The picks from the proposals on Clean. Core: the flame is palest at its heart, so the tail has depth and its curl is drawn twice, while the body still flows into the flame with no seam (Lantern's bands drew one there). Snug arms: Wisp's stick arms were the first thing lost at small sizes; Snug's thicker arms and bigger soft tips read at 48px, on Wisp's own joints and slim body. The drop head stays: it is Wisp's most recognisable shape and the app icon's, and neither Candle (crowds the antennae small) nor Dewdrop (loses the flame's point) was clearly better.",
     risk: "Core disappears at 32px, so it is a refinement for larger sizes only; the arms are what change the small figure.",
   }),
-  label: "Wisp · Ribbon",
+  label: "Wisp",
 };

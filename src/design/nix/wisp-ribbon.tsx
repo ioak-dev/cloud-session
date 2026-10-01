@@ -6,7 +6,8 @@ import { pivot, type Body } from "./rig/skeleton";
 import { C } from "./theme";
 
 /**
- * Wisp · Ribbon — a proposal, not adopted. `WISP_MAIN` is untouched.
+ * Wisp's ribbon wings — the main character's wings, on the studio's Wisp page. `WISP_MAIN` (two
+ * pairs of butterfly wings) is kept as the alternate main character, on the Wisp · Butterfly page.
  *
  * The first Wisp (the bench's `firefly-bodies.tsx`, commit 1cc3b0d) did not have insect wings.
  * It had one pair of ribbons that left the shoulders, swelled out and then trailed down past the
@@ -18,10 +19,9 @@ import { C } from "./theme";
  * (shaded from the scheme's `C.soft` at the shoulder through `C.tint`), fading to nothing at the
  * tips. A ribbon is one pair, so it rides `wingL`/`wingR` alone; `hindL`/`hindR` carry nothing.
  *
- * Three variants are kept, and the ribbon page lets one be chosen for every figure on it:
- * Clean, Glow tips and Spirit. The studio's ribbon page is the Wisp page with that choice
- * applied: the turn puppet, back view, flight and form read `WingStyleContext` and
- * `RibbonFormContext` (`wisp-turn.tsx`).
+ * Three variants are kept: Clean, chosen, which every figure on the Wisp page wears; Glow tips
+ * and Spirit, on the References page. The turn puppet, back view, flight and form read
+ * `WingStyleContext` and `RibbonFormContext` (`wisp-turn.tsx`).
  */
 
 const GLOW = WISP_PAL.glow;

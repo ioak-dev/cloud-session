@@ -397,7 +397,7 @@ export function WispTurn({
   const t = useSmokeClock(style === "ribbon" && !!form.smoke);
   const parts = [
     ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid, t) : wings(yaw, flapU, flapL)),
-    /* the ribbon page draws the picks on Clean: Snug's arms and the Core tail */
+    /* the Wisp page (ribbons) draws the picks on Clean: Snug's arms and the Core tail */
     ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);

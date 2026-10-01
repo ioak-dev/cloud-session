@@ -101,7 +101,7 @@ export function WispBack() {
   const uid = useUid();
   const style = React.useContext(WingStyleContext);
   const form = React.useContext(RibbonFormContext);
-  /* the ribbon page draws the picks on Clean: Snug's thicker arms and the Core tail */
+  /* the Wisp page (ribbons) draws the picks on Clean: Snug's thicker arms and the Core tail */
   const snug = style === "ribbon";
   return (
     <g>

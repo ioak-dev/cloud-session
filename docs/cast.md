@@ -45,7 +45,9 @@ In the rig, `Palette.line` is the outline colour for the body, limbs, clothes an
 
 ### Wisp
 
-**Wisp is the main character**, in `src/design/nix/firefly-wisp.tsx`. It is the former “True colour” variant. It floats with no legs, has a droplet head, and its body ends in a flame of light. It leaves glowing sparks behind as it flies. The original pale Wisp, Moth, Solid and Curly are dropped.
+**Decision: Wisp's wings are the ribbons.** The main character is Wisp on one pair of ribbon wings (Clean), with the Core tail and Snug's thicker arms: `CLEAN_PICK` in `src/design/nix/wisp-clean.tsx`, on the studio's **Wisp** page (`#/wisp`). Wisp on two pairs of spotted butterfly wings (`WISP_MAIN`) is kept as an **alternate main character, for reference**, on the **Wisp · Butterfly (reference)** page (`#/butterfly`). The old `#/ribbon` link opens the Wisp page. Everything below that is not about the wings still holds for both; the wing rules are the ribbons' (see “Wisp · Ribbon wings”).
+
+**Wisp is the main character**, in `src/design/nix/firefly-wisp.tsx` (the body, head, flame and face; the wings are the ribbons in `wisp-ribbon.tsx`). It is the former “True colour” variant. It floats with no legs, has a droplet head, and its body ends in a flame of light. It leaves glowing sparks behind as it flies. The original pale Wisp, Moth, Solid and Curly are dropped.
 
 How it is drawn. These rules also apply to anything added to Wisp later:
 
@@ -56,7 +58,7 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 | Antennae | Grow from behind the head (drawn before it), in `C.thin`, each tipped with a spark |
 | Body, arms | No outline; parts are told apart by colour: the body in `C.mid`, the arms in the primary |
 | Hands | Wispy: the forearm tapers like a tendril of smoke and ends in a soft round tip of the same colour. No fingers, no thumb (`hands: "wisp"` in the rig) |
-| Wings | Two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
+| Wings | One pair of ribbons on `wingL`/`wingR` (Clean, `wisp-ribbon.tsx`): no outline, shaded from `C.soft` at the shoulder through frost to nothing at the tips, the tails drifting like smoke. The alternate (butterfly) Wisp: two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
 | Body and flame | One body turning into light. The body is short and rounded below. The flame starts up inside it in the body’s own colour, so there is no seam at any angle of sway. It pivots where they meet and turns to glow, then amber, below the body. It carries **two rings**, like a firefly’s lantern: fixed anatomy. No edge line on the flame |
 | Edges | Only the translucent parts (wings) and the antenna tips keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
 | Props | A backpack sits behind the wings and flame, fitted to the short body (`packFit`) |
@@ -67,7 +69,7 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 
 1. At rest, and wherever it arrives, Wisp **faces front**.
 2. To travel, it **turns continuously**, head first, to face its way, rising a little as it sets off. It never flips.
-3. It **flies side-on** toward where it is going, banking gently, wings beating as two pairs, and leaves sparks where it has been.
+3. It **flies side-on** toward where it is going, banking gently, its ribbons beating as one pair (the alternate's wings as two pairs), and leaves sparks where it has been.
 4. On arrival it settles and **turns back** to face front.
 
 **Where Wisp appears: the sign-up form only.** It lives in the gutter to the **left** of the form, turned toward it. The demo is `src/design/nix/wisp-form.tsx`.
@@ -96,11 +98,11 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 
 **The warmer's antennae** (and Scamp's) are soft stalks in three segments on their own joints (`antL` → `antMidL` → `antTipL`, and R; `rig/skeleton.ts`). The left stands up; the right flops over in a smooth curl, not a kink. In every pose each segment follows through, turning a little later and further than the one it hangs from (`secondary` in `rig/poses.ts`). At rest they have a habit of their own (`attitude.motion`, laid over the idle pose on its clock): once a loop the left one twitches, and a beat later the flopped one's tip flicks up and springs back in shrinking bounces. Declared keyframes (`rotAt`); stilled or under reduced motion they hold the first frame.
 
-**Wisp · Ribbon wings — proposal, not adopted.** `WISP_MAIN` is unchanged. The first Wisp (bench `firefly-bodies.tsx`, commit `1cc3b0d`) had one pair of **ribbon wings** that left the shoulders, swelled out and trailed down past the body to a point, like a scarf or a ghost's hem; they matched the drop head and the flame, so every outline tapered to a wisp. “Finalise Wisp” (`43969ae`) replaced them with the two pairs of spotted wings, which read as butterfly or fairy wings. `src/design/nix/wisp-ribbon.tsx` (`WISP_RIBBON`) puts the ribbons back on today's Wisp and on Wisp, warmer, with nothing else changed, redrawn to today's rules: `C.tint` at 82%, a hairline `C.hi` edge and fold line, no ink outline. A ribbon is one pair, on `wingL`/`wingR` only, so adopting it would mean changing the two-pair rule for Wisp.
+**Wisp · Ribbon wings — adopted.** These are now the main character's wings; `WISP_MAIN`, with two pairs, is the alternate main character (reference). The first Wisp (bench `firefly-bodies.tsx`, commit `1cc3b0d`) had one pair of **ribbon wings** that left the shoulders, swelled out and trailed down past the body to a point, like a scarf or a ghost's hem; they matched the drop head and the flame, so every outline tapered to a wisp. “Finalise Wisp” (`43969ae`) replaced them with the two pairs of spotted wings, which read as butterfly or fairy wings. `src/design/nix/wisp-ribbon.tsx` (`WISP_RIBBON`) puts the ribbons back on today's Wisp and on Wisp, warmer, with nothing else changed, redrawn to today's rules: `C.tint` at 82%, a hairline `C.hi` edge and fold line, no ink outline. A ribbon is one pair, on `wingL`/`wingR` only; the two-pair rule now applies only to the alternate (butterfly) Wisp.
 
-The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page, identical except that every figure wears the ribbons in the chosen variant, **Clean**. It applies to the whole page — the main character and its turnaround, back view, flight and form (`WingStyleContext` and `RibbonFormContext` in `wisp-turn.tsx`), the warmer proposals, the eye styles and the acting — so every ability and possibility of Wisp can be judged on Clean. In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. Everything is drawn with no outline: the colour is the edge (`C.soft` at the shoulder, frost `C.tint` through the middle, fading to nothing). One ribbon pair rides `wingL`/`wingR` only.
+On the studio's **Wisp** page (`#/wisp`, formerly the separate Wisp · Ribbon page) every figure wears the ribbons in the chosen variant, **Clean**. It applies to the whole page — the main character and its turnaround, back view, flight and form (`WingStyleContext` and `RibbonFormContext` in `wisp-turn.tsx`), the warmer proposals, the eye styles and the acting — so every ability and possibility of Wisp can be judged on Clean. In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. Everything is drawn with no outline: the colour is the edge (`C.soft` at the shoulder, frost `C.tint` through the middle, fading to nothing). One ribbon pair rides `wingL`/`wingR` only.
 
-**Ribbon variants** (`RIBBON_VARIANTS` in `wisp-ribbon.tsx`). **Clean is chosen** and is the ribbon page's main character. Glow tips and Spirit move to the References page (`#/references`) as reference. Dots, sparkles, lantern bands, ghost hem, swept up and breeze were tried and dropped.
+**Ribbon variants** (`RIBBON_VARIANTS` in `wisp-ribbon.tsx`). **Clean is chosen** and is the main character's. Glow tips and Spirit move to the References page (`#/references`) as reference. Dots, sparkles, lantern bands, ghost hem, swept up and breeze were tried and dropped.
 
 | Variant | What it is |
 |---|---|
@@ -112,7 +114,7 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 
 **The smoke's colour** (`--char-smoke` in `studio.css`) is set per ground so it is seen on both and never competes with the glow and the sparks: on light, a mid tint of the product colour (42%) peaking at 0.5 opacity, so it shows on the pale ground; on dark, a paler tint (30%) held to 0.38, so it does not shine. It stays smaller and fainter than a spark's halo. Glow tips' puffs keep the glow's gold.
 
-**Clean — proposals** (`wisp-clean.tsx`, on the ribbon page; tail, head and arms; front only, the puppet still draws Clean). Each changes one thing on Clean.
+**Clean — proposals** (`wisp-clean.tsx`, on the Wisp page; tail, head and arms; front only, the puppet still draws Clean). Each changes one thing on Clean.
 
 | Proposal | What changes |
 |---|---|
@@ -122,9 +124,9 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 | Dewdrop (head) | The point goes: a short, rounded tip with straight flanks and a fuller drop below, a drop of light about to fall. Close to Snug's rounder drop; judge them side by side |
 | Snug arms (arms) | Snug's limb widths (upper arm 11.5, forearm 11, hand tip 8.4) on Clean's own frame: Wisp's joints and slim torso, so only the arms change. Gestures read from further away; Wisp's stick arms are its weakest part at 32px |
 
-**Picked on Clean: the Core tail and Snug arms; the head stays the drop** (`CLEAN_PICK` in `wisp-clean.tsx`). It is the ribbon page's main character, and the turn puppet, back view, flight and form on that page draw the same (`wisp-turn.tsx`, `wisp-views.tsx`, when the wing style is `ribbon`). The Wisp page (two pairs of wings) is unchanged.
+**Picked on Clean: the Core tail and Snug arms; the head stays the drop** (`CLEAN_PICK` in `wisp-clean.tsx`). It is the main character on the Wisp page, and the turn puppet, back view, flight and form there draw the same (`wisp-turn.tsx`, `wisp-views.tsx`, when the wing style is `ribbon`). The Wisp · Butterfly (reference) page is unchanged.
 - **Core over Lantern and the current tail**: depth along the flame rather than bands across it; Lantern's dim amber band drew a seam where the body turns into the flame, against the no-seam rule. Core disappears at 32px, so it refines the larger figure only.
 - **The drop head over Candle and Dewdrop**: the drop is Wisp's most recognisable shape and the app icon's. Candle's taller tip crowds the antennae at small sizes and overlaps Scamp's curl; Dewdrop loses the flame's point and sits close to Snug's drop.
 - **Snug arms over Wisp's stick arms**: the stick arms were the first thing lost at small sizes; Snug's widths read at 48px, on Wisp's own joints and slim body, so the silhouette and the taper are unchanged.
 
-Lantern, Candle and Dewdrop stay on the ribbon page beside Clean as it was, for comparison.
+Lantern, Candle and Dewdrop stay on the Wisp page beside Clean as it was, for comparison.
