@@ -27,7 +27,7 @@ import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
-import { LOGO_VARIANTS, LOGOS, LogoMark, type Logo } from "./wisp-logo";
+import { APP_ICON, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
@@ -231,11 +231,11 @@ function PracticeStates() {
 }
 
 /** One app icon proposal: large, then at the sizes a browser and a phone use, on both grounds. */
-function LogoCard({ logo }: { logo: Logo }) {
+function LogoCard({ logo, k }: { logo: Logo; k?: K }) {
   return (
     <figure className="m-0 flex flex-col gap-3 rounded-[var(--radius)] bg-muted p-3">
       <div className="flex items-end gap-3">
-        <LogoMark logo={logo} px={128} />
+        <LogoMark logo={logo} k={k} px={128} />
         <div className="flex flex-col gap-2">
           {(["#ffffff", "#15171c"] as const).map((ground) => (
             <div
@@ -243,9 +243,9 @@ function LogoCard({ logo }: { logo: Logo }) {
               className="flex items-end gap-2 rounded-md p-2"
               style={{ background: ground }}
             >
-              <LogoMark logo={logo} px={64} />
-              <LogoMark logo={logo} px={32} />
-              <LogoMark logo={logo} px={16} />
+              <LogoMark logo={logo} k={k} px={64} />
+              <LogoMark logo={logo} k={k} px={32} />
+              <LogoMark logo={logo} k={k} px={16} />
             </div>
           ))}
         </div>
@@ -634,28 +634,65 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       {ribbon && (
       <>
         <h2 className="material-heading mt-10 text-lg text-foreground">
-          Wisp — app icon (proposals)
+          Wisp — app icon: {APP_ICON.label} (chosen)
         </h2>
+        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+          Wisp’s drop drawn as its own light — a solid yellow drop with ink eyes and two antennae —
+          on a solid primary tile. Solid colours only: no gradient, no halo, no shine, so it stays
+          crisp from the store listing to a 16px tab, and platforms can recolour it. Always in the
+          product’s own colours (shown here in the Sparkles scheme, whatever the header says).
+          Contrast: the yellow on the primary 3.9:1, the ink eyes on the yellow 11.1:1, the tile
+          5.7:1 on a white home screen and 3.1:1 on a dark one; blue and yellow hold up under the
+          common colour blindnesses. With it: the circle, for launchers and avatars that cut one,
+          and the one-colour mark, for themed and tinted icons and one-colour print. Files:{" "}
+          <code>docs/logo/app-icon*.svg</code>.
+        </p>
+        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+          {APP_ICON_SET.map((l) => (
+            <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
+          ))}
+        </div>
+
+        <h3 className="material-heading mt-8 text-base text-foreground">
+          The other proposals (not chosen)
+        </h3>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
           Marks made from Wisp's shape, not the full character. Each is shown as the app icon and
           at 32 and 16px, where it switches to a simplified drawing (no mouth, rings or spots,
-          nothing thinner than a pixel), on the light and the dark ground. Standalone files:{" "}
-          <code>docs/logo/</code>.
+          nothing thinner than a pixel), on the light and the dark ground, in the header's scheme.
+          Figure and Flight, drawn with the butterfly wings, are retired to the Wisp · Butterfly
+          page. Standalone files: <code>docs/logo/</code>.
         </p>
         <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
           {LOGOS.map((l) => (
             <LogoCard key={l.id} logo={l} />
           ))}
         </div>
-        <h3 className="material-heading mt-6 text-base text-foreground">
+        <h4 className="material-heading mt-6 text-sm text-foreground">
           Drop and Glow — variations
-        </h3>
+        </h4>
         <div className="mt-2 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
           {LOGO_VARIANTS.map((l) => (
             <LogoCard key={l.id} logo={l} />
           ))}
         </div>
       </>
+      )}
+      {!ribbon && (
+        <>
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            App icons with the butterfly wings (retired)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Proposals drawn from the whole figure, so they carry the two pairs of wings. Retired
+            with the butterfly Wisp; the chosen app icon is on the Wisp page.
+          </p>
+          <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+            {LOGOS_BUTTERFLY.map((l) => (
+              <LogoCard key={l.id} logo={l} />
+            ))}
+          </div>
+        </>
       )}
 
       <h2 className="material-heading mt-10 text-lg text-foreground">{front.label} — turnaround</h2>

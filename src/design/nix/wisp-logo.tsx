@@ -793,9 +793,74 @@ const GLOW_ROUND: Logo = {
   },
 };
 
-export const LOGOS: Logo[] = [DROP, FIGURE, FLIGHT, GLOW, PEEK, EMBER];
+/* ——— the chosen app icon: Glow · Light, and the shapes a platform asks for ——— */
 
-/** More of the two strongest: Drop and Glow. */
+/**
+ * Glow · Light in a circle: the yellow drop on a primary disc, inside the inner 80% so a circular
+ * mask never clips it. For Android adaptive icons, avatars and social profiles.
+ */
+const LIGHT_ROUND: Logo = {
+  id: "glow-light-round",
+  label: "Glow · Light · Round",
+  line: "The chosen icon in a circle: the yellow drop on a primary disc, inside the safe zone.",
+  note: "For launchers that cut a circle, avatars and social profiles. The antennae are pulled in so a circular mask never clips them.",
+  draw: (k, size) => {
+    const big = size === "full";
+    return (
+      <>
+        <path d={CIRCLE} fill={k.primary} />
+        <Antennae k={k} cx={64} top={38} spread={big ? 18 : 22} rise={big ? 12 : 13} stalk={big ? 4.5 : 8} tip={big ? 5.5 : 9} colour={k.glow} />
+        <path d={big ? drop(64, 34, 68, 74) : drop(64, 32, 78, 80)} fill={k.glow} />
+        <Eyes k={k} cx={64} y={82} gap={big ? 12 : 14} rx={big ? 5.2 : 7.4} ry={big ? 7.2 : 10} />
+        {big ? <Smile k={k} cx={64} y={95} w={10} /> : null}
+      </>
+    );
+  },
+};
+
+/**
+ * Glow · Light in one colour: the drop and antennae as a single solid shape with the eyes cut
+ * out, no tile. For themed and tinted icons (Android's monochrome layer, iOS tinted), and for
+ * one-colour print. Drawn in the primary here; the platform or the press supplies the colour.
+ */
+const LIGHT_MONO: Logo = {
+  id: "glow-light-mono",
+  label: "Glow · Light · One colour",
+  line: "The chosen mark as one solid colour, the eyes cut out: no tile, no second colour.",
+  note: "For Android's themed icon layer, iOS tinted icons, stamps and one-colour print. The silhouette alone has to say Wisp, and the drop with its two antennae does.",
+  draw: (k, size, uid) => {
+    const big = size === "full";
+    const m = `${uid}-mono`;
+    return (
+      <>
+        <mask id={m}>
+          <rect width={128} height={128} fill="#fff" />
+          <Eyes k={{ ...k, ink: "#000" }} cx={64} y={84} gap={big ? 14 : 17} rx={big ? 6 : 8} ry={big ? 8.4 : 11} />
+          {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={98} w={11} /> : null}
+        </mask>
+        <g mask={`url(#${m})`}>
+          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.primary} tipColour={k.primary} />
+          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.primary} />
+        </g>
+      </>
+    );
+  },
+};
+
+/**
+ * The app icon: Glow · Light. Solid colours only (no gradient, no halo, no shine), in the
+ * product's fixed colours (`K_SPARKLES`), never the studio's scheme switch. Contrast, Sparkles
+ * scheme: the glow on the primary 3.9:1, the ink eyes on the glow 11.1:1; the primary tile 5.7:1
+ * on a white home screen and 3.1:1 on a dark one. Blue and yellow is the pair that survives the
+ * common colour blindnesses.
+ */
+export const APP_ICON: Logo = GLOW_LIGHT;
+/** The chosen icon's other shapes: the circle and the one-colour mark. */
+export const APP_ICON_SET: Logo[] = [GLOW_LIGHT, LIGHT_ROUND, LIGHT_MONO];
+
+export const LOGOS: Logo[] = [DROP, GLOW, PEEK, EMBER];
+
+/** More of the two strongest: Drop and Glow (Glow · Light, chosen, is shown on its own). */
 export const LOGO_VARIANTS: Logo[] = [
   DROP_NIGHT,
   DROP_WINK,
@@ -803,9 +868,11 @@ export const LOGO_VARIANTS: Logo[] = [
   DROP_LIT,
   GLOW_HALO,
   GLOW_SCAMP,
-  GLOW_LIGHT,
   GLOW_ROUND,
 ];
+
+/** Retired: drawn with the butterfly wings, which are no longer Wisp's (`#/butterfly`). */
+export const LOGOS_BUTTERFLY: Logo[] = [FIGURE, FLIGHT];
 
 /** One proposal as an `<svg>`, at any pixel size; `small` is used at 32px and under. */
 export function LogoMark({

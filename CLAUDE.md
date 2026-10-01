@@ -28,7 +28,7 @@ npm start
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |
-| `src/design/nix/wisp-logo.tsx` | App icon proposals made from Wisp's shape (Drop, Figure, Flight, Glow, Peek, Ember) and variations on Drop and Glow, each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/` |
+| `src/design/nix/wisp-logo.tsx` | The app icon: Glow · Light, chosen (`APP_ICON`, with its round and one-colour shapes in `APP_ICON_SET`); the proposals it was chosen from (Drop, Glow, Peek, Ember and variations on Drop and Glow; Figure and Flight, retired with the butterfly wings), each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/`, the chosen set as `app-icon*.svg` |
 | `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
 | `src/design/nix/firefly-spirits-2.tsx` | Wispy directions (reference): Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |
