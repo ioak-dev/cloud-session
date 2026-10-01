@@ -1,5 +1,7 @@
 # World
 
+**Now (2026-10-01): the world is Lantern Pond; the side characters are a shortlist (`docs/cast.md`).** The casts named below (the Observatory club, Otis, Noodle, Marlowe, Ollie) were removed and are kept here only as the record of how the shortlist was reached.
+
 **Status: chosen — Lantern Pond (2026-10-01), with Ines in place of Rory the beaver. Drawn in `side-pond.tsx` (Otis, Ines, Mina, Noodle; Marlowe the heron and Ollie the snail were replaced) and `side-garden.tsx` (Bun, Bean); proposals, none final.** Earlier status: open again. The Observatory on the hill (below) was chosen and its six drawn, then set aside: the user asked for a different world and characters. Bun (a rabbit) and Bean (a baby hippo) are kept as candidates (“ok-ok”, `side-garden.tsx`); the world is now chosen together with a full cast of six around them. The proposals are in “Round three” just below; the Observatory sections after it are kept for reference.
 
 ## Round three — worlds for a full cast with Bun and Bean (proposals, none chosen)
