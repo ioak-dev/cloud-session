@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { flameTip, WispTurn, type ArmPose, type ArmsTo, type Mouth } from "./wisp-turn";
+import { antennaTip, flameTip, WispTurn, type ArmPose, type ArmsTo, type Mouth } from "./wisp-turn";
 
 /**
  * Wisp's moments around signing in (proposals): three reactions each for a sign-in that did not
@@ -117,11 +117,15 @@ type Frame = {
   bow?: number;
   blanket?: number;
   wiggle?: number;
+  tips?: readonly [number, number];
+  tipBob?: readonly [number, number];
+  hug?: number;
   /** Sparks are left behind on this frame. */
   trail?: boolean;
 };
 
-type Event = "error" | "signin" | "signup";
+/** What the server answered: no match, signed in (big or quiet), a new account, a workspace. */
+export type Event = "error" | "signin" | "quiet" | "signup" | "workspace";
 type Moment = {
   id: string;
   event: Event;
@@ -140,6 +144,8 @@ type Moment = {
   wash?: (t: number) => { x: number; y: number; r: number; o: number } | null;
   /** Pools of light left lit (the lamplighter). */
   lamps?: (t: number) => { x: number; y: number; o: number }[];
+  /** Draw `fx` over Wisp rather than under it (a spark held in its hands). */
+  fxFront?: boolean;
 };
 
 const rest = (t: number, y: number): Frame => ({ x: GX, y: y + 2 * Math.sin(t / 600), yaw: 28, lookX: 1 });
@@ -527,14 +533,289 @@ const WARM: Moment = {
   },
 };
 
-export const MOMENTS: Moment[] = [FIZZLE, KNOT, QUERY, CODE, WAKE, LAMP, CONSTELLATION, BOW, WARM];
+/* ——— signed in, quieter: Wisp and its own light, no travel ——— */
+
+/** Where things on Wisp are in the stage, for a frame: its lantern, an antenna tip. */
+const lanternOf = (f: Frame) => {
+  const [fx] = flameTip(f.yaw);
+  return [f.x + (fx - 4 + 10) * K, f.y + (236 - 20) * K] as const;
+};
+const tipAt = (f: Frame, side: -1 | 1) => {
+  const [ax, ay] = antennaTip(side, f.head ?? f.yaw);
+  return [f.x + (ax + 10) * K, f.y + (ay - 20) * K] as const;
+};
+/** A twinkle: a four-pointed glint in the glow's colour. */
+function Twinkle({ x, y, s, o }: { x: number; y: number; s: number; o: number }) {
+  const a = 6 * s;
+  const b = 1.4 * s;
+  return (
+    <path
+      d={`M${x} ${y - a} L${x + b} ${y - b} L${x + a} ${y} L${x + b} ${y + b} L${x} ${y + a} L${x - b} ${y + b} L${x - a} ${y} L${x - b} ${y - b} Z`}
+      fill={GLOW}
+      stroke="var(--char-glow-edge)"
+      strokeWidth={0.5}
+      opacity={o}
+    />
+  );
+}
+/** A repeatable scatter: the same “random” for the same index every loop. */
+const hash = (i: number) => {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+const HELLO: Moment = {
+  id: "antenna-hello",
+  event: "quiet",
+  label: "Antenna hello",
+  note: "It turns to you and its antenna tips light up one after the other, left then right, and bob like a little wave; a small hop and a smile.",
+  dur: 2600,
+  still: 1150,
+  answer: 250,
+  at: (t) => {
+    const lit = (at: number) => key(t, [at, 0], [at + 120, 1, "out"], [at + 900, 1], [at + 1200, 0]);
+    const nod = (at: number) => (on(t, at, at + 900) ? 7 * Math.sin(((t - at) / 900) * Math.PI) * wave(t - at, 300) : 0);
+    return {
+      ...rest(t, AT.pass),
+      y: AT.pass + 2 * Math.sin(t / 600) + key(t, [1150, 0], [1270, -5, "out"], [1470, 0, "back"]),
+      yaw: key(t, [300, 28], [600, 0]),
+      head: key(t, [250, 28], [520, 0]),
+      lookX: key(t, [300, 1], [520, 0]),
+      tips: [lit(600), lit(850)],
+      tipBob: [nod(650), nod(900)],
+      mouth: t > 900 ? "grin" : "smile",
+      shut: key(t, [1350, 0], [1450, 1], [1850, 1], [1950, 0]),
+      sy: key(t, [1100, 1], [1150, 0.95, "out"], [1270, 1.03], [1470, 1]),
+    };
+  },
+};
+
+const HUG: Moment = {
+  id: "ribbon-hug",
+  event: "quiet",
+  label: "Ribbon hug",
+  note: "It wraps its ribbons round itself for a moment, a hug for itself, and squeezes; its lantern glows a little warmer. Then it lets go with a happy sigh.",
+  dur: 2800,
+  still: 1300,
+  answer: 250,
+  at: (t) => {
+    const hug = key(t, [600, 0], [950, 1, "back"], [1750, 1], [2050, 0, "out"]);
+    return {
+      ...rest(t, AT.pass),
+      y: AT.pass + 2 * Math.sin(t / 600) + key(t, [2000, 0], [2150, 2], [2400, 0]),
+      yaw: key(t, [300, 28], [600, 0]),
+      head: key(t, [250, 28], [520, 0]),
+      lookX: key(t, [300, 1], [520, 0]),
+      hug,
+      armsTo: { l: POSE.across, r: POSE.across, w: hug },
+      sx: key(t, [950, 1], [1050, 0.94, "out"], [1250, 1], [1350, 0.95, "out"], [1550, 1]),
+      rot: on(t, 1000, 1700) ? 3 * wave(t, 700) : 0,
+      glow: key(t, [900, 1], [1300, 1.45], [1800, 1.2], [2200, 1]),
+      shut: key(t, [900, 0], [1000, 1], [1900, 1], [2000, 0]),
+      mouth: on(t, 2000, 2250) ? "o" : t > 900 ? "grin" : "smile",
+      beat: hug > 0.3 ? 0 : 0.35,
+    };
+  },
+};
+
+const WINK: Moment = {
+  id: "spark-wink",
+  event: "quiet",
+  label: "Spark wink",
+  note: "It winks, and one spark pops off its flame, drifts up past its face, twinkles once and is gone.",
+  dur: 2600,
+  still: 1700,
+  answer: 250,
+  at: (t) => ({
+    ...rest(t, AT.pass),
+    yaw: key(t, [300, 28], [600, 10]),
+    head: key(t, [250, 28], [520, 10]),
+    lookX: key(t, [300, 1], [520, 1], [1200, 1], [1500, 3]),
+    look: key(t, [1200, 0], [1500, -4], [2000, -4], [2200, 0]),
+    wink: key(t, [850, 0], [950, 1], [1400, 1], [1500, 0]),
+    mouth: on(t, 850, 1900) ? "grin" : "smile",
+    glow: key(t, [900, 1], [960, 1.5, "out"], [1200, 1]),
+    sy: key(t, [900, 1], [960, 0.95, "out"], [1150, 1, "back"]),
+  }),
+  fx: (t) => {
+    if (!on(t, 950, 2150)) return null;
+    const f = WINK.at(950);
+    const [x0, y0] = tipOf(f, f.yaw);
+    const p = key(t, [950, 0], [1750, 1, "out"]);
+    const x = x0 + 16 * p + 3 * Math.sin(p * 9);
+    const y = y0 - 72 * p;
+    const tw = key(t, [1700, 0], [1820, 1, "out"], [2050, 0]);
+    return (
+      <g>
+        <circle cx={x} cy={y} r={4.5} fill={GLOW} opacity={0.3 * (1 - tw)} />
+        <circle cx={x} cy={y} r={2} fill={GLOW} stroke="var(--char-glow-edge)" strokeWidth={0.6} opacity={1 - tw} />
+        {tw > 0 && <Twinkle x={x} y={y} s={0.8 + 1.2 * tw} o={tw} />}
+      </g>
+    );
+  },
+};
+
+/* ——— a workspace set up: small bits, with some glow and sparks ——— */
+
+const BEATS = [1100, 1500, 1900];
+const HEART: Moment = {
+  id: "heartbeat",
+  event: "workspace",
+  label: "Heartbeat",
+  note: "A happy little bounce, then three soft rings of light pulse out from its lantern — ba-dum, ba-dum, ba-dum — and fade.",
+  dur: 3000,
+  still: 1650,
+  answer: 250,
+  at: (t) => {
+    const pulse = BEATS.reduce((a, b) => a + (t >= b ? Math.exp(-(t - b) / 160) : 0), 0);
+    return {
+      ...rest(t, AT.pass),
+      y: AT.pass + 2 * Math.sin(t / 600) + key(t, [600, 0], [720, -6, "out"], [920, 0, "back"]),
+      yaw: key(t, [300, 28], [600, 10]),
+      head: key(t, [250, 28], [520, 10]),
+      sy: key(t, [560, 1], [600, 0.93, "out"], [720, 1.05], [920, 1]) * (1 + 0.03 * pulse),
+      glow: 1 + 0.7 * pulse,
+      shut: key(t, [1000, 0], [1100, 1], [2300, 1], [2400, 0]),
+      mouth: t > 700 ? "grin" : "smile",
+    };
+  },
+  fx: (t) => {
+    const f = HEART.at(1100);
+    const [cx, cy] = lanternOf(f);
+    return BEATS.map((b) => {
+      if (!on(t, b, b + 1000)) return null;
+      const p = (t - b) / 1000;
+      return (
+        <circle
+          key={b}
+          cx={cx}
+          cy={cy}
+          r={6 + 38 * EASE.out(p)}
+          fill="none"
+          stroke={GLOW}
+          strokeWidth={1.8 * (1 - p) + 0.3}
+          opacity={0.85 * (1 - p)}
+        />
+      );
+    });
+  },
+};
+
+const SPARKLER: Moment = {
+  id: "sparkler",
+  event: "workspace",
+  label: "Sparkler antennae",
+  note: "Its antenna tips fizz with tiny sparks like a pair of sparklers, and it giggles, wiggling, until they fizzle out.",
+  dur: 2800,
+  still: 1300,
+  answer: 250,
+  at: (t) => {
+    const fizz = key(t, [650, 0], [760, 1, "out"], [1850, 1], [2150, 0]);
+    const giggle = on(t, 800, 2000);
+    return {
+      ...rest(t, AT.pass),
+      yaw: key(t, [300, 28], [600, 0]),
+      head: key(t, [250, 28], [520, 0]),
+      lookX: key(t, [300, 1], [520, 0]),
+      look: key(t, [600, 0], [800, -3], [2000, -3], [2200, 0]),
+      tips: [fizz, fizz],
+      rot: giggle ? 4 * wave(t, 130) : 0,
+      x: GX + (giggle ? 0.8 * wave(t, 90) : 0),
+      shut: key(t, [850, 0], [950, 1], [1950, 1], [2050, 0]),
+      mouth: on(t, 750, 2100) ? "grin" : "smile",
+    };
+  },
+  fx: (t) => {
+    if (!on(t, 700, 2300)) return null;
+    const f = SPARKLER.at(1000);
+    const out: React.ReactNode[] = [];
+    for (let i = 0; i < 60; i++) {
+      const born = 700 + i * 22;
+      const life = 320;
+      if (t < born || t > born + life || born > 1950) continue;
+      const side: -1 | 1 = i % 2 ? 1 : -1;
+      const [x0, y0] = tipAt(f, side);
+      const a = -Math.PI / 2 + (hash(i) - 0.5) * 2.6;
+      const p = (t - born) / life;
+      const d = (8 + 12 * hash(i + 99)) * EASE.out(p);
+      out.push(
+        <circle key={i} cx={x0 + Math.cos(a) * d} cy={y0 + Math.sin(a) * d + 6 * p * p} r={1.3 * (1 - p) + 0.4} fill={GLOW} stroke="var(--char-glow-edge)" strokeWidth={0.3} opacity={1 - p} />,
+      );
+    }
+    return out;
+  },
+};
+
+/** Where a kept spark ends up: by the new workspace's name, like the dot of an i. */
+const NAME_SPOT = { x: CARD.x + 120, y: CARD.y + ROW.answer - 1 };
+const KEEP: Moment = {
+  id: "spark-to-keep",
+  event: "workspace",
+  label: "A spark to keep",
+  note: "It cups its hands at its flame, peeks in at a spark it has caught, then opens them and lets the spark float up to the new workspace's name, where it twinkles once.",
+  dur: 3400,
+  still: 1150,
+  answer: 250,
+  fxFront: true,
+  at: (t) => {
+    const cup = key(t, [400, 0], [700, 1], [1500, 1], [1700, 0]);
+    return {
+      ...rest(t, AT.pass),
+      yaw: key(t, [300, 28], [600, 8]),
+      head: key(t, [250, 28], [520, 8]),
+      look: key(t, [600, 0], [800, 5], [1500, 5], [1800, -4], [2700, -4], [2900, 0]),
+      lookX: key(t, [600, 1], [800, 0], [1000, 0], [1150, 2], [1350, 0], [1500, 0], [1800, 4], [2700, 4], [2900, 1]),
+      rot: key(t, [900, 0], [1100, -6], [1350, -6], [1500, 0]),
+      armsTo: { l: POSE.cup, r: POSE.cup, w: cup },
+      mouth: on(t, 1000, 1400) ? "o" : t > 1600 ? "grin" : "smile",
+      shut: key(t, [2450, 0], [2550, 1], [2900, 1], [3000, 0]),
+    };
+  },
+  fx: (t) => {
+    if (!on(t, 650, 3200)) return null;
+    const f = KEEP.at(1000);
+    /* in the cupped hands, just in front of the lantern */
+    const [hx, hy] = [f.x + (110 + 10) * K, f.y + (226 - 20) * K];
+    const p = key(t, [1550, 0], [2450, 1, "io"]);
+    const x = hx + (NAME_SPOT.x - hx) * p;
+    const y = hy + (NAME_SPOT.y - hy) * p - 26 * Math.sin(Math.PI * p);
+    const glowIn = key(t, [650, 0], [850, 1]);
+    const tw = key(t, [2450, 0], [2570, 1, "out"], [2850, 0]);
+    const fade = key(t, [2850, 1], [3200, 0]);
+    return (
+      <g opacity={glowIn * fade}>
+        <circle cx={x} cy={y} r={6.5 + (t < 1550 ? 1.5 * wave(t, 400) : 0)} fill={GLOW} opacity={0.45} />
+        {/* a paler core than the lantern, so it reads in front of it */}
+        <circle cx={x} cy={y} r={2.8} fill="#fff6d6" stroke="var(--char-glow-edge)" strokeWidth={0.7} />
+        {tw > 0 && <Twinkle x={x} y={y} s={0.8 + 1.2 * tw} o={tw} />}
+      </g>
+    );
+  },
+};
+
+export const MOMENTS: Moment[] = [FIZZLE, KNOT, QUERY, CODE, WAKE, LAMP, HELLO, HUG, WINK, CONSTELLATION, BOW, WARM, HEART, SPARKLER, KEEP];
 
 /* ——— the stage ——— */
 
-const COPY: Record<Event, { title: string; button: string; answer: string }> = {
-  error: { title: "Sign in", button: "Sign in", answer: "That didn't match. Try again?" },
-  signin: { title: "Sign in", button: "Sign in", answer: "Welcome back, Asha." },
-  signup: { title: "Create your account", button: "Create account", answer: "You're in. Welcome to Sparkles." },
+type Copy = { title: string; button: string; answer: string; fields: readonly [string, string][] };
+const SIGN_IN: Copy["fields"] = [
+  ["Email", "asha@school.org"],
+  ["Password", "•••••••••"],
+];
+const COPY: Record<Event, Copy> = {
+  error: { title: "Sign in", button: "Sign in", answer: "That didn't match. Try again?", fields: SIGN_IN },
+  signin: { title: "Sign in", button: "Sign in", answer: "Welcome back, Asha.", fields: SIGN_IN },
+  quiet: { title: "Sign in", button: "Sign in", answer: "Welcome back, Asha.", fields: SIGN_IN },
+  signup: { title: "Create your account", button: "Create account", answer: "You're in. Welcome to Sparkles.", fields: SIGN_IN },
+  workspace: {
+    title: "Set up your workspace",
+    button: "Create workspace",
+    answer: "Year 8 Science is ready.",
+    fields: [
+      ["Workspace name", "Year 8 Science"],
+      ["Who it's for", "A class"],
+    ],
+  },
 };
 
 function useLoop(len: number, reduce: boolean) {
@@ -603,12 +884,7 @@ function MomentStage({ m }: { m: Moment }) {
           {copy.answer}
         </div>
         <div className="transition-opacity duration-300" style={{ opacity: success ? 0 : 1 }}>
-          {(
-            [
-              ["Email", ROW.email, ROW.user, "asha@school.org"],
-              ["Password", ROW.password, ROW.pass, "•••••••••"],
-            ] as const
-          ).map(([label, ly, fy, v]) => (
+          {copy.fields.map(([label, v], i) => [label, i ? ROW.password : ROW.email, i ? ROW.pass : ROW.user, v] as const).map(([label, ly, fy, v]) => (
             <React.Fragment key={label}>
               <span className="instrument absolute left-[18px] text-[11px] text-muted-foreground" style={{ top: ly }}>
                 {label}
@@ -667,7 +943,7 @@ function MomentStage({ m }: { m: Moment }) {
       </svg>
 
       <svg className="pointer-events-none absolute inset-0 overflow-visible" width={W} height={H} aria-hidden style={{ opacity: vis }}>
-        {m.fx?.(t, uid)}
+        {!m.fxFront && m.fx?.(t, uid)}
         {sparks.map((s, i) => (
           <g key={i} opacity={1 - s.age}>
             <circle cx={s.x} cy={s.y + 10 * s.age} r={s.r * 2.4} fill={GLOW} opacity={0.3} />
@@ -706,12 +982,21 @@ function MomentStage({ m }: { m: Moment }) {
             knot={f.knot ?? 0}
             curl={f.curl ?? 0}
             bow={f.bow ?? 0}
+            tips={f.tips}
+            tipBob={f.tipBob}
+            hug={f.hug ?? 0}
             blanket={f.blanket ?? 0}
             wiggle={f.wiggle ?? 0}
             uid={`${uid}-w`}
           />
         </svg>
       </div>
+
+      {m.fxFront && (
+        <svg className="pointer-events-none absolute inset-0 overflow-visible" width={W} height={H} aria-hidden style={{ opacity: vis }}>
+          {m.fx?.(t, uid)}
+        </svg>
+      )}
     </div>
   );
 }
