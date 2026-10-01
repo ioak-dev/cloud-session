@@ -356,3 +356,38 @@ svg[data-still="true"] .spark-still {
   content-visibility: auto;
   contain-intrinsic-size: auto 480px;
 }
+
+/* Wisp's light on what is around it (proposal, `WispForm lit`): its own yellow laid over the
+   ground, the card and the fields at low strength. On the dark ground it reads as light; on the
+   light ground, where nothing is brighter than paper, as a warm tint, so it is laid on lighter. */
+:root {
+  --wisp-light-peak: 0.34;
+  --wisp-field-peak: 0.5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --wisp-light-peak: 0.34;
+    --wisp-field-peak: 0.6;
+  }
+}
+.dark {
+  --wisp-light-peak: 0.34;
+  --wisp-field-peak: 0.6;
+}
+/* The light spills past its block into the page margin, so its block is never skipped (and so
+   never clipped to its box). */
+.studio-page > .wisp-lit-block {
+  content-visibility: visible;
+}
+/* The page's side: a field reads where the light is (`litField`) and catches it on its own
+   surface and on the rim facing Wisp. */
+.wisp-lit-field[style*="--lit"] {
+  background-image: radial-gradient(
+    circle var(--lr) at var(--lx) var(--ly),
+    color-mix(in oklab, #ffcf4a calc(var(--lit) * var(--wisp-field-peak)), transparent),
+    transparent 70%
+  );
+  box-shadow:
+    inset 2px 0 0 color-mix(in oklab, #ffcf4a calc(var(--lit) * var(--wisp-field-peak) * 2), transparent),
+    -2px 0 10px -2px color-mix(in oklab, #ffcf4a calc(var(--lit) * var(--wisp-field-peak) * 1.5), transparent);
+}
