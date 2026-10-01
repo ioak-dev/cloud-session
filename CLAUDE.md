@@ -25,6 +25,7 @@ npm start
 | `src/design/nix/wisp-warm.tsx` | Wisp, warmer: five proposed variations (Hearth, Scamp, Moony, Snug, and the four combined); Wisp itself unchanged |
 | `src/design/nix/wisp-ribbon.tsx` | Wisp's ribbon wings: the three kept variants (Clean, chosen; Glow tips and Spirit, reference) and `withRibbon`, which puts them on any Wisp |
 | `src/design/nix/wisp-clean.tsx` | Proposals on Clean: tail patterns (Lantern, Core), head shapes (Candle, Dewdrop) and Snug's thicker arms; `CLEAN_PICK`, the main character (Clean ribbons, Core tail, Snug arms, drop head) |
+| `src/design/nix/wisp-wordmark.tsx` | Wordmark candidates for “sparkles” (round two: eight Google Fonts faces), set beside the chosen app icon |
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |

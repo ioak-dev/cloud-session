@@ -27,8 +27,9 @@ import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
-import { APP_ICON, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
+import { APP_ICON, APP_ICON_FACES, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
+import { WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
@@ -652,6 +653,32 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
           ))}
         </div>
+
+        <h3 className="material-heading mt-8 text-base text-foreground">
+          The icon’s face — ink, white, or Bean’s white eyes
+        </h3>
+        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+          The face on the yellow drop three ways. Ink, as chosen. White eyes and a white smile:
+          white on the yellow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and
+          is gone at 16px. White eyes with ink pupils, as the Bean eye style draws them: the white
+          is the eye and the pupil carries the contrast, so the face holds at every size.
+        </p>
+        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+          {APP_ICON_FACES.map((l) => (
+            <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
+          ))}
+        </div>
+
+        <h3 className="material-heading mt-8 text-base text-foreground">
+          Wordmark — candidates beside the icon
+        </h3>
+        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+          A fresh round of faces for “sparkles”, chosen to fit the mark: round bowls, round or soft
+          terminals like the antennae’s caps, a stroke near the stalks’ weight, and open letters
+          that stay legible for a child and at small sizes. Each is shown beside the icon on white,
+          on dark, reversed on the primary, and at 16px. All are on Google Fonts under the OFL.
+        </p>
+        <WordmarkSheet />
 
         <h3 className="material-heading mt-8 text-base text-foreground">
           The other proposals (not chosen)

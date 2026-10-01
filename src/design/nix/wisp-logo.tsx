@@ -847,6 +847,85 @@ const LIGHT_MONO: Logo = {
   },
 };
 
+/* ——— the chosen icon's face: ink (as chosen), white, or white eyes with ink pupils ——— */
+
+/**
+ * Glow · Light with a white face: white eyes and a white smile on the yellow drop. White on the
+ * glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out, most of all at 16px.
+ */
+const LIGHT_WHITE: Logo = {
+  id: "glow-light-white",
+  label: "Glow · Light · White face",
+  line: "The chosen icon with white eyes and a white smile on the yellow drop.",
+  note: "Fails contrast: white on the glow is 1.47:1 (a graphic needs 3:1). The face fades into the drop, and at 16px it is gone; the icon becomes a yellow blob.",
+  draw: (k, size) => {
+    const white = { ...k, ink: "#ffffff" };
+    return size === "full" ? (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={32} spread={22} rise={16} stalk={4.5} tip={6} colour={k.glow} />
+        <path d={drop(64, 28, 80, 86)} fill={k.glow} />
+        <Eyes k={white} cx={64} y={84} gap={14} rx={6} ry={8.4} />
+        <Smile k={white} cx={64} y={98} w={11} />
+      </>
+    ) : (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={30} spread={28} rise={18} stalk={8} tip={10} colour={k.glow} />
+        <path d={drop(64, 26, 92, 94)} fill={k.glow} />
+        <Eyes k={white} cx={64} y={84} gap={17} rx={8} ry={11} />
+      </>
+    );
+  },
+};
+
+/** White eyes with an ink pupil each, as the Bean eye style draws them. */
+function BeanEyes({ k, cx, y, gap, rx, ry, pupil }: { k: K; cx: number; y: number; gap: number; rx: number; ry: number; pupil: number }) {
+  return (
+    <g>
+      {([-1, 1] as const).map((s) => (
+        <g key={s}>
+          <ellipse cx={cx + gap * s} cy={y} rx={rx} ry={ry} fill="#ffffff" />
+          {/* the pupils sit a little in and down: looking at you */}
+          <circle cx={cx + gap * s - s * rx * 0.18} cy={y + ry * 0.2} r={pupil} fill={k.ink} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/**
+ * Glow · Light with Bean eyes: white eyes, each with an ink pupil, and an ink smile. The white is
+ * the eye and the pupil carries the contrast (ink on white 16.4:1, ink on the glow 11.1:1), so the
+ * face holds at every size. The same eyes as Bean, one of the two styles left for the character.
+ */
+const LIGHT_BEAN: Logo = {
+  id: "glow-light-bean",
+  label: "Glow · Light · Bean eyes",
+  line: "The chosen icon with white eyes and ink pupils, as the Bean eye style, and an ink smile.",
+  note: "Keeps white in the face and still reads: the pupils carry it at 16px. Brighter and more alive than plain ink eyes, and the eyes can look somewhere. Ties the icon to the Bean eye style, if Bean is chosen for the character.",
+  draw: (k, size) =>
+    size === "full" ? (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={32} spread={22} rise={16} stalk={4.5} tip={6} colour={k.glow} />
+        <path d={drop(64, 28, 80, 86)} fill={k.glow} />
+        <BeanEyes k={k} cx={64} y={83} gap={14} rx={8} ry={10} pupil={4.4} />
+        <Smile k={k} cx={64} y={99} w={11} />
+      </>
+    ) : (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={30} spread={28} rise={18} stalk={8} tip={10} colour={k.glow} />
+        <path d={drop(64, 26, 92, 94)} fill={k.glow} />
+        <BeanEyes k={k} cx={64} y={83} gap={17} rx={10} ry={12.5} pupil={6.5} />
+      </>
+    ),
+};
+
+/** The chosen icon's face, three ways: ink as chosen, white as asked, and Bean's white eyes. */
+export const APP_ICON_FACES: Logo[] = [GLOW_LIGHT, LIGHT_WHITE, LIGHT_BEAN];
+
 /**
  * The app icon: Glow · Light. Solid colours only (no gradient, no halo, no shine), in the
  * product's fixed colours (`K_SPARKLES`), never the studio's scheme switch. Contrast, Sparkles
