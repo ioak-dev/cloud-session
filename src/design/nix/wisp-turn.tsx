@@ -529,7 +529,8 @@ function Bow({ b, uid }: { b: number; uid: string }) {
   const loop = "M100 42 C88 24 66 24 70 40 C73 52 90 50 100 42 Z";
   const tail = "M98 45 Q92 56 84 66 L92 63 L94 70 Q99 57 101 46 Z";
   return (
-    <g transform={`translate(100 42) scale(${b}) translate(-100 -42)`} opacity={Math.min(1, b * 2)}>
+    /* big enough to read at the form's size: about twice the drop's tip, sitting up on it */
+    <g transform={`translate(100 40) scale(${2 * b}) translate(-100 -42)`} opacity={Math.min(1, b * 2)} strokeWidth={HAIR / 2}>
       <defs>
         <linearGradient id={`${uid}-bow`} gradientUnits="userSpaceOnUse" x1="100" y1="24" x2="100" y2="70">
           <stop offset="0" stopColor={C.tint} />
@@ -537,12 +538,12 @@ function Bow({ b, uid }: { b: number; uid: string }) {
         </linearGradient>
       </defs>
       {[1, -1].map((s) => (
-        <g key={s} transform={s < 0 ? "translate(200 0) scale(-1 1)" : undefined} fill={`url(#${uid}-bow)`} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round">
+        <g key={s} transform={s < 0 ? "translate(200 0) scale(-1 1)" : undefined} fill={`url(#${uid}-bow)`} stroke={C.hi} strokeLinejoin="round">
           <path d={tail} />
           <path d={loop} />
         </g>
       ))}
-      <ellipse cx={100} cy={42} rx={6} ry={5.5} fill={C.tint} stroke={C.hi} strokeWidth={HAIR} />
+      <ellipse cx={100} cy={42} rx={6} ry={5.5} fill={C.tint} stroke={C.hi} />
     </g>
   );
 }
@@ -551,7 +552,10 @@ function Bow({ b, uid }: { b: number; uid: string }) {
 function Knot({ k, yaw }: { k: number; yaw: number }) {
   const q = proj(0, -58, yaw);
   return (
-    <g transform={`translate(${q.x} 212) scale(${1.4 * k})`} fill={C.tint} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round">
+    /* big enough to read at the form's size, with its two ends hanging */
+    <g transform={`translate(${q.x} 206) scale(${2.6 * k})`} fill={C.tint} stroke={C.hi} strokeWidth={HAIR / 2} strokeLinejoin="round">
+      <path d="M-2 4 Q-8 14 -12 22 L-7 20 L-6 25 Q-2 14 1 5 Z" />
+      <path d="M2 4 Q7 13 9 20 L4 18 L2 23 Q1 13 -1 5 Z" />
       <path d="M0 0 C-14 -14 -22 4 -8 6 C-2 7 2 3 0 0 Z" />
       <path d="M0 0 C14 -14 22 4 8 6 C2 7 -2 3 0 0 Z" />
       <ellipse cx={0} cy={1} rx={5} ry={4.5} />
