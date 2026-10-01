@@ -204,6 +204,36 @@ The original bench firefly stays in `candidates.tsx` for reference. **Next step:
 
 Once one is chosen, the main character’s silhouette, palette and ability stay fixed across every context. Only pose, expression and authored wardrobe change. The glow is its signature, not a status.
 
+**App icon — proposals.** Six marks made from Wisp's shape, not the full character, the way Duolingo's icon is Duo's head (`src/design/nix/wisp-logo.tsx`, `LOGOS`; shown in the studio as “Wisp — app icon”). Each has an app-icon drawing and a simplified one for 32px and under (favicon, tab, notification): no mouth, rings or wing spots, eyes without shines, nothing thinner than a pixel at 16px. Wisp's drawing rules hold: no black outlines, no highlights, the product's primary, the glow as its own colour. They draw with the scheme's tokens, so the header recolours them; `npm run logos` writes them in the Sparkles scheme to `docs/logo/` as `<id>.svg` and `<id>-favicon.svg`, with `sheet.png` showing all six at 220, 64, 32 and 16px on both grounds.
+
+| Mark | What it is | Strong / weak |
+|---|---|---|
+| Drop | The head front on: droplet, eyes, smile, two glowing antennae, on a pale tile | The face is the icon; reads at 16px as a blue drop with two yellow dots |
+| Figure | The whole figure reduced: head, wings, ringed flame, on the primary | The only one that says firefly; the head is small at 16px, the flame carries it |
+| Flight | Side-on, leaning into its way, flame streaming, sparks behind, on a night tile | Motion and the spark trail; one eye, so less face |
+| Glow | The drop and antennae as a primary silhouette in its own yellow light, pale eyes | Boldest and clearest at 16px; least character large. The yellow field is the glow, not a status hue |
+| Peek | The top of the head rising from the bottom edge, looking up, on the deep primary | Most personality; cropped, so at 16px it is a blue hill with eyes |
+| Ember | Head and flame as one shape: the drop's colour runs into light and curls off | An abstract mark that is still Wisp; works without the face as a wordmark's dot |
+
+None is chosen. The eye style is still between Bean and Gumdrop; the marks use plain ink eyes until it is decided.
+
+**Drop and Glow — variations** (`LOGO_VARIANTS`; `docs/logo/sheet-variants.png`):
+
+| Mark | What changes |
+|---|---|
+| Drop · Night | Drop on a night tile, sparks haloed, a soft light rising from below: for dark home screens and dark mode |
+| Drop · Scamp | One antenna flopped over in a curl, a wink, a lopsided grin: the asymmetry makes the silhouette only Wisp's |
+| Drop · Flat | Two flat tones (mid, with its own deeper shade underneath) on white: for print and merchandise |
+| Drop · Lit | The head warms toward its chin as if its flame were just below the frame, on the deep primary |
+| Glow · Halo | The primary silhouette in a disc of its own light on a night tile |
+| Glow · Scamp | Glow with the flopped antenna and a wink |
+| Glow · Light | Reversed: a yellow drop with ink eyes on the primary. A mark only; the character's body stays in the primary |
+| Glow · Round | In a circle, inside the inner 80% safe zone: for avatars and launchers that cut a circle |
+
+**What the platforms require.** An app icon is solid: the App Store icon has no alpha; iOS 26 icons are layered in Icon Composer and the system adds the glass, so each layer is supplied flat and opaque; an Android adaptive or a PWA `maskable` icon needs an opaque background with the mark inside the inner 80%; an `apple-touch-icon` with transparency turns black on iOS. Only the browser favicon may be transparent, and then the mark must hold on both a light and a dark tab, which a drop in `C.mid` does. So the tile stays; Glow · Round shows the safe-zone layout.
+
+**Wordmark — candidates** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
+
 ## Side characters
 
 | # | Character | Ability | Status |

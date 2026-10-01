@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node studio.mjs",
     "build": "vite build",
+    "logos": "node scripts/export-logos.mjs",
     "typecheck": "tsc --noEmit"
   },
   "overrides": {
