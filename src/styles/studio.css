@@ -56,6 +56,11 @@
   --char-line: oklch(0.2 0.04 262 / 0.3);
   --char-thin: var(--char-primary);
   --char-glow-edge: #e3a41b;
+  /* The ribbons' smoke: a mist of the product colour, quieter than the glow and the sparks on
+     either ground. On light a mid tint, so it shows on the pale ground; on dark a pale tint, held
+     lower, so it does not shine. */
+  --char-smoke: color-mix(in oklab, var(--char-primary) 42%, white);
+  --char-smoke-peak: 0.5;
 
   --guide-ink: oklch(0.249 0.022 354);
   --guide-body: oklch(0.373 0.112 278);
@@ -91,6 +96,8 @@
     --accent-deep: oklch(0.800 0.150 80);
     --read-w: 370;
     --char-thin: var(--char-hi);
+    --char-smoke: color-mix(in oklab, var(--char-primary) 30%, white);
+    --char-smoke-peak: 0.38;
     color-scheme: dark;
   }
 }
@@ -109,6 +116,8 @@
   --accent-deep: oklch(0.800 0.150 80);
   --read-w: 370;
   --char-thin: var(--char-hi);
+  --char-smoke: color-mix(in oklab, var(--char-primary) 30%, white);
+  --char-smoke-peak: 0.38;
   color-scheme: dark;
 }
 
@@ -318,10 +327,10 @@ svg[data-still="true"] .spark-still {
     opacity: 0;
   }
   15% {
-    opacity: 0.85;
+    opacity: var(--char-smoke-peak);
   }
   100% {
-    transform: translate(var(--dx), var(--dy)) scale(2.4);
+    transform: translate(var(--dx), var(--dy)) scale(2.1);
     opacity: 0;
   }
 }

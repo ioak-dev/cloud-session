@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { Candidate, Ctx } from "./candidates";
 import { Antenna, bright, palette } from "./firefly-variants";
 import type { Palette } from "./rig/palette";
@@ -107,7 +109,8 @@ function Antennae({ mood }: Ctx) {
   );
 }
 
-function Head(c: Ctx) {
+/** The head: the drop (or another head shape, `d`) with the antennae behind it. */
+export function Head({ d = DROPLET, ...c }: Ctx & { d?: string }) {
   const g = `${c.uid}-wisphead`;
   return (
     <g>
@@ -121,7 +124,7 @@ function Head(c: Ctx) {
           <stop offset="100%" stopColor={C.primary} />
         </radialGradient>
       </defs>
-      <path d={DROPLET} fill={`url(#${g})`} />
+      <path d={d} fill={`url(#${g})`} />
     </g>
   );
 }
@@ -199,8 +202,12 @@ export function Wings() {
  * The flame is the lower body turning into light. It starts up inside the body in the body's own
  * colour, so where the two overlap there is no seam at any angle of sway, and only below the body
  * does it turn to glow and then amber. No edge line: a line would show where it is still body.
+ * `children` is a pattern drawn on the flame, under its rings, moving with it.
  */
-export function Flame({ uid, mood }: Ctx) {
+export const FLAME =
+  "M84 170 C84 164 116 164 116 170 C126 200 126 232 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C76 234 74 202 84 170 Z";
+
+export function Flame({ uid, mood, children }: Ctx & { children?: ReactNode }) {
   const g = `${uid}-wispflame`;
   return (
     <g data-joint="tail" style={pivot("tail", WISP.j)}>
@@ -221,10 +228,8 @@ export function Flame({ uid, mood }: Ctx) {
         fill={pal.glow}
         opacity={0.35 * bright(mood)}
       />
-      <path
-        d="M84 170 C84 164 116 164 116 170 C126 200 126 232 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C76 234 74 202 84 170 Z"
-        fill={`url(#${g})`}
-      />
+      <path d={FLAME} fill={`url(#${g})`} />
+      {children}
       {/* two rings, as on a firefly's lantern: fixed anatomy */}
       <path
         d="M84 214 Q102 222 122 212 M88 231 Q102 237 116 228"

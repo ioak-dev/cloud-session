@@ -25,6 +25,8 @@ import { C } from "./theme";
  */
 
 const GLOW = WISP_PAL.glow;
+/** The smoke's colour, set per ground in `studio.css` so it shows on light and stays quiet on dark. */
+const SMOKE = "var(--char-smoke)";
 
 const sides = [
   ["L", -1],
@@ -314,9 +316,9 @@ export function FinishedRibbons({
               {form.puffs && (
                 /* a puff: its colour at the heart, nothing at the edge */
                 <radialGradient id={`${g}-puff`}>
-                  <stop offset="0" stopColor={form.glow ? GLOW : C.tint} stopOpacity={0.9} />
-                  <stop offset="0.55" stopColor={form.glow ? GLOW : C.tint} stopOpacity={0.45} />
-                  <stop offset="1" stopColor={form.glow ? GLOW : C.tint} stopOpacity={0} />
+                  <stop offset="0" stopColor={form.glow ? GLOW : SMOKE} stopOpacity={1} />
+                  <stop offset="0.55" stopColor={form.glow ? GLOW : SMOKE} stopOpacity={0.5} />
+                  <stop offset="1" stopColor={form.glow ? GLOW : SMOKE} stopOpacity={0} />
                 </radialGradient>
               )}
             </defs>

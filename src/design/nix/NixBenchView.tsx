@@ -20,6 +20,7 @@ import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon";
+import { CLEAN_HEADS, CLEAN_TAILS } from "./wisp-clean";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -549,7 +550,8 @@ const REFERENCE_GROUPS: Group[] = [
 
 /** The main character's page: Wisp as drawn (`pairs`), or its ribbon clone (`ribbon`). */
 export function WispPage({ wings }: { wings: WingStyle }) {
-  const [variant, setVariant] = React.useState<RibbonVariantId>("spirit");
+  /* Clean is the chosen ribbon variant; Glow tips and Spirit are on the reference page */
+  const variant: RibbonVariantId = "clean";
   const ribbon = wings === "ribbon";
   const v = RIBBON_VARIANTS.find((x) => x.id === variant)!;
   const line = ribbon ? RIBBON_LINES[variant] : PAIRS;
@@ -569,30 +571,31 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             The Wisp page again, with the ribbon wings as the main character. Wisp started with one
             pair of ribbon wings that trailed down past the body to a point, like a scarf or a
             ghost’s hem; “Finalise Wisp” swapped them for two pairs of spotted wings. Everything else
-            is Wisp as drawn. Choose a variant below and every figure on the page — the turnaround,
-            the flight, the form, the warmer proposals, the eye styles and the acting — wears it.
-            Proposal, not adopted.
+            is Wisp as drawn. The ribbons are Clean: one ribbon each side, fading to nothing, its
+            tail swaying and a little mist leaving the tips. Every figure on the page — the
+            turnaround, the flight, the form, the warmer proposals, the eye styles and the acting —
+            wears it. Glow tips and Spirit are on the{" "}
+            <a href="#/references" className="text-foreground underline">
+              References
+            </a>{" "}
+            page. Proposal, not adopted.
           </p>
-          <div className="mt-5 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3 sm:max-w-[64rem]">
-            <span className="instrument text-xs text-muted-foreground">Ribbon variant</span>
-            <FilterSet className="flex-wrap">
-              {RIBBON_VARIANTS.map((x) => (
-                <FilterSegment key={x.id} pressed={x.id === variant} onClick={() => setVariant(x.id)}>
-                  {x.label}
-                </FilterSegment>
-              ))}
-            </FilterSet>
-            <div className="flex flex-wrap items-end gap-4">
-              {RIBBON_VARIANTS.map((x) => (
-                <figure key={x.id} className="m-0 w-28 shrink-0">
-                  <NixFigure c={RIBBON_LINES[x.id].main} className="h-36 w-full" />
-                </figure>
-              ))}
-              <p className="material m-0 max-w-[40ch] text-sm text-muted-foreground">
-                <span className="material-heading text-foreground">{v.label}.</span> {v.note}
-              </p>
-            </div>
-          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            Clean — tail patterns and head shapes (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Clean as it is, then four that each change one thing on it. Two tail patterns drawn from
+            what a firefly’s light really looks like — Lantern, where only the segment between the
+            rings is lit brightest, as on a real firefly; and Core, a paler heart inside the flame,
+            following its curl. Two head shapes that move the drop’s tip toward one of the things a
+            wisp is — Candle, a taller tip that leans like a candle’s flame; and Dewdrop, a short
+            rounded tip, a drop about to fall. Front only. Shown at rest, then in every expression.
+          </p>
+          <MoodSheet
+            list={[RIBBON_LINES.clean.main, ...CLEAN_TAILS, ...CLEAN_HEADS]}
+            name={(x) => (x.id === RIBBON_LINES.clean.main.id ? "Clean (as is)" : x.label.replace("Clean · ", ""))}
+          />
         </>
       ) : (
         <p className="material mt-3 max-w-[64ch] text-muted-foreground">
@@ -785,6 +788,24 @@ export function ReferencesPage() {
         Drawings kept as reference, not candidates: the other wispy directions, Pip and the earlier
         fireflies. Wisp and its ribbon wings are on their own pages.
       </p>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — ribbon variants
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The ribbon variants not chosen. Clean is the ribbon page’s main character; these two stay
+        as reference.
+      </p>
+      <div className="mt-3 grid gap-4 sm:max-w-[48rem] sm:grid-cols-2">
+        {RIBBON_VARIANTS.filter((v) => v.id !== "clean").map((v) => (
+          <figure key={v.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={RIBBON_LINES[v.id].main} className="h-64 w-full" />
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{v.label}</span>
+              <span className="material mt-1 block text-muted-foreground">{v.note}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
       <Bench groups={REFERENCE_GROUPS} />
     </>
   );
