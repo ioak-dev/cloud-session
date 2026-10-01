@@ -2,7 +2,9 @@
 
 import * as React from "react";
 
-import { flameTip, WingStyleContext, WispTurn } from "./wisp-turn";
+import { flameTip, RibbonFormContext, WingStyleContext, WispTurn } from "./wisp-turn";
+import { FinishedRibbons } from "./wisp-ribbon";
+import { Core } from "./wisp-clean";
 import { C } from "./theme";
 
 /**
@@ -95,32 +97,12 @@ function BackWings() {
   );
 }
 
-/** The ribbons from behind: the same shape as in front, lying over the back. */
-function BackRibbons() {
-  return (
-    <>
-      {([-1, 1] as const).map((s) => (
-        <g key={s}>
-          <path
-            d={`M${100 + 10 * s} 156 C${100 + 40 * s} 136 ${100 + 66 * s} 146 ${100 + 62 * s} 172 C${100 + 60 * s} 192 ${100 + 44 * s} 204 ${100 + 44 * s} 228 C${100 + 34 * s} 206 ${100 + 32 * s} 180 ${100 + 10 * s} 166 Z`}
-            {...wingProps}
-          />
-          <path
-            d={`M${100 + 16 * s} 160 C${100 + 40 * s} 150 ${100 + 56 * s} 160 ${100 + 50 * s} 186`}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </g>
-      ))}
-    </>
-  );
-}
-
 export function WispBack() {
   const uid = useUid();
   const style = React.useContext(WingStyleContext);
+  const form = React.useContext(RibbonFormContext);
+  /* the Wisp page (ribbons) draws the picks on Clean: Snug's thicker arms and the Core tail */
+  const snug = style === "ribbon";
   return (
     <g>
       <defs>
@@ -130,16 +112,17 @@ export function WispBack() {
       {([-1, 1] as const).map((s) => (
         <g key={s}>
           <g stroke={C.primary} strokeLinecap="round" fill="none">
-            <path d={`M${100 + 16 * s} 160 L${100 + 24 * s} 178`} strokeWidth={9} />
-            <path d={`M${100 + 24 * s} 178 L${100 + 28 * s} 194`} strokeWidth={6} />
+            <path d={`M${100 + 16 * s} 160 L${100 + 24 * s} 178`} strokeWidth={snug ? 11.5 : 9} />
+            <path d={`M${100 + 24 * s} 178 L${100 + 28 * s} 194`} strokeWidth={snug ? 8 : 6} />
           </g>
-          <circle cx={100 + 28.6 * s} cy={197} r={5.8} fill={C.primary} />
+          <circle cx={100 + 28.6 * s} cy={197} r={snug ? 7.9 : 5.8} fill={C.primary} />
         </g>
       ))}
       <path
         d="M84 170 C84 164 116 164 116 170 C126 200 126 232 104 250 C98 256 100 266 110 268 C94 270 88 258 92 248 C76 234 74 202 84 170 Z"
         fill={`url(#${uid}-bf)`}
       />
+      {snug && <Core uid={`${uid}-back`} />}
       <path
         d="M84 214 Q102 222 122 212 M88 231 Q102 237 116 228"
         stroke={AMBER}
@@ -168,7 +151,7 @@ export function WispBack() {
         ))}
         <path d={DROPLET} fill={`url(#${uid}-bh)`} />
       </g>
-      {style === "ribbon" ? <BackRibbons /> : <BackWings />}
+      {style === "ribbon" ? <FinishedRibbons uid={`${uid}-back`} form={form} /> : <BackWings />}
     </g>
   );
 }
