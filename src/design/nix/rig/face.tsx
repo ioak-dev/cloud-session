@@ -1,5 +1,6 @@
 import { pivot } from "./skeleton";
 import type { EyeKit, MouthKit } from "./eyes";
+import type { Viseme } from "./visemes";
 import { DROP, TONGUE, WHITE, type Palette } from "./palette";
 
 /**
@@ -425,12 +426,15 @@ export function Face({
   pal,
   browColor,
   uid = "face",
+  viseme,
 }: {
   mood: Mood;
   style: FaceStyle;
   pal: Palette;
   browColor?: string;
   uid?: string;
+  /** The mouth shape while the character talks; only a character's own mouth kit draws it. */
+  viseme?: Viseme;
 }) {
   const m = ALL_MOODS.find((x) => x.id === mood) ?? MOODS[0];
   const xl = 100 - style.eyeGap;
@@ -510,7 +514,7 @@ export function Face({
         />
       )}
       {style.mouthKit
-        ? style.mouthKit({ mood: m.id, y: style.mouthY, pal })
+        ? style.mouthKit({ mood: m.id, y: style.mouthY, pal, viseme })
         : style.mouth !== false && (
             <MouthShape kind={m.mouth} y={style.mouthY} style={style} pal={pal} />
           )}

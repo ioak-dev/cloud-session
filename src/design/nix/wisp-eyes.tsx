@@ -181,7 +181,9 @@ type Style = {
   /** The eye's half-width and half-height at rest. */
   rx: number;
   ry: number;
-  brow: { w: number; arch: number; weight: number; gap: number };
+  /** `taper`: drawn as a soft crescent, full in the middle and thinning to round tips, instead of
+   *  a stroke of even weight. `colour`: a tone other than ink (the body's own deep shade). */
+  brow: { w: number; arch: number; weight: number; gap: number; taper?: boolean; colour?: string };
   closed: number;
   /** The open eye: its shape, what is inside it, and an optional rim. */
   open: (o: {
@@ -203,11 +205,23 @@ function kit(style: Style): EyeKit {
     const ry = style.ry * k;
     const b = style.brow;
     const by = y - ry - b.gap - m.brow.lift;
-    const brow = (
+    const browInk = b.colour ?? ink;
+    const brow = b.taper ? (
+      /* a crescent: its two edges bow apart by the weight at the middle and meet at the tips;
+         a hairline of the same colour rounds the tips */
+      <path
+        d={`M${x - b.w} ${by + b.arch * 0.3} Q${x} ${by - b.arch - b.weight} ${x + b.w} ${by + b.arch * 0.3} Q${x} ${by - b.arch + b.weight} ${x - b.w} ${by + b.arch * 0.3} Z`}
+        transform={turnAt(s, m.brow.tilt, x, by)}
+        fill={browInk}
+        stroke={browInk}
+        strokeWidth={1.3}
+        strokeLinejoin="round"
+      />
+    ) : (
       <path
         d={`M${x - b.w} ${by + b.arch * 0.3} Q${x} ${by - b.arch} ${x + b.w} ${by + b.arch * 0.3}`}
         transform={turnAt(s, m.brow.tilt, x, by)}
-        {...line(ink, b.weight)}
+        {...line(browInk, b.weight)}
       />
     );
     if (m.eye === "closed")
@@ -318,6 +332,136 @@ export const BEAN_EYES = kit({
     };
   },
 });
+
+/* ——— Bean, softer: the same acting, lighter lines ——— */
+
+/**
+ * Bean drawn softer. Bean's acting is all in its parts — the roaming pupil, the lids, the brows'
+ * tilt and lift — and none of that changes here. What reads as chunky is the line: a 4.2 ink brow
+ * of even weight, a 1.8 ink rim round each eye, a 2.6 lash. Each variant lightens those:
+ * - `rim`: the eye's edge in a soft tone (the translucent `C.line`, or the face's own blue) and a
+ *   hairline, or none;
+ * - `brow`: thinner, tapered to round tips, or in the body's own deep blue rather than ink;
+ * - `pupil` and `shine`: a rounder eye with a bigger pupil and a second shine reads younger.
+ */
+type BeanSoft = {
+  rx?: number;
+  ry?: number;
+  pupil?: number;
+  /** A second, small shine low on the pupil. */
+  shine2?: boolean;
+  rim: { colour: string; width: number } | null;
+  lash: number;
+  brow: Style["brow"];
+  closed: number;
+};
+
+function bean(o: BeanSoft): EyeKit {
+  return kit({
+    rx: o.rx ?? 9.4,
+    ry: o.ry ?? 12,
+    brow: o.brow,
+    closed: o.closed,
+    open: ({ a, act: m, rx, ry, look }) => {
+      const { x, y, pal } = a;
+      const px = x + look[0] * 1.5;
+      const py = y + 1 + look[1] * 1.4;
+      const r = (o.pupil ?? 5.4) * (m.pupil ?? 1);
+      return {
+        shape: <ellipse cx={x} cy={y} rx={rx} ry={ry} />,
+        lash: o.lash,
+        rim: o.rim ? (
+          <ellipse cx={x} cy={y} rx={rx} ry={ry} fill="none" stroke={o.rim.colour} strokeWidth={o.rim.width} />
+        ) : undefined,
+        inside: (
+          <g>
+            <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={EYE_WHITE} />
+            {m.party ? (
+              <path d={sparkle(px, py, 7.4, 0.36)} fill={pal.ink} />
+            ) : (
+              <circle cx={px} cy={py} r={r} fill={pal.ink} />
+            )}
+            <circle cx={px - r * 0.4} cy={py - r * 0.45} r={Math.max(1.2, r * 0.34)} fill={EYE_WHITE} />
+            {o.shine2 && !m.party && (
+              <circle cx={px + r * 0.42} cy={py + r * 0.42} r={Math.max(0.8, r * 0.14)} fill={EYE_WHITE} />
+            )}
+            {m.spark && <path d={sparkle(px + 2, py - 2, 3)} fill={EYE_WHITE} />}
+          </g>
+        ),
+      };
+    },
+  });
+}
+
+/** Soft: Bean's own lines, each lighter — a translucent hairline rim, thinner brows, a finer lash. */
+export const BEAN_SOFT = bean({
+  rim: { colour: C.line, width: 1.1 },
+  lash: 1.8,
+  brow: { w: 7, arch: 3, weight: 2.8, gap: 3.5 },
+  closed: 3,
+});
+
+/** Feather: brows tapered to round tips, full only in the middle, like a brush stroke. */
+export const BEAN_FEATHER = bean({
+  rim: { colour: C.line, width: 1.1 },
+  lash: 2,
+  brow: { w: 7.6, arch: 3.4, weight: 3.4, gap: 3.4, taper: true },
+  closed: 3,
+});
+
+/** Blue brows: tapered brows in the body's own deep blue; ink is left for the pupils and mouth. */
+export const BEAN_BLUE = bean({
+  rim: { colour: C.line, width: 1.1 },
+  lash: 1.8,
+  brow: { w: 7.6, arch: 3.4, weight: 3.6, gap: 3.4, taper: true, colour: C.deep },
+  closed: 3,
+});
+
+/** Round: a rounder eye, a bigger pupil with two shines, a rim in the face's own blue. Cuddliest. */
+export const BEAN_ROUND = bean({
+  rx: 9.8,
+  ry: 11.2,
+  pupil: 6.1,
+  shine2: true,
+  rim: { colour: C.hi, width: 1.3 },
+  lash: 1.8,
+  brow: { w: 7, arch: 3.6, weight: 3, gap: 3.6, taper: true },
+  closed: 3,
+});
+
+/** The softer Beans, beside Bean as drawn. */
+export const BEAN_STYLES: { id: string; label: string; kit: EyeKit; note: string }[] = [
+  {
+    id: "bean",
+    label: "Bean (as drawn)",
+    kit: BEAN_EYES,
+    note: "A 4.2 ink brow of even weight, a 1.8 ink rim, a 2.6 lash: clear, but chunky.",
+  },
+  {
+    id: "bean-soft",
+    label: "Soft",
+    kit: BEAN_SOFT,
+    note: "The least change: the rim becomes a translucent hairline, the brows drop to 2.8, the lash to 1.8. Same face, lighter hand.",
+  },
+  {
+    id: "bean-feather",
+    label: "Feather",
+    kit: BEAN_FEATHER,
+    note: "The brows become tapered strokes, full in the middle and thinning to round tips, like a brush. As expressive (they still tilt and lift), gentler at rest.",
+  },
+  {
+    id: "bean-blue",
+    label: "Blue brows",
+    kit: BEAN_BLUE,
+    note: "Feather's brows in the body's own deep blue instead of ink, so only the pupils and the mouth are dark. The softest at rest; check the brows still read on the dark ground.",
+  },
+  {
+    id: "bean-round",
+    label: "Round",
+    kit: BEAN_ROUND,
+    note: "A rounder eye with a bigger pupil and two shines, rimmed in the face's own blue, with tapered brows. The youngest and cuddliest; the pupil has less room to roam, so side-eye is a little smaller.",
+  },
+];
 
 /**
  * Gumdrop: solid glossy eyes with no white, that change shape instead — lids cut them flat,

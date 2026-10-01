@@ -10,6 +10,7 @@ import { outfitParts, type Cloth, type OutfitId } from "./outfit";
 import { motionFor, POSES, type Pose, type PoseId } from "./poses";
 import { Backpack, Book, HeadProps, type PropId } from "./props";
 import { SparkTrail } from "./sparks";
+import type { Viseme } from "./visemes";
 import { CHIBI, FIGURE_VB, HEAD_VB, lerp, pivot, type P } from "./skeleton";
 
 /**
@@ -37,6 +38,8 @@ export type FigureProps = {
   headFx?: React.ReactNode;
   /** A one-off act: its own mood, motion and arms, in place of a catalogue pose. */
   act?: Pose;
+  /** The mouth shape while it talks (`visemes.ts`); drawn by the character's own mouth kit. */
+  viseme?: Viseme;
 };
 
 function Seg({ a, b, w, color, ink }: { a: P; b: P; w: number; color: string; ink: string }) {
@@ -157,6 +160,7 @@ export function NixFigure({
   label,
   headFx,
   act,
+  viseme,
 }: FigureProps) {
   const ref = React.useRef<SVGSVGElement>(null);
   const uid = React.useId().replace(/:/g, "");
@@ -372,6 +376,7 @@ export function NixFigure({
                 pal={pal}
                 browColor={c.kind === "animal" ? undefined : pal.hair}
                 uid={uid}
+                viseme={viseme}
               />
               <HeadProps on={on} pal={pal} eyeY={c.face.eyeY} eyeGap={c.face.eyeGap} />
               {/* the signature rides over any hat — it is what keeps the character itself */}

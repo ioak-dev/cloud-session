@@ -793,9 +793,457 @@ const GLOW_ROUND: Logo = {
   },
 };
 
-export const LOGOS: Logo[] = [DROP, FIGURE, FLIGHT, GLOW, PEEK, EMBER];
+/* ——— the chosen app icon: Glow · Light, and the shapes a platform asks for ——— */
 
-/** More of the two strongest: Drop and Glow. */
+/**
+ * Glow · Light in a circle: the yellow drop on a primary disc, inside the inner 80% so a circular
+ * mask never clips it. For Android adaptive icons, avatars and social profiles.
+ */
+const LIGHT_ROUND: Logo = {
+  id: "glow-light-round",
+  label: "Glow · Light · Round",
+  line: "The chosen icon in a circle: the yellow drop on a primary disc, inside the safe zone.",
+  note: "For launchers that cut a circle, avatars and social profiles. The antennae are pulled in so a circular mask never clips them.",
+  draw: (k, size) => {
+    const big = size === "full";
+    return (
+      <>
+        <path d={CIRCLE} fill={k.primary} />
+        <Antennae k={k} cx={64} top={38} spread={big ? 18 : 22} rise={big ? 12 : 13} stalk={big ? 4.5 : 8} tip={big ? 5.5 : 9} colour={k.glow} />
+        <path d={big ? drop(64, 34, 68, 74) : drop(64, 32, 78, 80)} fill={k.glow} />
+        <Eyes k={k} cx={64} y={82} gap={big ? 12 : 14} rx={big ? 5.2 : 7.4} ry={big ? 7.2 : 10} />
+        {big ? <Smile k={k} cx={64} y={95} w={10} /> : null}
+      </>
+    );
+  },
+};
+
+/**
+ * Glow · Light in one colour: the drop and antennae as a single solid shape with the eyes cut
+ * out, no tile. For themed and tinted icons (Android's monochrome layer, iOS tinted), and for
+ * one-colour print. Drawn in the primary here; the platform or the press supplies the colour.
+ */
+const LIGHT_MONO: Logo = {
+  id: "glow-light-mono",
+  label: "Glow · Light · One colour",
+  line: "The chosen mark as one solid colour, the eyes cut out: no tile, no second colour.",
+  note: "For Android's themed icon layer, iOS tinted icons, stamps and one-colour print. The silhouette alone has to say Wisp, and the drop with its two antennae does.",
+  draw: (k, size, uid) => {
+    const big = size === "full";
+    const m = `${uid}-mono`;
+    return (
+      <>
+        <mask id={m}>
+          <rect width={128} height={128} fill="#fff" />
+          <Eyes k={{ ...k, ink: "#000" }} cx={64} y={84} gap={big ? 14 : 17} rx={big ? 6 : 8} ry={big ? 8.4 : 11} />
+          {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={98} w={11} /> : null}
+        </mask>
+        <g mask={`url(#${m})`}>
+          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.primary} tipColour={k.primary} />
+          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.primary} />
+        </g>
+      </>
+    );
+  },
+};
+
+/* ——— the chosen icon's face: ink (as chosen), white, or white eyes with ink pupils ——— */
+
+/**
+ * Glow · Light with a white face: white eyes and a white smile on the yellow drop. White on the
+ * glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out, most of all at 16px.
+ */
+const LIGHT_WHITE: Logo = {
+  id: "glow-light-white",
+  label: "Glow · Light · White face",
+  line: "The chosen icon with white eyes and a white smile on the yellow drop.",
+  note: "Fails contrast: white on the glow is 1.47:1 (a graphic needs 3:1). The face fades into the drop, and at 16px it is gone; the icon becomes a yellow blob.",
+  draw: (k, size) => {
+    const white = { ...k, ink: "#ffffff" };
+    return size === "full" ? (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={32} spread={22} rise={16} stalk={4.5} tip={6} colour={k.glow} />
+        <path d={drop(64, 28, 80, 86)} fill={k.glow} />
+        <Eyes k={white} cx={64} y={84} gap={14} rx={6} ry={8.4} />
+        <Smile k={white} cx={64} y={98} w={11} />
+      </>
+    ) : (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={30} spread={28} rise={18} stalk={8} tip={10} colour={k.glow} />
+        <path d={drop(64, 26, 92, 94)} fill={k.glow} />
+        <Eyes k={white} cx={64} y={84} gap={17} rx={8} ry={11} />
+      </>
+    );
+  },
+};
+
+/** White eyes with an ink pupil each, as the Bean eye style draws them. */
+function BeanEyes({ k, cx, y, gap, rx, ry, pupil }: { k: K; cx: number; y: number; gap: number; rx: number; ry: number; pupil: number }) {
+  return (
+    <g>
+      {([-1, 1] as const).map((s) => (
+        <g key={s}>
+          <ellipse cx={cx + gap * s} cy={y} rx={rx} ry={ry} fill="#ffffff" />
+          {/* the pupils sit a little in and down: looking at you */}
+          <circle cx={cx + gap * s - s * rx * 0.18} cy={y + ry * 0.2} r={pupil} fill={k.ink} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+/**
+ * Glow · Light with Bean eyes: white eyes, each with an ink pupil, and an ink smile. The white is
+ * the eye and the pupil carries the contrast (ink on white 16.4:1, ink on the glow 11.1:1), so the
+ * face holds at every size. The same eyes as Bean, one of the two styles left for the character.
+ */
+const LIGHT_BEAN: Logo = {
+  id: "glow-light-bean",
+  label: "Glow · Light · Bean eyes",
+  line: "The chosen icon with white eyes and ink pupils, as the Bean eye style, and an ink smile.",
+  note: "Keeps white in the face and still reads: the pupils carry it at 16px. Brighter and more alive than plain ink eyes, and the eyes can look somewhere. Ties the icon to the Bean eye style, if Bean is chosen for the character.",
+  draw: (k, size) =>
+    size === "full" ? (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={32} spread={22} rise={16} stalk={4.5} tip={6} colour={k.glow} />
+        <path d={drop(64, 28, 80, 86)} fill={k.glow} />
+        <BeanEyes k={k} cx={64} y={83} gap={14} rx={8} ry={10} pupil={4.4} />
+        <Smile k={k} cx={64} y={99} w={11} />
+      </>
+    ) : (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={30} spread={28} rise={18} stalk={8} tip={10} colour={k.glow} />
+        <path d={drop(64, 26, 92, 94)} fill={k.glow} />
+        <BeanEyes k={k} cx={64} y={83} gap={17} rx={10} ry={12.5} pupil={6.5} />
+      </>
+    ),
+};
+
+/* ——— the icon's eyes, after Feather (the character's eyes) ——— */
+
+type Size = LogoSize;
+/** Where the icon's eyes sit: full size, and the 32px-and-under drawing. */
+const EYE_AT = { full: { cx: 64, y: 84, gap: 14 }, small: { cx: 64, y: 84, gap: 17 } } as const;
+/** Draws one icon eye, centred on (x, y), for side `s`. */
+type IconEye = (k: K, x: number, y: number, s: -1 | 1, size: Size, scale?: number) => ReactNode;
+
+const AMBER_RIM = "#e3a41b";
+/** Feather's soft rim as a solid tone: its 30% ink laid over the glow, so the icon stays opaque. */
+const SOFT_RIM = "#bd9945";
+
+/** A white eye with an ink pupil and shine, as Feather; `rim` is the eye's edge, if any. */
+const featherEye =
+  (rim: ((k: K) => string) | null, o: { pupil?: number; rimW?: [number, number] } = {}): IconEye =>
+  (k, x, y, s, size, scale = 1) => {
+    const big = size === "full";
+    const rx = (big ? 8 : 10) * scale;
+    const ry = (big ? 10 : 12.5) * scale;
+    const r = (big ? 4.6 : 6.6) * (o.pupil ?? 1) * scale;
+    /* the pupils sit a little in and down: looking at you */
+    const px = x - s * rx * 0.16;
+    const py = y + ry * 0.18;
+    const [wf, ws] = o.rimW ?? [1.6, 2.4];
+    return (
+      <g key={s}>
+        <ellipse cx={x} cy={y} rx={rx} ry={ry} fill="#ffffff" stroke={rim ? rim(k) : "none"} strokeWidth={big ? wf : ws} />
+        <circle cx={px} cy={py} r={r} fill={k.ink} />
+        {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#ffffff" /> : null}
+      </g>
+    );
+  };
+
+const ICON_EYES: { id: string; label: string; line: string; note: string; eye: IconEye; brows?: boolean }[] = [
+  {
+    id: "ink",
+    label: "Ink",
+    line: "Solid ink ovals: Glow · Light as chosen.",
+    note: "The strongest at 16px and the simplest. No white, so it does not echo Feather's eyes; the face reads as a symbol more than as Wisp.",
+    eye: (k, x, y, s, size) => (
+      <ellipse key={s} cx={x} cy={y} rx={size === "full" ? 6 : 8} ry={size === "full" ? 8.4 : 11} fill={k.ink} />
+    ),
+  },
+  {
+    id: "ink-shine",
+    label: "Ink · shine",
+    line: "Solid ink ovals, each with a white shine high on the inside: Feather's pupil, without the white.",
+    note: "As strong as Ink at 16px (the shine drops out there), and alive at icon size: the shine is the same catchlight Feather's pupil carries. Fixed anatomy, not a highlight that follows a light.",
+    eye: (k, x, y, s, size) => {
+      const big = size === "full";
+      const rx = big ? 6.6 : 8;
+      const ry = big ? 9 : 11;
+      return (
+        <g key={s}>
+          <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={k.ink} />
+          {big ? <circle cx={x - rx * 0.36} cy={y - ry * 0.4} r={2.4} fill="#ffffff" /> : null}
+        </g>
+      );
+    },
+  },
+  {
+    id: "feather",
+    label: "Feather",
+    line: "Feather's eye: white, a soft hairline rim, an ink pupil with its shine.",
+    note: "The character's own eyes, so icon and Wisp share one face. The rim is Feather's translucent dark laid over the yellow as one solid tone, a soft olive line; the pupil carries the face at 16px.",
+    eye: featherEye(() => SOFT_RIM),
+  },
+  {
+    id: "feather-amber",
+    label: "Feather · amber rim",
+    line: "Feather's eye rimmed in the drop's own deeper amber instead of a dark line.",
+    note: "The edge in the part's own tone, as Wisp's rules ask: the softest outline that still holds the white on the yellow. Warm, friendly; the white reads as an eye rather than a hole.",
+    eye: featherEye(() => AMBER_RIM, { rimW: [2, 2.6] }),
+  },
+  {
+    id: "feather-ink",
+    label: "Feather · ink rim",
+    line: "Outline and eyeball: the white eye ringed in ink, an ink pupil.",
+    note: "The clearest white eye at every size, but the ring is the chunky line Feather softened away; reads as Bean.",
+    eye: featherEye((k) => k.ink, { rimW: [1.8, 2.6] }),
+  },
+  {
+    id: "white",
+    label: "Eyeball on white",
+    line: "White eyes with ink pupils and no rim at all.",
+    note: "The cleanest drawing. White on the yellow is 1.47:1, so the eye's edge fades and the pupils float; at 16px it reads as two dots, like Ink.",
+    eye: featherEye(null),
+  },
+  {
+    id: "big-pupil",
+    label: "Big pupil",
+    line: "A white eye almost filled by its pupil: a crescent of white round a big ink pupil, amber rim.",
+    note: "Reads like Ink at 16px and like Feather up close: the white is a thin crescent, so the eyes look big, round and young. The cutest.",
+    eye: featherEye(() => AMBER_RIM, { pupil: 1.42, rimW: [1.6, 2.2] }),
+  },
+  {
+    id: "ring",
+    label: "Ring",
+    line: "An ink outline with the pupil inside and no white: the drop's yellow shows through the eye.",
+    note: "Light and graphic, the most 'logo'. Loses the white that makes Feather Feather, and at 16px the ring and pupil merge into a blot.",
+    eye: (k, x, y, s, size) => {
+      const big = size === "full";
+      return (
+        <g key={s}>
+          <ellipse cx={x} cy={y} rx={big ? 7.6 : 9.6} ry={big ? 9.6 : 12} fill="none" stroke={k.ink} strokeWidth={big ? 2 : 2.8} />
+          <circle cx={x - s * 1.2} cy={y + 1.8} r={big ? 3.8 : 5.4} fill={k.ink} />
+        </g>
+      );
+    },
+  },
+  {
+    id: "feather-brows",
+    label: "Feather · brows",
+    line: "Feather · amber rim with Feather's tapered ink brows.",
+    note: "The most expressive and the most like the character: the brows give it a mood even at rest. At 32px and under the brows are left out, so the small icon is Feather · amber rim.",
+    eye: featherEye(() => AMBER_RIM, { rimW: [2, 2.6] }),
+    brows: true,
+  },
+];
+
+/** A tapered brow over an icon eye, as Feather's: full in the middle, round at the tips. */
+function IconBrow({ k, x, y }: { k: K; x: number; y: number }) {
+  const by = y - 15;
+  return (
+    <path
+      d={`M${x - 7} ${by + 1} Q${x} ${by - 6.4} ${x + 7} ${by + 1} Q${x} ${by - 1.4} ${x - 7} ${by + 1} Z`}
+      fill={k.ink}
+      stroke={k.ink}
+      strokeWidth={1.3}
+      strokeLinejoin="round"
+    />
+  );
+}
+
+/** Glow · Light with one of the eyes. */
+const lightWithEyes = (e: (typeof ICON_EYES)[number]): Logo => ({
+  id: `glow-light-eyes-${e.id}`,
+  label: e.label,
+  line: e.line,
+  note: e.note,
+  draw: (k, size) => {
+    const big = size === "full";
+    const at = EYE_AT[size];
+    return (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.glow} />
+        <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.glow} />
+        {([-1, 1] as const).map((s) => e.eye(k, at.cx + at.gap * s, at.y, s, size))}
+        {big && e.brows ? ([-1, 1] as const).map((s) => <IconBrow key={`b${s}`} k={k} x={at.cx + at.gap * s} y={at.y} />) : null}
+        {big ? <Smile k={k} cx={64} y={99} w={11} /> : null}
+      </>
+    );
+  },
+});
+
+/** Glow · Light with each of the eyes, for choosing the icon's eyes after Feather. */
+export const APP_ICON_EYES: Logo[] = ICON_EYES.map(lightWithEyes);
+/** The eyes not chosen: every proposal but Feather (reference). */
+export const APP_ICON_EYES_REFERENCE: Logo[] = APP_ICON_EYES.filter((l) => l.id !== "glow-light-eyes-feather");
+
+/** The chosen icon's face, three ways: ink as chosen, white as asked, and Bean's white eyes. */
+export const APP_ICON_FACES: Logo[] = [GLOW_LIGHT, LIGHT_WHITE, LIGHT_BEAN];
+
+/** Feather's eyes on the icon (`featherEye` with the soft rim): the app icon's eyes. */
+const FEATHER_EYE = featherEye(() => SOFT_RIM);
+
+/** The chosen icon in a circle, with Feather's eyes. */
+const FEATHER_ROUND: Logo = {
+  id: "glow-light-feather-round",
+  label: "Glow · Light · Round",
+  line: "The app icon in a circle: the yellow drop on a primary disc, inside the safe zone, with Feather's eyes.",
+  note: "For launchers that cut a circle, avatars and social profiles. The antennae are pulled in so a circular mask never clips them.",
+  draw: (k, size) => {
+    const big = size === "full";
+    const gap = big ? 12 : 14;
+    return (
+      <>
+        <path d={CIRCLE} fill={k.primary} />
+        <Antennae k={k} cx={64} top={38} spread={big ? 18 : 22} rise={big ? 12 : 13} stalk={big ? 4.5 : 8} tip={big ? 5.5 : 9} colour={k.glow} />
+        <path d={big ? drop(64, 34, 68, 74) : drop(64, 32, 78, 80)} fill={k.glow} />
+        {([-1, 1] as const).map((s) => FEATHER_EYE(k, 64 + gap * s, 82, s, size, big ? 0.86 : 0.84))}
+        {big ? <Smile k={k} cx={64} y={96} w={10} /> : null}
+      </>
+    );
+  },
+};
+
+/**
+ * The chosen mark in one colour, with Feather's eyes, no tile. Two ways to draw the face:
+ * - `fill`, for a coloured or black mark: the eyes' whites are white, so they read white on any
+ *   ground; the pupils are the mark's own colour, with a white shine; the smile is white.
+ * - `cut`, for a white mark on a dark ground: white eyes on a white head would vanish, so a thin
+ *   ring is cut round each eye to part it from the head, and the pupils and smile are cut out,
+ *   showing the dark ground through them; the shine stays white inside the pupil.
+ */
+function monoMark({
+  id,
+  label,
+  line,
+  note,
+  colour,
+  face,
+}: {
+  id: string;
+  label: string;
+  line: string;
+  note: string;
+  colour: (k: K) => string;
+  face: "fill" | "cut";
+}): Logo {
+  return {
+    id,
+    label,
+    line,
+    note,
+    draw: (k, size, uid) => {
+      const big = size === "full";
+      const c = colour(k);
+      const at = EYE_AT[size];
+      const rx = big ? 8 : 10;
+      const ry = big ? 10 : 12.5;
+      const r = big ? 4.6 : 6.6;
+      const eyes = ([-1, 1] as const).map((s) => {
+        const x = at.cx + at.gap * s;
+        return { s, x, px: x - s * rx * 0.16, py: at.y + ry * 0.18 };
+      });
+      const shape = (
+        <>
+          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={c} tipColour={c} />
+          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={c} />
+        </>
+      );
+      if (face === "fill")
+        return (
+          <>
+            {shape}
+            {eyes.map(({ s, x, px, py }) => (
+              <g key={s}>
+                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="#ffffff" />
+                <circle cx={px} cy={py} r={r} fill={c} />
+                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#ffffff" /> : null}
+              </g>
+            ))}
+            {big ? <Smile k={{ ...k, ink: "#ffffff" }} cx={64} y={99} w={11} /> : null}
+          </>
+        );
+      const m = `${uid}-cut`;
+      return (
+        <>
+          <mask id={m}>
+            <rect width={128} height={128} fill="#fff" />
+            {eyes.map(({ s, x, px, py }) => (
+              <g key={s}>
+                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="none" stroke="#000" strokeWidth={big ? 2 : 2.6} />
+                <circle cx={px} cy={py} r={r} fill="#000" />
+                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#fff" /> : null}
+              </g>
+            ))}
+            {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={99} w={11} /> : null}
+          </mask>
+          <g mask={`url(#${m})`}>{shape}</g>
+        </>
+      );
+    },
+  };
+}
+
+const FEATHER_MONO = monoMark({
+  id: "glow-light-feather-mono",
+  label: "Glow · Light · One colour",
+  line: "The app icon as one colour, the primary, with white eyes and smile: no tile.",
+  note: "For Android's themed icon layer, iOS tinted icons and one-colour print in the brand colour. The eyes' whites are white, so they stay white on a light or a dark ground; the pupils are the mark's own blue.",
+  colour: (k) => k.primary,
+  face: "fill",
+});
+
+const FEATHER_MONO_BLACK = monoMark({
+  id: "glow-light-feather-mono-black",
+  label: "Glow · Light · Black",
+  line: "The one-colour mark in black, with white eyes and smile: for light grounds.",
+  note: "For light mode, black-and-white print, stamps and documents where the brand colour is not available. The whites stay white; the pupils are black.",
+  colour: () => "#000000",
+  face: "fill",
+});
+
+const FEATHER_MONO_WHITE = monoMark({
+  id: "glow-light-feather-mono-white",
+  label: "Glow · Light · White",
+  line: "The one-colour mark in white, for dark grounds: a thin ring parts each white eye from the head; the pupils and smile show the ground.",
+  note: "For dark mode, and white on a photo or a dark surface. White eyes on a white head would vanish, so a ring is cut round each eye and the pupils are cut through; the shine stays white.",
+  colour: () => "#ffffff",
+  face: "cut",
+});
+
+/**
+ * The app icon: Glow · Light, with Feather's eyes. Solid colours only (no gradient, no halo, no shine), in the
+ * product's fixed colours (`K_SPARKLES`), never the studio's scheme switch. Contrast, Sparkles
+ * scheme: the glow on the primary 3.9:1, the ink eyes on the glow 11.1:1; the primary tile 5.7:1
+ * on a white home screen and 3.1:1 on a dark one. Blue and yellow is the pair that survives the
+ * common colour blindnesses.
+ */
+export const APP_ICON: Logo = {
+  ...lightWithEyes(ICON_EYES.find((e) => e.id === "feather")!),
+  id: "glow-light-feather",
+  label: "Glow · Light",
+  line: "Wisp's drop as its own light: a solid yellow drop with Feather's eyes and two antennae, on a solid primary tile.",
+  note: "Feather's eyes: white, a soft solid rim, an ink pupil with its shine, so icon and character share one face. The pupils carry the face at 16px.",
+};
+/** The chosen icon and its other shapes: the circle, and the one-colour mark in the primary, black and white. */
+export const APP_ICON_SET: Logo[] = [APP_ICON, FEATHER_ROUND, FEATHER_MONO, FEATHER_MONO_BLACK, FEATHER_MONO_WHITE];
+/** Glow · Light as first chosen, with ink eyes, and its circle and one-colour shapes: reference. */
+export const APP_ICON_INK: Logo[] = [
+  { ...GLOW_LIGHT, label: "Glow · Light · ink eyes" },
+  { ...LIGHT_ROUND, label: "Glow · Light · Round · ink eyes" },
+  { ...LIGHT_MONO, label: "Glow · Light · One colour · ink eyes" },
+];
+
+export const LOGOS: Logo[] = [DROP, GLOW, PEEK, EMBER];
+
+/** More of the two strongest: Drop and Glow (Glow · Light, chosen, is shown on its own). */
 export const LOGO_VARIANTS: Logo[] = [
   DROP_NIGHT,
   DROP_WINK,
@@ -803,9 +1251,11 @@ export const LOGO_VARIANTS: Logo[] = [
   DROP_LIT,
   GLOW_HALO,
   GLOW_SCAMP,
-  GLOW_LIGHT,
   GLOW_ROUND,
 ];
+
+/** Retired: drawn with the butterfly wings, which are no longer Wisp's (`#/butterfly`). */
+export const LOGOS_BUTTERFLY: Logo[] = [FIGURE, FLIGHT];
 
 /** One proposal as an `<svg>`, at any pixel size; `small` is used at 32px and under. */
 export function LogoMark({

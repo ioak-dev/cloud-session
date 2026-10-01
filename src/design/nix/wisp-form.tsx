@@ -12,18 +12,45 @@ import { flameTip, WispTurn } from "./wisp-turn";
  *                    through the gutter (away from the form) with its eyes on where it is going,
  *                    and settles beside the new field. No turn. Moves retarget, never queue.
  *   while typing     it turns further into the field and its eyes follow the text as it grows.
- *   the password     once it lands beside the password field it turns its back — right round,
- *                    continuously — and faces the form again when focus leaves.
+ *   the password     once it lands beside a password field it stops looking, in that field's way
+ *                    (`hide`): `back` turns its back, right round, continuously (as chosen);
+ *                    `hands` lifts its hands over its eyes; `blanket` pulls its ribbons up over
+ *                    its head like a blanket, a little ghost with its antennae poking out, and
+ *                    giggles under there while you type. It never peeks. When focus leaves it
+ *                    faces the form again.
  *
  * Its turn and gaze ease toward their targets frame by frame (the head a little quicker than the
  * body), so every change of attention is a turn, not a cut. Under reduced motion it does not
  * travel or ease: it reappears beside the new field and faces the right way at once.
+ *
+ * Lit (proposal, `lit`): its glow lights what is around it — the gutter, the card, the fields —
+ * from the lantern at the tip of its flame. The light falls off fast near the lantern and trails
+ * off slowly; it dips as Wisp gathers for a hop, swells a little mid-arc, and each spark leaves a
+ * faint pool of light where it falls that outlasts the spark. Wisp itself is never lit (its
+ * drawing has nothing lighting-dependent). The light is drawn in the glow's own yellow, stronger
+ * on the dark ground than on the light one (`--wisp-light-peak` in studio.css).
+ * It publishes where it is as `--wisp-x`, `--wisp-y`, `--wisp-reach` (px, in the form's box) and
+ * `--wisp-glow` (0–1), so the page's own HTML can light its elements from the same source; the
+ * fields here do it with `litField`. Under reduced motion the light holds still beside the field.
  */
 
-const FIELDS = [
+/** How Wisp stops looking at a password field. */
+export type Hide = "back" | "hands" | "blanket";
+
+type Field = {
+  id: string;
+  label: string;
+  type: "text" | "email" | "password";
+  auto: string;
+  demo: string;
+  hint?: string;
+  hide?: Hide;
+};
+
+const FIELDS: Field[] = [
   { id: "name", label: "Your name", type: "text", auto: "name", demo: "Asha Rao" },
   { id: "email", label: "Email", type: "email", auto: "email", demo: "asha@school.org" },
-  { id: "password", label: "Password", type: "password", auto: "new-password", demo: "sparkle42" },
+  { id: "password", label: "Password", type: "password", auto: "new-password", demo: "sparkle42", hide: "back" },
   {
     id: "team",
     label: "Team name",
@@ -32,21 +59,76 @@ const FIELDS = [
     demo: "Year 8 Science",
     hint: "A school, a class, a household — or just you.",
   },
-] as const;
+];
+
+/** Three password fields, one for each way of not looking (proposals). */
+export const PASSWORD_FIELDS: Field[] = [
+  {
+    id: "pw-back",
+    label: "Password — turns its back",
+    type: "password",
+    auto: "new-password",
+    demo: "sparkle42",
+    hide: "back",
+    hint: "As chosen: it turns right round, head first, and faces you again when you leave.",
+  },
+  {
+    id: "pw-hands",
+    label: "Password — hands over its eyes",
+    type: "password",
+    auto: "new-password",
+    demo: "glowworm7",
+    hide: "hands",
+    hint: "It faces you and covers its eyes with both hands, like a game of hide and seek.",
+  },
+  {
+    id: "pw-blanket",
+    label: "Password — hides under its ribbons",
+    type: "password",
+    auto: "new-password",
+    demo: "moonbeam3",
+    hide: "blanket",
+    hint: "It pulls its ribbons up over its head like a blanket — a little ghost, antennae poking out — and giggles under there while you type.",
+  },
+];
 
 const SIZE = { w: 46, h: 62 };
 const VIEW = "-10 20 220 280";
 const GUTTER_X = 10;
 const DELAY = 90;
 /** How Wisp holds itself: turned toward the form, further while you type, away for a password. */
-const YAW = { attend: 28, typing: 50, away: 180 };
+const YAW = { attend: 28, typing: 50, away: 180, hands: 10, blanket: 6 };
+
+/** The light (proposal): reach in px, the swell mid-hop, the dip as it gathers, spark pools. */
+const LIGHT = { reach: 160, arc: 0.3, gather: 0.15, pool: 9, linger: 1100 };
+const SPARK_LIFE = 650;
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const inOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
 type Hop = { from: number; to: number; t0: number; dur: number };
 type Spark = { x: number; y: number; born: number; r: number };
-type Pose = { yaw: number; head: number; lookX: number; t: number };
+type Pose = { yaw: number; head: number; lookX: number; cover: number; blanket: number; t: number };
+export type Light = { x: number; y: number; reach: number; glow: number };
+
+/**
+ * How brightly a light lands on an element, and where, in the element's own box: what the page's
+ * HTML reads to light a field. Strength falls off with the distance to the nearest point of the
+ * element, squared, so a field lights from the edge facing Wisp.
+ */
+export function litField(el: HTMLElement, light: Light): React.CSSProperties {
+  const l = el.offsetLeft;
+  const t = el.offsetTop;
+  const dx = Math.max(l - light.x, 0, light.x - (l + el.offsetWidth));
+  const dy = Math.max(t - light.y, 0, light.y - (t + el.offsetHeight));
+  const lit = light.glow * Math.max(0, 1 - Math.hypot(dx, dy) / light.reach) ** 2;
+  return {
+    "--lx": `${light.x - l}px`,
+    "--ly": `${light.y - t}px`,
+    "--lr": `${light.reach}px`,
+    "--lit": `${Math.round(lit * 100)}%`,
+  } as React.CSSProperties;
+}
 
 function along(h: Hop, now: number) {
   const p = clamp((now - h.t0) / h.dur, 0, 1);
@@ -59,11 +141,19 @@ function along(h: Hop, now: number) {
   return { p, y, bow, gather, dir: Math.sign(d) };
 }
 
-export function WispForm() {
+export function WispForm({
+  fields: FORM = FIELDS,
+  title = "Create your account",
+  lit = false,
+}: {
+  fields?: Field[];
+  title?: string;
+  lit?: boolean;
+} = {}) {
   const uid = React.useId().replace(/:/g, "");
   const rows = React.useRef<(HTMLDivElement | null)[]>([]);
   const hop = React.useRef<Hop>({ from: 0, to: 0, t0: 0, dur: 1 });
-  const pose = React.useRef<Pose>({ yaw: YAW.attend, head: YAW.attend, lookX: 1, t: 0 });
+  const pose = React.useRef<Pose>({ yaw: YAW.attend, head: YAW.attend, lookX: 1, cover: 0, blanket: 0, t: 0 });
   const sparks = React.useRef<Spark[]>([]);
   const lastSpark = React.useRef(0);
   const typingUntil = React.useRef(0);
@@ -107,12 +197,12 @@ export function WispForm() {
     (async () => {
       for (let round = 0; !cancelled; round++) {
         setValues({});
-        for (let i = 0; i < FIELDS.length && !cancelled; i++) {
+        for (let i = 0; i < FORM.length && !cancelled; i++) {
           setActive(i);
           await wait(800);
-          const text = FIELDS[i].demo;
+          const text = FORM[i].demo;
           for (let k = 1; k <= text.length && !cancelled; k++) {
-            setValues((v) => ({ ...v, [FIELDS[i].id]: text.slice(0, k) }));
+            setValues((v) => ({ ...v, [FORM[i].id]: text.slice(0, k) }));
             typingUntil.current = performance.now() + 700;
             await wait(90);
           }
@@ -126,17 +216,22 @@ export function WispForm() {
     };
   }, [auto]);
 
-  const field = FIELDS[active];
+  const field = FORM[active];
   const target = React.useCallback(
     (t: number) => {
       const h = hop.current;
       const landed = t >= h.t0 + h.dur;
-      if (field.id === "password" && landed) return { yaw: YAW.away, lookX: 0 };
+      const none = { cover: 0, blanket: 0 };
+      if (field.hide && landed) {
+        if (field.hide === "hands") return { yaw: YAW.hands, lookX: 0, cover: 1, blanket: 0 };
+        if (field.hide === "blanket") return { yaw: YAW.blanket, lookX: 0, cover: 0, blanket: 1 };
+        return { yaw: YAW.away, lookX: 0, ...none };
+      }
       if (t < typingUntil.current) {
         const len = (values[field.id] ?? "").length;
-        return { yaw: YAW.typing + Math.min(16, len * 0.8), lookX: 2 + Math.min(4, len * 0.2) };
+        return { yaw: YAW.typing + Math.min(16, len * 0.8), lookX: 2 + Math.min(4, len * 0.2), ...none };
       }
-      return { yaw: YAW.attend, lookX: 1 };
+      return { yaw: YAW.attend, lookX: 1, ...none };
     },
     [field.id, values],
   );
@@ -153,6 +248,9 @@ export function WispForm() {
       p.head += (goal.yaw - p.head) * ease(110);
       p.yaw += (goal.yaw - p.yaw) * ease(170);
       p.lookX += (goal.lookX - p.lookX) * ease(120);
+      /* the hands come up quickly; the blanket is pulled up more slowly */
+      p.cover += (goal.cover - p.cover) * ease(150);
+      p.blanket += (goal.blanket - p.blanket) * ease(260);
       p.t = t;
       if (!reduce) {
         const a = along(hop.current, t);
@@ -168,13 +266,14 @@ export function WispForm() {
           });
         }
       }
-      sparks.current = sparks.current.filter((sp) => t - sp.born < 650);
+      const life = lit ? LIGHT.linger : SPARK_LIFE;
+      sparks.current = sparks.current.filter((sp) => t - sp.born < life);
       setNow(t);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [reduce]);
+  }, [reduce, lit]);
 
   const a = reduce
     ? { p: 1, y: hop.current.to, bow: 0, gather: 0, dir: 0 }
@@ -188,21 +287,48 @@ export function WispForm() {
   const y = a.y - SIZE.h * 0.42 + bob;
   const p = pose.current;
 
+  // the light rides on the lantern: where the sparks come from
+  const [fx, fy] = flameTip(p.yaw);
+  const k = SIZE.w / 220;
+  const shimmer = reduce ? 1 : 1 + 0.04 * Math.sin(now / 430) + 0.03 * Math.sin(now / 170 + 2);
+  const light: Light = {
+    x: x + (fx + 10) * k,
+    y: y + (fy - 20) * k,
+    reach: LIGHT.reach * (1 + 0.12 * arc),
+    glow: Math.min(1, (0.75 + LIGHT.arc * arc - LIGHT.gather * a.gather) * shimmer),
+  };
+  const fieldLight = (i: number) => {
+    const el = rows.current[i]?.querySelector("input");
+    return lit && el ? litField(el, light) : undefined;
+  };
+
   const use = (i: number) => {
     setAuto(false);
     setActive(i);
   };
 
   return (
-    <div className="relative flex max-w-[30rem] gap-0">
+    <div
+      className="relative flex max-w-[30rem] gap-0"
+      style={
+        lit
+          ? ({
+              "--wisp-x": `${light.x}px`,
+              "--wisp-y": `${light.y}px`,
+              "--wisp-reach": `${light.reach}px`,
+              "--wisp-glow": light.glow,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
       <div className="w-[72px] shrink-0" aria-hidden />
       <form
         className="flex w-full flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-5"
         onSubmit={(e) => e.preventDefault()}
         aria-label="Create your account"
       >
-        <h3 className="material-heading m-0 text-base text-foreground">Create your account</h3>
-        {FIELDS.map((f, i) => (
+        <h3 className="material-heading m-0 text-base text-foreground">{title}</h3>
+        {FORM.map((f, i) => (
           <div
             key={f.id}
             ref={(el) => {
@@ -225,9 +351,10 @@ export function WispForm() {
                 typingUntil.current = performance.now() + 800;
               }}
               data-on={active === i}
-              className="h-10 rounded-[var(--radius-control)] border border-border bg-canvas px-3 text-sm text-foreground data-[on=true]:border-primary"
+              style={fieldLight(i)}
+              className="wisp-lit-field h-10 rounded-[var(--radius-control)] border border-border bg-canvas px-3 text-sm text-foreground data-[on=true]:border-primary"
             />
-            {"hint" in f && <span className="text-xs text-muted-foreground">{f.hint}</span>}
+            {f.hint && <span className="text-xs text-muted-foreground">{f.hint}</span>}
           </div>
         ))}
         <div className="flex items-center gap-3">
@@ -248,12 +375,54 @@ export function WispForm() {
         </div>
       </form>
 
+      {lit && (
+        <svg
+          className="wisp-light pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+          aria-hidden
+        >
+          <defs>
+            {/* fast near the lantern, a long soft tail: light, not a disc */}
+            <radialGradient id={`${uid}-light`}>
+              <stop offset="0" stopColor="#ffcf4a" stopOpacity={1} />
+              <stop offset="0.1" stopColor="#ffcf4a" stopOpacity={0.75} />
+              <stop offset="0.3" stopColor="#ffcf4a" stopOpacity={0.45} />
+              <stop offset="0.55" stopColor="#ffcf4a" stopOpacity={0.2} />
+              <stop offset="0.8" stopColor="#ffcf4a" stopOpacity={0.06} />
+              <stop offset="1" stopColor="#ffcf4a" stopOpacity={0} />
+            </radialGradient>
+          </defs>
+          <g style={{ opacity: "var(--wisp-light-peak)" }}>
+            <circle
+              cx={light.x}
+              cy={light.y}
+              r={light.reach}
+              fill={`url(#${uid}-light)`}
+              opacity={light.glow}
+            />
+            {sparks.current.map((s, i) => {
+              const age = (now - s.born) / LIGHT.linger;
+              return (
+                <circle
+                  key={i}
+                  cx={s.x}
+                  cy={s.y + 10 * Math.min(1, (now - s.born) / SPARK_LIFE)}
+                  r={LIGHT.pool * s.r}
+                  fill={`url(#${uid}-light)`}
+                  opacity={0.6 * (1 - age) ** 1.5}
+                />
+              );
+            })}
+          </g>
+        </svg>
+      )}
+
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
         aria-hidden
       >
         {sparks.current.map((s, i) => {
-          const age = (now - s.born) / 650;
+          const age = (now - s.born) / SPARK_LIFE;
+          if (age >= 1) return null;
           return (
             <g key={i} opacity={1 - age}>
               <circle cx={s.x} cy={s.y + 10 * age} r={s.r * 2.4} fill="#ffcf4a" opacity={0.3} />
@@ -293,6 +462,10 @@ export function WispForm() {
             flapL={16 * amp * Math.sin((now / 250) * Math.PI * 2 + 1)}
             look={moving ? 5 * a.dir * arc : typing ? 2 : 0}
             lookX={p.lookX}
+            cover={p.cover}
+            blanket={p.blanket}
+            /* under the blanket it giggles, more while you type */
+            wiggle={reduce ? 0 : p.blanket * (typing ? 5 : 1.6) * Math.sin(now / (typing ? 90 : 200))}
             uid={`${uid}-w`}
           />
         </svg>

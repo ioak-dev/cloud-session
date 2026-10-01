@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import type { Candidate } from "./candidates";
-import { pal } from "./firefly-wisp";
 import { ActFigure, type WispAct } from "./wisp-acts";
 import { EASE, fadeAt, handsAt, keys, rotAt, type Hands, type Key, type Track } from "./rig/motion";
 import type { Pose } from "./rig/poses";
@@ -287,7 +286,6 @@ export const WISP_SPINNERS: WispSpinner[] = [
  * Dots in the glow's colour with the glow's own edge, as the spark trail draws them. They are
  * WAAPI animations whose start time is the figure's: one clock. */
 
-const GLOW = pal.glow;
 const EDGE = "var(--char-glow-edge)";
 
 /** A ring spark's brightness over the loop, from the moment it is lit. */
@@ -316,11 +314,11 @@ function hopKeys(a: number): Keyframe[] {
   ];
 }
 
-function Dot({ r }: { r: number }) {
+function Dot({ r, glow }: { r: number; glow: string }) {
   return (
     <>
-      <circle r={r * 2.3} fill={GLOW} opacity={0.3} />
-      <circle r={r} fill={GLOW} stroke={EDGE} strokeWidth={0.8} />
+      <circle r={r * 2.3} fill={glow} opacity={0.3} />
+      <circle r={r} fill={glow} stroke={EDGE} strokeWidth={0.8} />
     </>
   );
 }
@@ -412,7 +410,7 @@ export function SpinnerFigure({
                   data-spark={i}
                   style={{ opacity: still.opacity, scale: String(still.scale), transformBox: "fill-box", transformOrigin: "center" }}
                 >
-                  <Dot r={5} />
+                  <Dot r={5} glow={c.pal.glow} />
                 </g>
               </g>
             );
@@ -424,7 +422,7 @@ export function SpinnerFigure({
           {HOPS.map((_, i) => (
             <g key={i} transform={`translate(${164 + i * 26} 120)`}>
               <g data-hop={i} style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}>
-                <Dot r={4.6} />
+                <Dot r={4.6} glow={c.pal.glow} />
               </g>
             </g>
           ))}

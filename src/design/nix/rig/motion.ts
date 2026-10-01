@@ -295,6 +295,12 @@ export function useJointMotion(
         );
       });
     }
+    /* SMIL inside the drawing (a ribbon's drifting edge) runs on the svg's own clock: stilled, it
+       holds its first frame, which is the drawing at rest */
+    if (frozen) {
+      svg.setCurrentTime(0);
+      svg.pauseAnimations();
+    }
     if (!frozen) {
       svg.querySelectorAll<SVGElement>(`[data-joint="blink"]`).forEach((el) => {
         running.push(el.animate(BLINK, { duration: 4200, iterations: Infinity }));
@@ -314,12 +320,15 @@ export function useJointMotion(
       }
       if (on) svg.removeAttribute("data-offscreen");
       else svg.setAttribute("data-offscreen", "true");
+      if (on && !frozen) svg.unpauseAnimations();
+      else svg.pauseAnimations();
     });
     io.observe(svg);
 
     return () => {
       io.disconnect();
       svg.removeAttribute("data-offscreen");
+      svg.unpauseAnimations();
       running.forEach((a) => a.cancel());
       touched.forEach((el) => apply(el, {}));
     };

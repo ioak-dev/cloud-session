@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import type { Mood } from "./face";
 import type { Palette } from "./palette";
+import type { Viseme } from "./visemes";
 
 /**
  * A character's own eyes. Every side character designs its eyes on purpose — shape, colour,
@@ -25,8 +26,10 @@ export type EyeArgs = {
 
 export type EyeKit = (a: EyeArgs) => ReactNode;
 
-/** A character's own mouth, centred on x = 100 at `y`, for every mood. */
-export type MouthArgs = { mood: Mood; y: number; pal: Palette };
+/** A character's own mouth, centred on x = 100 at `y`, for every mood. While it talks, `viseme`
+ *  is the mouth shape for the sound being said (`visemes.ts`), drawn in place of the mood's mouth
+ *  and coloured by the mood; absent, the mouth is the mood's own. */
+export type MouthArgs = { mood: Mood; y: number; pal: Palette; viseme?: Viseme };
 export type MouthKit = (a: MouthArgs) => ReactNode;
 
 export const TONGUE_PINK = "#ef7f8e";
