@@ -1112,48 +1112,111 @@ const FEATHER_ROUND: Logo = {
 };
 
 /**
- * The chosen mark in one colour, with Feather's eyes: the drop and antennae as one solid shape;
- * each eye's white is cut out and its pupil left solid inside it (with the shine cut from the
- * pupil at icon size), so the eyes still look somewhere. No tile.
+ * The chosen mark in one colour, with Feather's eyes, no tile. Two ways to draw the face:
+ * - `fill`, for a coloured or black mark: the eyes' whites are white, so they read white on any
+ *   ground; the pupils are the mark's own colour, with a white shine; the smile is white.
+ * - `cut`, for a white mark on a dark ground: white eyes on a white head would vanish, so a thin
+ *   ring is cut round each eye to part it from the head, and the pupils and smile are cut out,
+ *   showing the dark ground through them; the shine stays white inside the pupil.
  */
-const FEATHER_MONO: Logo = {
+function monoMark({
+  id,
+  label,
+  line,
+  note,
+  colour,
+  face,
+}: {
+  id: string;
+  label: string;
+  line: string;
+  note: string;
+  colour: (k: K) => string;
+  face: "fill" | "cut";
+}): Logo {
+  return {
+    id,
+    label,
+    line,
+    note,
+    draw: (k, size, uid) => {
+      const big = size === "full";
+      const c = colour(k);
+      const at = EYE_AT[size];
+      const rx = big ? 8 : 10;
+      const ry = big ? 10 : 12.5;
+      const r = big ? 4.6 : 6.6;
+      const eyes = ([-1, 1] as const).map((s) => {
+        const x = at.cx + at.gap * s;
+        return { s, x, px: x - s * rx * 0.16, py: at.y + ry * 0.18 };
+      });
+      const shape = (
+        <>
+          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={c} tipColour={c} />
+          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={c} />
+        </>
+      );
+      if (face === "fill")
+        return (
+          <>
+            {shape}
+            {eyes.map(({ s, x, px, py }) => (
+              <g key={s}>
+                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="#ffffff" />
+                <circle cx={px} cy={py} r={r} fill={c} />
+                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#ffffff" /> : null}
+              </g>
+            ))}
+            {big ? <Smile k={{ ...k, ink: "#ffffff" }} cx={64} y={99} w={11} /> : null}
+          </>
+        );
+      const m = `${uid}-cut`;
+      return (
+        <>
+          <mask id={m}>
+            <rect width={128} height={128} fill="#fff" />
+            {eyes.map(({ s, x, px, py }) => (
+              <g key={s}>
+                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="none" stroke="#000" strokeWidth={big ? 2 : 2.6} />
+                <circle cx={px} cy={py} r={r} fill="#000" />
+                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#fff" /> : null}
+              </g>
+            ))}
+            {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={99} w={11} /> : null}
+          </mask>
+          <g mask={`url(#${m})`}>{shape}</g>
+        </>
+      );
+    },
+  };
+}
+
+const FEATHER_MONO = monoMark({
   id: "glow-light-feather-mono",
   label: "Glow · Light · One colour",
-  line: "The app icon as one solid colour: the eyes' whites cut out, the pupils left solid, no tile.",
-  note: "For Android's themed icon layer, iOS tinted icons, stamps and one-colour print. The silhouette says Wisp; the pupils inside the cut-out whites keep Feather's look.",
-  draw: (k, size, uid) => {
-    const big = size === "full";
-    const m = `${uid}-mono`;
-    const at = EYE_AT[size];
-    const rx = big ? 8 : 10;
-    const ry = big ? 10 : 12.5;
-    const r = big ? 4.6 : 6.6;
-    return (
-      <>
-        <mask id={m}>
-          <rect width={128} height={128} fill="#fff" />
-          {([-1, 1] as const).map((s) => {
-            const x = at.cx + at.gap * s;
-            const px = x - s * rx * 0.16;
-            const py = at.y + ry * 0.18;
-            return (
-              <g key={s}>
-                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="#000" />
-                <circle cx={px} cy={py} r={r} fill="#fff" />
-                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#000" /> : null}
-              </g>
-            );
-          })}
-          {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={99} w={11} /> : null}
-        </mask>
-        <g mask={`url(#${m})`}>
-          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.primary} tipColour={k.primary} />
-          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.primary} />
-        </g>
-      </>
-    );
-  },
-};
+  line: "The app icon as one colour, the primary, with white eyes and smile: no tile.",
+  note: "For Android's themed icon layer, iOS tinted icons and one-colour print in the brand colour. The eyes' whites are white, so they stay white on a light or a dark ground; the pupils are the mark's own blue.",
+  colour: (k) => k.primary,
+  face: "fill",
+});
+
+const FEATHER_MONO_BLACK = monoMark({
+  id: "glow-light-feather-mono-black",
+  label: "Glow · Light · Black",
+  line: "The one-colour mark in black, with white eyes and smile: for light grounds.",
+  note: "For light mode, black-and-white print, stamps and documents where the brand colour is not available. The whites stay white; the pupils are black.",
+  colour: () => "#000000",
+  face: "fill",
+});
+
+const FEATHER_MONO_WHITE = monoMark({
+  id: "glow-light-feather-mono-white",
+  label: "Glow · Light · White",
+  line: "The one-colour mark in white, for dark grounds: a thin ring parts each white eye from the head; the pupils and smile show the ground.",
+  note: "For dark mode, and white on a photo or a dark surface. White eyes on a white head would vanish, so a ring is cut round each eye and the pupils are cut through; the shine stays white.",
+  colour: () => "#ffffff",
+  face: "cut",
+});
 
 /**
  * The app icon: Glow · Light, with Feather's eyes. Solid colours only (no gradient, no halo, no shine), in the
@@ -1169,8 +1232,8 @@ export const APP_ICON: Logo = {
   line: "Wisp's drop as its own light: a solid yellow drop with Feather's eyes and two antennae, on a solid primary tile.",
   note: "Feather's eyes: white, a soft solid rim, an ink pupil with its shine, so icon and character share one face. The pupils carry the face at 16px.",
 };
-/** The chosen icon and its other shapes: the circle and the one-colour mark. */
-export const APP_ICON_SET: Logo[] = [APP_ICON, FEATHER_ROUND, FEATHER_MONO];
+/** The chosen icon and its other shapes: the circle, and the one-colour mark in the primary, black and white. */
+export const APP_ICON_SET: Logo[] = [APP_ICON, FEATHER_ROUND, FEATHER_MONO, FEATHER_MONO_BLACK, FEATHER_MONO_WHITE];
 /** Glow · Light as first chosen, with ink eyes, and its circle and one-colour shapes: reference. */
 export const APP_ICON_INK: Logo[] = [
   { ...GLOW_LIGHT, label: "Glow · Light · ink eyes" },
