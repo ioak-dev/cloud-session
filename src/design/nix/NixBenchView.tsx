@@ -27,7 +27,7 @@ import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./
 import { BEAN_STYLES, EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
-import { APP_ICON, APP_ICON_EYES, APP_ICON_FACES, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
+import { APP_ICON, APP_ICON_EYES_REFERENCE, APP_ICON_FACES, APP_ICON_INK, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
@@ -569,62 +569,29 @@ export function WispPage({ wings }: { wings: WingStyle }) {
   const v = RIBBON_VARIANTS.find((x) => x.id === variant)!;
   const line = ribbon ? RIBBON_LINES[variant] : PAIRS;
   const front = line.main;
-  const asIs = (x: Candidate) => (x.id === front.id ? `${front.label} (as is)` : x.label);
-  const actEyes = ["bean", "gumdrop"].map(
-    (id) => line.eyes[WISP_EYES.findIndex((x) => x.id === `wisp-warmer-eyes-${id}`)],
-  );
   return (
     <WingStyleContext.Provider value={wings}>
     <RibbonFormContext.Provider value={v.form}>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">{ribbon ? "Wisp" : "Wisp · Butterfly wings (reference)"}</h1>
       {ribbon ? (
-        <>
-          <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-            The main character is Wisp: a floating firefly that leaves glowing sparks behind it as
-            it flies. Colours come from the scheme in the header; only its flame and sparks are its
-            own. Its wings are one pair of ribbons that trail down past the body, like a scarf or a
-            ghost’s hem — the wings it started with. The two pairs of spotted butterfly wings it
-            had since “Finalise Wisp” are kept as an alternate main character on{" "}
-            <a href="#/butterfly" className="text-foreground underline">
-              Wisp · Butterfly
-            </a>
-            . The ribbons are Clean: one ribbon each side, fading to nothing, its
-            tail swaying and a little mist leaving the tips. Every figure on the page — the
-            turnaround, the flight, the form, the warmer proposals, the eye styles and the acting —
-            wears them. The main character, its turnaround, flight and form also carry the picks on
-            Clean: a paler core in the flame and Snug’s thicker arms. Glow tips and Spirit are on the{" "}
-            <a href="#/references" className="text-foreground underline">
-              References
-            </a>{" "}
-            page.
-          </p>
-
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Clean — tail patterns, head shapes and arms (proposals)
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            Chosen: the Core tail and Snug’s arms, with the drop head kept — the main character on
-            this page, and what the turnaround, flight and form draw. Then Clean as it was, and the
-            proposals, each changing one thing on it. Two tail patterns drawn from
-            what a firefly’s light really looks like — Lantern, where only the segment between the
-            rings is lit brightest, as on a real firefly; and Core, a paler heart inside the flame,
-            following its curl. Two head shapes that move the drop’s tip toward one of the things a
-            wisp is — Candle, a taller tip that leans like a candle’s flame; and Dewdrop, a short
-            rounded tip, a drop about to fall. Last, Snug arms: Snug’s thicker arms and bigger soft
-            hand tips on Clean’s slim body. Front only. Shown at rest, then in every expression.
-          </p>
-          <MoodSheet
-            list={[CLEAN_PICK, CLEAN_BASE, ...CLEAN_TAILS, ...CLEAN_HEADS, ...CLEAN_ARMS]}
-            name={(x) =>
-              x.id === CLEAN_PICK.id
-                ? "Chosen"
-                : x.id === CLEAN_BASE.id
-                  ? "Clean (before)"
-                  : x.label.replace("Clean · ", "")
-            }
-          />
-        </>
+        <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+          The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
+          flies. This page holds only what is chosen. Its wings are one pair of ribbons (Clean) that
+          trail down past the body and fade to nothing, the tails swaying and a little mist leaving
+          the tips; a paler core in its flame; Snug’s thicker arms; the drop head; Feather eyes.
+          Colours come from the scheme in the header; only its flame and sparks are its own. Then
+          its app icon and wordmark, its turnaround, its flight and the sign-up form. Everything it
+          was chosen from is kept on the{" "}
+          <a href="#/references" className="text-foreground underline">
+            References
+          </a>{" "}
+          page; the butterfly-winged Wisp is on{" "}
+          <a href="#/butterfly" className="text-foreground underline">
+            Wisp · Butterfly
+          </a>
+          .
+        </p>
       ) : (
         <p className="material mt-3 max-w-[64ch] text-muted-foreground">
           Reference: an alternate main character. Wisp with two pairs of spotted butterfly wings,
@@ -639,49 +606,37 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       )}
       <Tests />
 
-      {/* the app icon is the main character's: on the Wisp page only */}
       {ribbon && (
-      <>
+        <>
+          <h2 className="material-heading mt-10 text-lg text-foreground">Wisp</h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            At rest, then in every expression.
+          </p>
+          <MoodSheet list={[front]} name={() => "Wisp"} />
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            App icon: {APP_ICON.label}
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Wisp’s drop drawn as its own light — a solid yellow drop with Feather’s eyes and two
+            antennae — on a solid primary tile. Solid colours only: no gradient, no halo, so it stays
+            crisp from the store listing to a 16px tab, and platforms can recolour it. Always in the
+            product’s own colours (shown here in the Sparkles scheme, whatever the header says).
+            Contrast: the yellow on the primary 3.9:1, the ink pupils on the white and the yellow
+            above 11:1, the tile 5.7:1 on a white home screen and 3.1:1 on a dark one; blue and
+            yellow hold up under the common colour blindnesses. With it: the circle, for launchers
+            and avatars that cut one, and the one-colour mark, for themed and tinted icons and
+            one-colour print. Files: <code>docs/logo/app-icon*.svg</code>.
+          </p>
+          <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+            {APP_ICON_SET.map((l) => (
+              <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
+            ))}
+          </div>
+
         <h2 className="material-heading mt-10 text-lg text-foreground">
-          Wisp — app icon: {APP_ICON.label} (chosen)
+          Wordmark: {WORDMARK.family} {WORDMARK.weight}
         </h2>
-        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          Wisp’s drop drawn as its own light — a solid yellow drop with eyes and two antennae — on a
-          solid primary tile. Its eyes are being redrawn after Feather (below). Solid colours only: no gradient, no halo, no shine, so it stays
-          crisp from the store listing to a 16px tab, and platforms can recolour it. Always in the
-          product’s own colours (shown here in the Sparkles scheme, whatever the header says).
-          Contrast: the yellow on the primary 3.9:1, the ink eyes on the yellow 11.1:1, the tile
-          5.7:1 on a white home screen and 3.1:1 on a dark one; blue and yellow hold up under the
-          common colour blindnesses. Its circle and one-colour shapes, and every other icon
-          proposal, are on the{" "}
-          <a href="#/references" className="text-foreground underline">
-            References
-          </a>{" "}
-          page until the eyes are chosen. Files: <code>docs/logo/app-icon*.svg</code>.
-        </p>
-        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          <LogoCard logo={APP_ICON} k={K_SPARKLES} />
-        </div>
-
-        <h3 className="material-heading mt-8 text-base text-foreground">
-          The icon’s eyes, after Feather (proposals)
-        </h3>
-        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          Wisp’s eyes are now Feather: a white eye, a soft rim, an ink pupil with its shine, tapered
-          brows. These are the ways the icon’s eyes could follow — from solid ink, through Feather’s
-          white eye with different rims, to an outline with no white. Everything else is Glow ·
-          Light. Each is shown as the app icon and at 64, 32 and 16px on white and on dark; at 32px
-          and under each switches to its own simplified drawing.
-        </p>
-        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          {APP_ICON_EYES.map((l) => (
-            <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
-          ))}
-        </div>
-
-        <h3 className="material-heading mt-8 text-base text-foreground">
-          Wordmark: {WORDMARK.family} {WORDMARK.weight} (chosen)
-        </h3>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
           “sparkles”, set in lowercase in {WORDMARK.family} {WORDMARK.weight} with −0.01em
           tracking: in the primary on light grounds, white on dark and on the primary. Geometric
@@ -694,8 +649,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           page.
         </p>
         <WordmarkSheet list={[WORDMARK]} />
-
-      </>
+        </>
       )}
       {!ribbon && (
         <>
@@ -759,8 +713,35 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         <WispForm />
       </div>
 
+      {!ribbon && <WarmerSections line={line} ribbon={false} />}
+
+      <Bench
+        groups={
+          ribbon
+            ? [["Main character — Wisp", [line.main]]]
+            : [
+                ["Alternate main character — Wisp · Butterfly (reference)", [line.main]],
+                ["Wisp, warmer — proposals", line.warm],
+                ["Wisp, warmer — eye styles", line.eyes],
+              ]
+        }
+      />
+    </RibbonFormContext.Provider>
+    </WingStyleContext.Provider>
+  );
+}
+
+/** The warmer proposals, their eye styles and acting: on the butterfly page, and on References for the ribbons. */
+function WarmerSections({ line, ribbon }: { line: Line; ribbon: boolean }) {
+  const front = line.main;
+  const asIs = (x: Candidate) => (x.id === front.id ? `${front.label} (as is)` : x.label);
+  const actEyes = ["bean", "gumdrop"].map(
+    (id) => line.eyes[WISP_EYES.findIndex((x) => x.id === `wisp-warmer-eyes-${id}`)],
+  );
+  return (
+    <>
       <h2 className="material-heading mt-10 text-lg text-foreground">
-        Wisp, warmer — proposals{ribbon ? " on the ribbons" : ""}
+        {ribbon ? "Reference — " : ""}Wisp, warmer — proposals{ribbon ? " on the ribbons" : ""}
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
         Wisp itself is unchanged. Beside the side characters it is the only one who is nobody at
@@ -772,7 +753,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       <MoodSheet list={[front, ...line.warm]} name={asIs} />
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
-        Wisp, warmer — eye styles
+        {ribbon ? "Reference — " : ""}Wisp, warmer — eye styles
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
         The warmer in five eye styles, each drawn for the shared nine expressions and five of
@@ -820,63 +801,9 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         </table>
       </div>
 
-      {ribbon && (
-        <>
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Bean, softer — on Wisp (proposals)
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            Bean’s acting with a lighter hand. What made it chunky is its line — a 4.2 ink brow of
-            even weight, a 1.8 ink rim round each eye, a 2.6 lash — not its acting: the roaming
-            pupil, the lids and the brows’ tilt and lift are the same table in every variant, so
-            each is as expressive. Soft lightens every line; Feather tapers the brows to round
-            tips; Blue brows draws Feather’s brows in the body’s deep blue; Round makes the eye
-            rounder with a bigger pupil and two shines. Shown on Wisp, at rest and in every
-            expression.
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {BEAN_ON_MAIN.map((x, i) => (
-              <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-                <NixFigure c={x} className="h-56 w-full" />
-                <figcaption className="text-sm">
-                  <span className="material-heading text-foreground">{BEAN_STYLES[i].label}</span>
-                  <span className="material mt-1 block text-muted-foreground">{BEAN_STYLES[i].note}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-          <div className="mt-3 overflow-x-auto">
-            <table className="border-separate border-spacing-1">
-              <thead>
-                <tr>
-                  <th />
-                  {ALL_MOODS.map((m) => (
-                    <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
-                      {m.title}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {BEAN_ON_MAIN.map((x, i) => (
-                  <tr key={x.id} data-bean={BEAN_STYLES[i].id}>
-                    <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
-                      {BEAN_STYLES[i].label}
-                    </th>
-                    {ALL_MOODS.map((m) => (
-                      <td key={m.id} className="rounded-[var(--radius)] bg-muted">
-                        <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">Wisp, warmer — acting</h2>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        {ribbon ? "Reference — " : ""}Wisp, warmer — acting
+      </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
         What kept it laid back: it floated level and centred, on one slow even beat, always looking
         straight at you, never changing shape, and never playing with its own light. Each act
@@ -899,39 +826,146 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </figure>
         ))}
       </div>
+    </>
+  );
+}
 
-      <Bench
-        groups={[
-          [ribbon ? "Main character — Wisp" : "Alternate main character — Wisp · Butterfly (reference)", [line.main]],
-          [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
-          ["Wisp, warmer — eye styles", line.eyes],
-        ]}
+/** The proposals on Clean the main character was picked from (References). */
+function CleanProposals() {
+  return (
+    <>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — proposals on Clean: tail, head and arms
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Chosen (on the Wisp page): the Core tail and Snug’s arms, with the drop head kept. Then
+        Clean as it was, and the proposals, each changing one thing on it. Two tail patterns drawn from
+        what a firefly’s light really looks like — Lantern, where only the segment between the
+        rings is lit brightest, as on a real firefly; and Core, a paler heart inside the flame,
+        following its curl. Two head shapes that move the drop’s tip toward one of the things a
+        wisp is — Candle, a taller tip that leans like a candle’s flame; and Dewdrop, a short
+        rounded tip, a drop about to fall. Last, Snug arms: Snug’s thicker arms and bigger soft
+        hand tips on Clean’s slim body. Front only. Shown at rest, then in every expression.
+      </p>
+      <MoodSheet
+        list={[CLEAN_PICK, CLEAN_BASE, ...CLEAN_TAILS, ...CLEAN_HEADS, ...CLEAN_ARMS]}
+        name={(x) =>
+          x.id === CLEAN_PICK.id
+            ? "Chosen"
+            : x.id === CLEAN_BASE.id
+              ? "Clean (before)"
+              : x.label.replace("Clean · ", "")
+        }
       />
-    </RibbonFormContext.Provider>
-    </WingStyleContext.Provider>
+    </>
+  );
+}
+
+/** Bean, softer: the eye proposals Feather was chosen from, on the main character (References). */
+function BeanSofter() {
+  return (
+    <>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — Bean, softer: the eyes Feather was chosen from
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Feather is chosen and is on the Wisp page. Bean’s acting with a lighter hand. What made it chunky is its line — a 4.2 ink brow of
+        even weight, a 1.8 ink rim round each eye, a 2.6 lash — not its acting: the roaming
+        pupil, the lids and the brows’ tilt and lift are the same table in every variant, so
+        each is as expressive. Soft lightens every line; Feather tapers the brows to round
+        tips; Blue brows draws Feather’s brows in the body’s deep blue; Round makes the eye
+        rounder with a bigger pupil and two shines. Shown on Wisp, at rest and in every
+        expression.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {BEAN_ON_MAIN.map((x, i) => (
+          <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={x} className="h-56 w-full" />
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{BEAN_STYLES[i].label}</span>
+              <span className="material mt-1 block text-muted-foreground">{BEAN_STYLES[i].note}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {ALL_MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {BEAN_ON_MAIN.map((x, i) => (
+              <tr key={x.id} data-bean={BEAN_STYLES[i].id}>
+                <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                  {BEAN_STYLES[i].label}
+                </th>
+                {ALL_MOODS.map((m) => (
+                  <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                    <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
 /** The reference page: the drawings kept beside Wisp, moved off the Wisp pages. */
 export function ReferencesPage() {
   return (
-    <>
+    <WingStyleContext.Provider value="ribbon">
+    <RibbonFormContext.Provider value={RIBBON_VARIANTS.find((v) => v.id === "clean")!.form}>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">References</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Drawings kept as reference, not candidates: the other wispy directions, Pip and the earlier
-        fireflies. Wisp and its ribbon wings are on their own pages.
+        Everything kept as backup, not chosen: what Wisp, its app icon and its wordmark were
+        chosen from, the warmer proposals with their eye styles and acting, and the other wispy
+        directions, Pip and the earlier fireflies. The chosen Wisp is on the{" "}
+        <a href="#/wisp" className="text-foreground underline">
+          Wisp
+        </a>{" "}
+        page; the butterfly-winged Wisp on{" "}
+        <a href="#/butterfly" className="text-foreground underline">
+          Wisp · Butterfly
+        </a>
+        .
       </p>
+
+      <CleanProposals />
+      <BeanSofter />
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — app icon eyes not chosen
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The eyes Feather was chosen from for the app icon, each on Glow · Light; then Glow · Light
+        as first chosen, with ink eyes, and its circle and one-colour shapes.
+      </p>
+      <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+        {[...APP_ICON_EYES_REFERENCE, ...APP_ICON_INK].map((l) => (
+          <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
+        ))}
+      </div>
+
       <h2 className="material-heading mt-10 text-lg text-foreground">
         Reference — app icon proposals
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        The marks the app icon (Glow · Light, on the Wisp page) was chosen from; its circle and
-        one-colour shapes, drawn with ink eyes, to be redrawn with the chosen eyes; and the earlier
-        face options. Each is shown as the app icon and at 64, 32 and 16px, in the header’s scheme.
+        The marks the app icon (Glow · Light) was chosen from, and the earlier face options. Each
+        is shown as the app icon and at 64, 32 and 16px, in the header’s scheme.
       </p>
       <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-        {[...APP_ICON_SET.slice(1), ...APP_ICON_FACES.slice(1), ...LOGOS, ...LOGO_VARIANTS].map((l) => (
+        {[...APP_ICON_FACES.slice(1), ...LOGOS, ...LOGO_VARIANTS].map((l) => (
           <LogoCard key={l.id} logo={l} />
         ))}
       </div>
@@ -964,8 +998,18 @@ export function ReferencesPage() {
           </figure>
         ))}
       </div>
-      <Bench groups={REFERENCE_GROUPS} />
-    </>
+
+      <WarmerSections line={RIBBON_LINES.clean} ribbon />
+
+      <Bench
+        groups={[
+          ["Reference — Wisp, warmer: proposals on the ribbons", RIBBON_LINES.clean.warm],
+          ["Reference — Wisp, warmer: eye styles", RIBBON_LINES.clean.eyes],
+          ...REFERENCE_GROUPS,
+        ]}
+      />
+    </RibbonFormContext.Provider>
+    </WingStyleContext.Provider>
   );
 }
 

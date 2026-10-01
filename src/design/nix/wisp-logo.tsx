@@ -929,18 +929,20 @@ type Size = LogoSize;
 /** Where the icon's eyes sit: full size, and the 32px-and-under drawing. */
 const EYE_AT = { full: { cx: 64, y: 84, gap: 14 }, small: { cx: 64, y: 84, gap: 17 } } as const;
 /** Draws one icon eye, centred on (x, y), for side `s`. */
-type IconEye = (k: K, x: number, y: number, s: -1 | 1, size: Size) => ReactNode;
+type IconEye = (k: K, x: number, y: number, s: -1 | 1, size: Size, scale?: number) => ReactNode;
 
 const AMBER_RIM = "#e3a41b";
+/** Feather's soft rim as a solid tone: its 30% ink laid over the glow, so the icon stays opaque. */
+const SOFT_RIM = "#bd9945";
 
 /** A white eye with an ink pupil and shine, as Feather; `rim` is the eye's edge, if any. */
 const featherEye =
   (rim: ((k: K) => string) | null, o: { pupil?: number; rimW?: [number, number] } = {}): IconEye =>
-  (k, x, y, s, size) => {
+  (k, x, y, s, size, scale = 1) => {
     const big = size === "full";
-    const rx = big ? 8 : 10;
-    const ry = big ? 10 : 12.5;
-    const r = (big ? 4.6 : 6.6) * (o.pupil ?? 1);
+    const rx = (big ? 8 : 10) * scale;
+    const ry = (big ? 10 : 12.5) * scale;
+    const r = (big ? 4.6 : 6.6) * (o.pupil ?? 1) * scale;
     /* the pupils sit a little in and down: looking at you */
     const px = x - s * rx * 0.16;
     const py = y + ry * 0.18;
@@ -984,9 +986,9 @@ const ICON_EYES: { id: string; label: string; line: string; note: string; eye: I
   {
     id: "feather",
     label: "Feather",
-    line: "Feather's eye: white, a translucent hairline rim, an ink pupil with its shine.",
-    note: "The character's own eyes, so icon and Wisp share one face. The rim is a translucent dark, which on the yellow reads as a soft olive line; the pupil carries the face at 16px.",
-    eye: featherEye(() => "rgba(36, 26, 58, 0.3)"),
+    line: "Feather's eye: white, a soft hairline rim, an ink pupil with its shine.",
+    note: "The character's own eyes, so icon and Wisp share one face. The rim is Feather's translucent dark laid over the yellow as one solid tone, a soft olive line; the pupil carries the face at 16px.",
+    eye: featherEye(() => SOFT_RIM),
   },
   {
     id: "feather-amber",
@@ -1079,20 +1081,102 @@ const lightWithEyes = (e: (typeof ICON_EYES)[number]): Logo => ({
 
 /** Glow · Light with each of the eyes, for choosing the icon's eyes after Feather. */
 export const APP_ICON_EYES: Logo[] = ICON_EYES.map(lightWithEyes);
+/** The eyes not chosen: every proposal but Feather (reference). */
+export const APP_ICON_EYES_REFERENCE: Logo[] = APP_ICON_EYES.filter((l) => l.id !== "glow-light-eyes-feather");
 
 /** The chosen icon's face, three ways: ink as chosen, white as asked, and Bean's white eyes. */
 export const APP_ICON_FACES: Logo[] = [GLOW_LIGHT, LIGHT_WHITE, LIGHT_BEAN];
 
+/** Feather's eyes on the icon (`featherEye` with the soft rim): the app icon's eyes. */
+const FEATHER_EYE = featherEye(() => SOFT_RIM);
+
+/** The chosen icon in a circle, with Feather's eyes. */
+const FEATHER_ROUND: Logo = {
+  id: "glow-light-feather-round",
+  label: "Glow · Light · Round",
+  line: "The app icon in a circle: the yellow drop on a primary disc, inside the safe zone, with Feather's eyes.",
+  note: "For launchers that cut a circle, avatars and social profiles. The antennae are pulled in so a circular mask never clips them.",
+  draw: (k, size) => {
+    const big = size === "full";
+    const gap = big ? 12 : 14;
+    return (
+      <>
+        <path d={CIRCLE} fill={k.primary} />
+        <Antennae k={k} cx={64} top={38} spread={big ? 18 : 22} rise={big ? 12 : 13} stalk={big ? 4.5 : 8} tip={big ? 5.5 : 9} colour={k.glow} />
+        <path d={big ? drop(64, 34, 68, 74) : drop(64, 32, 78, 80)} fill={k.glow} />
+        {([-1, 1] as const).map((s) => FEATHER_EYE(k, 64 + gap * s, 82, s, size, big ? 0.86 : 0.84))}
+        {big ? <Smile k={k} cx={64} y={96} w={10} /> : null}
+      </>
+    );
+  },
+};
+
 /**
- * The app icon: Glow · Light. Solid colours only (no gradient, no halo, no shine), in the
+ * The chosen mark in one colour, with Feather's eyes: the drop and antennae as one solid shape;
+ * each eye's white is cut out and its pupil left solid inside it (with the shine cut from the
+ * pupil at icon size), so the eyes still look somewhere. No tile.
+ */
+const FEATHER_MONO: Logo = {
+  id: "glow-light-feather-mono",
+  label: "Glow · Light · One colour",
+  line: "The app icon as one solid colour: the eyes' whites cut out, the pupils left solid, no tile.",
+  note: "For Android's themed icon layer, iOS tinted icons, stamps and one-colour print. The silhouette says Wisp; the pupils inside the cut-out whites keep Feather's look.",
+  draw: (k, size, uid) => {
+    const big = size === "full";
+    const m = `${uid}-mono`;
+    const at = EYE_AT[size];
+    const rx = big ? 8 : 10;
+    const ry = big ? 10 : 12.5;
+    const r = big ? 4.6 : 6.6;
+    return (
+      <>
+        <mask id={m}>
+          <rect width={128} height={128} fill="#fff" />
+          {([-1, 1] as const).map((s) => {
+            const x = at.cx + at.gap * s;
+            const px = x - s * rx * 0.16;
+            const py = at.y + ry * 0.18;
+            return (
+              <g key={s}>
+                <ellipse cx={x} cy={at.y} rx={rx} ry={ry} fill="#000" />
+                <circle cx={px} cy={py} r={r} fill="#fff" />
+                {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#000" /> : null}
+              </g>
+            );
+          })}
+          {big ? <Smile k={{ ...k, ink: "#000" }} cx={64} y={99} w={11} /> : null}
+        </mask>
+        <g mask={`url(#${m})`}>
+          <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.primary} tipColour={k.primary} />
+          <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.primary} />
+        </g>
+      </>
+    );
+  },
+};
+
+/**
+ * The app icon: Glow · Light, with Feather's eyes. Solid colours only (no gradient, no halo, no shine), in the
  * product's fixed colours (`K_SPARKLES`), never the studio's scheme switch. Contrast, Sparkles
  * scheme: the glow on the primary 3.9:1, the ink eyes on the glow 11.1:1; the primary tile 5.7:1
  * on a white home screen and 3.1:1 on a dark one. Blue and yellow is the pair that survives the
  * common colour blindnesses.
  */
-export const APP_ICON: Logo = GLOW_LIGHT;
-/** The chosen icon's other shapes: the circle and the one-colour mark. */
-export const APP_ICON_SET: Logo[] = [GLOW_LIGHT, LIGHT_ROUND, LIGHT_MONO];
+export const APP_ICON: Logo = {
+  ...lightWithEyes(ICON_EYES.find((e) => e.id === "feather")!),
+  id: "glow-light-feather",
+  label: "Glow · Light",
+  line: "Wisp's drop as its own light: a solid yellow drop with Feather's eyes and two antennae, on a solid primary tile.",
+  note: "Feather's eyes: white, a soft solid rim, an ink pupil with its shine, so icon and character share one face. The pupils carry the face at 16px.",
+};
+/** The chosen icon and its other shapes: the circle and the one-colour mark. */
+export const APP_ICON_SET: Logo[] = [APP_ICON, FEATHER_ROUND, FEATHER_MONO];
+/** Glow · Light as first chosen, with ink eyes, and its circle and one-colour shapes: reference. */
+export const APP_ICON_INK: Logo[] = [
+  { ...GLOW_LIGHT, label: "Glow · Light · ink eyes" },
+  { ...LIGHT_ROUND, label: "Glow · Light · Round · ink eyes" },
+  { ...LIGHT_MONO, label: "Glow · Light · One colour · ink eyes" },
+];
 
 export const LOGOS: Logo[] = [DROP, GLOW, PEEK, EMBER];
 

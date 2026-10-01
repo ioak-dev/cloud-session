@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, the main character: Wisp on its ribbon wings, Clean, with the Core tail and Snug's thicker arms, with Feather eyes, which its turnaround, flight and form draw too; then the proposals they were picked from, its app icon (Glow · Light) with proposals for its eyes, its wordmark, warmer proposals, eye styles and acting; the old `#/ribbon` link opens it), **Side characters** (`#/side`), **References** (`#/references`, the app icon proposals and wordmark candidates not chosen, the ribbon variants not chosen, Glow tips and Spirit, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, only the chosen: Wisp on its ribbon wings, Clean, with the Core tail, Snug's thicker arms and Feather eyes, at rest and in every expression; its app icon, Glow · Light with Feather eyes, with its circle and one-colour mark; its wordmark, Gabarito 700; its turnaround, flight and sign-up form; the old `#/ribbon` link opens it), **Side characters** (`#/side`), **References** (`#/references`, everything the chosen Wisp was picked from, kept as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals and the wordmark candidates not chosen, the ribbon variants Glow tips and Spirit, the warmer proposals with their eye styles and acting, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -29,7 +29,7 @@ npm start
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression; Bean, softer (`BEAN_STYLES`: Soft, Feather, Blue brows, Round), shown on the main character. Feather (`BEAN_FEATHER`) is the main character's eyes |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |
-| `src/design/nix/wisp-logo.tsx` | The app icon: Glow · Light, chosen (`APP_ICON`), and its eyes after Feather (`APP_ICON_EYES`, proposals) on the Wisp page; on the References page, its round and one-colour shapes (`APP_ICON_SET`) and the proposals it was chosen from (Drop, Glow, Peek, Ember and variations on Drop and Glow; Figure and Flight, retired with the butterfly wings), each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/`, the chosen set as `app-icon*.svg` |
+| `src/design/nix/wisp-logo.tsx` | The app icon: Glow · Light with Feather eyes (`APP_ICON`), with its circle and one-colour mark (`APP_ICON_SET`), on the Wisp page; on the References page, the eyes not chosen (`APP_ICON_EYES_REFERENCE`), Glow · Light with ink eyes (`APP_ICON_INK`) and the proposals it was chosen from (Drop, Glow, Peek, Ember and variations on Drop and Glow; Figure and Flight, retired with the butterfly wings), each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/`, the chosen set as `app-icon*.svg` |
 | `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
 | `src/design/nix/firefly-spirits-2.tsx` | Wispy directions (reference): Comet, Bubble, Dandelion, Star, Crescent |
 | `src/design/nix/firefly-pip.tsx` | Pip, Wing cases, Plump (reference) |
@@ -41,7 +41,7 @@ npm start
 | `src/design/nix/side-candidates.tsx`, `side-puff.tsx`, `side-humans.tsx`, `side-abilities.tsx` | The side characters (fruit bat; chick; Juno, Lulu), the octopus and penguin as reference, and every ability preview |
 | `src/design/nix/side-states.tsx` | The practice states: 5 variants × 4 states for each of the six side characters |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, and the spark trail |
-| `src/design/nix/NixBenchView.tsx` | The studio pages: `WispPage` (the ribbons on Clean with its picks, or two pairs for the butterfly reference), `SidePage` and `ReferencesPage`, sharing one bench |
+| `src/design/nix/NixBenchView.tsx` | The studio pages: `WispPage` (the chosen Wisp only, or the full butterfly reference page), `SidePage` and `ReferencesPage` (the backup, with `CleanProposals`, `BeanSofter` and `WarmerSections`), sharing one bench |
 | `src/App.tsx` | Routes the four pages by hash (and `#/ribbon` to the Wisp page) |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
