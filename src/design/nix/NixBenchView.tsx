@@ -28,6 +28,7 @@ import {
 } from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
+import { SpinnerFigure, WISP_SPINNERS } from "./wisp-spinners";
 import { WispForm } from "./wisp-form";
 import { LOGO_VARIANTS, LOGOS, LogoMark, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
@@ -792,6 +793,34 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             <figcaption className="text-sm">
               <span className="material-heading text-foreground">{a.title}</span>
               <span className="material mt-1 block text-muted-foreground">{a.line}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        {front.label} — loading spinners (proposals)
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Loops that say "one moment" with Wisp as drawn, in place of a ring spinner: a somersault, a
+        breath of its glow, a ring of its sparks it watches go round, and three sparks that hop like
+        a typing indicator. Each is seamless and the same every time; it reacts to nothing. The dots
+        are an effects layer in the glow's colour on the figure's clock. Below, each at the size a
+        spinner is used. Under reduced motion, a still frame.
+      </p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {WISP_SPINNERS.map((s) => (
+          <figure key={s.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <div className="flex h-56 items-center justify-center overflow-hidden">
+              <SpinnerFigure c={front} s={s} size="h-56" />
+            </div>
+            <div className="flex items-end justify-center gap-6 overflow-hidden border-t border-border pt-2">
+              <SpinnerFigure c={front} s={s} size="h-16" />
+              <SpinnerFigure c={front} s={s} size="h-10" />
+            </div>
+            <figcaption className="text-sm">
+              <span className="material-heading text-foreground">{s.title}</span>
+              <span className="material mt-1 block text-muted-foreground">{s.line}</span>
             </figcaption>
           </figure>
         ))}

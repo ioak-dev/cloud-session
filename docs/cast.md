@@ -162,6 +162,22 @@ None of them reacts to what is typed, and none says anything about a valid or an
 
 None of them is in the turn puppet, the views, the flight or the form: that waits until one, or a mix, is picked into `WISP_MAIN`.
 
+**Wisp — loading spinners (proposals).** Loops that say "one moment" with Wisp as drawn (`WISP_MAIN`; on the ribbon page, with ribbons), in place of a ring spinner. They are in `src/design/nix/wisp-spinners.tsx` (`WISP_SPINNERS`, drawn by `SpinnerFigure`) and shown on the Wisp page large and at 64 and 40px.
+
+| Spinner | What happens | Loop |
+|---|---|---|
+| Tumble | Leans back (anticipation), tucks its hands in, turns a full somersault about its middle with wings buzzing and antennae trailing, overshoots, settles, hovers a beat | 2.4 s |
+| Glow breath | Hands at its heart; on the in-breath it rises, grows a little taller, its flame swells and its glow comes up; then it all eases back | 3.6 s |
+| Spark ring | Ten sparks round it light up one after another, clockwise from the top; its head and body lean after the lit one and its antennae trail | 2.4 s |
+| Counting dots | Three sparks beside it hop in turn like a typing indicator; it nods to each with a boing of its antenna, then straightens | 2.4 s |
+
+- Each loop is seamless and the same every time. A spinner reacts to nothing: not an answer, a count, an approval or an emptied queue.
+- The tumble turns Wisp over in its own plane; it never mirrors, so it does not break "never flips".
+- The ring's and the dots' sparks are an effects layer in the glow's colour with the glow's edge, not sparks drawn into the figure; the figure's own spark trail is unchanged. Their animations take the figure's start time, so the face, the joints and the dots run on one clock.
+- A spinner's loop runs on linear time and each keyframe segment carries its own easing, so a tumble's one long ease is not bent by a second ease over the whole loop.
+- Under reduced motion the figure holds its first frame and resting face, and the dots hold one still frame of the loop. The figure is `aria-hidden`; the spinner is a `role="status"` with a text label.
+- **Open:** Wisp appears only on the sign-up form. Using any of these elsewhere (while a lesson loads, say) widens where Wisp appears, and that is the user's decision. Nothing here is adopted.
+
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
 | Variant | Shape | Where the light is |

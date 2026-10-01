@@ -26,6 +26,7 @@ npm start
 | `src/design/nix/wisp-ribbon.tsx` | Wisp · Ribbon (proposal): today's Wisp, Wisp, warmer, and the warmer without its ruff, on the original ribbon wings; the warmer proposals and eye styles on ribbons for the ribbon page; ribbon finishes (no outline with dots or sparkles, spirit) and the spirit's minor variations |
 | `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
+| `src/design/nix/wisp-spinners.tsx` | Wisp loading spinners (proposals): Tumble, Glow breath, Spark ring, Counting dots |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |
 | `src/design/nix/wisp-logo.tsx` | App icon proposals made from Wisp's shape (Drop, Figure, Flight, Glow, Peek, Ember) and variations on Drop and Glow, each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/` |
 | `src/design/nix/firefly-spirits.tsx` | Wispy directions (reference): Puff, Jelly, Bloom |
