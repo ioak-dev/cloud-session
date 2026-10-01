@@ -180,6 +180,24 @@ The eye style is between **Bean and Gumdrop**; the user will decide later. Honey
 
 Under reduced motion each holds its pose without easing or wiggling.
 
+**Around signing in — nine reactions (proposals)** (`MOMENTS` in `src/design/nix/wisp-moments.tsx`, three demos under the password fields on the Wisp page). Three each for a sign-in that did not match, a sign-in that worked, and a new account. Each plays on a small sign-in card, lit as the lit form proposes, and loops. Like the blanket, each comes from Wisp's own body: its lantern, sparks, ribbons, antennae and the light it casts, never a prop. Each is declared keyframes on one loop clock (`key` tracks), and under reduced motion holds one still frame at its peak. They use new controls on the turn puppet: `shut` and `wink` (eyes closed as a beam or asleep), `mouth` (smile, grin, “o”, a sheepish wobble), `glow` (the lantern dimmed, or flashed above 1), `armsTo` (an arm eased toward a pose), `knot`, `curl` and `bow`.
+
+| Moment | Reaction | What it does |
+|---|---|---|
+| Didn't match | Fizzle | The lantern sputters like a match that didn't catch and puffs a little smoke. It blinks at its tail, cups the flame and blows; it catches with a flare, and it hops back to the username |
+| Didn't match | Ribbon knot | The ribbons swing in, cross under the flame and tie in a knot behind (`knot`), as if the strands didn't match. It looks over its shoulder, wriggles, and the knot pops loose with a boing and four sparks; a sheepish shrug, then back to the username |
+| Didn't match | Question mark | It ducks under its ribbon blanket to the nose; one antenna curls into a question mark (`curl`) while a hand scratches its head; then it pops out, ready to try again, and hops back to the username |
+| Signed in | Firefly code | Fireflies know each other by their flashes. It turns to you, dims, and flashes its own pattern — blink, blink, pause, blink — then beams and waves |
+| Signed in | Woken up | Waiting, it has dozed off under its ribbons, breathing slowly, its lantern low, a mote of light drifting up now and then. It startles awake, throws the ribbons off and stretches wide |
+| Signed in | Lamplighter | It zips ahead along the top of the card; each spot its lantern passes stays lit a while, like lamps down a hallway. At the far end it turns to you and bows |
+| Signed up | Constellation | It flies one loop; its sparks hang instead of falling, draw together into a small five-pointed star that twinkles once, and fade |
+| Signed up | Ribbon bow | It ties its ribbons into a bow on top of its head (`bow`), like a present, with a wink. Then it pulls one end and the bow falls away into a twirl, a full continuous turn |
+| Signed up | Housewarming | It hops to the button and touches the tip of its flame to it, as you light a wick. The light swells across the whole card, then settles to a glow |
+
+The error reactions never frown, shake their heads or turn a status colour: each treats the miss as Wisp's own hiccup. None of the success reactions is a reward (no medal, no confetti), and none grows with use: an event gets one reaction, the same every time.
+
+**Open — two rules these would change.** Wisp's rules say it never reacts to whether an entry is valid, and that it appears only on the sign-up form. All nine answer the server (wrong details, signed in, signed up), and the six sign-in ones put Wisp on a sign-in form too. Choosing any of them is choosing to change those rules; until then the form's behaviour is unchanged.
+
 **The studio's pages after the choices.** The Wisp page (`#/wisp`) holds only what is chosen: Wisp (Clean ribbons, Core tail, Snug arms, drop head, Feather eyes) at rest and in every expression; the app icon (Glow · Light with Feather eyes, its circle and one-colour mark); the wordmark (Gabarito 700); the turnaround, flight and sign-up form; and the bench for the main character. Everything it was chosen from is on the References page (`#/references`) as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals not chosen, the wordmark candidates, Glow tips and Spirit, and the warmer proposals with their eye styles and acting (on the ribbons), then the wispy directions, Pip and the earlier fireflies. The butterfly-winged Wisp keeps its own full page (`#/butterfly`).
 
 **Wisp's eyes — chosen: Feather** (`BEAN_FEATHER`). Bean's acting (the roaming pupil, the lids, the brows' tilt and lift) with a translucent hairline rim (`C.line`), a 2.0 lash and tapered ink brows. On the main character (`CLEAN_PICK.face`), and drawn the same by the turn puppet on the Wisp page (`FeatherEye` in `wisp-turn.tsx`), so the turnaround, flight and form match; there the puppet's glance moves the pupil inside the white rather than the whole eye. The butterfly Wisp keeps its own eyes.

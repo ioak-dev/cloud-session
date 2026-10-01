@@ -34,6 +34,7 @@ const RINGS = "M84 214 Q102 222 122 212 M88 231 Q102 237 116 228";
 
 type P = [number, number];
 const rad = (d: number) => (d * Math.PI) / 180;
+const norm = (d: number) => ((((d + 180) % 360) + 360) % 360) - 180;
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const smooth = (a: number, b: number, v: number) => {
   const t = clamp((v - a) / (b - a), 0, 1);
@@ -221,20 +222,29 @@ function wings(yaw: number, flapU: number, flapL: number): Part[] {
 const ARMS = { upper: 9, w0: 4.25, w1: 3.4, hand: 5.9 };
 const SNUG_ARMS = { upper: 11.5, w0: 5.5, w1: 4.4, hand: 8 };
 
+/** An arm held somewhere: elbow and hand as [outward, height, forward] on the right side; the
+ *  left mirrors it. */
+export type ArmPose = { elbow: [number, number, number]; hand: [number, number, number] };
+/** Arm poses to ease toward, by weight `w` (0 hanging … 1 there); a side left out stays put. */
+export type ArmsTo = { l?: ArmPose; r?: ArmPose; w: number };
+
 /**
  * The arms, hanging (`cover` 0) or raised so the hands cover the eyes (`cover` 1): the elbows
  * lift out to the sides and the hands come up in front of the face, where the eyes are, and grow
- * a little, as a hand held close does.
+ * a little, as a hand held close does. `to` eases either arm on toward a pose of its own.
  */
-function arms(yaw: number, { upper, w0, w1, hand } = ARMS, cover = 0): Part[] {
+function arms(yaw: number, { upper, w0, w1, hand } = ARMS, cover = 0, to?: ArmsTo): Part[] {
   const u = cover * cover * (3 - 2 * cover);
   const mix = (a: number, b: number) => a + (b - a) * u;
+  const w = to ? clamp(to.w, 0, 1.2) : 0;
   return [-1, 1].map((s) => {
+    const pose = s < 0 ? to?.l : to?.r;
+    const go = (a: number, b: number) => (pose ? a + (b - a) * w : a);
     const sh = proj(16 * s, 0, yaw);
-    const el = proj(mix(24, 34) * s, mix(4, 16), yaw);
-    const hd = proj(mix(28.5, 22) * s, mix(7, 30), yaw);
-    const a: P = [el.x, mix(178, 138)];
-    const b: P = [hd.x, mix(196, 98)];
+    const el = proj(go(mix(24, 34), pose?.elbow[0] ?? 0) * s, go(mix(4, 16), pose?.elbow[2] ?? 0), yaw);
+    const hd = proj(go(mix(28.5, 22), pose?.hand[0] ?? 0) * s, go(mix(7, 30), pose?.hand[2] ?? 0), yaw);
+    const a: P = [el.x, go(mix(178, 138), pose?.elbow[1] ?? 0)];
+    const b: P = [hd.x, go(mix(196, 98), pose?.hand[1] ?? 0)];
     const r = mix(hand, hand * 1.45);
     const dx = b[0] - a[0];
     const dy = b[1] - a[1];
@@ -267,12 +277,23 @@ function arms(yaw: number, { upper, w0, w1, hand } = ARMS, cover = 0): Part[] {
 
 /* ——— head ——— */
 
-function Antennae({ yaw }: { yaw: number }) {
+/** The right antenna curled into a question mark: up, over, and hooked back in. */
+const QUERY: [number, number, number][] = [
+  [3, 58, 0],
+  [4, 40, 4],
+  [2, 22, 8],
+  [16, 16, 10],
+  [32, 12, 12],
+  [34, 34, 13],
+  [20, 36, 14],
+];
+
+function Antennae({ yaw, curl = 0 }: { yaw: number; curl?: number }) {
   return (
     <>
       {[-1, 1].map((s) => {
         // lateral offset, height, forward reach: they lean forward toward the tip
-        const pts: [number, number, number][] = [
+        const base: [number, number, number][] = [
           [3 * s, 58, 0],
           [7 * s, 46, 4],
           [18 * s, 46, 8],
@@ -281,6 +302,10 @@ function Antennae({ yaw }: { yaw: number }) {
           [23 * s, 31, 13],
           [21 * s, 32, 14],
         ];
+        const pts =
+          s > 0 && curl
+            ? base.map((p, i) => p.map((v, k) => v + (QUERY[i][k] - v) * curl) as [number, number, number])
+            : base;
         const q = pts.map(([l, y, f]) => ({ x: proj(l, f, yaw).x, y }));
         const [p0, a, b, c, e, g, t] = q;
         return (
@@ -306,6 +331,19 @@ function Antennae({ yaw }: { yaw: number }) {
  * translucent hairline rim, an ink pupil that roams inside it, and a tapered ink brow. Where the
  * puppet looks moves the pupil, not the eye, so a glance reads as Feather's does.
  */
+/** An eye closed: a beam (upturned arc) or asleep (a lid's curve). */
+function Shut({ as, ink }: { as: "happy" | "sleep"; ink: string }) {
+  return (
+    <path
+      d={as === "happy" ? "M-8 3 Q0 -8 8 3" : "M-8 -1 Q0 6 8 -1"}
+      stroke={ink}
+      strokeWidth={3}
+      fill="none"
+      strokeLinecap="round"
+    />
+  );
+}
+
 function FeatherEye({ look, lookX }: { look: number; lookX: number }) {
   const px = clamp(lookX * 0.8, -4, 4);
   const py = 1 + clamp(look * 0.6, -4, 4);
@@ -331,10 +369,18 @@ function Face({
   look = 0,
   lookX = 0,
   feather = false,
+  shut = 0,
+  shutAs = "happy",
+  wink = 0,
+  mouth = "smile",
 }: {
   yaw: number;
   look?: number;
   lookX?: number;
+  shut?: number;
+  shutAs?: "happy" | "sleep";
+  wink?: number;
+  mouth?: Mouth;
   /** The main character's Feather eyes (the Wisp page); otherwise the butterfly Wisp's. */
   feather?: boolean;
 }) {
@@ -374,8 +420,23 @@ function Face({
           opacity={0.6 * c.o}
         />
       ))}
-      {eyes.map((e, i) =>
-        feather ? (
+      {eyes.map((e, i) => {
+        /* the near (right) eye winks; a closed eye squeezes shut, then is drawn as a line */
+        const lid = i === 1 ? Math.max(shut, wink) : shut;
+        const as = i === 1 && wink > shut ? "happy" : shutAs;
+        if (lid > 0.01)
+          return (
+            <g key={i} opacity={e.o} transform={`translate(${e.x} ${feather ? 107 : 108}) scale(${Math.max(e.k, 0.05)} 1)`}>
+              {lid < 0.7 ? (
+                <g transform={`scale(1 ${1 - lid})`}>
+                  {feather ? <FeatherEye look={0} lookX={lookX} /> : <ellipse rx={7} ry={8.8} fill={EYE} />}
+                </g>
+              ) : (
+                <Shut as={as} ink={EYE} />
+              )}
+            </g>
+          );
+        return feather ? (
           <g
             key={i}
             opacity={e.o}
@@ -401,19 +462,26 @@ function Face({
             strokeLinecap="round"
           />
         </g>
-        ),
-      )}
-      <path
-        d={`M${mx - 6 * mk} 125 Q${mx} ${130} ${mx + 6 * mk} 125`}
-        stroke={EYE}
-        strokeWidth={2.6}
-        fill="none"
-        strokeLinecap="round"
-        opacity={mo}
-      />
+        );
+      })}
+      <g opacity={mo}>
+        {mouth === "grin" ? (
+          <path d={`M${mx - 8 * mk} 123 Q${mx} 136 ${mx + 8 * mk} 123 Q${mx} 127 ${mx - 8 * mk} 123 Z`} fill={EYE} stroke={EYE} strokeWidth={1.6} strokeLinejoin="round" />
+        ) : mouth === "o" ? (
+          <ellipse cx={mx} cy={127} rx={3.4 * mk} ry={4} fill={EYE} />
+        ) : mouth === "wobble" ? (
+          <path d={`M${mx - 7 * mk} 127 q${3.5 * mk} -3 ${7 * mk} 0 q${3.5 * mk} 3 ${7 * mk} 0`} stroke={EYE} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+        ) : (
+          <path d={`M${mx - 6 * mk} 125 Q${mx} ${130} ${mx + 6 * mk} 125`} stroke={EYE} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+        )}
+      </g>
     </g>
   );
 }
+
+/** The mouths the puppet can make: its smile, a grin, an “o” (surprise, a yawn, blowing) and a
+ *  sheepish wobble. */
+export type Mouth = "smile" | "grin" | "o" | "wobble";
 
 /* ——— the whole figure ——— */
 
@@ -437,8 +505,59 @@ export type TurnProps = {
   blanket?: number;
   /** The blanket's wiggle, in degrees: it giggles under there. */
   wiggle?: number;
+  /** 0 → 1: the eyes close, as a beam (`happy`) or asleep (`sleep`). */
+  shut?: number;
+  shutAs?: "happy" | "sleep";
+  /** 0 → 1: the near (right) eye winks. */
+  wink?: number;
+  mouth?: Mouth;
+  /** The lantern: 0 out, 1 as drawn, above 1 a flash. */
+  glow?: number;
+  /** Either arm eased toward a pose of its own. */
+  armsTo?: ArmsTo;
+  /** 0 → 1: the ribbons swing in, cross under the flame and tie in a knot behind. Ribbons only. */
+  knot?: number;
+  /** 0 → 1: the right antenna curls into a question mark. */
+  curl?: number;
+  /** 0 → 1: the ribbons are tied in a bow on top of the head. Ribbons only. */
+  bow?: number;
   uid: string;
 };
+
+/** The ribbons tied in a bow on the drop's tip, in head space: two loops, a knot, two tails. */
+function Bow({ b, uid }: { b: number; uid: string }) {
+  const loop = "M100 42 C88 24 66 24 70 40 C73 52 90 50 100 42 Z";
+  const tail = "M98 45 Q92 56 84 66 L92 63 L94 70 Q99 57 101 46 Z";
+  return (
+    <g transform={`translate(100 42) scale(${b}) translate(-100 -42)`} opacity={Math.min(1, b * 2)}>
+      <defs>
+        <linearGradient id={`${uid}-bow`} gradientUnits="userSpaceOnUse" x1="100" y1="24" x2="100" y2="70">
+          <stop offset="0" stopColor={C.tint} />
+          <stop offset="1" stopColor={C.soft} />
+        </linearGradient>
+      </defs>
+      {[1, -1].map((s) => (
+        <g key={s} transform={s < 0 ? "translate(200 0) scale(-1 1)" : undefined} fill={`url(#${uid}-bow)`} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round">
+          <path d={tail} />
+          <path d={loop} />
+        </g>
+      ))}
+      <ellipse cx={100} cy={42} rx={6} ry={5.5} fill={C.tint} stroke={C.hi} strokeWidth={HAIR} />
+    </g>
+  );
+}
+
+/** The knot the ribbons tie behind Wisp: a small pretzel in the ribbons' frost. */
+function Knot({ k, yaw }: { k: number; yaw: number }) {
+  const q = proj(0, -58, yaw);
+  return (
+    <g transform={`translate(${q.x} 212) scale(${1.4 * k})`} fill={C.tint} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round">
+      <path d="M0 0 C-14 -14 -22 4 -8 6 C-2 7 2 3 0 0 Z" />
+      <path d="M0 0 C14 -14 22 4 8 6 C2 7 -2 3 0 0 Z" />
+      <ellipse cx={0} cy={1} rx={5} ry={4.5} />
+    </g>
+  );
+}
 
 /** The blanket: a sheet over the head, peaked where the drop's tip is, hemmed at the chest. */
 const SHEET =
@@ -490,8 +609,20 @@ export function WispTurn({
   cover = 0,
   blanket = 0,
   wiggle = 0,
+  shut = 0,
+  shutAs = "happy",
+  wink = 0,
+  mouth = "smile",
+  glow = 1,
+  armsTo,
+  knot = 0,
+  curl = 0,
+  bow = 0,
   uid,
 }: TurnProps) {
+  /* a whole turn comes back round: the angle is kept within ±180° */
+  yaw = norm(yaw);
+  headYaw = norm(headYaw);
   const s = Math.sin(rad(yaw));
   const body = 1 - 0.08 * Math.abs(s);
   const fw = 1 - 0.25 * Math.abs(s);
@@ -500,17 +631,24 @@ export function WispTurn({
   const style = React.useContext(WingStyleContext);
   const form = React.useContext(RibbonFormContext);
   const t = useSmokeClock(style === "ribbon" && !!form.smoke);
-  /* under the blanket the ribbons are the blanket, so they fade from the sides as it rises */
+  /* under the blanket, or tied in a bow, the ribbons are the blanket or the bow, so they fade
+     from the sides as it forms */
   const sheet = style === "ribbon" ? blanket : 0;
+  const tied = style === "ribbon" ? bow : 0;
+  const hide = Math.max(sheet, tied);
+  /* knotted, the ribbons swing in until they cross under the flame */
+  const tangle = style === "ribbon" ? knot : 0;
   const parts = [
     ...(style === "ribbon"
-      ? ribbons(yaw, flapU, form, uid, t).map((p, i) =>
-          sheet > 0 ? { ...p, el: <g key={`rb${i}`} opacity={1 - sheet}>{p.el}</g> } : p,
+      ? ribbons(yaw, flapU + 42 * tangle, form, uid, t).map((p, i) =>
+          hide > 0 ? { ...p, el: <g key={`rb${i}`} opacity={1 - hide}>{p.el}</g> } : p,
         )
       : wings(yaw, flapU, flapL)),
+    ...(tangle > 0.05 ? [{ d: -20, el: <Knot key="knot" k={clamp(tangle, 0, 1.2)} yaw={yaw} /> }] : []),
     /* the Wisp page (ribbons) draws the picks on Clean: Snug's arms and the Core tail */
-    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS, cover),
+    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS, cover, armsTo),
   ];
+  const lamp = clamp(glow, 0, 2.4);
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
   const front = parts.filter((p) => p.d >= 0).sort((a, b) => a.d - b.d);
   return (
@@ -544,8 +682,10 @@ export function WispTurn({
       </defs>
       {behind.map((p) => p.el)}
       <g transform={flame}>
-        <circle cx={104} cy={236} r={38} fill={GLOW} opacity={0.3} />
-        <path d={FLAME} fill={`url(#${uid}-tf)`} />
+        <circle cx={104} cy={236} r={38 * (0.7 + 0.3 * lamp)} fill={GLOW} opacity={Math.min(0.75, 0.3 * lamp)} />
+        {/* dimmed, the lantern shows the body's own pale colour through it */}
+        {lamp < 1 && <path d={FLAME} fill={C.soft} />}
+        <path d={FLAME} fill={`url(#${uid}-tf)`} opacity={Math.min(1, lamp)} />
         {style === "ribbon" && <Core uid={uid} />}
         <path d={RINGS} stroke={AMBER} strokeWidth={2.2} fill="none" strokeLinecap="round" />
       </g>
@@ -556,9 +696,19 @@ export function WispTurn({
       />
       <rect x={94} y={134} width={12} height={20} rx={4} fill={C.mid} />
       <g transform={HEAD_FIT}>
-        <Antennae yaw={headYaw} />
+        <Antennae yaw={headYaw} curl={curl} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
-        <Face yaw={headYaw} look={look} lookX={lookX} feather={style === "ribbon"} />
+        <Face
+          yaw={headYaw}
+          look={look}
+          lookX={lookX}
+          feather={style === "ribbon"}
+          shut={shut}
+          shutAs={shutAs}
+          wink={wink}
+          mouth={mouth}
+        />
+        {tied > 0.02 && <Bow b={tied} uid={uid} />}
       </g>
       {front.map((p) => p.el)}
       {sheet > 0 && <Blanket b={sheet} yaw={yaw} headYaw={headYaw} wiggle={wiggle} uid={uid} />}

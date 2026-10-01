@@ -28,6 +28,7 @@ import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./
 import { BEAN_STYLES, EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { PASSWORD_FIELDS, WispForm } from "./wisp-form";
+import { WispMoments } from "./wisp-moments";
 import { APP_ICON, APP_ICON_EYES_REFERENCE, APP_ICON_FACES, APP_ICON_INK, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
@@ -648,6 +649,44 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </p>
           <div className="mt-3">
             <WispForm fields={PASSWORD_FIELDS} title="Three ways not to look" />
+          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — when the sign-in doesn't match (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three gentle reactions to a wrong username or password. None frowns at you, shakes its
+            head or turns a status colour: each treats the miss as Wisp's own little hiccup, and
+            ends with it back beside the username. Like the blanket, each comes from its own body.
+            Each loops on a sign-in card, lit as the lit form proposes. Under reduced motion each
+            holds one still frame.
+          </p>
+          <div className="wisp-lit-block mt-3">
+            <WispMoments event="error" />
+          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — signed in (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three ways to say welcome back. The form gives way to the welcome; Wisp says hello in
+            its own light.
+          </p>
+          <div className="wisp-lit-block mt-3">
+            <WispMoments event="signin" />
+          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — signed up (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three ways to mark a first meeting. None is a reward: no medal, no confetti, nothing
+            that grows with use. These, and the sign-in reactions, answer the server, so choosing
+            any changes Wisp's rule that it never reacts to whether an entry is valid; the sign-in
+            ones also put Wisp on a second form. Both are open in the cast notes.
+          </p>
+          <div className="wisp-lit-block mt-3">
+            <WispMoments event="signup" />
           </div>
         </>
       )}
