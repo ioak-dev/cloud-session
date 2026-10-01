@@ -5,8 +5,11 @@ import * as React from "react";
 import { APP_ICON, K_SPARKLES, LogoMark } from "./wisp-logo";
 
 /**
- * Wordmark candidates for “sparkles”, set beside the chosen app icon (Glow · Light). A fresh round,
- * after Fraunces, Fredoka, Nunito, Baloo 2, Lexend and Quicksand (`docs/logo/wordmarks.png`).
+ * Wordmark candidates for “sparkles”, set beside the chosen app icon (Glow · Light). The top three
+ * of round two (M PLUS Rounded 1c, Gabarito, Figtree) are kept; the rest are round three, fresh.
+ * Not repeated: round one (Fraunces, Fredoka, Nunito, Baloo 2, Lexend, Quicksand,
+ * `docs/logo/wordmarks.png`) and the five dropped from round two (Varela Round, Comfortaa,
+ * Sniglet, Rubik, Atkinson Hyperlegible Next).
  *
  * What makes a face fit the mark: the icon is built from round things — a drop, two round
  * antenna tips on round-capped stalks, oval eyes, a curved smile — drawn solid, with no hairlines.
@@ -22,61 +25,20 @@ export type Wordmark = {
   css: string;
   /** Tracking, in em: round faces set tight look heavy; the airy ones need none. */
   tracking?: number;
+  /** One of the top three, kept from round two. */
+  kept?: boolean;
   note: string;
 };
 
 export const WORDMARKS: Wordmark[] = [
+  /* kept from round two: the top three */
   {
     id: "mplus",
     family: "M PLUS Rounded 1c",
     weight: 800,
     css: "M+PLUS+Rounded+1c:wght@800",
+    kept: true,
     note: "Fully rounded terminals, like the antennae's caps, at a weight close to the stalks. Sturdy and warm without being bubbly; the closest match to the mark.",
-  },
-  {
-    id: "varela",
-    family: "Varela Round",
-    weight: 400,
-    css: "Varela+Round",
-    tracking: 0.01,
-    note: "Geometric and fully rounded, one weight. Calm and clear; lighter than the mark, so the icon leads and the name follows.",
-  },
-  {
-    id: "comfortaa",
-    family: "Comfortaa",
-    weight: 700,
-    css: "Comfortaa:wght@700",
-    tracking: 0.01,
-    note: "Built from circles, as the drop is: the most geometric match. Airy; its round 'a' and 'e' echo the eyes. Thin at 16px.",
-  },
-  {
-    id: "sniglet",
-    family: "Sniglet",
-    weight: 800,
-    css: "Sniglet:wght@800",
-    note: "Plump and soft, a cousin of the drop. The most playful here; check it does not read as a toddler's toy for teachers and parents.",
-  },
-  {
-    id: "rubik",
-    family: "Rubik",
-    weight: 600,
-    css: "Rubik:wght@600",
-    note: "Slightly rounded corners on a sturdy sans: friendly, grown-up, and holds at every size. Less round than the mark, so it reads as the product beside the character.",
-  },
-  {
-    id: "figtree",
-    family: "Figtree",
-    weight: 800,
-    css: "Figtree:wght@800",
-    tracking: -0.01,
-    note: "Clean geometric with open, round bowls; crisp at small sizes. The most neutral fit — modern, and lets the yellow drop carry the warmth.",
-  },
-  {
-    id: "atkinson",
-    family: "Atkinson Hyperlegible Next",
-    weight: 700,
-    css: "Atkinson+Hyperlegible+Next:wght@700",
-    note: "Drawn for low-vision readers, and a cousin of the studio's own body face. The most accessible name; the least round, so it pairs by clarity rather than by shape.",
   },
   {
     id: "gabarito",
@@ -84,7 +46,57 @@ export const WORDMARKS: Wordmark[] = [
     weight: 700,
     css: "Gabarito:wght@700",
     tracking: -0.01,
+    kept: true,
     note: "Geometric with soft, round counters and a little bounce. Friendly and modern; a good middle between Figtree's clarity and M PLUS's roundness.",
+  },
+  {
+    id: "figtree",
+    family: "Figtree",
+    weight: 800,
+    css: "Figtree:wght@800",
+    tracking: -0.01,
+    kept: true,
+    note: "Clean geometric with open, round bowls; crisp at small sizes. The most neutral fit — modern, and lets the yellow drop carry the warmth.",
+  },
+  /* round three: fresh */
+  {
+    id: "zenmaru",
+    family: "Zen Maru Gothic",
+    weight: 700,
+    css: "Zen+Maru+Gothic:wght@700",
+    tracking: 0.01,
+    note: "A Japanese 'maru' (round) gothic: every stroke end rounded, like M PLUS but calmer and a touch lighter. Quiet and kind; the softest of the sturdy faces.",
+  },
+  {
+    id: "andika",
+    family: "Andika",
+    weight: 700,
+    css: "Andika:wght@700",
+    note: "Designed by SIL for beginning readers: letters that cannot be mistaken for each other, open and plain. The one drawn for the learner; less round than the mark, so it pairs by purpose.",
+  },
+  {
+    id: "urbanist",
+    family: "Urbanist",
+    weight: 800,
+    css: "Urbanist:wght@800",
+    tracking: -0.005,
+    note: "Geometric, built on circles, with a low, wide stance: the drop's roundness in a modern product face. Clean at 16px.",
+  },
+  {
+    id: "jakarta",
+    family: "Plus Jakarta Sans",
+    weight: 800,
+    css: "Plus+Jakarta+Sans:wght@800",
+    tracking: -0.015,
+    note: "Friendly modern sans with round bowls and a slightly bouncy rhythm; confident for parents and teachers, warm enough beside Wisp.",
+  },
+  {
+    id: "bricolage",
+    family: "Bricolage Grotesque",
+    weight: 700,
+    css: "Bricolage+Grotesque:wght@700",
+    tracking: -0.01,
+    note: "The most character here: ink-trap quirks and a hand-made warmth. Distinctive as a name, less round than the mark; check it stays calm at small sizes.",
   },
 ];
 
@@ -134,6 +146,7 @@ function Lockup({ w }: { w: Wordmark }) {
       <figcaption className="text-sm">
         <span className="material-heading text-foreground">
           {w.family} {w.weight}
+          {w.kept ? " · top three" : " · new"}
         </span>
         <span className="material mt-1 block text-muted-foreground">{w.note}</span>
       </figcaption>

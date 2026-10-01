@@ -147,7 +147,7 @@ The Wisp page (`#/wisp`) shows the main character on its ribbons; Wisp with two 
 | Lidded | White eyes, small pupils, heavy lids in its own colour | Sly, proud, professional; rests cooler |
 | Starry | Dark eyes with a spark of its own light for a catchlight | Ties the eyes to the glow; the eye becomes a spark at a party |
 
-The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference.
+The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference. **Recommended: Bean.** Wisp's one job on the sign-up form is to watch: its eyes follow the text as it is typed, and look away at the password. Bean's pupil moves inside a white eye, so where it looks reads at a glance, even small; Gumdrop's solid eyes show a glance only by their shine and shape. Bean also has the widest acting range (side-eye, a pinprick of shock), and its white eyes with ink pupils are the icon face that keeps white and still reads (Glow · Light · Bean eyes). The risk is Duolingo: keep Bean's whites tall ovals with small round pupils, never Duo's big round whites. Gumdrop is the runner-up: the cutest and the best at the smallest sizes, if gaze matters less than charm.
 
 **Wisp, warmer — acting (proposals).** What kept Wisp laid back, and what the acting does about it:
 
@@ -255,18 +255,20 @@ Glow · Light is chosen (above). The eye style is still between Bean and Gumdrop
 
 **The icon's face — ink, white, or Bean's white eyes** (`APP_ICON_FACES` in `wisp-logo.tsx`; `docs/logo/app-icon-faces.png`). Asked: white eyes and mouth. Drawn as **Glow · Light · White face**: white on the glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and is gone at 16px. The alternative that keeps white in the face is **Glow · Light · Bean eyes**: white eyes, each with an ink pupil, and an ink smile; the pupils carry the contrast (ink on white 16.4:1, on the glow 11.1:1), so it holds at every size, and it is the Bean eye style, one of the two left for the character. Undecided between ink (as chosen) and Bean eyes; white alone is not recommended.
 
-**Wordmark — candidates, round two** (`src/design/nix/wisp-wordmark.tsx`, `WORDMARKS`; shown on the Wisp page beside the chosen icon; `docs/logo/wordmarks-2.png`). Chosen to fit the mark: round bowls, round or soft terminals like the antennae's caps, a stroke near the stalks' weight, open letters that stay legible for a child and at 16px. Each is set in lowercase beside the icon on white, on dark, reversed on the primary, and at 16px; all on Google Fonts under the OFL.
+**Wordmark — candidates: the top three and round three** (`src/design/nix/wisp-wordmark.tsx`, `WORDMARKS`; shown on the Wisp page beside the chosen icon; `docs/logo/wordmarks-3.png`). Chosen to fit the mark: round bowls, round or soft terminals like the antennae's caps, a stroke near the stalks' weight, open letters that stay legible for a child and at 16px. Each is set in lowercase beside the icon on white, on dark, reversed on the primary, and at 16px; all on Google Fonts under the OFL.
 
-| Face | Fit |
-|---|---|
-| M PLUS Rounded 1c 800 | Fully rounded terminals like the antennae's caps, at a weight close to the stalks: the closest match to the mark |
-| Varela Round 400 | Geometric, fully rounded, one weight; lighter than the mark, so the icon leads |
-| Comfortaa 700 | Built from circles, as the drop is; airy, thin at 16px |
-| Sniglet 800 | Plump and soft; the most playful, may read too young for teachers and parents |
-| Rubik 600 | Slightly rounded corners on a sturdy sans; grown-up, holds at every size |
-| Figtree 800 | Clean geometric with round bowls; the most neutral, crisp small |
-| Atkinson Hyperlegible Next 700 | Drawn for low-vision readers, a cousin of the studio's body face; fits by clarity, not shape |
-| Gabarito 700 | Geometric with soft round counters; between Figtree's clarity and M PLUS's roundness |
+| Face | | Fit |
+|---|---|---|
+| M PLUS Rounded 1c 800 | Top three | Fully rounded terminals like the antennae's caps, at a weight close to the stalks: the closest match to the mark |
+| Gabarito 700 | Top three | Geometric with soft round counters and a little bounce; between Figtree's clarity and M PLUS's roundness |
+| Figtree 800 | Top three | Clean geometric with round bowls; the most neutral, crisp small |
+| Zen Maru Gothic 700 | New | A round ('maru') gothic: every stroke end rounded, like M PLUS but calmer and lighter |
+| Andika 700 | New | Designed by SIL for beginning readers: letters that cannot be confused. Pairs by purpose, less by shape |
+| Urbanist 800 | New | Geometric on circles, low and wide; the drop's roundness in a modern product face |
+| Plus Jakarta Sans 800 | New | Friendly modern sans, round bowls, slightly bouncy; confident for parents and teachers |
+| Bricolage Grotesque 700 | New | The most character: ink-trap quirks, hand-made warmth; less round, check it at small sizes |
+
+Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperlegible Next) are dropped; `docs/logo/wordmarks-2.png` keeps that round. None is chosen.
 
 **Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 

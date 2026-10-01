@@ -673,7 +673,8 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           Wordmark — candidates beside the icon
         </h3>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          A fresh round of faces for “sparkles”, chosen to fit the mark: round bowls, round or soft
+          The top three so far — M PLUS Rounded 1c, Gabarito, Figtree — and five fresh faces for
+          “sparkles”, all chosen to fit the mark: round bowls, round or soft
           terminals like the antennae’s caps, a stroke near the stalks’ weight, and open letters
           that stay legible for a child and at small sizes. Each is shown beside the icon on white,
           on dark, reversed on the primary, and at 16px. All are on Google Fonts under the OFL.
