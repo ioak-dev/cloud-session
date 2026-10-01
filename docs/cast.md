@@ -158,6 +158,8 @@ The eye style is between **Bean and Gumdrop**; the user will decide later. Honey
 | Blue brows | Feather's brows in the body's own deep blue (`C.deep`) instead of ink: only the pupils and mouth are dark |
 | Round | A rounder eye with a bigger pupil and a second small shine, rimmed in the face's own blue (`C.hi`), tapered brows. Youngest; the pupil has less room to roam |
 
+**Wisp's eyes — chosen: Feather** (`BEAN_FEATHER`). Bean's acting (the roaming pupil, the lids, the brows' tilt and lift) with a translucent hairline rim (`C.line`), a 2.0 lash and tapered ink brows. On the main character (`CLEAN_PICK.face`), and drawn the same by the turn puppet on the Wisp page (`FeatherEye` in `wisp-turn.tsx`), so the turnaround, flight and form match; there the puppet's glance moves the pupil inside the white rather than the whole eye. The butterfly Wisp keeps its own eyes.
+
 **Wisp, warmer — acting (proposals).** What kept Wisp laid back, and what the acting does about it:
 
 | What was missing | What the warmer does now |
@@ -261,6 +263,22 @@ Glow · Light is chosen (above). The eye style is still between Bean and Gumdrop
 | Glow · Round | In a circle, inside the inner 80% safe zone: for avatars and launchers that cut a circle |
 
 **What the platforms require.** An app icon is solid: the App Store icon has no alpha; iOS 26 icons are layered in Icon Composer and the system adds the glass, so each layer is supplied flat and opaque; an Android adaptive or a PWA `maskable` icon needs an opaque background with the mark inside the inner 80%; an `apple-touch-icon` with transparency turns black on iOS. Only the browser favicon may be transparent, and then the mark must hold on both a light and a dark tab, which a drop in `C.mid` does. So the tile stays; Glow · Light · Round is the chosen icon's safe-zone layout.
+
+**The icon's eyes, after Feather — proposals** (`APP_ICON_EYES` in `wisp-logo.tsx`; on the Wisp page under Glow · Light, which is now the only icon shown there; every other proposal, the circle and one-colour shapes and the earlier faces are on the References page until the eyes are chosen). Each is Glow · Light with only the eyes changed, with its own 32px-and-under drawing:
+
+| Eyes | What it is |
+|---|---|
+| Ink | Solid ink ovals, as Glow · Light was drawn |
+| Ink · shine | Solid ink ovals with a white shine: Feather's pupil without the white |
+| Feather | Feather's eye: white, translucent hairline rim, ink pupil and shine |
+| Feather · amber rim | The same, rimmed in the drop's own deeper amber |
+| Feather · ink rim | Outline and eyeball: white ringed in ink, ink pupil |
+| Eyeball on white | White eye, ink pupil, no rim (white on the glow is 1.47:1, so the edge fades) |
+| Big pupil | A crescent of white round a big ink pupil, amber rim |
+| Ring | An ink outline round the pupil, no white |
+| Feather · brows | Feather · amber rim with tapered ink brows (left out at 32px and under) |
+
+**Recommended, top two: Big pupil, then Ink · shine.** Big pupil is Feather's eye at icon scale: the white, the amber rim and the shine say it is Wisp up close, and because the pupil fills the eye it reads like Ink at 16px; it is also the warmest and youngest. Ink · shine is the strongest at every size and still carries Feather's catchlight; choose it if the 16px tab matters most. The plain white-eye versions make the eyes look small and the pupils float on the yellow; the ink rim brings back the chunky line Feather removed.
 
 **The icon's face — ink, white, or Bean's white eyes** (`APP_ICON_FACES` in `wisp-logo.tsx`; `docs/logo/app-icon-faces.png`). Asked: white eyes and mouth. Drawn as **Glow · Light · White face**: white on the glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and is gone at 16px. The alternative that keeps white in the face is **Glow · Light · Bean eyes**: white eyes, each with an ink pupil, and an ink smile; the pupils carry the contrast (ink on white 16.4:1, on the glow 11.1:1), so it holds at every size, and it is the Bean eye style, one of the two left for the character. Undecided between ink (as chosen) and Bean eyes; white alone is not recommended.
 

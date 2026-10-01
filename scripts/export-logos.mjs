@@ -17,13 +17,13 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const out = path.join(root, "docs/logo");
 const server = await createServer({ root, server: { middlewareMode: true }, appType: "custom" });
 try {
-  const { APP_ICON_FACES, APP_ICON_SET, LOGOS, LOGO_VARIANTS, LOGOS_BUTTERFLY, LogoMark, K_SPARKLES } = await server.ssrLoadModule(
+  const { APP_ICON_EYES, APP_ICON_FACES, APP_ICON_SET, LOGOS, LOGO_VARIANTS, LOGOS_BUTTERFLY, LogoMark, K_SPARKLES } = await server.ssrLoadModule(
     "/src/design/nix/wisp-logo.tsx",
   );
   await mkdir(out, { recursive: true });
   /* the chosen icon under fixed names: the app icon, the circle, the one-colour mark */
   const chosen = APP_ICON_SET.map((logo, i) => [logo, ["app-icon", "app-icon-round", "app-icon-mono"][i]]);
-  const all = [...APP_ICON_SET, ...APP_ICON_FACES.slice(1), ...LOGOS, ...LOGO_VARIANTS, ...LOGOS_BUTTERFLY].map((logo) => [logo, logo.id]);
+  const all = [...APP_ICON_SET, ...APP_ICON_EYES, ...APP_ICON_FACES.slice(1), ...LOGOS, ...LOGO_VARIANTS, ...LOGOS_BUTTERFLY].map((logo) => [logo, logo.id]);
   for (const [logo, base] of [...chosen, ...all]) {
     for (const [size, name] of [
       ["full", `${base}.svg`],

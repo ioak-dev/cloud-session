@@ -292,10 +292,46 @@ function Antennae({ yaw }: { yaw: number }) {
   );
 }
 
-function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?: number }) {
+/**
+ * Feather (`BEAN_FEATHER` in `wisp-eyes.tsx`), the main character's eyes: a white eye with a
+ * translucent hairline rim, an ink pupil that roams inside it, and a tapered ink brow. Where the
+ * puppet looks moves the pupil, not the eye, so a glance reads as Feather's does.
+ */
+function FeatherEye({ look, lookX }: { look: number; lookX: number }) {
+  const px = clamp(lookX * 0.8, -4, 4);
+  const py = 1 + clamp(look * 0.6, -4, 4);
+  const r = 5.4;
+  return (
+    <>
+      <ellipse cx={0} cy={0} rx={9.4} ry={12} fill="#fff" stroke={C.line} strokeWidth={1.1} />
+      <circle cx={px} cy={py} r={r} fill={EYE} />
+      <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#fff" />
+      <path
+        d="M-7.6 -15.4 Q0 -23.2 7.6 -15.4 Q0 -16.4 -7.6 -15.4 Z"
+        fill={EYE}
+        stroke={EYE}
+        strokeWidth={1.3}
+        strokeLinejoin="round"
+      />
+    </>
+  );
+}
+
+function Face({
+  yaw,
+  look = 0,
+  lookX = 0,
+  feather = false,
+}: {
+  yaw: number;
+  look?: number;
+  lookX?: number;
+  /** The main character's Feather eyes (the Wisp page); otherwise the butterfly Wisp's. */
+  feather?: boolean;
+}) {
   // the eyes and cheeks sit on the head's sphere; the mouth rides the centre line
   const eyes = [-1, 1].map((s) => {
-    const phi = s * Math.asin(19 / 36);
+    const phi = s * Math.asin((feather ? 20 : 19) / 36);
     const a = phi + rad(yaw);
     const x = 100 + 36 * Math.sin(a);
     const k = clamp(Math.cos(a) / Math.cos(phi), 0, 1);
@@ -329,7 +365,16 @@ function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?
           opacity={0.6 * c.o}
         />
       ))}
-      {eyes.map((e, i) => (
+      {eyes.map((e, i) =>
+        feather ? (
+          <g
+            key={i}
+            opacity={e.o}
+            transform={`translate(${e.x} ${107 + 0.4 * look}) scale(${Math.max(e.k, 0.05)} 1)`}
+          >
+            <FeatherEye look={look} lookX={lookX} />
+          </g>
+        ) : (
         <g
           key={i}
           opacity={e.o}
@@ -347,7 +392,8 @@ function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?
             strokeLinecap="round"
           />
         </g>
-      ))}
+        ),
+      )}
       <path
         d={`M${mx - 6 * mk} 125 Q${mx} ${130} ${mx + 6 * mk} 125`}
         stroke={EYE}
@@ -447,7 +493,7 @@ export function WispTurn({
       <g transform={HEAD_FIT}>
         <Antennae yaw={headYaw} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
-        <Face yaw={headYaw} look={look} lookX={lookX} />
+        <Face yaw={headYaw} look={look} lookX={lookX} feather={style === "ribbon"} />
       </g>
       {front.map((p) => p.el)}
     </g>

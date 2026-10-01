@@ -27,7 +27,7 @@ import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./
 import { BEAN_STYLES, EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
-import { APP_ICON, APP_ICON_FACES, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
+import { APP_ICON, APP_ICON_EYES, APP_ICON_FACES, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
@@ -646,33 +646,35 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           Wisp — app icon: {APP_ICON.label} (chosen)
         </h2>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          Wisp’s drop drawn as its own light — a solid yellow drop with ink eyes and two antennae —
-          on a solid primary tile. Solid colours only: no gradient, no halo, no shine, so it stays
+          Wisp’s drop drawn as its own light — a solid yellow drop with eyes and two antennae — on a
+          solid primary tile. Its eyes are being redrawn after Feather (below). Solid colours only: no gradient, no halo, no shine, so it stays
           crisp from the store listing to a 16px tab, and platforms can recolour it. Always in the
           product’s own colours (shown here in the Sparkles scheme, whatever the header says).
           Contrast: the yellow on the primary 3.9:1, the ink eyes on the yellow 11.1:1, the tile
           5.7:1 on a white home screen and 3.1:1 on a dark one; blue and yellow hold up under the
-          common colour blindnesses. With it: the circle, for launchers and avatars that cut one,
-          and the one-colour mark, for themed and tinted icons and one-colour print. Files:{" "}
-          <code>docs/logo/app-icon*.svg</code>.
+          common colour blindnesses. Its circle and one-colour shapes, and every other icon
+          proposal, are on the{" "}
+          <a href="#/references" className="text-foreground underline">
+            References
+          </a>{" "}
+          page until the eyes are chosen. Files: <code>docs/logo/app-icon*.svg</code>.
         </p>
         <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          {APP_ICON_SET.map((l) => (
-            <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
-          ))}
+          <LogoCard logo={APP_ICON} k={K_SPARKLES} />
         </div>
 
         <h3 className="material-heading mt-8 text-base text-foreground">
-          The icon’s face — ink, white, or Bean’s white eyes
+          The icon’s eyes, after Feather (proposals)
         </h3>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          The face on the yellow drop three ways. Ink, as chosen. White eyes and a white smile:
-          white on the yellow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and
-          is gone at 16px. White eyes with ink pupils, as the Bean eye style draws them: the white
-          is the eye and the pupil carries the contrast, so the face holds at every size.
+          Wisp’s eyes are now Feather: a white eye, a soft rim, an ink pupil with its shine, tapered
+          brows. These are the ways the icon’s eyes could follow — from solid ink, through Feather’s
+          white eye with different rims, to an outline with no white. Everything else is Glow ·
+          Light. Each is shown as the app icon and at 64, 32 and 16px on white and on dark; at 32px
+          and under each switches to its own simplified drawing.
         </p>
         <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          {APP_ICON_FACES.map((l) => (
+          {APP_ICON_EYES.map((l) => (
             <LogoCard key={l.id} logo={l} k={K_SPARKLES} />
           ))}
         </div>
@@ -693,29 +695,6 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         </p>
         <WordmarkSheet list={[WORDMARK]} />
 
-        <h3 className="material-heading mt-8 text-base text-foreground">
-          The other proposals (not chosen)
-        </h3>
-        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          Marks made from Wisp's shape, not the full character. Each is shown as the app icon and
-          at 32 and 16px, where it switches to a simplified drawing (no mouth, rings or spots,
-          nothing thinner than a pixel), on the light and the dark ground, in the header's scheme.
-          Figure and Flight, drawn with the butterfly wings, are retired to the Wisp · Butterfly
-          page. Standalone files: <code>docs/logo/</code>.
-        </p>
-        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          {LOGOS.map((l) => (
-            <LogoCard key={l.id} logo={l} />
-          ))}
-        </div>
-        <h4 className="material-heading mt-6 text-sm text-foreground">
-          Drop and Glow — variations
-        </h4>
-        <div className="mt-2 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-          {LOGO_VARIANTS.map((l) => (
-            <LogoCard key={l.id} logo={l} />
-          ))}
-        </div>
       </>
       )}
       {!ribbon && (
@@ -943,6 +922,20 @@ export function ReferencesPage() {
         Drawings kept as reference, not candidates: the other wispy directions, Pip and the earlier
         fireflies. Wisp and its ribbon wings are on their own pages.
       </p>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — app icon proposals
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The marks the app icon (Glow · Light, on the Wisp page) was chosen from; its circle and
+        one-colour shapes, drawn with ink eyes, to be redrawn with the chosen eyes; and the earlier
+        face options. Each is shown as the app icon and at 64, 32 and 16px, in the header’s scheme.
+      </p>
+      <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+        {[...APP_ICON_SET.slice(1), ...APP_ICON_FACES.slice(1), ...LOGOS, ...LOGO_VARIANTS].map((l) => (
+          <LogoCard key={l.id} logo={l} />
+        ))}
+      </div>
+
       <h2 className="material-heading mt-10 text-lg text-foreground">
         Reference — wordmark candidates
       </h2>

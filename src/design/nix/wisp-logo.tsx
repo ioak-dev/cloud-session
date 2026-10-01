@@ -923,6 +923,163 @@ const LIGHT_BEAN: Logo = {
     ),
 };
 
+/* ——— the icon's eyes, after Feather (the character's eyes) ——— */
+
+type Size = LogoSize;
+/** Where the icon's eyes sit: full size, and the 32px-and-under drawing. */
+const EYE_AT = { full: { cx: 64, y: 84, gap: 14 }, small: { cx: 64, y: 84, gap: 17 } } as const;
+/** Draws one icon eye, centred on (x, y), for side `s`. */
+type IconEye = (k: K, x: number, y: number, s: -1 | 1, size: Size) => ReactNode;
+
+const AMBER_RIM = "#e3a41b";
+
+/** A white eye with an ink pupil and shine, as Feather; `rim` is the eye's edge, if any. */
+const featherEye =
+  (rim: ((k: K) => string) | null, o: { pupil?: number; rimW?: [number, number] } = {}): IconEye =>
+  (k, x, y, s, size) => {
+    const big = size === "full";
+    const rx = big ? 8 : 10;
+    const ry = big ? 10 : 12.5;
+    const r = (big ? 4.6 : 6.6) * (o.pupil ?? 1);
+    /* the pupils sit a little in and down: looking at you */
+    const px = x - s * rx * 0.16;
+    const py = y + ry * 0.18;
+    const [wf, ws] = o.rimW ?? [1.6, 2.4];
+    return (
+      <g key={s}>
+        <ellipse cx={x} cy={y} rx={rx} ry={ry} fill="#ffffff" stroke={rim ? rim(k) : "none"} strokeWidth={big ? wf : ws} />
+        <circle cx={px} cy={py} r={r} fill={k.ink} />
+        {big ? <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#ffffff" /> : null}
+      </g>
+    );
+  };
+
+const ICON_EYES: { id: string; label: string; line: string; note: string; eye: IconEye; brows?: boolean }[] = [
+  {
+    id: "ink",
+    label: "Ink",
+    line: "Solid ink ovals: Glow · Light as chosen.",
+    note: "The strongest at 16px and the simplest. No white, so it does not echo Feather's eyes; the face reads as a symbol more than as Wisp.",
+    eye: (k, x, y, s, size) => (
+      <ellipse key={s} cx={x} cy={y} rx={size === "full" ? 6 : 8} ry={size === "full" ? 8.4 : 11} fill={k.ink} />
+    ),
+  },
+  {
+    id: "ink-shine",
+    label: "Ink · shine",
+    line: "Solid ink ovals, each with a white shine high on the inside: Feather's pupil, without the white.",
+    note: "As strong as Ink at 16px (the shine drops out there), and alive at icon size: the shine is the same catchlight Feather's pupil carries. Fixed anatomy, not a highlight that follows a light.",
+    eye: (k, x, y, s, size) => {
+      const big = size === "full";
+      const rx = big ? 6.6 : 8;
+      const ry = big ? 9 : 11;
+      return (
+        <g key={s}>
+          <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={k.ink} />
+          {big ? <circle cx={x - rx * 0.36} cy={y - ry * 0.4} r={2.4} fill="#ffffff" /> : null}
+        </g>
+      );
+    },
+  },
+  {
+    id: "feather",
+    label: "Feather",
+    line: "Feather's eye: white, a translucent hairline rim, an ink pupil with its shine.",
+    note: "The character's own eyes, so icon and Wisp share one face. The rim is a translucent dark, which on the yellow reads as a soft olive line; the pupil carries the face at 16px.",
+    eye: featherEye(() => "rgba(36, 26, 58, 0.3)"),
+  },
+  {
+    id: "feather-amber",
+    label: "Feather · amber rim",
+    line: "Feather's eye rimmed in the drop's own deeper amber instead of a dark line.",
+    note: "The edge in the part's own tone, as Wisp's rules ask: the softest outline that still holds the white on the yellow. Warm, friendly; the white reads as an eye rather than a hole.",
+    eye: featherEye(() => AMBER_RIM, { rimW: [2, 2.6] }),
+  },
+  {
+    id: "feather-ink",
+    label: "Feather · ink rim",
+    line: "Outline and eyeball: the white eye ringed in ink, an ink pupil.",
+    note: "The clearest white eye at every size, but the ring is the chunky line Feather softened away; reads as Bean.",
+    eye: featherEye((k) => k.ink, { rimW: [1.8, 2.6] }),
+  },
+  {
+    id: "white",
+    label: "Eyeball on white",
+    line: "White eyes with ink pupils and no rim at all.",
+    note: "The cleanest drawing. White on the yellow is 1.47:1, so the eye's edge fades and the pupils float; at 16px it reads as two dots, like Ink.",
+    eye: featherEye(null),
+  },
+  {
+    id: "big-pupil",
+    label: "Big pupil",
+    line: "A white eye almost filled by its pupil: a crescent of white round a big ink pupil, amber rim.",
+    note: "Reads like Ink at 16px and like Feather up close: the white is a thin crescent, so the eyes look big, round and young. The cutest.",
+    eye: featherEye(() => AMBER_RIM, { pupil: 1.42, rimW: [1.6, 2.2] }),
+  },
+  {
+    id: "ring",
+    label: "Ring",
+    line: "An ink outline with the pupil inside and no white: the drop's yellow shows through the eye.",
+    note: "Light and graphic, the most 'logo'. Loses the white that makes Feather Feather, and at 16px the ring and pupil merge into a blot.",
+    eye: (k, x, y, s, size) => {
+      const big = size === "full";
+      return (
+        <g key={s}>
+          <ellipse cx={x} cy={y} rx={big ? 7.6 : 9.6} ry={big ? 9.6 : 12} fill="none" stroke={k.ink} strokeWidth={big ? 2 : 2.8} />
+          <circle cx={x - s * 1.2} cy={y + 1.8} r={big ? 3.8 : 5.4} fill={k.ink} />
+        </g>
+      );
+    },
+  },
+  {
+    id: "feather-brows",
+    label: "Feather · brows",
+    line: "Feather · amber rim with Feather's tapered ink brows.",
+    note: "The most expressive and the most like the character: the brows give it a mood even at rest. At 32px and under the brows are left out, so the small icon is Feather · amber rim.",
+    eye: featherEye(() => AMBER_RIM, { rimW: [2, 2.6] }),
+    brows: true,
+  },
+];
+
+/** A tapered brow over an icon eye, as Feather's: full in the middle, round at the tips. */
+function IconBrow({ k, x, y }: { k: K; x: number; y: number }) {
+  const by = y - 15;
+  return (
+    <path
+      d={`M${x - 7} ${by + 1} Q${x} ${by - 6.4} ${x + 7} ${by + 1} Q${x} ${by - 1.4} ${x - 7} ${by + 1} Z`}
+      fill={k.ink}
+      stroke={k.ink}
+      strokeWidth={1.3}
+      strokeLinejoin="round"
+    />
+  );
+}
+
+/** Glow · Light with one of the eyes. */
+const lightWithEyes = (e: (typeof ICON_EYES)[number]): Logo => ({
+  id: `glow-light-eyes-${e.id}`,
+  label: e.label,
+  line: e.line,
+  note: e.note,
+  draw: (k, size) => {
+    const big = size === "full";
+    const at = EYE_AT[size];
+    return (
+      <>
+        <Tile fill={k.primary} />
+        <Antennae k={k} cx={64} top={big ? 32 : 30} spread={big ? 22 : 28} rise={big ? 16 : 18} stalk={big ? 4.5 : 8} tip={big ? 6 : 10} colour={k.glow} />
+        <path d={big ? drop(64, 28, 80, 86) : drop(64, 26, 92, 94)} fill={k.glow} />
+        {([-1, 1] as const).map((s) => e.eye(k, at.cx + at.gap * s, at.y, s, size))}
+        {big && e.brows ? ([-1, 1] as const).map((s) => <IconBrow key={`b${s}`} k={k} x={at.cx + at.gap * s} y={at.y} />) : null}
+        {big ? <Smile k={k} cx={64} y={99} w={11} /> : null}
+      </>
+    );
+  },
+});
+
+/** Glow · Light with each of the eyes, for choosing the icon's eyes after Feather. */
+export const APP_ICON_EYES: Logo[] = ICON_EYES.map(lightWithEyes);
+
 /** The chosen icon's face, three ways: ink as chosen, white as asked, and Bean's white eyes. */
 export const APP_ICON_FACES: Logo[] = [GLOW_LIGHT, LIGHT_WHITE, LIGHT_BEAN];
 

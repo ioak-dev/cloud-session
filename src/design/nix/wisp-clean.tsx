@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Candidate, Ctx } from "./candidates";
 import { FLAME, Flame, Head, WISP, WISP_MAIN } from "./firefly-wisp";
 import type { Body } from "./rig/skeleton";
+import { BEAN_FEATHER } from "./wisp-eyes";
 import { FinishedRibbons, RIBBON_VARIANTS, withRibbon } from "./wisp-ribbon";
 
 /**
@@ -195,4 +196,7 @@ export const CLEAN_PICK: Candidate = {
     risk: "Core disappears at 32px, so it is a refinement for larger sizes only; the arms are what change the small figure.",
   }),
   label: "Wisp",
+  /* Feather eyes (`BEAN_FEATHER`): Bean's acting with a translucent rim and tapered brows; the
+     turn puppet draws the same on the Wisp page */
+  face: { ...BASE.face, kit: BEAN_FEATHER, eyeSize: 1, eyeGap: 20, eyeY: 107 },
 };
