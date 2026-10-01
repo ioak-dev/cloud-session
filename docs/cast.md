@@ -305,7 +305,7 @@ Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperl
 
 ## Side characters
 
-**Reset (2026-10-01): the side characters start from scratch.** Every existing side-character drawing is dropped as a design; the drawings described below stay in the studio only until the redraw starts. The proposed world that connects the six — the Lantern Tree, with Nana Rosa as the sixth — and the questions still to answer are in `docs/world.md`. Nothing there is chosen yet.
+**Reset (2026-10-01): all six side characters are new.** None of the characters below carries over — not species, roles, abilities, faces or jokes; they stay in the studio only until the redraw starts. The new six are designed together around one world, and they speak (fixed lines, lip-synced). The world is not chosen yet; the candidates and the recommendation (an observatory on the hill) are in `docs/world.md`.
 
 | # | Character | Ability | Status |
 |---|---|---|---|
