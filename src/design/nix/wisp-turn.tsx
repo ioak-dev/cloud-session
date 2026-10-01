@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { CLEAN, RIBBON_REACH, RIBBON_TAIL, SPIRIT_MOTES, STRAND_INNER, type Pt, type SpiritForm } from "./wisp-ribbon";
 import { C } from "./theme";
 
 /**
@@ -108,61 +109,49 @@ function bez(pts: { x: number; y: number }[]) {
   return `${d} Z`;
 }
 
-/** The original ribbon wing (`wisp-ribbon.tsx`): out from the shoulder, then trailing to a point. */
-const ribbon = (s: number): P[] => [
-  [100 + 10 * s, 156],
-  [100 + 40 * s, 136],
-  [100 + 66 * s, 146],
-  [100 + 62 * s, 172],
-  [100 + 60 * s, 192],
-  [100 + 44 * s, 204],
-  [100 + 44 * s, 228],
-  [100 + 34 * s, 206],
-  [100 + 32 * s, 180],
-  [100 + 10 * s, 166],
-];
-/** The fold the ribbon turns on. */
-const fold = (s: number): P[] => [
-  [100 + 16 * s, 160],
-  [100 + 40 * s, 150],
-  [100 + 56 * s, 160],
-  [100 + 50 * s, 186],
-];
-
 /**
  * Which wings the puppet and the back view draw: Wisp's two spotted pairs, or the single pair of
  * ribbons proposed in `wisp-ribbon.tsx`. A page sets it once for every view inside it.
  */
 export type WingStyle = "pairs" | "ribbon";
 export const WingStyleContext = React.createContext<WingStyle>("pairs");
+/** The ribbon variant (`wisp-ribbon.tsx`) every ribbon view draws; only read when the style is `ribbon`. */
+export const RibbonFormContext = React.createContext<SpiritForm>(CLEAN);
 
 type Part = { d: number; el: React.ReactNode };
 
+/** Offsets and heights of a ribbon curve as figure-space points on one side. */
+const onSide = (pts: readonly Pt[], s: number): P[] => pts.map(([dx, y]) => [100 + dx * s, y]);
+
 /** The ribbons: one pair, flapped as the upper pair is, swept back in depth like the others. */
-function ribbons(yaw: number, flap: number): Part[] {
+function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string): Part[] {
+  const fade = form.glow ? GLOW : C.hi;
   return [-1, 1].map((s) => {
     const root: P = [100 + 10 * s, 158];
-    const r = ribbon(s).map((p) => wingPoint(p, root, flap * s, yaw));
-    const [f0, f1, f2, f3] = fold(s).map((p) => wingPoint(p, root, flap * s, yaw));
+    const project = (pts: readonly Pt[]) => onSide(pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
+    const r = project(RIBBON_TAIL);
+    const g = `${uid}-tr${s}`;
+    const top = wingPoint([100 + 14 * s, 150], root, flap * s, yaw);
+    const end = wingPoint([100 + 44 * s, RIBBON_REACH], root, flap * s, yaw);
     return {
       d: r.reduce((a, p) => a + p.d, 0) / r.length,
       el: (
         <g key={`r${s}`}>
-          <path
-            d={bez(r)}
-            fill={C.tint}
-            fillOpacity={0.82}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            strokeLinejoin="round"
-          />
-          <path
-            d={`M${f0.x} ${f0.y} C${f1.x} ${f1.y} ${f2.x} ${f2.y} ${f3.x} ${f3.y}`}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            fill="none"
-            strokeLinecap="round"
-          />
+          <defs>
+            <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={top.x} y1={top.y} x2={end.x} y2={end.y}>
+              <stop offset="0" stopColor={C.soft} stopOpacity={0.95} />
+              <stop offset="0.35" stopColor={C.tint} stopOpacity={0.88} />
+              <stop offset="0.72" stopColor={fade} stopOpacity={form.glow ? 0.7 : 0.5} />
+              <stop offset="1" stopColor={fade} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          {form.strands >= 2 && <path d={bez(project(STRAND_INNER))} fill={`url(#${g})`} />}
+          <path d={bez(r)} fill={`url(#${g})`} />
+          {form.motes === "dots" &&
+            SPIRIT_MOTES.map(([dx, y, rad, o]) => {
+              const q = wingPoint([100 + dx * s, y], root, flap * s, yaw);
+              return <circle key={`${dx}${y}`} cx={q.x} cy={q.y} r={rad} fill={C.hi} opacity={o} />;
+            })}
         </g>
       ),
     };
@@ -397,8 +386,9 @@ export function WispTurn({
   // the flame narrows a little side-on and sweeps back from where it is heading
   const flame = `matrix(${fw} 0 ${-0.16 * s} 1 ${100 - 100 * fw + 0.16 * s * 170} 0)`;
   const style = React.useContext(WingStyleContext);
+  const form = React.useContext(RibbonFormContext);
   const parts = [
-    ...(style === "ribbon" ? ribbons(yaw, flapU) : wings(yaw, flapU, flapL)),
+    ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid) : wings(yaw, flapU, flapL)),
     ...arms(yaw),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);

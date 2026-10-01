@@ -98,25 +98,15 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 
 **Wisp · Ribbon wings — proposal, not adopted.** `WISP_MAIN` is unchanged. The first Wisp (bench `firefly-bodies.tsx`, commit `1cc3b0d`) had one pair of **ribbon wings** that left the shoulders, swelled out and trailed down past the body to a point, like a scarf or a ghost's hem; they matched the drop head and the flame, so every outline tapered to a wisp. “Finalise Wisp” (`43969ae`) replaced them with the two pairs of spotted wings, which read as butterfly or fairy wings. `src/design/nix/wisp-ribbon.tsx` (`WISP_RIBBON`) puts the ribbons back on today's Wisp and on Wisp, warmer, with nothing else changed, redrawn to today's rules: `C.tint` at 82%, a hairline `C.hi` edge and fold line, no ink outline. A ribbon is one pair, on `wingL`/`wingR` only, so adopting it would mean changing the two-pair rule for Wisp.
 
-The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): a clone of the Wisp page with the ribbons as the main character, shown in the recommended pairings (Wisp · Ribbon, Warmer · Ribbon, and Warmer · Ribbon, no ruff). Every figure on that page wears the ribbons — the warmer proposals, the eye styles and the acting (`WISP_WARM_RIBBON`, `WISP_EYES_RIBBON`), and the turn puppet, back view, flight and form, which read `WingStyleContext` (`wisp-turn.tsx`). In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. **Warmer · Ribbon, no ruff** (recommended) is the warmer slimmed back to Wisp's line so the ribbons carry it: no ruff, Wisp's own drop with the curl (`CURL`) instead of the rounder one, and Wisp's narrow body, neck and arms instead of Snug's. It keeps the warmer's temperament: the chest flame and the warmth in the face, the curl, the stalks with the flopped antenna, honey eyes and talking brows, the lopsided smile, the tipped head and the hey, and the alive idle. At 48 and 32px its silhouette keeps a neck and the ribbons flare to points, where the ruffed warmer reads as one rounder mass. It is drawn facing front only; the puppet, flight and form on that page still show plain Wisp · Ribbon.
+The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page, identical except for a top section that selects one of three ribbon variants. The choice applies to the whole page — the main character and its turnaround, back view, flight and form (`WingStyleContext` and `RibbonFormContext` in `wisp-turn.tsx`), the warmer proposals, the eye styles and the acting — so every ability and possibility of Wisp can be judged on the chosen ribbons. In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. Everything is drawn with no outline: the colour is the edge (`C.soft` at the shoulder, frost `C.tint` through the middle, fading to nothing). One ribbon pair rides `wingL`/`wingR` only.
 
-**Ribbon finishes — proposals** (`WISP_RIBBON_FINISHES`, on Warmer · Ribbon, no ruff; facing front only):
+**Ribbon variants** (`RIBBON_VARIANTS` in `wisp-ribbon.tsx`). Dots, sparkles, lantern bands, ghost hem, swept up and breeze were tried and dropped.
 
-| Finish | What changes |
+| Variant | What it is |
 |---|---|
-| No outline · dots | The hairline edge goes. The ribbon is shaded instead — `C.soft` at the shoulder, frost (`C.tint`) through the middle, `C.soft` again at the point — so its own colour is its edge on both grounds. Five fixed dots in `C.hi` |
-| No outline · sparkles | The same shaded ribbon with four small fixed four-point stars in the glow's colour: the firefly's light caught in its wings. Never animated, never a highlight |
-| Spirit | The ribbons dissolve: longer, the tails curling out like smoke, a thinner strand trailing inside each, fading from `C.soft` through frost to a last `C.hi` wisp and then nothing. A few motes fade with them. Every edge below the head now dissolves |
-
-**Spirit — variations** (`WISP_SPIRITS`; `SpiritForm` in `wisp-ribbon.tsx`). The spirit as drawn and **Clean** (one ribbon each side, no strand, no motes) are kept; long tails, curl in, frayed and starry motes were tried and dropped. Each of the rest adds one distinctive thing to Clean:
-
-| Variation | What it adds | Reads at 48 / 32px |
-|---|---|---|
-| Glow tips | The mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability | Colour only; silhouette as Clean |
-| Lantern bands | Two faint amber bands across each ribbon (clipped to it), echoing the flame's rings | Colour only; silhouette as Clean |
-| Ghost hem | Each ribbon ends in a small, tapered scalloped hem, like a ghost's sheet | Slightly; the scallops merge |
-| Swept up | The ribbons rise above the shoulders, nearly to the cheeks, before they fall | Yes: the widest shoulders of any Wisp |
-| Breeze | The right ribbon is blown out and its tail lifted: an asymmetry with the curl and flopped antenna | Yes: the most distinctive silhouette |
+| Clean | One ribbon each side, fading to nothing, nothing inside it |
+| Glow tips | Clean, but the mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability |
+| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes fading with it |
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 

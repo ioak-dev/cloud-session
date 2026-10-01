@@ -2,7 +2,8 @@
 
 import * as React from "react";
 
-import { flameTip, WingStyleContext, WispTurn } from "./wisp-turn";
+import { flameTip, RibbonFormContext, WingStyleContext, WispTurn } from "./wisp-turn";
+import { FinishedRibbons } from "./wisp-ribbon";
 import { C } from "./theme";
 
 /**
@@ -95,32 +96,10 @@ function BackWings() {
   );
 }
 
-/** The ribbons from behind: the same shape as in front, lying over the back. */
-function BackRibbons() {
-  return (
-    <>
-      {([-1, 1] as const).map((s) => (
-        <g key={s}>
-          <path
-            d={`M${100 + 10 * s} 156 C${100 + 40 * s} 136 ${100 + 66 * s} 146 ${100 + 62 * s} 172 C${100 + 60 * s} 192 ${100 + 44 * s} 204 ${100 + 44 * s} 228 C${100 + 34 * s} 206 ${100 + 32 * s} 180 ${100 + 10 * s} 166 Z`}
-            {...wingProps}
-          />
-          <path
-            d={`M${100 + 16 * s} 160 C${100 + 40 * s} 150 ${100 + 56 * s} 160 ${100 + 50 * s} 186`}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </g>
-      ))}
-    </>
-  );
-}
-
 export function WispBack() {
   const uid = useUid();
   const style = React.useContext(WingStyleContext);
+  const form = React.useContext(RibbonFormContext);
   return (
     <g>
       <defs>
@@ -168,7 +147,7 @@ export function WispBack() {
         ))}
         <path d={DROPLET} fill={`url(#${uid}-bh)`} />
       </g>
-      {style === "ribbon" ? <BackRibbons /> : <BackWings />}
+      {style === "ribbon" ? <FinishedRibbons uid={`${uid}-back`} form={form} /> : <BackWings />}
     </g>
   );
 }

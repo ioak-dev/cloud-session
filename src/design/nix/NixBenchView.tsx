@@ -19,19 +19,13 @@ import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
-import {
-  WISP_EYES_RIBBON,
-  WISP_RIBBON,
-  WISP_RIBBON_FINISHES,
-  WISP_SPIRITS,
-  WISP_WARM_RIBBON,
-} from "./wisp-ribbon";
+import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
 import { LOGO_VARIANTS, LOGOS, LogoMark, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
-import { WingStyleContext, type WingStyle } from "./wisp-turn";
+import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { PRACTICE, STATES, type Variant } from "./side-states";
@@ -86,12 +80,7 @@ const ANIMAL_REFERENCE: Candidate[] = [
 const ALL: Candidate[] = [
   WISP_MAIN,
   ...WISP_WARM,
-  ...WISP_RIBBON,
-  ...WISP_WARM_RIBBON,
-  ...WISP_RIBBON_FINISHES,
-  ...WISP_SPIRITS,
   ...WISP_EYES,
-  ...WISP_EYES_RIBBON,
   ...SPIRITS,
   ...SPIRITS_2,
   ...PIP_FAMILY,
@@ -533,19 +522,24 @@ function MoodSheet({ list, name }: { list: Candidate[]; name: (x: Candidate) => 
 
 /** What differs between the Wisp page and its ribbon clone. */
 type Line = {
-  wings: WingStyle;
-  /** The main character: one drawing, or the recommended pairings side by side. */
-  main: Candidate[];
+  /** The main character. */
+  main: Candidate;
   warm: Candidate[];
   eyes: Candidate[];
 };
 
-const LINES: Record<WingStyle, Line> = {
-  pairs: { wings: "pairs", main: [WISP_MAIN], warm: WISP_WARM, eyes: WISP_EYES },
-  ribbon: { wings: "ribbon", main: WISP_RIBBON, warm: WISP_WARM_RIBBON, eyes: WISP_EYES_RIBBON },
-};
+const PAIRS: Line = { main: WISP_MAIN, warm: WISP_WARM, eyes: WISP_EYES };
 
-const SPIRIT_BASE_TILE = byId(WISP_RIBBON_FINISHES, "wisp-ribbon-spirit");
+/** The Wisp line with the ribbons of one variant in place of the wings: nothing else changes. */
+const ribbonLine = (v: (typeof RIBBON_VARIANTS)[number]): Line => ({
+  main: withRibbon(WISP_MAIN, v),
+  warm: WISP_WARM.map((c) => withRibbon(c, v)),
+  eyes: WISP_EYES.map((c) => withRibbon(c, v)),
+});
+const RIBBON_LINES = Object.fromEntries(RIBBON_VARIANTS.map((v) => [v.id, ribbonLine(v)])) as Record<
+  RibbonVariantId,
+  Line
+>;
 
 const REFERENCE_GROUPS: Group[] = [
   ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
@@ -555,26 +549,51 @@ const REFERENCE_GROUPS: Group[] = [
 
 /** The main character's page: Wisp as drawn (`pairs`), or its ribbon clone (`ribbon`). */
 export function WispPage({ wings }: { wings: WingStyle }) {
-  const line = LINES[wings];
+  const [variant, setVariant] = React.useState<RibbonVariantId>("spirit");
   const ribbon = wings === "ribbon";
-  const [front] = line.main;
+  const v = RIBBON_VARIANTS.find((x) => x.id === variant)!;
+  const line = ribbon ? RIBBON_LINES[variant] : PAIRS;
+  const front = line.main;
   const asIs = (x: Candidate) => (x.id === front.id ? `${front.label} (as is)` : x.label);
-  const actEyes = ["wisp-warmer-eyes-bean", "wisp-warmer-eyes-gumdrop"].map(
-    (id) => line.eyes.find((x) => x.id === (ribbon ? `${id}-ribbon` : id))!,
+  const actEyes = ["bean", "gumdrop"].map(
+    (id) => line.eyes[WISP_EYES.findIndex((x) => x.id === `wisp-warmer-eyes-${id}`)],
   );
   return (
     <WingStyleContext.Provider value={wings}>
+    <RibbonFormContext.Provider value={v.form}>
       <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
       <h1 className="display mt-1">{ribbon ? "Wisp · Ribbon wings" : "Wisp"}</h1>
       {ribbon ? (
-        <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-          The Wisp page again, with the ribbon wings as the main character. Wisp started with one
-          pair of ribbon wings that left the shoulders and trailed down past the body to a point,
-          like a scarf or a ghost’s hem; “Finalise Wisp” swapped them for two pairs of spotted
-          wings. Everything else is Wisp as drawn. Every figure here — the warmer proposals, the eye
-          styles, the acting, the turnaround, the flight and the form — wears the ribbons.
-          Proposal, not adopted.
-        </p>
+        <>
+          <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+            The Wisp page again, with the ribbon wings as the main character. Wisp started with one
+            pair of ribbon wings that trailed down past the body to a point, like a scarf or a
+            ghost’s hem; “Finalise Wisp” swapped them for two pairs of spotted wings. Everything else
+            is Wisp as drawn. Choose a variant below and every figure on the page — the turnaround,
+            the flight, the form, the warmer proposals, the eye styles and the acting — wears it.
+            Proposal, not adopted.
+          </p>
+          <div className="mt-5 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3 sm:max-w-[64rem]">
+            <span className="instrument text-xs text-muted-foreground">Ribbon variant</span>
+            <FilterSet className="flex-wrap">
+              {RIBBON_VARIANTS.map((x) => (
+                <FilterSegment key={x.id} pressed={x.id === variant} onClick={() => setVariant(x.id)}>
+                  {x.label}
+                </FilterSegment>
+              ))}
+            </FilterSet>
+            <div className="flex flex-wrap items-end gap-4">
+              {RIBBON_VARIANTS.map((x) => (
+                <figure key={x.id} className="m-0 w-28 shrink-0">
+                  <NixFigure c={RIBBON_LINES[x.id].main} still className="h-36 w-full" />
+                </figure>
+              ))}
+              <p className="material m-0 max-w-[40ch] text-sm text-muted-foreground">
+                <span className="material-heading text-foreground">{v.label}.</span> {v.note}
+              </p>
+            </div>
+          </div>
+        </>
       ) : (
         <p className="material mt-3 max-w-[64ch] text-muted-foreground">
           The main character is Wisp: a floating firefly that leaves glowing sparks behind it as it
@@ -589,83 +608,30 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       )}
       <Tests />
 
-      {!ribbon && (
-        <>
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Wisp — app icon (proposals)
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            Marks made from Wisp's shape, not the full character. Each is shown as the app icon and
-            at 32 and 16px, where it switches to a simplified drawing (no mouth, rings or spots,
-            nothing thinner than a pixel), on the light and the dark ground. Standalone files:{" "}
-            <code>docs/logo/</code>.
-          </p>
-          <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-            {LOGOS.map((l) => (
-              <LogoCard key={l.id} logo={l} />
-            ))}
-          </div>
-          <h3 className="material-heading mt-6 text-base text-foreground">
-            Drop and Glow — variations
-          </h3>
-          <div className="mt-2 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
-            {LOGO_VARIANTS.map((l) => (
-              <LogoCard key={l.id} logo={l} />
-            ))}
-          </div>
-        </>
-      )}
-
-      {ribbon && (
-        <>
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Main character — the pairings
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            The ribbons on Wisp as it is, on Wisp, warmer, and on the warmer without its ruff —
-            Wisp’s own slim drop, neck and body with the warmer’s face, curl, stalks and chest
-            flame. Shown at rest, then in every expression.
-          </p>
-          <MoodSheet list={line.main} name={(x) => x.label} />
-
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Ribbon finishes — on the warmer without its ruff
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            The recommended pairing, then the ribbons with no outline — shaded from the product
-            colour at the shoulder through frost, so the colour is the edge — with a few dots,
-            or with small stars in the glow’s colour; then a spirit, whose ribbons run longer, curl
-            out like smoke and fade to nothing. Facing front only.
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {[line.main[2], ...WISP_RIBBON_FINISHES].map((x) => (
-              <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-                <NixFigure c={x} className="h-64 w-full" />
-                <figcaption className="text-sm">
-                  <span className="material-heading text-foreground">
-                    {x.id === line.main[2].id ? "With its edge (as above)" : x.label.split(" · ").slice(1).join(" · ")}
-                  </span>
-                  <span className="material mt-1 block text-muted-foreground">{x.signature}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-
-          <h2 className="material-heading mt-10 text-lg text-foreground">
-            Spirit — variations
-          </h2>
-          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            The spirit and Clean, its simplest form; then five that each add one distinctive thing to
-            Clean: tips that turn the glow’s gold, the flame’s lantern bands in the ribbons, a ghost’s
-            scalloped hem, ribbons swept up above the shoulders, and one ribbon blown out by a
-            breeze. Shown at rest, then in every expression.
-          </p>
-          <MoodSheet
-            list={[SPIRIT_BASE_TILE, ...WISP_SPIRITS]}
-            name={(x) => (x.id === SPIRIT_BASE_TILE.id ? "Spirit (as drawn)" : x.label.replace("Spirit · ", ""))}
-          />
-        </>
-      )}
+    <>
+        <h2 className="material-heading mt-10 text-lg text-foreground">
+          Wisp — app icon (proposals)
+        </h2>
+        <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+          Marks made from Wisp's shape, not the full character. Each is shown as the app icon and
+          at 32 and 16px, where it switches to a simplified drawing (no mouth, rings or spots,
+          nothing thinner than a pixel), on the light and the dark ground. Standalone files:{" "}
+          <code>docs/logo/</code>.
+        </p>
+        <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+          {LOGOS.map((l) => (
+            <LogoCard key={l.id} logo={l} />
+          ))}
+        </div>
+        <h3 className="material-heading mt-6 text-base text-foreground">
+          Drop and Glow — variations
+        </h3>
+        <div className="mt-2 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+          {LOGO_VARIANTS.map((l) => (
+            <LogoCard key={l.id} logo={l} />
+          ))}
+        </div>
+      </>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">{front.label} — turnaround</h2>
       <div className="mt-2 grid grid-cols-2 gap-4 sm:max-w-[52rem] sm:grid-cols-4">
@@ -799,18 +765,13 @@ export function WispPage({ wings }: { wings: WingStyle }) {
 
       <Bench
         groups={[
-          [ribbon ? "Main character — Wisp · Ribbon, the pairings" : "Main character — Wisp", line.main],
-          ...(ribbon
-            ? ([
-                ["Ribbon finishes", WISP_RIBBON_FINISHES],
-                ["Spirit — variations", WISP_SPIRITS],
-              ] as Group[])
-            : []),
+          [ribbon ? `Main character — Wisp · Ribbon, ${v.label}` : "Main character — Wisp", [line.main]],
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
           ...REFERENCE_GROUPS,
         ]}
       />
+    </RibbonFormContext.Provider>
     </WingStyleContext.Provider>
   );
 }
