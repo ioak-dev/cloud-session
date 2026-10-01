@@ -85,6 +85,17 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 
 Wisp never reacts to what is typed: nothing for a valid or an invalid entry.
 
+**Wisp lights its surroundings — proposal, not adopted** (`<WispForm lit />`, shown under the form as “lighting its surroundings”). The glow lights what is around Wisp from the lantern at the tip of its flame: the gutter, the card, and the near edge of the field. The form's rules above are unchanged.
+
+| Part | What it does |
+|---|---|
+| The pool | The glow's own yellow, centred on the flame tip (the point the sparks come from). It is brightest at the lantern, drops quickly and then fades slowly, reaching about 160 px. It is stronger on the dark ground than on the light one (`--wisp-light-peak` in `studio.css`). It breathes with a slow shimmer |
+| During a hop | Dips a little as Wisp gathers and swells about 30% mid-arc (and reaches a little further), then settles |
+| Where sparks fall | Each spark leaves a small, faint pool of light where it lands, which outlasts the spark (about 1.1 s) |
+| Wisp itself | Never lit: its drawing has nothing that depends on lighting |
+| The page's HTML | The form publishes the light as `--wisp-x`, `--wisp-y`, `--wisp-reach` (px, in the form's box) and `--wisp-glow` (0–1). `litField` gives a field its own `--lit`, `--lx`, `--ly`, `--lr`, and the fields here (`.wisp-lit-field`) warm their surface and the rim facing Wisp from them. In Sparkles that part is the product's HTML, not the character |
+| Reduced motion | No shimmer and no hop: the light holds still beside the field |
+
 The flight demo plays this across a stage and back. Every frame is a pure function of one loop clock: position, yaw (the head a beat ahead), wing beats and each spark. Under reduced motion it shows one still frame with the trail.
 
 **Wisp, warmer — proposals, not adopted.** `WISP_MAIN` is unchanged. Beside the side characters, Wisp is the only one who is nobody at rest: all cool blue with its only warmth at its tail, a small face low on a perfectly symmetric drop that reads as a logo, a stick body and neck, and no temperament. `src/design/nix/wisp-warm.tsx` (`WISP_WARM`) proposes five answers. Each of the first four changes one thing so it can be judged alone; the fifth combines them. All keep the drop, the two pairs of wings, the ringed flame and the spark trail. The studio shows them next to Wisp as it is, at rest and in every expression.

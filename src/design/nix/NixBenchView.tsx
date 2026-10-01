@@ -616,6 +616,23 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         <WispForm />
       </div>
 
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        {front.label} — on the sign-up form, lighting its surroundings (proposal)
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The same form, with Wisp's glow lighting what is around it from the lantern at its flame
+        tip: the gutter, the card and the near edge of the field. The light falls off fast and
+        trails off slowly, dips as Wisp gathers for a hop, swells a little mid-arc, and each spark
+        leaves a faint pool of light where it falls. Wisp itself is not lit. On the dark ground the
+        light adds; on the light ground it is a warm tint. The fields light themselves from where
+        the light is, which the form publishes for the page's own HTML. Under reduced motion the
+        light holds still.
+      </p>
+      <div className="wisp-lit-block mt-3">
+        <WispForm lit />
+      </div>
+
+
       {ribbon && (
         <>
           <h2 className="material-heading mt-10 text-lg text-foreground">
