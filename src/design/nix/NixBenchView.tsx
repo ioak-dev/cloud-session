@@ -677,6 +677,17 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </div>
 
           <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — signed in, quieter (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three welcomes a little subtler than signing up: no travel and nothing across the card,
+            only Wisp and its own light, each over in about a second and a half.
+          </p>
+          <div className="wisp-lit-block mt-3">
+            <WispMoments event="quiet" />
+          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
             {front.label} — signed up (proposals)
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
@@ -687,6 +698,19 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </p>
           <div className="wisp-lit-block mt-3">
             <WispMoments event="signup" />
+          </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            {front.label} — workspace set up (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Three small reactions to a new workspace, in the spirit of the blanket: a bit of
+            character with some play of glow and sparks, nothing grand. A workspace being set up is
+            a new event beside the other three; like them it would get one reaction, the same every
+            time.
+          </p>
+          <div className="wisp-lit-block mt-3">
+            <WispMoments event="workspace" />
           </div>
         </>
       )}

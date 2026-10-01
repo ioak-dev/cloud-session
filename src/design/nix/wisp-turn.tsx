@@ -288,7 +288,19 @@ const QUERY: [number, number, number][] = [
   [20, 36, 14],
 ];
 
-function Antennae({ yaw, curl = 0 }: { yaw: number; curl?: number }) {
+/** The antennae; `tips` brightens each tip (0 as drawn … 1 lit up) and `bob` dips each tip down
+ *  (+) or lifts it (−), in figure units, left then right. */
+function Antennae({
+  yaw,
+  curl = 0,
+  tips = [0, 0],
+  bob = [0, 0],
+}: {
+  yaw: number;
+  curl?: number;
+  tips?: readonly [number, number];
+  bob?: readonly [number, number];
+}) {
   return (
     <>
       {[-1, 1].map((s) => {
@@ -306,7 +318,9 @@ function Antennae({ yaw, curl = 0 }: { yaw: number; curl?: number }) {
           s > 0 && curl
             ? base.map((p, i) => p.map((v, k) => v + (QUERY[i][k] - v) * curl) as [number, number, number])
             : base;
-        const q = pts.map(([l, y, f]) => ({ x: proj(l, f, yaw).x, y }));
+        const lit = tips[s < 0 ? 0 : 1];
+        const dip = bob[s < 0 ? 0 : 1];
+        const q = pts.map(([l, y, f], i) => ({ x: proj(l, f, yaw).x, y: y + (dip * i) / 6 }));
         const [p0, a, b, c, e, g, t] = q;
         return (
           <g key={s}>
@@ -317,8 +331,8 @@ function Antennae({ yaw, curl = 0 }: { yaw: number; curl?: number }) {
               fill="none"
               strokeLinecap="round"
             />
-            <circle cx={t.x} cy={t.y} r={6.5} fill={GLOW} opacity={0.35} />
-            <circle cx={t.x} cy={t.y} r={3} fill={GLOW} stroke={AMBER} strokeWidth={HAIR} />
+            <circle cx={t.x} cy={t.y} r={6.5 + 7 * lit} fill={GLOW} opacity={Math.min(0.85, 0.35 + 0.4 * lit)} />
+            <circle cx={t.x} cy={t.y} r={3 + 1.6 * lit} fill={GLOW} stroke={AMBER} strokeWidth={HAIR} />
           </g>
         );
       })}
@@ -521,6 +535,11 @@ export type TurnProps = {
   curl?: number;
   /** 0 → 1: the ribbons are tied in a bow on top of the head. Ribbons only. */
   bow?: number;
+  /** Each antenna tip lit up (0 … 1) and dipped (+) or lifted (−), left then right. */
+  tips?: readonly [number, number];
+  tipBob?: readonly [number, number];
+  /** 0 → 1: the ribbons wrap round in front of the body, a hug for itself. Ribbons only. */
+  hug?: number;
   uid: string;
 };
 
@@ -622,6 +641,9 @@ export function WispTurn({
   knot = 0,
   curl = 0,
   bow = 0,
+  tips,
+  tipBob,
+  hug = 0,
   uid,
 }: TurnProps) {
   /* a whole turn comes back round: the angle is kept within ±180° */
@@ -642,11 +664,14 @@ export function WispTurn({
   const hide = Math.max(sheet, tied);
   /* knotted, the ribbons swing in until they cross under the flame */
   const tangle = style === "ribbon" ? knot : 0;
+  /* hugging, they swing round in front and cross over the body */
+  const wrap = style === "ribbon" ? hug : 0;
   const parts = [
     ...(style === "ribbon"
-      ? ribbons(yaw, flapU + 42 * tangle, form, uid, t).map((p, i) =>
-          hide > 0 ? { ...p, el: <g key={`rb${i}`} opacity={1 - hide}>{p.el}</g> } : p,
-        )
+      ? ribbons(yaw, flapU + 42 * tangle + 50 * wrap, form, uid, t).map((p, i) => {
+          const q = wrap > 0.3 ? { ...p, d: 1 } : p;
+          return hide > 0 ? { ...q, el: <g key={`rb${i}`} opacity={1 - hide}>{q.el}</g> } : q;
+        })
       : wings(yaw, flapU, flapL)),
     ...(tangle > 0.05 ? [{ d: -20, el: <Knot key="knot" k={clamp(tangle, 0, 1.2)} yaw={yaw} /> }] : []),
     /* the Wisp page (ribbons) draws the picks on Clean: Snug's arms and the Core tail */
@@ -700,7 +725,7 @@ export function WispTurn({
       />
       <rect x={94} y={134} width={12} height={20} rx={4} fill={C.mid} />
       <g transform={HEAD_FIT}>
-        <Antennae yaw={headYaw} curl={curl} />
+        <Antennae yaw={headYaw} curl={curl} tips={tips} bob={tipBob} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
         <Face
           yaw={headYaw}
@@ -718,6 +743,12 @@ export function WispTurn({
       {sheet > 0 && <Blanket b={sheet} yaw={yaw} headYaw={headYaw} wiggle={wiggle} uid={uid} />}
     </g>
   );
+}
+
+/** Where an antenna's tip is (left −1, right 1), in figure space, at a head yaw. */
+export function antennaTip(side: -1 | 1, yaw: number): P {
+  const x = proj(21 * side, 14, yaw).x;
+  return [100 + (x - 100) * 1.12, 146 + (32 - 150) * 1.12];
 }
 
 /** Where the flame's tip is, in figure space, at a yaw: that is where sparks are left. */
