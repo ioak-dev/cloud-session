@@ -20,7 +20,7 @@ import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon";
-import { CLEAN_ARMS, CLEAN_HEADS, CLEAN_TAILS } from "./wisp-clean";
+import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./wisp-clean";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -533,7 +533,8 @@ const PAIRS: Line = { main: WISP_MAIN, warm: WISP_WARM, eyes: WISP_EYES };
 
 /** The Wisp line with the ribbons of one variant in place of the wings: nothing else changes. */
 const ribbonLine = (v: (typeof RIBBON_VARIANTS)[number]): Line => ({
-  main: withRibbon(WISP_MAIN, v),
+  /* on Clean, the picks: the Core tail and Snug's arms (`wisp-clean.tsx`) */
+  main: v.id === "clean" ? CLEAN_PICK : withRibbon(WISP_MAIN, v),
   warm: WISP_WARM.map((c) => withRibbon(c, v)),
   eyes: WISP_EYES.map((c) => withRibbon(c, v)),
 });
@@ -574,7 +575,8 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             is Wisp as drawn. The ribbons are Clean: one ribbon each side, fading to nothing, its
             tail swaying and a little mist leaving the tips. Every figure on the page — the
             turnaround, the flight, the form, the warmer proposals, the eye styles and the acting —
-            wears it. Glow tips and Spirit are on the{" "}
+            wears them. The main character, its turnaround, flight and form also carry the picks on
+            Clean: a paler core in the flame and Snug’s thicker arms. Glow tips and Spirit are on the{" "}
             <a href="#/references" className="text-foreground underline">
               References
             </a>{" "}
@@ -585,7 +587,9 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             Clean — tail patterns, head shapes and arms (proposals)
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            Clean as it is, then four that each change one thing on it. Two tail patterns drawn from
+            Chosen: the Core tail and Snug’s arms, with the drop head kept — the main character on
+            this page, and what the turnaround, flight and form draw. Then Clean as it was, and the
+            proposals, each changing one thing on it. Two tail patterns drawn from
             what a firefly’s light really looks like — Lantern, where only the segment between the
             rings is lit brightest, as on a real firefly; and Core, a paler heart inside the flame,
             following its curl. Two head shapes that move the drop’s tip toward one of the things a
@@ -594,8 +598,14 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             hand tips on Clean’s slim body. Front only. Shown at rest, then in every expression.
           </p>
           <MoodSheet
-            list={[RIBBON_LINES.clean.main, ...CLEAN_TAILS, ...CLEAN_HEADS, ...CLEAN_ARMS]}
-            name={(x) => (x.id === RIBBON_LINES.clean.main.id ? "Clean (as is)" : x.label.replace("Clean · ", ""))}
+            list={[CLEAN_PICK, CLEAN_BASE, ...CLEAN_TAILS, ...CLEAN_HEADS, ...CLEAN_ARMS]}
+            name={(x) =>
+              x.id === CLEAN_PICK.id
+                ? "Chosen"
+                : x.id === CLEAN_BASE.id
+                  ? "Clean (before)"
+                  : x.label.replace("Clean · ", "")
+            }
           />
         </>
       ) : (

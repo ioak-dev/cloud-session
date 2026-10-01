@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { CLEAN, RIBBON_REACH, RIBBON_TAIL, SEED, smoke, SPIRIT_MOTES, STRAND_INNER, useSmokeClock, type Pt, type SpiritForm } from "./wisp-ribbon";
+import { Core } from "./wisp-clean";
 import { C } from "./theme";
 
 /**
@@ -215,7 +216,12 @@ function wings(yaw: number, flapU: number, flapL: number): Part[] {
 
 /* ——— arms: hanging tendrils, a little forward of the body ——— */
 
-function arms(yaw: number): Part[] {
+/** Arm widths: upper stroke, forearm half-widths at elbow and wrist, hand tip radius. On the ribbon
+ *  page Wisp has Snug's thicker arms (`SNUG_ARM_W` in `wisp-clean.tsx`), scaled the same way. */
+const ARMS = { upper: 9, w0: 4.25, w1: 3.4, hand: 5.9 };
+const SNUG_ARMS = { upper: 11.5, w0: 5.5, w1: 4.4, hand: 8 };
+
+function arms(yaw: number, { upper, w0, w1, hand } = ARMS): Part[] {
   return [-1, 1].map((s) => {
     const sh = proj(16 * s, 0, yaw);
     const el = proj(24 * s, 4, yaw);
@@ -227,8 +233,6 @@ function arms(yaw: number): Part[] {
     const len = Math.hypot(dx, dy) || 1;
     const nx = -dy / len;
     const ny = dx / len;
-    const w0 = 4.25;
-    const w1 = 3.4;
     return {
       d: (sh.d + hd.d) / 2,
       el: (
@@ -239,13 +243,13 @@ function arms(yaw: number): Part[] {
             x2={el.x}
             y2={178}
             stroke={C.primary}
-            strokeWidth={9}
+            strokeWidth={upper}
             strokeLinecap="round"
           />
           <path
             d={`M${a[0] + nx * w0} ${a[1] + ny * w0} L${b[0] + nx * w1} ${b[1] + ny * w1} L${b[0] - nx * w1} ${b[1] - ny * w1} L${a[0] - nx * w0} ${a[1] - ny * w0} Z`}
           />
-          <circle cx={b[0]} cy={b[1]} r={5.9} />
+          <circle cx={b[0]} cy={b[1]} r={hand} />
         </g>
       ),
     };
@@ -393,7 +397,8 @@ export function WispTurn({
   const t = useSmokeClock(style === "ribbon" && !!form.smoke);
   const parts = [
     ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid, t) : wings(yaw, flapU, flapL)),
-    ...arms(yaw),
+    /* the ribbon page draws the picks on Clean: Snug's arms and the Core tail */
+    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
   const front = parts.filter((p) => p.d >= 0).sort((a, b) => a.d - b.d);
@@ -430,6 +435,7 @@ export function WispTurn({
       <g transform={flame}>
         <circle cx={104} cy={236} r={38} fill={GLOW} opacity={0.3} />
         <path d={FLAME} fill={`url(#${uid}-tf)`} />
+        {style === "ribbon" && <Core uid={uid} />}
         <path d={RINGS} stroke={AMBER} strokeWidth={2.2} fill="none" strokeLinecap="round" />
       </g>
       <path

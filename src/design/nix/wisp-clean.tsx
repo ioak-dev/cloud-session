@@ -55,7 +55,8 @@ function Lantern({ uid }: Ctx) {
   );
 }
 
-function Core({ uid }: Ctx) {
+/** The Core tail: drawn by the rig figure and by the turn puppet and back view (`wisp-turn.tsx`, `wisp-views.tsx`). */
+export function Core({ uid }: { uid: string }) {
   const g = `${uid}-core`;
   return (
     <g>
@@ -83,11 +84,14 @@ const CANDLE =
 const DEWDROP =
   "M100 48 C108 48 116 58 124 68 C138 84 148 92 148 112 C148 134 126 146 100 146 C74 146 52 134 52 112 C52 92 62 84 76 68 C84 58 92 48 100 48 Z";
 
+/** Snug's limb widths: upper arm, forearm, hand tip. The puppet and back view draw the same. */
+export const SNUG_ARM_W = { upper: 11.5, fore: 11, hand: 8.4 } as const;
+
 /** Clean's frame with Snug's limb widths: the same joints and torso, thicker arms, bigger tips. */
 const SNUG_ARMS: Body = {
   ...WISP,
   id: "wisp-clean-snug-arms",
-  w: { ...WISP.w, upper: 11.5, fore: 11, hand: 8.4 },
+  w: { ...WISP.w, ...SNUG_ARM_W },
 };
 
 type Change = {
@@ -171,3 +175,24 @@ export const CLEAN_ARMS: Candidate[] = [
     risk: "Thicker arms on a narrow body can look borrowed; check the shoulders join cleanly and that the arms do not crowd the ribbons at the sides.",
   }),
 ];
+
+/** Clean as it was before the picks: the comparison for every proposal above. */
+export const CLEAN_BASE: Candidate = BASE;
+
+/**
+ * The pick: Clean with the Core tail and Snug's arms; the head stays the drop. It is the ribbon
+ * page's main character, and the puppet, back view, flight and form draw the same on that page.
+ */
+export const CLEAN_PICK: Candidate = {
+  ...clean({
+    id: "pick",
+    label: "Core, Snug arms",
+    frame: SNUG_ARMS,
+    pattern: (c) => <Core {...c} />,
+    signature: "Clean ribbons, a paler heart in the flame, thicker arms; the drop head unchanged",
+    pitch:
+      "The picks from the proposals on Clean. Core: the flame is palest at its heart, so the tail has depth and its curl is drawn twice, while the body still flows into the flame with no seam (Lantern's bands drew one there). Snug arms: Wisp's stick arms were the first thing lost at small sizes; Snug's thicker arms and bigger soft tips read at 48px, on Wisp's own joints and slim body. The drop head stays: it is Wisp's most recognisable shape and the app icon's, and neither Candle (crowds the antennae small) nor Dewdrop (loses the flame's point) was clearly better.",
+    risk: "Core disappears at 32px, so it is a refinement for larger sizes only; the arms are what change the small figure.",
+  }),
+  label: "Wisp · Ribbon",
+};
