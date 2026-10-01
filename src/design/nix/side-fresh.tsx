@@ -1,223 +1,27 @@
-import type { Candidate, Ctx } from "./candidates";
+import type { Candidate } from "./candidates";
 import { EYE_WHITE, line } from "./rig/eyes";
-import { pivot } from "./rig/skeleton";
 import {
-  ANIMAL_OUTFITS,
   arcBrow,
   blob,
   cute,
-  dashBrow,
   eyesOf,
   face,
   INK,
-  mirror,
   mix,
   mouthOf,
-  pal,
   person,
   PERSON_OUTFITS,
-  PINK,
-  sides,
-  Taper,
   Two,
-  UNFIT,
 } from "./side-kit";
 import { C } from "./theme";
 
 /**
- * Fresh candidates to shortlist against: four animals — Crumb, a mouse; Willow, a fawn; Biscuit,
- * a corgi pup; Hazel, a squirrel — and three people — Arjun, a boy of about ten; Tilly, a girl of
- * about six; Theo, the pond warden, a young man. Drawn on the cute frame to
+ * Fresh candidates to shortlist against: Arjun, a boy of about ten; Tilly, a girl of about six;
+ * Theo, the pond warden, a young man. (Four animals drawn with them — Crumb, Willow, Biscuit,
+ * Hazel — were removed: they looked alike.) Drawn on the cute frame to
  * `docs/character-guidelines.md`, each with its own eyes and mouth (which also talks). Static
  * figures and faces only, until some are picked.
  */
-
-/* ——— Crumb, a mouse: the smallest, and the bravest about it ——— */
-
-const MOUSE = mix(C.hi, "#b4a79d", 45);
-const MOUSE_SHADE = mix(C.deep, "#7d6e64", 40);
-const MOUSE_LIGHT = "#f4ece4";
-
-const CRUMB = cute("crumb", { k: 1.52, neck: 210, torso: "M84 156 Q100 150 116 156 Q124 166 123 190 Q121 220 100 220 Q79 220 77 190 Q76 166 84 156 Z", j: { earL: [70, 80], earR: [130, 80], tail: [110, 252] }, headVB: "4 26 192 192" });
-
-function CrumbHead() {
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, CRUMB.j)}>
-          {/* big ears, tipped out like satellite dishes, never round circles on top */}
-          <ellipse cx={mirror(s, 56)} cy={76} rx={26} ry={22} transform={`rotate(${s * 28} ${mirror(s, 56)} 76)`} fill={MOUSE_SHADE} />
-          <ellipse cx={mirror(s, 57)} cy={76} rx={18} ry={15} transform={`rotate(${s * 28} ${mirror(s, 57)} 76)`} fill={PINK} opacity={0.8} />
-        </g>
-      ))}
-      <Two d={blob(100, 116, 38, 35, 1.12)} fill={MOUSE} shade={MOUSE_SHADE} k={2} />
-      <path d={blob(100, 132, 20, 13, 1.04)} fill={MOUSE_LIGHT} />
-      <circle cx={100} cy={128} r={4} fill={PINK} />
-      <g {...line(MOUSE_SHADE, 1.3)}>
-        <path d="M84 132 L64 128 M84 136 L66 140 M116 132 L136 128 M116 136 L134 140" />
-      </g>
-    </g>
-  );
-}
-
-function CrumbBehind() {
-  return (
-    <g transform={UNFIT}>
-      <g data-joint="tail" style={pivot("tail", CRUMB.j)}>
-        <Taper segs={[[[112, 256], [150, 270], [170, 240], [156, 222]], [[156, 222], [146, 210], [134, 222], [144, 228]]]} w0={5} w1={3} fill={PINK} />
-      </g>
-    </g>
-  );
-}
-
-const crumbEyes = eyesOf({ rx: 8.4, ry: 9.8, fill: INK, pupil: { r: 0 }, shine: 3, lid: MOUSE, closed: INK, browY: 15, brow: dashBrow(MOUSE_SHADE, 3, 4), rest: { raise: 3, browTilt: -6 } });
-
-/* ——— Willow, a fawn: gentle, dreamy, all legs ——— */
-
-const FAWN = mix(C.accentDeep, "#c48a58", 45);
-const FAWN_SHADE = mix(C.deep, "#8a5c3a", 35);
-const FAWN_LIGHT = "#f6e6d2";
-
-const WILLOW = cute("willow", {
-  k: 1.4,
-  neck: 196,
-  torso: "M84 150 Q100 144 116 150 Q126 160 125 182 Q122 214 100 216 Q78 214 75 182 Q74 160 84 150 Z",
-  w: { upper: 10, fore: 9, thigh: 9, shin: 7.6, hand: 6.4, cloth: 0.9 },
-  j: { earL: [70, 92], earR: [130, 92], hipL: [93, 244], kneeL: [92, 258], footL: [91, 273], hipR: [107, 244], kneeR: [108, 258], footR: [109, 273] },
-  headVB: "8 18 184 184",
-});
-
-function WillowHead() {
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, WILLOW.j)}>
-          <path d={`M${mirror(s, 72)} 92 Q${mirror(s, 40)} 78 ${mirror(s, 26)} 92 Q${mirror(s, 44)} 108 ${mirror(s, 72)} 104 Z`} fill={FAWN_SHADE} />
-          <path d={`M${mirror(s, 70)} 94 Q${mirror(s, 46)} 84 ${mirror(s, 34)} 93 Q${mirror(s, 48)} 103 ${mirror(s, 70)} 101 Z`} fill={FAWN_LIGHT} />
-        </g>
-      ))}
-      <Two d={blob(100, 112, 36, 36, 1.06)} fill={FAWN} shade={FAWN_SHADE} k={2} />
-      {/* white dapples on her crown, a pale muzzle, a small dark nose */}
-      {[
-        [86, 84, 3],
-        [102, 80, 2.6],
-        [116, 86, 2.4],
-        [94, 92, 2],
-      ].map(([x, y, r]) => (
-        <circle key={`${x}${y}`} cx={x} cy={y} r={r} fill={FAWN_LIGHT} />
-      ))}
-      <path d={blob(100, 134, 17, 12, 1.04)} fill={FAWN_LIGHT} />
-      <ellipse cx={100} cy={128} rx={5} ry={3.6} fill={INK} />
-    </g>
-  );
-}
-
-const willowEyes = eyesOf({
-  rx: 9.4,
-  ry: 11,
-  fill: INK,
-  iris: { r: 7, color: mix(C.accentDeep, "#4a2c1a", 40) },
-  pupil: { r: 0 },
-  shine: 3.2,
-  lid: FAWN,
-  rim: { color: INK, w: 2.6, lashes: 3 },
-  closed: INK,
-  browY: 16,
-  brow: dashBrow(FAWN_SHADE, 2.6, 4),
-  /* dreamy: lids a little down, looking off */
-  rest: { top: 0.16, look: [-1.6, -1], raise: 2, browTilt: 6 },
-});
-
-/* ——— Biscuit, a corgi pup: loyal, bouncing, never stops wagging ——— */
-
-const CORGI = mix(C.accent, "#e09a52", 45);
-const CORGI_SHADE = mix(C.accentDeep, "#b06a32", 45);
-const CORGI_WHITE = "#fbf3e8";
-
-const BISCUIT = cute("biscuit", {
-  k: 1.44,
-  neck: 208,
-  torso: "M76 154 Q100 144 124 154 Q138 168 136 194 Q132 222 100 222 Q68 222 64 194 Q62 168 76 154 Z",
-  w: { upper: 12, fore: 11, thigh: 14, shin: 12, hand: 8, cloth: 1.1 },
-  j: { earL: [74, 80], earR: [126, 80], tail: [112, 250], hipL: [88, 258], kneeL: [87, 266], footL: [86, 273], hipR: [112, 258], kneeR: [113, 266], footR: [114, 273] },
-  headVB: "8 12 184 184",
-});
-
-function BiscuitHead({ mood }: Ctx) {
-  /* its ears are its mood: up and forward when happy, back when worried */
-  const tilt = mood === "worried" || mood === "oops" ? 28 : mood === "curious" ? -6 : 0;
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, BISCUIT.j)}>
-          <g transform={`rotate(${s * tilt} ${mirror(s, 78)} 84)`}>
-            <path d={`M${mirror(s, 66)} 92 L${mirror(s, 52)} 36 Q${mirror(s, 58)} 30 ${mirror(s, 64)} 34 L${mirror(s, 96)} 76 Z`} fill={CORGI_SHADE} />
-            <path d={`M${mirror(s, 70)} 86 L${mirror(s, 58)} 44 L${mirror(s, 86)} 76 Z`} fill={PINK} opacity={0.7} />
-          </g>
-        </g>
-      ))}
-      <Two d={blob(100, 114, 42, 36, 1.12)} fill={CORGI} shade={CORGI_SHADE} k={2.2} />
-      {/* the white blaze up its face, the white muzzle, a black nose */}
-      <path d="M100 82 Q106 100 112 116 Q124 124 124 136 Q118 150 100 150 Q82 150 76 136 Q76 124 88 116 Q94 100 100 82 Z" fill={CORGI_WHITE} />
-      <ellipse cx={100} cy={128} rx={6.4} ry={4.6} fill={INK} />
-      <circle cx={98.2} cy={126.6} r={1.4} fill={EYE_WHITE} />
-    </g>
-  );
-}
-
-function BiscuitBehind() {
-  return (
-    <g transform={UNFIT}>
-      <g data-joint="tail" style={pivot("tail", BISCUIT.j)}>
-        <circle cx={124} cy={248} r={8} fill={CORGI_WHITE} />
-      </g>
-    </g>
-  );
-}
-
-const biscuitEyes = eyesOf({ rx: 8.8, ry: 9.8, fill: INK, iris: { r: 6.6, color: "#5a3420" }, pupil: { r: 0 }, shine: 3, lid: CORGI, closed: INK, browY: 15, brow: dashBrow(CORGI_SHADE, 3.2, 4.4), rest: { raise: 4, look: [0, -0.8] } });
-
-/* ——— Hazel, a squirrel: quick, chattering, forgets where she buried everything ——— */
-
-const SQ = mix(C.accentDeep, "#b5653a", 45);
-const SQ_SHADE = mix(C.deep, "#7a3e22", 35);
-const SQ_LIGHT = "#f6e2c8";
-
-const HAZEL = cute("hazel", { k: 1.46, neck: 206, torso: "M82 154 Q100 146 118 154 Q128 166 127 190 Q124 220 100 220 Q76 220 73 190 Q72 166 82 154 Z", j: { earL: [76, 74], earR: [124, 74], tail: [108, 248] }, headVB: "8 18 184 184" });
-
-function HazelHead({ mood }: Ctx) {
-  const stuffed = mood === "delighted";
-  return (
-    <g>
-      {sides.map(([side, s]) => (
-        <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, HAZEL.j)}>
-          <path d={`M${mirror(s, 66)} 88 Q${mirror(s, 62)} 60 ${mirror(s, 72)} 50 Q${mirror(s, 84)} 62 ${mirror(s, 86)} 80 Z`} fill={SQ} />
-          {/* the tufts on her ear tips */}
-          <path d={`M${mirror(s, 72)} 52 l${s * -4} -10 M${mirror(s, 72)} 52 l${s * 2} -11`} {...line(SQ_SHADE, 3)} />
-        </g>
-      ))}
-      <Two d={blob(100, 114, 38, 35, stuffed ? 1.3 : 1.12)} fill={SQ} shade={SQ_SHADE} k={2} />
-      <path d={blob(100, 130, stuffed ? 30 : 22, 16, 1.06)} fill={SQ_LIGHT} />
-      <ellipse cx={100} cy={124} rx={4.4} ry={3.2} fill={INK} />
-    </g>
-  );
-}
-
-function HazelBehind() {
-  return (
-    <g transform={UNFIT}>
-      <g data-joint="tail" style={pivot("tail", HAZEL.j)}>
-        {/* a great S of a tail, taller than her head */}
-        <Taper segs={[[[110, 252], [160, 260], [176, 210], [150, 170]], [[150, 170], [130, 140], [140, 100], [166, 98]]]} w0={20} w1={30} fill={SQ_SHADE} />
-        <g transform="translate(-2 -2)">
-          <Taper segs={[[[110, 252], [160, 260], [176, 210], [150, 170]], [[150, 170], [130, 140], [140, 100], [166, 98]]]} w0={16} w1={26} fill={SQ} />
-        </g>
-      </g>
-    </g>
-  );
-}
-
-const hazelEyes = eyesOf({ rx: 8, ry: 9.4, fill: INK, iris: { r: 6, color: "#4a2414" }, pupil: { r: 0 }, shine: 2.8, lid: SQ, closed: INK, browY: 14, brow: arcBrow(SQ_SHADE, 3, 5), rest: { raise: 5, browTilt: -6, look: [1.6, -0.6], k: [1, 1.06] } });
 
 /* ——— Arjun, a boy of about ten: curious, knows a fact about everything ——— */
 
@@ -329,89 +133,6 @@ const theoEyes = eyesOf({ rx: 7.4, ry: 8.2, fill: EYE_WHITE, iris: { r: 5.8, col
 /* ——— The candidates ——— */
 
 export const FRESH: Candidate[] = [
-  {
-    id: "fresh-crumb",
-    kind: "animal",
-    frame: CRUMB,
-    outline: false,
-    hands: "mitten",
-    attitude: { mood: "neutral", tilt: -8, hands: { L: [76, 202], R: [124, 196], outL: true, outR: true } },
-    label: "Crumb",
-    signature: "A tiny mouse with great tipped-out ears and a curling pink tail — she squeezes",
-    pitch: "The smallest of everyone, and the bravest about it: wants to be taken seriously; the flaw is that she picks fights with things fifty times her size. At rest, fists on hips, chin up. Ability: Squeeze — fits through any gap.",
-    risk: "Ears tipped out, never two black circles on top: stay clear of a famous mouse.",
-    pal: pal(MOUSE, PINK, { skin: MOUSE, skinShade: MOUSE_SHADE, limb: MOUSE, paw: PINK }),
-    body: MOUSE,
-    face: face({ eyeY: 116, eyeGap: 17, mouthY: 140, lid: MOUSE, kit: crumbEyes, mouthKit: mouthOf({ lip: MOUSE_SHADE, W: 6.4, H: 6, buck: true }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    behind: () => <CrumbBehind />,
-    belly: () => <ellipse cx={100} cy={190} rx={15} ry={20} fill={MOUSE_LIGHT} />,
-    head: () => <CrumbHead />,
-  },
-  {
-    id: "fresh-willow",
-    kind: "animal",
-    frame: WILLOW,
-    outline: false,
-    attitude: { mood: "neutral", tilt: 8, hands: { L: [92, 200], R: [108, 200], outL: false, outR: false } },
-    label: "Willow",
-    signature: "A dappled fawn with long lashes, wide soft ears and long thin legs — she vanishes in the dapple",
-    pitch: "Gentle and dreamy, notices the small things; the flaw is she drifts off mid-sentence. At rest, head on one side, gazing off. Ability: Dapple — stands so still in dappled light no one can see her.",
-    risk: "Dreamy, never vacant.",
-    pal: pal(FAWN, FAWN_SHADE, { skin: FAWN, skinShade: FAWN_SHADE, limb: FAWN, paw: FAWN_SHADE, shoe: FAWN_SHADE }),
-    body: FAWN,
-    face: face({ eyeY: 116, eyeGap: 17, mouthY: 142, lid: FAWN, kit: willowEyes, mouthKit: mouthOf({ lip: FAWN_SHADE, W: 6, H: 6 }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    belly: () => (
-      <g fill={FAWN_LIGHT}>
-        <ellipse cx={100} cy={190} rx={14} ry={20} />
-        <circle cx={82} cy={164} r={3} />
-        <circle cx={118} cy={170} r={2.6} />
-      </g>
-    ),
-    head: () => <WillowHead />,
-  },
-  {
-    id: "fresh-biscuit",
-    kind: "animal",
-    frame: BISCUIT,
-    outline: false,
-    attitude: { mood: "delighted", tilt: 8, hands: { L: [86, 204], R: [114, 204], outL: true, outR: true } },
-    label: "Biscuit",
-    signature: "A corgi pup with huge upright ears, a white blaze and a fluffy chest — it wags",
-    pitch: "Loyal, bouncing, never stops wagging: wants everyone together; the flaw is that it can't keep still for a second. Its ears are its mood. Ability: Wag — wags so hard its whole body wiggles.",
-    risk: "Excitement kept small; it never jumps on the learner's answer.",
-    pal: pal(CORGI, CORGI_WHITE, { skin: CORGI, skinShade: CORGI_SHADE, limb: CORGI, paw: CORGI_WHITE }),
-    body: CORGI,
-    face: face({ eyeY: 112, eyeGap: 19, mouthY: 140, lid: CORGI, kit: biscuitEyes, mouthKit: mouthOf({ lip: "#5a3420", W: 7.6, H: 7.6 }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    behind: () => <BiscuitBehind />,
-    belly: () => <path d="M84 154 Q100 166 116 154 Q120 182 110 204 Q100 210 90 204 Q80 182 84 154 Z" fill={CORGI_WHITE} />,
-    head: (c) => <BiscuitHead {...c} />,
-  },
-  {
-    id: "fresh-hazel",
-    kind: "animal",
-    frame: HAZEL,
-    outline: false,
-    hands: "mitten",
-    attitude: { mood: "curious", tilt: -8, hands: { L: [96, 176], R: [104, 176], outL: false, outR: false } },
-    label: "Hazel",
-    signature: "A rust-red squirrel with ear tufts and a great S of a tail — she stuffs her cheeks",
-    pitch: "Quick, chattering, a hundred plans at once; the flaw is she forgets where she buried every one. At rest, paws up at her chest, head cocked, one eye wider. Her cheeks puff out when she is delighted. Ability: Cheeks — stuffs them till they're round as plums.",
-    risk: "Scatterbrained, never silly about the learner's work.",
-    pal: pal(SQ, SQ_SHADE, { skin: SQ, skinShade: SQ_SHADE, limb: SQ, paw: SQ_SHADE }),
-    body: SQ,
-    face: face({ eyeY: 112, eyeGap: 18, mouthY: 136, lid: SQ, kit: hazelEyes, mouthKit: mouthOf({ lip: SQ_SHADE, W: 6.6, H: 6.4, buck: true }) }),
-    outfit: "bare",
-    outfits: ANIMAL_OUTFITS,
-    behind: () => <HazelBehind />,
-    belly: () => <ellipse cx={100} cy={190} rx={15} ry={21} fill={SQ_LIGHT} />,
-    head: (c) => <HazelHead {...c} />,
-  },
   {
     id: "fresh-arjun",
     kind: "human",
