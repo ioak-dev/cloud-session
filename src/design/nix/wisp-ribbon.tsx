@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import type { Candidate, Ctx } from "./candidates";
 import { Flame, pal as WISP_PAL, WISP } from "./firefly-wisp";
 import { pivot, type Body } from "./rig/skeleton";
@@ -34,11 +36,14 @@ const sides = [
  * - `strands`: 1, the ribbon alone; 2, a thinner strand trailing inside it.
  * - `motes`: fading dots in `C.hi`, or none.
  * - `glow`: the mist turns the glow's colour as it fades, as if its light leaks out of the ribbon.
+ * - `smoke`: the ribbon's trailing edge moves on its own, like smoke (`smoke` below), separately
+ *   from the wing's flap and from the other ribbon; the strand drifts on its own beat too.
  */
 export type SpiritForm = {
   strands: 1 | 2;
   motes: "dots" | "none";
   glow?: boolean;
+  smoke?: boolean;
 };
 
 /** Clean: one ribbon each side, fading to nothing, nothing inside. */
@@ -46,7 +51,7 @@ export const CLEAN: SpiritForm = { strands: 1, motes: "none" };
 /** Glow tips: Clean, with the ribbons fading to the glow's gold. */
 export const GLOW_TIPS: SpiritForm = { ...CLEAN, glow: true };
 /** Spirit: a thinner strand inside each ribbon, and a few motes fading with it. */
-export const SPIRIT: SpiritForm = { strands: 2, motes: "dots" };
+export const SPIRIT: SpiritForm = { strands: 2, motes: "dots", smoke: true };
 
 export type RibbonVariantId = "clean" | "glow" | "spirit";
 export const RIBBON_VARIANTS: readonly {
@@ -109,6 +114,96 @@ export const SPIRIT_MOTES = [
 /** Where the fade ends: the gradient's far end, in figure space. */
 export const RIBBON_REACH = 256;
 
+/* ——— smoke: the trailing edge moves on its own ——— */
+
+/** The seconds one smoke cycle takes; every component below is a whole number of cycles, so it loops. */
+export const SMOKE_PERIOD = 8;
+/** The most a point at the tip drifts, in figure units. */
+const SMOKE_REACH = 9;
+
+/**
+ * Drifts a ribbon curve as smoke does. A point's drift grows from nothing at the shoulder to full
+ * at the tip, and each point has its own phase, so the edge ripples instead of swinging as one:
+ * the tail curls one way while the middle goes the other. Two beats per point (one and two cycles)
+ * keep it from reading as a sine. `seed` makes each ribbon and strand its own.
+ */
+export function smoke(pts: readonly Pt[], t: number, seed: number): Pt[] {
+  const th = (2 * Math.PI * t) / SMOKE_PERIOD;
+  return pts.map(([dx, y], i) => {
+    const w = Math.min(1, Math.max(0, (y - 168) / 88)) ** 1.6;
+    const ph = seed + i * 0.95;
+    return [
+      dx + w * SMOKE_REACH * (Math.sin(th + ph) + 0.45 * Math.sin(2 * th + 1.7 * ph)),
+      y + w * SMOKE_REACH * 0.45 * Math.cos(th + 1.3 * ph),
+    ];
+  });
+}
+
+/** One shared clock for every smoking ribbon, in seconds; stands still under reduced motion. */
+const clock = (() => {
+  const subs = new Set<() => void>();
+  let t = 0;
+  let frame = 0;
+  const tick = () => {
+    const next = Math.round(performance.now() / 33) / 30; // 30 frames a second is smooth enough
+    if (next !== t) {
+      t = next;
+      subs.forEach((f) => f());
+    }
+    frame = requestAnimationFrame(tick);
+  };
+  return {
+    subscribe(f: () => void) {
+      subs.add(f);
+      if (subs.size === 1 && !prefersStill()) frame = requestAnimationFrame(tick);
+      return () => {
+        subs.delete(f);
+        if (subs.size === 0) cancelAnimationFrame(frame);
+      };
+    },
+    get: () => t,
+  };
+})();
+const noSub = () => () => {};
+const prefersStill = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Seconds for a puppet that has to redraw its ribbons itself; 0 when `active` is false. */
+export function useSmokeClock(active: boolean): number {
+  return React.useSyncExternalStore(
+    active ? clock.subscribe : noSub,
+    active ? clock.get : () => 0,
+    () => 0,
+  );
+}
+
+/** Keyframes of a drifting curve, as the values of an SVG `animate` that loops. */
+const SMOKE_FRAMES = 16;
+const smokeValues = (pts: readonly Pt[], seed: number, X: (dx: number) => number) =>
+  Array.from({ length: SMOKE_FRAMES + 1 }, (_, k) =>
+    curve(smoke(pts, (k % SMOKE_FRAMES) * (SMOKE_PERIOD / SMOKE_FRAMES), seed), X),
+  ).join(";");
+
+/** A ribbon or strand whose trailing edge drifts on its own (SMIL: no re-render per frame). */
+function Drift({ pts, seed, X, fill }: { pts: readonly Pt[]; seed: number; X: (dx: number) => number; fill: string }) {
+  const live = !prefersStill();
+  return (
+    <path d={curve(pts, X)} fill={fill}>
+      {live && (
+        <animate
+          attributeName="d"
+          dur={`${SMOKE_PERIOD}s`}
+          repeatCount="indefinite"
+          values={smokeValues(pts, seed, X)}
+        />
+      )}
+    </path>
+  );
+}
+
+/** Each side drifts from its own phase. */
+export const SEED = { L: 0, R: 2.1 } as const;
+
 /** The ribbons in a form, on whichever frame they are hung from. */
 export function FinishedRibbons({
   frame = WISP,
@@ -138,8 +233,18 @@ export function FinishedRibbons({
                 <stop offset="1" stopColor={fade} stopOpacity={0} />
               </linearGradient>
             </defs>
-            {form.strands >= 2 && <path d={curve(STRAND_INNER, X)} fill={`url(#${g})`} />}
-            <path d={curve(RIBBON_TAIL, X)} fill={`url(#${g})`} />
+            {form.smoke ? (
+              <>
+                {/* each ribbon and strand has its own seed: nothing moves together */}
+                {form.strands >= 2 && <Drift pts={STRAND_INNER} seed={SEED[side] + 2.3} X={X} fill={`url(#${g})`} />}
+                <Drift pts={RIBBON_TAIL} seed={SEED[side]} X={X} fill={`url(#${g})`} />
+              </>
+            ) : (
+              <>
+                {form.strands >= 2 && <path d={curve(STRAND_INNER, X)} fill={`url(#${g})`} />}
+                <path d={curve(RIBBON_TAIL, X)} fill={`url(#${g})`} />
+              </>
+            )}
             {form.motes === "dots" &&
               SPIRIT_MOTES.map(([dx, y, r, o]) => (
                 <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} opacity={o} />

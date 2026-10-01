@@ -106,7 +106,7 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): the Wisp page
 |---|---|
 | Clean | One ribbon each side, fading to nothing, nothing inside it |
 | Glow tips | Clean, but the mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability |
-| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes fading with it |
+| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes fading with it. The trailing edges drift on their own like smoke (`smoke` in `wisp-ribbon.tsx`): drift grows from nothing at the shoulder to full at the tip, every point on its own phase, each ribbon and strand on its own seed, over an 8 s loop, so the edge ripples instead of swinging with the flap. Stands still under reduced motion |
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 

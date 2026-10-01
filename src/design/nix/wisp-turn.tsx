@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { CLEAN, RIBBON_REACH, RIBBON_TAIL, SPIRIT_MOTES, STRAND_INNER, type Pt, type SpiritForm } from "./wisp-ribbon";
+import { CLEAN, RIBBON_REACH, RIBBON_TAIL, SEED, smoke, SPIRIT_MOTES, STRAND_INNER, useSmokeClock, type Pt, type SpiritForm } from "./wisp-ribbon";
 import { C } from "./theme";
 
 /**
@@ -124,11 +124,14 @@ type Part = { d: number; el: React.ReactNode };
 const onSide = (pts: readonly Pt[], s: number): P[] => pts.map(([dx, y]) => [100 + dx * s, y]);
 
 /** The ribbons: one pair, flapped as the upper pair is, swept back in depth like the others. */
-function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string): Part[] {
+function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string, t: number): Part[] {
   const fade = form.glow ? GLOW : C.hi;
   return [-1, 1].map((s) => {
     const root: P = [100 + 10 * s, 158];
-    const project = (pts: readonly Pt[]) => onSide(pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
+    /* the trailing edge drifts on its own, per ribbon and strand, before the wing is flapped */
+    const seed = SEED[s < 0 ? "L" : "R"];
+    const project = (pts: readonly Pt[], k = 0) =>
+      onSide(form.smoke ? smoke(pts, t, seed + k) : pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
     const r = project(RIBBON_TAIL);
     const g = `${uid}-tr${s}`;
     const top = wingPoint([100 + 14 * s, 150], root, flap * s, yaw);
@@ -145,7 +148,7 @@ function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string): Part
               <stop offset="1" stopColor={fade} stopOpacity={0} />
             </linearGradient>
           </defs>
-          {form.strands >= 2 && <path d={bez(project(STRAND_INNER))} fill={`url(#${g})`} />}
+          {form.strands >= 2 && <path d={bez(project(STRAND_INNER, 2.3))} fill={`url(#${g})`} />}
           <path d={bez(r)} fill={`url(#${g})`} />
           {form.motes === "dots" &&
             SPIRIT_MOTES.map(([dx, y, rad, o]) => {
@@ -387,8 +390,9 @@ export function WispTurn({
   const flame = `matrix(${fw} 0 ${-0.16 * s} 1 ${100 - 100 * fw + 0.16 * s * 170} 0)`;
   const style = React.useContext(WingStyleContext);
   const form = React.useContext(RibbonFormContext);
+  const t = useSmokeClock(style === "ribbon" && !!form.smoke);
   const parts = [
-    ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid) : wings(yaw, flapU, flapL)),
+    ...(style === "ribbon" ? ribbons(yaw, flapU, form, uid, t) : wings(yaw, flapU, flapL)),
     ...arms(yaw),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
