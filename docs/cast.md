@@ -236,6 +236,8 @@ None is chosen. The eye style is still between Bean and Gumdrop; the marks use p
 
 ## Side characters
 
+**Reset (2026-10-01): the side characters start from scratch.** Every existing side-character drawing is dropped as a design; the drawings described below stay in the studio only until the redraw starts. The proposed world that connects the six — the Lantern Tree, with Nana Rosa as the sixth — and the questions still to answer are in `docs/world.md`. Nothing there is chosen yet.
+
 | # | Character | Ability | Status |
 |---|---|---|---|
 | 1 | Chameleon | Colour change | **Confirmed.** The design itself can still be reworked |
