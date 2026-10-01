@@ -595,13 +595,13 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           </div>
 
           <h2 className="material-heading mt-10 text-lg text-foreground">
-            Spirit — minor variations
+            Spirit — variations
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            The spirit, then five variations that each change one thing: longer tails, tails that
-            curl in toward the flame, a frayed hem, motes as small stars in the glow’s colour, and
-            the ribbon alone. Shown at rest, then in every expression — the spirit must stay
-            friendly at worried and oops.
+            The spirit and Clean, its simplest form; then five that each add one distinctive thing to
+            Clean: tips that turn the glow’s gold, the flame’s lantern bands in the ribbons, a ghost’s
+            scalloped hem, ribbons swept up above the shoulders, and one ribbon blown out by a
+            breeze. Shown at rest, then in every expression.
           </p>
           <MoodSheet
             list={[SPIRIT_BASE_TILE, ...WISP_SPIRITS]}
@@ -746,7 +746,7 @@ export function WispPage({ wings }: { wings: WingStyle }) {
           ...(ribbon
             ? ([
                 ["Ribbon finishes", WISP_RIBBON_FINISHES],
-                ["Spirit — minor variations", WISP_SPIRITS],
+                ["Spirit — variations", WISP_SPIRITS],
               ] as Group[])
             : []),
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],

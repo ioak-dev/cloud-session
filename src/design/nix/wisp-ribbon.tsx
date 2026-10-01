@@ -97,18 +97,26 @@ const SPIRIT_MOTES = [
 
 /**
  * The spirit's shape, so its variations can each change one thing:
- * - `tail`: `out`, curling out like smoke; `long`, reaching past the flame's tip; `in`, curling
- *   back toward the flame.
- * - `strands`: 1, the ribbon alone; 2, a thinner strand inside it; 3, and a wisp off its outer
- *   edge, so the hem frays.
- * - `motes`: fading dots in `C.hi`, fading stars in the glow's colour, or none.
+ * - `tail`: `out`, curling out like smoke; `swept`, rising above the shoulder like a lifted shawl
+ *   before it falls; `hem`, ending in a ghost's scalloped hem instead of one tail.
+ * - `strands`: 1, the ribbon alone; 2, a thinner strand inside it.
+ * - `motes`: fading dots in `C.hi`, or none.
+ * - `glow`: the mist turns the glow's colour as it fades, as if its light leaks out of the ribbon.
+ * - `bands`: two faint amber bands across each ribbon, the flame's lantern rings echoed.
+ * - `breeze`: the right ribbon is caught in a breeze and blown out: an asymmetry, like the curl
+ *   and the flopped antenna.
  */
 export type SpiritForm = {
-  tail: "out" | "long" | "in";
-  strands: 1 | 2 | 3;
-  motes: "dots" | "stars" | "none";
+  tail: "out" | "swept" | "hem";
+  strands: 1 | 2;
+  motes: "dots" | "none";
+  glow?: boolean;
+  bands?: boolean;
+  breeze?: boolean;
 };
 export const SPIRIT: SpiritForm = { tail: "out", strands: 2, motes: "dots" };
+/** The spirit's simplest form: one ribbon each side, nothing inside. */
+export const CLEAN: SpiritForm = { tail: "out", strands: 1, motes: "none" };
 
 type Pt = readonly [number, number];
 /** A closed curve through outward offsets and heights: a start point, then cubic triples. */
@@ -123,28 +131,33 @@ const curve = ([p0, ...rest]: readonly Pt[], X: (dx: number) => number) => {
   return `${d} Z`;
 };
 
-const SPIRIT_TAIL: Record<SpiritForm["tail"], readonly Pt[]> = {
+const SPIRIT_TAIL: Record<SpiritForm["tail"] | "blown", readonly Pt[]> = {
   out: [
     [10, 156], [40, 136], [66, 146], [64, 172], [62, 194], [50, 208], [48, 226],
     [46, 240], [52, 250], [60, 254], [48, 258], [38, 248], [38, 232], [37, 210], [32, 182], [10, 166],
   ],
-  long: [
-    [10, 156], [40, 136], [66, 146], [64, 172], [62, 196], [52, 214], [50, 234],
-    [48, 252], [54, 266], [64, 272], [50, 278], [38, 266], [38, 248], [37, 218], [32, 184], [10, 166],
+  swept: [
+    [10, 156], [28, 122], [58, 112], [66, 138], [72, 162], [54, 200], [50, 224],
+    [48, 240], [54, 250], [60, 254], [48, 258], [38, 248], [38, 232], [37, 210], [32, 182], [10, 166],
   ],
-  in: [
-    [10, 156], [40, 136], [66, 146], [64, 172], [62, 194], [54, 210], [48, 228],
-    [42, 244], [32, 252], [22, 250], [32, 246], [38, 238], [38, 226], [37, 208], [32, 182], [10, 166],
+  hem: [
+    [10, 156], [40, 136], [66, 146], [64, 172], [62, 196], [58, 220], [56, 238],
+    [55, 248], [51, 253], [47, 245], [45, 253], [41, 254], [39, 245],
+    [37, 252], [33, 251], [35, 236], [36, 212], [30, 184], [10, 166],
+  ],
+  /* the out tail with the breeze in it: carried out and up at the end */
+  blown: [
+    [10, 156], [40, 136], [68, 144], [72, 166], [76, 186], [74, 204], [80, 216],
+    [84, 226], [90, 228], [94, 220], [92, 236], [78, 240], [66, 228], [56, 210], [36, 184], [10, 166],
   ],
 };
 const STRAND_INNER: readonly Pt[] = [
   [30, 182], [28, 204], [20, 222], [24, 240], [26, 248], [32, 250], [34, 247],
   [29, 243], [29, 230], [33, 216], [36, 204], [36, 192], [30, 182],
 ];
-const STRAND_OUTER: readonly Pt[] = [
-  [60, 184], [64, 200], [62, 216], [66, 232], [67, 238], [71, 240], [73, 237],
-  [68, 232], [68, 218], [66, 204], [65, 194], [63, 188], [60, 184],
-];
+/** The lantern bands: across the ribbon where it narrows, as the flame's rings cross the flame. */
+const BANDS = (X: (dx: number) => number) =>
+  `M${X(30)} 192 Q${X(48)} 202 ${X(70)} 190 M${X(32)} 214 Q${X(44)} 222 ${X(60)} 210`;
 
 const star = (x: number, y: number, r: number) => {
   const k = r * 0.28;
@@ -165,12 +178,15 @@ export function FinishedRibbons({
   form?: SpiritForm;
 }) {
   const spirit = finish === "spirit";
-  const reach = spirit && form.tail === "long" ? 274 : 256;
+  /* the hem's scallops sit low, so its fade runs longer to keep them */
+  const reach = spirit && form.tail === "hem" ? 300 : 256;
   return (
     <>
       {sides.map(([side, s]) => {
         const X = (dx: number) => 100 + dx * s;
         const g = `${uid}-ribbon-${finish}-${side}`;
+        const tail = form.breeze && s === 1 ? "blown" : form.tail;
+        const fade = spirit && form.glow ? GLOW : C.hi;
         return (
           <g key={side} data-joint={`wing${side}`} style={pivot(`wing${side}`, frame.j)}>
             <defs>
@@ -178,10 +194,10 @@ export function FinishedRibbons({
               <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={X(14)} y1={150} x2={X(44)} y2={spirit ? reach : 228}>
                 <stop offset="0" stopColor={C.soft} stopOpacity={0.95} />
                 <stop offset={spirit ? 0.35 : 0.45} stopColor={C.tint} stopOpacity={0.88} />
-                {/* toward the tip it turns back to the product colour, so a fade still reads on a
-                    pale ground */}
-                {spirit && <stop offset="0.72" stopColor={C.hi} stopOpacity={0.5} />}
-                <stop offset="1" stopColor={spirit ? C.hi : C.soft} stopOpacity={spirit ? 0 : 0.7} />
+                {/* toward the tip it turns back to the product colour (or, glowing, to the glow),
+                    so a fade still reads on a pale ground */}
+                {spirit && <stop offset="0.72" stopColor={fade} stopOpacity={form.glow ? 0.7 : 0.5} />}
+                <stop offset="1" stopColor={spirit ? fade : C.soft} stopOpacity={spirit ? 0 : 0.7} />
               </linearGradient>
             </defs>
             {spirit ? (
@@ -190,19 +206,27 @@ export function FinishedRibbons({
                   /* a thinner strand trailing inside the ribbon, fading sooner */
                   <path d={curve(STRAND_INNER, X)} fill={`url(#${g})`} />
                 )}
-                {form.strands >= 3 && (
-                  /* a wisp coming off the outer edge: the hem frays */
-                  <path d={curve(STRAND_OUTER, X)} fill={`url(#${g})`} />
-                )}
                 {/* the ribbon, longer, its tail curling like smoke */}
-                <path d={curve(SPIRIT_TAIL[form.tail], X)} fill={`url(#${g})`} />
+                <path d={curve(SPIRIT_TAIL[tail], X)} fill={`url(#${g})`} />
+                {form.bands && (
+                  <clipPath id={`${g}-clip`}>
+                    <path d={curve(SPIRIT_TAIL[tail], X)} />
+                  </clipPath>
+                )}
+                {form.bands && (
+                  <path
+                    clipPath={`url(#${g}-clip)`}
+                    d={BANDS(X)}
+                    stroke="var(--char-glow-edge)"
+                    strokeWidth={1.8}
+                    strokeOpacity={0.75}
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                )}
                 {form.motes === "dots" &&
                   SPIRIT_MOTES.map(([dx, y, r, o]) => (
                     <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} opacity={o} />
-                  ))}
-                {form.motes === "stars" &&
-                  SPIRIT_MOTES.map(([dx, y, r, o]) => (
-                    <path key={`${dx}${y}`} d={star(X(dx), y, r * 1.9)} fill={GLOW} opacity={o} />
                   ))}
               </>
             ) : (
@@ -341,43 +365,53 @@ export const WISP_RIBBON_FINISHES: Candidate[] = (
 
 const SPIRIT_BASE = WISP_RIBBON_FINISHES.find((x) => x.id === "wisp-ribbon-spirit")!;
 
-/** Minor variations of the spirit: each changes one thing from it. */
+/**
+ * Variations of the spirit. Clean is the spirit at its simplest; each of the others adds one
+ * distinctive thing to Clean.
+ */
 export const WISP_SPIRITS: Candidate[] = (
   [
     [
-      "long",
-      "Long tails",
-      { ...SPIRIT, tail: "long" },
-      "The tails reach past the flame's tip before they curl out",
-      "Longer, so it trails more like a ghost's hem and the faded tips still reach below the flame at small sizes. The figure gets taller, not wider.",
-    ],
-    [
-      "in",
-      "Curl in",
-      { ...SPIRIT, tail: "in" },
-      "The tails curl back in toward the flame",
-      "The tails turn inward under the body, cupping the flame, so the figure closes into one drop of light: drop head above, drop of mist below. Calmer and more enclosed than curling out.",
-    ],
-    [
-      "frayed",
-      "Frayed",
-      { ...SPIRIT, strands: 3 },
-      "A third strand: a wisp comes off each ribbon's outer edge",
-      "The hem frays: a thin wisp peels off the outer edge of each ribbon as well as the strand inside, so the ribbon reads more as smoke and less as cloth.",
-    ],
-    [
-      "starry",
-      "Starry motes",
-      { ...SPIRIT, motes: "stars" },
-      "The motes are small stars in the glow's colour, fading with the ribbon",
-      "The motes in the ribbon become tiny four-point stars in the firefly's glow, fading as the ribbon fades: its light caught in the mist. Fixed, never twinkling.",
-    ],
-    [
       "clean",
       "Clean",
-      { ...SPIRIT, strands: 1, motes: "none" },
+      CLEAN,
       "The ribbon alone: no inner strand, no motes",
       "The simplest spirit: one ribbon each side, fading to nothing, nothing inside it. The fade does all the work.",
+    ],
+    [
+      "glow",
+      "Glow tips",
+      { ...CLEAN, glow: true },
+      "The mist turns gold as it fades: its light leaking out through the ribbons",
+      "Clean, but as the ribbons fade they turn from the product colour to the glow's gold, as if the firefly's light seeps out through its wings and is left in the air. The ribbons and the flame become one light: the only Wisp whose wings carry its ability.",
+    ],
+    [
+      "bands",
+      "Lantern bands",
+      { ...CLEAN, bands: true },
+      "Two faint amber bands across each ribbon, echoing the flame's rings",
+      "Clean, with the lantern's rings carried up into the ribbons: two faint amber bands across each, where it narrows. Fixed anatomy, like the rings on the flame, so ribbon and flame read as one firefly's body.",
+    ],
+    [
+      "hem",
+      "Ghost hem",
+      { ...CLEAN, tail: "hem" },
+      "Each ribbon ends in a scalloped hem, like a ghost's sheet",
+      "Clean, but each ribbon ends in the classic scalloped hem of a ghost's sheet rather than a single tail: the most immediately 'spirit' shape there is, kept small and soft so it reads friendly.",
+    ],
+    [
+      "swept",
+      "Swept up",
+      { ...CLEAN, tail: "swept" },
+      "The ribbons rise above the shoulders like a lifted shawl before they fall",
+      "Clean, with the ribbons rising above the shoulders, nearly to the cheeks, before they fall and fade: a lifted shawl, or a spirit spreading itself. A new silhouette, taller at the shoulders than any Wisp.",
+    ],
+    [
+      "breeze",
+      "Breeze",
+      { ...CLEAN, breeze: true },
+      "One ribbon caught in a breeze and blown out",
+      "Clean, but the right ribbon is caught in a breeze and blown out, its tail lifted: an asymmetry that belongs with the curl and the flopped antenna, so the whole figure leans one way. At rest it looks mid-drift.",
     ],
   ] as const
 ).map(([key, title, form, signature, pitch]) => ({

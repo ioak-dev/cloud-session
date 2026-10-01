@@ -108,7 +108,15 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): a clone of th
 | No outline · sparkles | The same shaded ribbon with four small fixed four-point stars in the glow's colour: the firefly's light caught in its wings. Never animated, never a highlight |
 | Spirit | The ribbons dissolve: longer, the tails curling out like smoke, a thinner strand trailing inside each, fading from `C.soft` through frost to a last `C.hi` wisp and then nothing. A few motes fade with them. Every edge below the head now dissolves |
 
-**Spirit — minor variations** (`WISP_SPIRITS`; `SpiritForm` in `wisp-ribbon.tsx`), each changing one thing from the spirit: **Long tails** (the tails reach past the flame's tip), **Curl in** (the tails curl back under the body, cupping the flame), **Frayed** (a third wisp peels off each ribbon's outer edge), **Starry motes** (the motes are small fixed stars in the glow's colour) and **Clean** (one ribbon each side, no strand, no motes). The faces stay friendly at worried and oops on all of them. At 48 and 32px, Long tails keeps the most of the hem and Clean has the clearest silhouette; Frayed's outer wisps begin to read as tentacles.
+**Spirit — variations** (`WISP_SPIRITS`; `SpiritForm` in `wisp-ribbon.tsx`). The spirit as drawn and **Clean** (one ribbon each side, no strand, no motes) are kept; long tails, curl in, frayed and starry motes were tried and dropped. Each of the rest adds one distinctive thing to Clean:
+
+| Variation | What it adds | Reads at 48 / 32px |
+|---|---|---|
+| Glow tips | The mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability | Colour only; silhouette as Clean |
+| Lantern bands | Two faint amber bands across each ribbon (clipped to it), echoing the flame's rings | Colour only; silhouette as Clean |
+| Ghost hem | Each ribbon ends in a small, tapered scalloped hem, like a ghost's sheet | Slightly; the scallops merge |
+| Swept up | The ribbons rise above the shoulders, nearly to the cheeks, before they fall | Yes: the widest shoulders of any Wisp |
+| Breeze | The right ribbon is blown out and its tail lifted: an asymmetry with the curl and flopped antenna | Yes: the most distinctive silhouette |
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 
