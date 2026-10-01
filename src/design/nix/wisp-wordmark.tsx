@@ -100,6 +100,14 @@ export const WORDMARKS: Wordmark[] = [
   },
 ];
 
+/**
+ * The wordmark: Gabarito 700, set as lowercase “sparkles” with -0.01em tracking, in the primary
+ * on light grounds and white on dark or on the primary. The other faces are on the References page.
+ */
+export const WORDMARK: Wordmark = WORDMARKS.find((w) => w.id === "gabarito")!;
+/** The faces it was chosen from. */
+export const WORDMARKS_REFERENCE: Wordmark[] = WORDMARKS.filter((w) => w !== WORDMARK);
+
 const HREF = `https://fonts.googleapis.com/css2?${WORDMARKS.map((w) => `family=${w.css}`).join("&")}&display=swap`;
 
 /** Loads the candidates' faces once, only where the sheet is shown. */
@@ -140,13 +148,13 @@ function Lockup({ w }: { w: Wordmark }) {
         </div>
         <div className="flex items-center gap-1.5 rounded-md bg-white p-2">
           <LogoMark logo={APP_ICON} k={K} px={16} />
-          <span style={{ ...font, fontSize: 14, color: K.ink }}>Sparkles</span>
+          <span style={{ ...font, fontSize: 14, color: K.ink }}>sparkles</span>
         </div>
       </div>
       <figcaption className="text-sm">
         <span className="material-heading text-foreground">
           {w.family} {w.weight}
-          {w.kept ? " · top three" : " · new"}
+          {w === WORDMARK ? " · chosen" : w.kept ? " · top three" : ""}
         </span>
         <span className="material mt-1 block text-muted-foreground">{w.note}</span>
       </figcaption>
@@ -154,11 +162,11 @@ function Lockup({ w }: { w: Wordmark }) {
   );
 }
 
-export function WordmarkSheet() {
+export function WordmarkSheet({ list = WORDMARKS }: { list?: Wordmark[] }) {
   useWordmarkFonts();
   return (
     <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2">
-      {WORDMARKS.map((w) => (
+      {list.map((w) => (
         <Lockup key={w.id} w={w} />
       ))}
     </div>

@@ -24,12 +24,12 @@ import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { RIBBON_VARIANTS, withRibbon, type RibbonVariantId } from "./wisp-ribbon";
 import { CLEAN_ARMS, CLEAN_BASE, CLEAN_HEADS, CLEAN_PICK, CLEAN_TAILS } from "./wisp-clean";
-import { EYE_STYLES } from "./wisp-eyes";
+import { BEAN_STYLES, EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
 import { APP_ICON, APP_ICON_FACES, APP_ICON_SET, K_SPARKLES, LOGO_VARIANTS, LOGOS, LOGOS_BUTTERFLY, LogoMark, type K, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
-import { WordmarkSheet } from "./wisp-wordmark";
+import { WORDMARK, WORDMARKS_REFERENCE, WordmarkSheet } from "./wisp-wordmark";
 import { RibbonFormContext, WingStyleContext, type WingStyle } from "./wisp-turn";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
@@ -547,6 +547,14 @@ const RIBBON_LINES = Object.fromEntries(RIBBON_VARIANTS.map((v) => [v.id, ribbon
   Line
 >;
 
+/** The softer Beans on the main character: only the eye kit changes. */
+const BEAN_ON_MAIN: Candidate[] = BEAN_STYLES.map((e) => ({
+  ...CLEAN_PICK,
+  id: `${CLEAN_PICK.id}-${e.id}`,
+  label: `Wisp · ${e.label}`,
+  face: { ...CLEAN_PICK.face, kit: e.kit, eyeSize: 1, eyeGap: 20, eyeY: 107 },
+}));
+
 const REFERENCE_GROUPS: Group[] = [
   ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
   ["Reference — Pip", PIP_FAMILY],
@@ -670,16 +678,20 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         </div>
 
         <h3 className="material-heading mt-8 text-base text-foreground">
-          Wordmark — candidates beside the icon
+          Wordmark: {WORDMARK.family} {WORDMARK.weight} (chosen)
         </h3>
         <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-          The top three so far — M PLUS Rounded 1c, Gabarito, Figtree — and five fresh faces for
-          “sparkles”, all chosen to fit the mark: round bowls, round or soft
-          terminals like the antennae’s caps, a stroke near the stalks’ weight, and open letters
-          that stay legible for a child and at small sizes. Each is shown beside the icon on white,
-          on dark, reversed on the primary, and at 16px. All are on Google Fonts under the OFL.
+          “sparkles”, set in lowercase in {WORDMARK.family} {WORDMARK.weight} with −0.01em
+          tracking: in the primary on light grounds, white on dark and on the primary. Geometric
+          with soft, round counters and a little bounce, so it sits beside the round, solid mark
+          without competing with it. Shown beside the icon on white, on dark, on the primary and at
+          16px. The faces it was chosen from are on the{" "}
+          <a href="#/references" className="text-foreground underline">
+            References
+          </a>{" "}
+          page.
         </p>
-        <WordmarkSheet />
+        <WordmarkSheet list={[WORDMARK]} />
 
         <h3 className="material-heading mt-8 text-base text-foreground">
           The other proposals (not chosen)
@@ -829,6 +841,62 @@ export function WispPage({ wings }: { wings: WingStyle }) {
         </table>
       </div>
 
+      {ribbon && (
+        <>
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            Bean, softer — on Wisp (proposals)
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            Bean’s acting with a lighter hand. What made it chunky is its line — a 4.2 ink brow of
+            even weight, a 1.8 ink rim round each eye, a 2.6 lash — not its acting: the roaming
+            pupil, the lids and the brows’ tilt and lift are the same table in every variant, so
+            each is as expressive. Soft lightens every line; Feather tapers the brows to round
+            tips; Blue brows draws Feather’s brows in the body’s deep blue; Round makes the eye
+            rounder with a bigger pupil and two shines. Shown on Wisp, at rest and in every
+            expression.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {BEAN_ON_MAIN.map((x, i) => (
+              <figure key={x.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+                <NixFigure c={x} className="h-56 w-full" />
+                <figcaption className="text-sm">
+                  <span className="material-heading text-foreground">{BEAN_STYLES[i].label}</span>
+                  <span className="material mt-1 block text-muted-foreground">{BEAN_STYLES[i].note}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <div className="mt-3 overflow-x-auto">
+            <table className="border-separate border-spacing-1">
+              <thead>
+                <tr>
+                  <th />
+                  {ALL_MOODS.map((m) => (
+                    <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                      {m.title}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {BEAN_ON_MAIN.map((x, i) => (
+                  <tr key={x.id} data-bean={BEAN_STYLES[i].id}>
+                    <th className="instrument pr-2 text-left text-xs font-normal text-foreground">
+                      {BEAN_STYLES[i].label}
+                    </th>
+                    {ALL_MOODS.map((m) => (
+                      <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                        <NixFigure c={x} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
       <h2 className="material-heading mt-10 text-lg text-foreground">Wisp, warmer — acting</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
         What kept it laid back: it floated level and centred, on one slow even beat, always looking
@@ -875,6 +943,16 @@ export function ReferencesPage() {
         Drawings kept as reference, not candidates: the other wispy directions, Pip and the earlier
         fireflies. Wisp and its ribbon wings are on their own pages.
       </p>
+      <h2 className="material-heading mt-10 text-lg text-foreground">
+        Reference — wordmark candidates
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        The faces the wordmark was chosen from; {WORDMARK.family} {WORDMARK.weight} is on the Wisp
+        page. The top three were M PLUS Rounded 1c, Gabarito and Figtree. Earlier rounds:{" "}
+        <code>docs/logo/wordmarks.png</code> and <code>wordmarks-2.png</code>.
+      </p>
+      <WordmarkSheet list={WORDMARKS_REFERENCE} />
+
       <h2 className="material-heading mt-10 text-lg text-foreground">
         Reference — ribbon variants
       </h2>

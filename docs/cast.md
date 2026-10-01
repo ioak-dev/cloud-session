@@ -149,6 +149,15 @@ The Wisp page (`#/wisp`) shows the main character on its ribbons; Wisp with two 
 
 The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference. **Recommended: Bean.** Wisp's one job on the sign-up form is to watch: its eyes follow the text as it is typed, and look away at the password. Bean's pupil moves inside a white eye, so where it looks reads at a glance, even small; Gumdrop's solid eyes show a glance only by their shine and shape. Bean also has the widest acting range (side-eye, a pinprick of shock), and its white eyes with ink pupils are the icon face that keeps white and still reads (Glow · Light · Bean eyes). The risk is Duolingo: keep Bean's whites tall ovals with small round pupils, never Duo's big round whites. Gumdrop is the runner-up: the cutest and the best at the smallest sizes, if gaze matters less than charm.
 
+**Bean, softer — proposals** (`BEAN_STYLES` in `wisp-eyes.tsx`; on the Wisp page, on the main character, at rest and in every expression). Bean read as chunky because of its line, not its acting: a 4.2 ink brow of even weight, a 1.8 ink rim round each eye, a 2.6 lash. Every variant keeps the same acting table (`act`): the roaming pupil, the lids, the brows' tilt and lift, so each is as expressive.
+
+| Variant | What changes |
+|---|---|
+| Soft | Every line lighter: the rim a translucent hairline (`C.line`, 1.1), brows 2.8, lash 1.8 |
+| Feather | Soft's rim and lash; the brows tapered, full in the middle and thinning to round tips, like a brush stroke |
+| Blue brows | Feather's brows in the body's own deep blue (`C.deep`) instead of ink: only the pupils and mouth are dark |
+| Round | A rounder eye with a bigger pupil and a second small shine, rimmed in the face's own blue (`C.hi`), tapered brows. Youngest; the pupil has less room to roam |
+
 **Wisp, warmer — acting (proposals).** What kept Wisp laid back, and what the acting does about it:
 
 | What was missing | What the warmer does now |
@@ -255,7 +264,9 @@ Glow · Light is chosen (above). The eye style is still between Bean and Gumdrop
 
 **The icon's face — ink, white, or Bean's white eyes** (`APP_ICON_FACES` in `wisp-logo.tsx`; `docs/logo/app-icon-faces.png`). Asked: white eyes and mouth. Drawn as **Glow · Light · White face**: white on the glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and is gone at 16px. The alternative that keeps white in the face is **Glow · Light · Bean eyes**: white eyes, each with an ink pupil, and an ink smile; the pupils carry the contrast (ink on white 16.4:1, on the glow 11.1:1), so it holds at every size, and it is the Bean eye style, one of the two left for the character. Undecided between ink (as chosen) and Bean eyes; white alone is not recommended.
 
-**Wordmark — candidates: the top three and round three** (`src/design/nix/wisp-wordmark.tsx`, `WORDMARKS`; shown on the Wisp page beside the chosen icon; `docs/logo/wordmarks-3.png`). Chosen to fit the mark: round bowls, round or soft terminals like the antennae's caps, a stroke near the stalks' weight, open letters that stay legible for a child and at 16px. Each is set in lowercase beside the icon on white, on dark, reversed on the primary, and at 16px; all on Google Fonts under the OFL.
+**Wordmark — chosen: Gabarito 700** (`WORDMARK` in `wisp-wordmark.tsx`). “sparkles” set in lowercase, always, with −0.01em tracking: in the primary on light grounds, white on dark and on the primary. Geometric with soft, round counters and a little bounce, so it sits beside the round, solid icon without competing with it. The Wisp page shows it beside the icon on white, dark, the primary and at 16px; every other face is on the References page.
+
+**Wordmark — the candidates it was chosen from: the top three and round three** (`src/design/nix/wisp-wordmark.tsx`, `WORDMARKS`; shown on the Wisp page beside the chosen icon; `docs/logo/wordmarks-3.png`). Chosen to fit the mark: round bowls, round or soft terminals like the antennae's caps, a stroke near the stalks' weight, open letters that stay legible for a child and at 16px. Each is set in lowercase beside the icon on white, on dark, reversed on the primary, and at 16px; all on Google Fonts under the OFL.
 
 | Face | | Fit |
 |---|---|---|
@@ -268,7 +279,7 @@ Glow · Light is chosen (above). The eye style is still between Bean and Gumdrop
 | Plus Jakarta Sans 800 | New | Friendly modern sans, round bowls, slightly bouncy; confident for parents and teachers |
 | Bricolage Grotesque 700 | New | The most character: ink-trap quirks, hand-made warmth; less round, check it at small sizes |
 
-Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperlegible Next) are dropped; `docs/logo/wordmarks-2.png` keeps that round. None is chosen.
+Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperlegible Next) are dropped; `docs/logo/wordmarks-2.png` keeps that round. Gabarito 700 is chosen (above).
 
 **Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 

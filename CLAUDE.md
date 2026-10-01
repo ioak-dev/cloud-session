@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, the main character: Wisp on its ribbon wings, Clean, with the Core tail and Snug's thicker arms, which its turnaround, flight and form draw too; then the proposals they were picked from, its app icon proposals, warmer proposals, eye styles and acting; the old `#/ribbon` link opens it), **Side characters** (`#/side`), **References** (`#/references`, the ribbon variants not chosen, Glow tips and Spirit, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
+`npm start` runs `node studio.mjs`, which serves the studio at http://127.0.0.1:5173. It has four pages, switched in the header: **Wisp** (`#/wisp`, the main character: Wisp on its ribbon wings, Clean, with the Core tail and Snug's thicker arms, which its turnaround, flight and form draw too; then the proposals they were picked from, its app icon proposals, warmer proposals, eye styles and acting; the old `#/ribbon` link opens it), **Side characters** (`#/side`), **References** (`#/references`, the wordmark candidates not chosen, the ribbon variants not chosen, Glow tips and Spirit, then the wispy directions, Pip and the earlier fireflies) and **Wisp · Butterfly (reference)** (`#/butterfly`, the same page with Wisp's two pairs of spotted wings, kept as an alternate main character). Light, dark, and system change the ground only. The colour schemes and the clothes switch in the header recolour every firefly at once.
 
 `npm run typecheck` is `tsc --noEmit`.
 
@@ -25,8 +25,8 @@ npm start
 | `src/design/nix/wisp-warm.tsx` | Wisp, warmer: five proposed variations (Hearth, Scamp, Moony, Snug, and the four combined); Wisp itself unchanged |
 | `src/design/nix/wisp-ribbon.tsx` | Wisp's ribbon wings: the three kept variants (Clean, chosen; Glow tips and Spirit, reference) and `withRibbon`, which puts them on any Wisp |
 | `src/design/nix/wisp-clean.tsx` | Proposals on Clean: tail patterns (Lantern, Core), head shapes (Candle, Dewdrop) and Snug's thicker arms; `CLEAN_PICK`, the main character (Clean ribbons, Core tail, Snug arms, drop head) |
-| `src/design/nix/wisp-wordmark.tsx` | Wordmark candidates for “sparkles” (round two: eight Google Fonts faces), set beside the chosen app icon |
-| `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression |
+| `src/design/nix/wisp-wordmark.tsx` | The wordmark: Gabarito 700, lowercase “sparkles”, −0.01em (`WORDMARK`), beside the app icon on the Wisp page; the faces it was chosen from (`WORDMARKS_REFERENCE`) on the References page |
+| `src/design/nix/wisp-eyes.tsx` | Eye styles proposed for Wisp, warmer: Honey, Bean, Gumdrop, Lidded, Starry, each for every expression; Bean, softer (`BEAN_STYLES`: Soft, Feather, Blue brows, Round), shown on the main character |
 | `src/design/nix/wisp-acts.tsx` | Wisp, warmer acting (proposals): its alive idle, a surprise take, a sneak peek, a hiccup, lights out, password eyes-shut |
 | `src/design/nix/wisp-form.tsx` | Wisp on the sign-up form: hops between fields, watches you type, turns its back for the password |
 | `src/design/nix/wisp-logo.tsx` | The app icon: Glow · Light, chosen (`APP_ICON`, with its round and one-colour shapes in `APP_ICON_SET`); the proposals it was chosen from (Drop, Glow, Peek, Ember and variations on Drop and Glow; Figure and Flight, retired with the butterfly wings), each with a favicon-size drawing; `npm run logos` exports them to `docs/logo/`, the chosen set as `app-icon*.svg` |
