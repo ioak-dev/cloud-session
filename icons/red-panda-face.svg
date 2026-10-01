@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sparkles — red panda face">
+<title>Sparkles — red panda face</title>
+<defs><radialGradient id="glow"><stop offset="0" stop-color="#ffe25a" stop-opacity=".75"/><stop offset=".45" stop-color="#ffd34d" stop-opacity=".35"/><stop offset="1" stop-color="#ffd34d" stop-opacity="0"/></radialGradient></defs>
+<rect width="512" height="512" rx="112" fill="#3b3752"/>
+<g transform="translate(256 256) scale(3.3) translate(-100 -88)">
+<g><path d="M52 84 C42 60 50 40 66 36 C80 46 84 62 78 74 Z" fill="#c25a2c" stroke="#2a1d22" stroke-width="3.6" stroke-linejoin="round"/><path d="M59 76 C55 62 59 50 66 46 C73 54 75 64 72 72 Z" fill="#f7e7d3"/></g>
+<g transform="translate(200 0) scale(-1 1)"><path d="M52 84 C42 60 50 40 66 36 C80 46 84 62 78 74 Z" fill="#c25a2c" stroke="#2a1d22" stroke-width="3.6" stroke-linejoin="round"/><path d="M59 76 C55 62 59 50 66 46 C73 54 75 64 72 72 Z" fill="#f7e7d3"/></g>
+<path d="M56 96 C56 64 76 54 100 54 C124 54 144 64 144 96 L154 106 L144 111 L152 121 L139 124 C130 136 116 140 100 140 C84 140 70 136 61 124 L48 121 L56 111 L46 106 Z" fill="#c25a2c" stroke="#2a1d22" stroke-width="3.6" stroke-linejoin="round"/>
+<path d="M50 112 L58 110 L52 120 L62 122 C66 128 72 132 78 134 C70 122 70 110 64 104 Z" fill="#f7e7d3"/>
+<path d="M150 112 L142 110 L148 120 L138 122 C134 128 128 132 122 134 C130 122 130 110 136 104 Z" fill="#f7e7d3"/>
+<ellipse cx="82" cy="81" rx="9.5" ry="5.6" fill="#f7e7d3"/><ellipse cx="118" cy="81" rx="9.5" ry="5.6" fill="#f7e7d3"/>
+<path d="M76 114 C78 102 90 100 100 104 C110 100 122 102 124 114 C124 128 112 136 100 136 C88 136 76 128 76 114 Z" fill="#f7e7d3"/>
+<path d="M81 104 Q78 116 83 128 M119 104 Q122 116 117 128" stroke="#8e3a18" stroke-width="6" fill="none" stroke-linecap="round"/>
+<!--d--><ellipse cx="72" cy="114" rx="5" ry="3" fill="#f39a8a" opacity=".6"/><ellipse cx="128" cy="114" rx="5" ry="3" fill="#f39a8a" opacity=".6"/><!--/d-->
+<ellipse cx="83" cy="97" rx="7" ry="8.4" fill="#2a1d22"/><circle cx="80.6" cy="93.8" r="2.7" fill="#fffdf8"/><ellipse cx="117" cy="97" rx="7" ry="8.4" fill="#2a1d22"/><circle cx="114.6" cy="93.8" r="2.7" fill="#fffdf8"/>
+<path d="M93 108 Q100 104.5 107 108 Q105 115 100 115 Q95 115 93 108 Z" fill="#2a1d22"/>
+<path d="M100 115 V119 M93 119 Q96.5 123.5 100 119 Q103.5 123.5 107 119" stroke="#2a1d22" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</g>
+</svg>

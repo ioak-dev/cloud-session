@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sparkles icon marks</title>
+<link rel="icon" href="firefly-glow-small.svg">
+<style>
+  :root { --bg: #f6f3ee; --fg: #2a1d22; --muted: #6b6168; --card: #fffdf8; --line: #e6dfd6; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #17161c; --fg: #f1ece6; --muted: #a39ca3; --card: #211f28; --line: #34313d; } }
+  :root[data-theme="dark"] { --bg: #17161c; --fg: #f1ece6; --muted: #a39ca3; --card: #211f28; --line: #34313d; }
+  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  button { font: inherit; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 2px; }
+  .card p { font-size: 13px; margin: 0 0 12px; }
+  .row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .row img { display: block; }
+  .row small { display: block; color: var(--muted); font-size: 11px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sparkles icon marks</h1>
+  <p>Two marks per animal. The large tile uses <code>name.svg</code>; 64 px and under use <code>name-small.svg</code>, which is zoomed in with thicker outlines and no blush or fine lines.
+     <button id="t" type="button">Toggle ground</button></p>
+  <div class="grid" id="g"></div>
+</main>
+<script>
+  const marks = [
+    ["otter-pebble", "Otter · pebble", "Head with the glowing pebble on its cord. Plum tile."],
+    ["otter-holding", "Otter · holding", "Paws clutching the pebble under the chin. Cream tile."],
+    ["red-panda-face", "Red panda · face", "Flared cheeks, tear marks, cream brows. Strongest at 16 px."],
+    ["red-panda-tail", "Red panda · tail S", "The ringed tail bent into an S, for Sparkles. Abstract."],
+    ["firefly-face", "Firefly · face", "Round face, glowing antenna tips, night tile."],
+    ["firefly-glow", "Firefly · glow", "Whole firefly; the glowing tail with a spark is the mark."],
+    ["chameleon-face", "Chameleon · face", "Turret eyes looking two ways, crest on top."],
+    ["chameleon-curl", "Chameleon · curl", "Body coiled into the spiral tail, one turret eye."],
+  ];
+  document.getElementById("g").innerHTML = marks.map(([id, name, note]) => `
+    <section class="card"><h2>${name}</h2><p>${note}</p><div class="row">
+      <div><img src="${id}.svg" width="128" height="128" alt=""><small>128</small></div>
+      ${[64, 32, 16].map((s) => `<div><img src="${id}-small.svg" width="${s}" height="${s}" alt=""><small>${s}</small></div>`).join("")}
+    </div></section>`).join("");
+  document.getElementById("t").onclick = () => {
+    const r = document.documentElement;
+    const dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    r.dataset.theme = dark ? "light" : "dark";
+  };
+</script>
+</body>
+</html>
