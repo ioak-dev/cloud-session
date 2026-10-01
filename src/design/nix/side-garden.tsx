@@ -48,7 +48,7 @@ const BUN = cute("bun", {
   torso: "M82 152 Q100 144 118 152 Q128 162 127 186 Q125 222 100 222 Q75 222 73 186 Q72 162 82 152 Z",
   w: { upper: 13, fore: 12, thigh: 17, shin: 16, hand: 8.4, cloth: 1.15 },
   j: { earL: [86, 74], earR: [114, 74], tail: [110, 252] },
-  headVB: "8 0 184 184",
+  headVB: "6 8 192 192",
 });
 
 /** How each ear sits in each mood: [left, right] turn in degrees (outward positive), and whether

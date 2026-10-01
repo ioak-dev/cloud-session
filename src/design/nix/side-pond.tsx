@@ -17,6 +17,7 @@ import {
   pal,
   PERSON_OUTFITS,
   sides,
+  SMILE,
   mirror,
   talk,
   Two,
@@ -25,7 +26,7 @@ import {
 } from "./observatory";
 import type { Mood } from "./rig/face";
 import { EYE_WHITE, line, OpenMouth, TONGUE_PINK, type MouthKit } from "./rig/eyes";
-import { pivot } from "./rig/skeleton";
+import { CHIBI, J, pivot, type Body } from "./rig/skeleton";
 import { SHAPE } from "./rig/visemes";
 import { GARDEN } from "./side-garden";
 import { C } from "./theme";
@@ -45,70 +46,131 @@ const HERON_DARK = mix(C.deep, INK, 55);
 const BEAK = C.accent;
 const BEAK_SHADE = C.accentDeep;
 
-const MARLOWE = {
-  ...cute("marlowe", {
-    k: 1.3,
-    neck: 178,
-    torso: "M84 154 Q100 144 118 152 Q130 166 126 192 Q120 218 100 220 Q80 218 76 194 Q72 168 84 154 Z",
-    w: { upper: 12, fore: 11, thigh: 5.4, shin: 4.8, hand: 7.4, cloth: 1 },
-    j: { hipL: [94, 254], kneeL: [93, 264], footL: [92, 273], hipR: [106, 254], kneeR: [107, 264], footR: [108, 273], earL: [112, 70], earR: [118, 74] },
-    headVB: "22 26 160 160",
-  }),
-  /* the long neck, white down its front */
-  neck: { x: 94, y: 168, w: 12, h: 34 },
+/** Marlowe stands on his own body: long thin legs, an egg of a body with a tail, an S of a neck,
+ *  a head on top — the one tall shape in a cast of round ones. */
+const MARLOWE_TORSO_FIT = "translate(100 176) scale(1.05 0.7) translate(-100 -148)";
+const MARLOWE_UNFIT = "translate(100 148) scale(0.95238 1.42857) translate(-100 -176)";
+
+const MARLOWE: Body = {
+  ...CHIBI,
+  id: "marlowe",
+  j: {
+    ...J,
+    root: [100, 284],
+    torso: [100, 212],
+    head: [100, 148],
+    shoulderL: [84, 190],
+    elbowL: [79, 206],
+    wristL: [78, 220],
+    shoulderR: [116, 190],
+    elbowR: [121, 206],
+    wristR: [122, 220],
+    hipL: [95, 222],
+    kneeL: [94, 248],
+    footL: [93, 273],
+    hipR: [105, 222],
+    kneeR: [106, 248],
+    footR: [107, 273],
+    tail: [128, 214],
+    earL: [116, 84],
+    earR: [116, 84],
+  },
+  headFit: "translate(100 148) scale(1.22) translate(-100 -150)",
+  torsoFit: MARLOWE_TORSO_FIT,
+  hemFit: MARLOWE_TORSO_FIT,
+  handsFit: "translate(100 196) scale(0.85) translate(-100 -158)",
+  packFit: "translate(0 2)",
+  torso: "M80 152 Q100 140 122 150 Q138 160 142 178 L156 200 Q136 204 126 210 Q112 222 96 222 Q78 218 74 196 Q70 168 80 152 Z",
+  headVB: "30 34 156 156",
+  w: { upper: 12, fore: 11, thigh: 5.2, shin: 4.6, hand: 5.6, cloth: 0.9 },
+  neck: { x: 100, y: 150, w: 0, h: 0 },
 };
 
 function MarloweHead() {
   return (
     <g>
-      {/* two long plumes trailing from the back of his crown: his silhouette */}
+      {/* two long plumes from the back of his crown, on a joint so they lift and droop */}
       <g data-joint="earL" style={pivot("earL", MARLOWE.j)}>
-        <path d="M112 76 C132 66 152 68 172 80" {...line(HERON_DARK, 5)} />
-        <path d="M116 80 C134 74 150 78 164 90" {...line(HERON_DARK, 3.6)} />
+        <path d="M112 80 C130 70 150 70 168 80" {...line(HERON_DARK, 5)} />
+        <path d="M114 86 C130 80 146 82 160 92" {...line(HERON_DARK, 3.4)} />
       </g>
-      <Two d={blob(100, 108, 36, 34, 1.02)} fill={HERON} shade={HERON_SHADE} k={2} />
-      {/* a white face and the black stripe over the eye that runs back into the plumes */}
-      <path d={blob(100, 120, 28, 22, 1.02)} fill={FACE} />
-      <path d="M70 92 Q100 82 130 90 Q118 86 100 88 Q84 90 70 98 Z" fill={HERON_DARK} />
+      <Two d={blob(100, 106, 37, 34, 1.04)} fill={HERON} shade={HERON_SHADE} k={2} />
+      {/* a white face and throat, and the dark stripe over each eye running back into the plumes */}
+      <path d={blob(100, 118, 30, 22, 1.04)} fill={FACE} />
+      {sides.map(([side, s]) => (
+        <path key={side} d={`M${mirror(s, 92)} 94 Q${mirror(s, 78)} 88 ${mirror(s, 64)} 96 Q${mirror(s, 78)} 92 ${mirror(s, 90)} 98 Z`} fill={HERON_DARK} />
+      ))}
+    </g>
+  );
+}
+
+/** In the torso's space: his S of a neck, white down the front, and the long plumes hanging from
+ *  its base like a beard. */
+function MarloweNeck() {
+  return (
+    <g transform={MARLOWE_UNFIT}>
+      <path d="M91 194 C84 176 98 166 92 138 L108 138 C114 166 102 176 110 194 Z" fill={HERON} />
+      <path d="M97 192 C92 178 102 168 98 140 L104 140 C108 168 100 178 104 192 Z" fill={FACE} />
+      <g {...line(FACE, 2.4)}>
+        <path d="M96 190 Q94 202 90 212" />
+        <path d="M100 191 Q100 204 98 216" />
+        <path d="M104 190 Q106 202 108 212" />
+      </g>
     </g>
   );
 }
 
 const marloweEyes = eyesOf({
-  rx: 7,
-  ry: 7.6,
-  fill: mix(C.accent, "white", 40),
-  pupil: { r: 3.4 },
-  shine: 1.8,
+  rx: 7.8,
+  ry: 8.4,
+  fill: mix(C.accent, "white", 35),
+  pupil: { r: 3.6 },
+  shine: 2,
   lid: HERON,
   closed: INK,
-  browY: 13,
+  browY: 14,
   /* long, drooping old-professor brows */
   brow: ({ x, y, s, raise, tilt }) => {
     const by = y - raise;
-    return <path d={`M${x - s * 7} ${by - 1} Q${x} ${by - 3} ${x + s * 9} ${by + 3}`} {...line(FACE, 3.2)} transform={`rotate(${s * tilt} ${x} ${by})`} />;
+    return <path d={`M${x - s * 8} ${by - 1} Q${x} ${by - 3.4} ${x + s * 10} ${by + 3.4}`} {...line(FACE, 3.4)} transform={`rotate(${s * tilt} ${x} ${by})`} />;
   },
-  /* dry: lids half down, one brow a little higher */
-  rest: { top: 0.4, raise: 1, browTilt: -4, k: [1, 1.04] },
+  /* dry: lids half down, the right brow a little higher */
+  rest: { top: 0.36, raise: 1, browTilt: -4, k: [1, 1.05] },
 });
 
-/** Marlowe: a long beak angled off to one side; he talks by dropping the lower half on its hinge. */
+/** Marlowe: a long beak held off to one side, so his face reads three-quarter; a ridge down the
+ *  top, a nostril, and a lower half that drops on its hinge to talk. A smile shows at the gape. */
 const marloweMouth: MouthKit = ({ mood, y, viseme }) => {
-  const beak = (open: number) => (
+  const beak = (open: number, smile = 0) => (
     <g>
-      <path d={`M93 ${y - 2} Q116 ${y + 6} 150 ${y + 26} Q118 ${y + 12 + open * 1.6} 95 ${y + 6 + open}`} fill={BEAK_SHADE} />
-      {open > 0.4 && <path d={`M95 ${y + 2} L146 ${y + 23} L95 ${y + 4 + open}`} fill={MOUTH_IN} />}
-      <path d={`M92 ${y - 6} Q100 ${y - 8} 108 ${y - 4} Q124 ${y + 6} 152 ${y + 24} Q120 ${y + 12} 94 ${y + 3} Q90 ${y - 1} 92 ${y - 6} Z`} fill={BEAK} />
+      {open > 0.4 && <path d={`M94 ${y + 1} L144 ${y + 20} L95 ${y + 4 + open}`} fill={MOUTH_IN} />}
+      <path
+        d={`M94 ${y + 2} Q120 ${y + 12 + open * 1.4} 142 ${y + 22 + open * 0.6} Q144 ${y + 24 + open * 0.6} 140 ${y + 24 + open * 0.6} Q118 ${y + 18 + open * 1.4} 95 ${y + 7 + open} Z`}
+        fill={BEAK_SHADE}
+      />
+      <path
+        d={`M90 ${y - 6} Q100 ${y - 10} 110 ${y - 6} Q128 ${y + 2} 148 ${y + 18} Q151 ${y + 22} 146 ${y + 21} Q124 ${y + 10} 92 ${y + 2} Q88 ${y - 2} 90 ${y - 6} Z`}
+        fill={BEAK}
+      />
+      <path d={`M100 ${y - 6} Q122 ${y + 1} 142 ${y + 15}`} {...line(BEAK_SHADE, 1.4)} opacity={0.55} />
+      <path d={`M104 ${y - 3} l6 2`} {...line(BEAK_SHADE, 1.6)} />
+      {smile !== 0 && <path d={`M91 ${y + 1} q-4 ${smile * 1.2} -7 ${smile * 0.4}`} {...line(HERON_SHADE, 2)} />}
     </g>
   );
-  if (viseme) return beak(SHAPE[viseme].h * 7);
+  if (viseme) return beak(SHAPE[viseme].h * 7, (SMILE[mood] ?? 0) > 1 ? -2 : 0);
   switch (mood) {
     case "happy":
+      return beak(1.6, -2.4);
+    case "delighted":
+      return beak(6, -3);
     case "curious":
       return beak(2.4);
-    case "delighted":
     case "oops":
-      return beak(5);
+      return beak(4, 2);
+    case "worried":
+      return beak(0, 2.4);
+    case "wink":
+      return beak(0, -2.4);
     default:
       return beak(0);
   }
@@ -141,7 +203,7 @@ const INES = cute("ines", {
   neck: 200,
   torso: "M84 150 Q100 146 116 150 Q124 156 123 172 L120 210 Q118 220 100 220 Q82 220 80 210 L77 172 Q76 156 84 150 Z",
   w: { upper: 11.5, fore: 10.5, thigh: 13, shin: 12, hand: 7.4, cloth: 1 },
-  headVB: "14 14 172 172",
+  headVB: "18 32 164 164",
 });
 
 function InesBack() {
@@ -338,7 +400,7 @@ const OLLIE = cute("ollie", {
   k: 1.04,
   neck: 258,
   torso: "M86 186 Q100 180 114 186 L116 218 Q100 224 84 218 Z",
-  headVB: "16 70 172 172",
+  headVB: "22 112 156 156",
 });
 
 function OllieBehind() {
@@ -375,15 +437,15 @@ function OllieHead({ mood }: Ctx) {
 }
 
 const ollieEyes = eyesOf({
-  rx: 9,
-  ry: 10,
+  rx: 11,
+  ry: 12.4,
   fill: INK,
-  iris: { r: 6.4, color: mix(C.primary, INK, 50) },
+  iris: { r: 8, color: mix(C.primary, INK, 50) },
   pupil: { r: 0 },
-  shine: 3,
+  shine: 3.6,
   lid: SNAIL,
   closed: INK,
-  browY: 15,
+  browY: 18,
   brow: dashBrow(SNAIL_SHADE, 3, 4),
   /* shy and careful: brows up at the middle */
   rest: { raise: 1, browTilt: 14, look: [0, 1] },
@@ -392,22 +454,26 @@ const ollieEyes = eyesOf({
 /** Ollie: a small soft mouth; it opens round and slow. */
 const ollieMouth: MouthKit = ({ mood, y, viseme }) => {
   const c = SNAIL_SHADE;
-  if (viseme) return talk(viseme, mood, y, { W: 7, H: 6.4, inside: MOUTH_IN, lip: c, lipW: 2.2 });
+  if (viseme) return talk(viseme, mood, y, { W: 9, H: 8, inside: MOUTH_IN, lip: c, lipW: 2.6 });
   switch (mood) {
     case "happy":
-      return <OpenMouth d={dMouth(y, 6.4, 5)} fill={MOUTH_IN} tongue={[100, y + 7, 3.4, 2.2]} />;
+      return <OpenMouth d={dMouth(y, 8, 6)} fill={MOUTH_IN} tongue={[100, y + 8.4, 4.2, 2.6]} />;
     case "delighted":
-      return <OpenMouth d={dMouth(y - 1, 8, 7)} fill={MOUTH_IN} tongue={[100, y + 9, 4.4, 2.8]} />;
+      return <OpenMouth d={dMouth(y - 1, 10, 9)} fill={MOUTH_IN} tongue={[100, y + 12, 5.4, 3.4]} />;
     case "curious":
+      return <ellipse cx={101} cy={y + 2.4} rx={3.2} ry={4} fill={MOUTH_IN} />;
     case "oops":
-      return <ellipse cx={100} cy={y + 2} rx={2.6} ry={3.2} fill={MOUTH_IN} />;
+      return <OpenMouth d={`M93 ${y + 4} Q100 ${y - 2} 107 ${y + 4} Q100 ${y + 2} 93 ${y + 4} Z`} fill={MOUTH_IN} />;
     case "worried":
-      return <path d={wave(y + 2, 5, 2)} {...line(c, 2.2)} />;
+      return <path d={wave(y + 2, 6.4, 2.4)} {...line(c, 2.6)} />;
     case "thinking":
+      return <path d={`M95 ${y + 2} Q101 ${y + 3} 107 ${y - 1}`} {...line(c, 2.6)} />;
     case "focused":
-      return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(c, 2.2)} />;
+      return <path d={`M95 ${y + 1} L105 ${y + 1}`} {...line(c, 2.6)} />;
+    case "wink":
+      return <path d={`M93 ${y} Q100 ${y + 6} 107 ${y - 1}`} {...line(c, 2.6)} />;
     default:
-      return <path d={`M95 ${y} Q100 ${y + 4} 105 ${y}`} {...line(c, 2.2)} />;
+      return <path d={`M94 ${y} Q100 ${y + 5} 106 ${y}`} {...line(c, 2.6)} />;
   }
 };
 
@@ -422,20 +488,29 @@ const NEW_FOUR: Candidate[] = [
     attitude: {
       mood: "neutral",
       tilt: -4,
-      hands: { L: [92, 204], R: [108, 204], outL: false, outR: false },
+      hands: { L: [78, 212], R: [122, 212], outL: true, outR: true },
     },
     label: "Marlowe",
     signature: "A tall, thin old heron with a long yellow beak and two plumes trailing back — his neck stretches",
     pitch:
       "The grown-up who keeps the pond school: tall, thin, patient and dry, the one tall shape in a cast of round ones. Wants the young ones to slow down and look properly; the flaw is that he takes so long to say it that they've usually run off. At rest he stands with his wings folded, lids half down, one brow a little higher than the other. Species-true: a long dagger of a beak (held off to one side so it reads face-on), a white face and neck front, a black stripe over the eye that runs back into two long plumes, yellow eyes, long thin legs. His ability is Long reach: his neck stretches to reach anything, anywhere.",
     risk: "Dry, never cold: on an incorrect answer he is the gentlest of all. The beak must never point at the learner.",
-    pal: pal(HERON, HERON, { skin: FACE, skinShade: HERON_SHADE, limb: HERON, paw: HERON, shoe: BEAK_SHADE, blush: "#f3a0b0" }),
+    pal: pal(HERON, HERON, { skin: FACE, skinShade: HERON_SHADE, limb: HERON, paw: HERON, shoe: mix(C.accentDeep, "#8a7a62", 50), blush: "#f3a0b0" }),
     body: HERON,
-    face: face({ eyeY: 104, eyeGap: 15, mouthY: 122, lid: HERON, kit: marloweEyes, mouthKit: marloweMouth }),
+    face: face({ eyeY: 104, eyeGap: 16, mouthY: 122, lid: HERON, kit: marloweEyes, mouthKit: marloweMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     head: () => <MarloweHead />,
-    belly: () => <ellipse cx={100} cy={176} rx={14} ry={20} fill={FACE} />,
+    pendant: () => <MarloweNeck />,
+    /* folded wings down his sides, their flight feathers ending in points; his arms are the same
+       grey, so at rest they lie in the wings and only show when he gestures */
+    belly: () => (
+      <g fill={HERON_SHADE}>
+        {sides.map(([side, s]) => (
+          <path key={side} d={`M${mirror(s, 82)} 156 Q${mirror(s, 72)} 182 ${mirror(s, 78)} 212 L${mirror(s, 84)} 204 L${mirror(s, 88)} 214 L${mirror(s, 92)} 202 Q${mirror(s, 88)} 182 ${mirror(s, 90)} 160 Z`} />
+        ))}
+      </g>
+    ),
   },
   {
     id: "pond-ines",
@@ -443,11 +518,17 @@ const NEW_FOUR: Candidate[] = [
     frame: INES,
     outline: false,
     hands: "mitten",
-    attitude: { mood: "happy", tilt: -6, hands: { L: [76, 202], R: [124, 202], outL: true, outR: true } },
+    attitude: {
+      mood: "neutral",
+      tilt: -6,
+      /* balancing on one leg, the other knee up, arms out like on a beam */
+      hands: { L: [36, 150], R: [164, 150], outL: true, outR: true },
+      motion: { hipR: [{ rotate: "-78deg" }, { rotate: "-78deg" }], kneeR: [{ rotate: "128deg" }, { rotate: "128deg" }] },
+    },
     label: "Ines",
-    signature: "A girl acrobat of about twelve with a high bun and a ribbon, hands on hips — she stretches",
+    signature: "A girl acrobat of about twelve with a high bun and a ribbon, balancing on one leg — she stretches",
     pitch:
-      "Fearless and showy, about twelve: the oldest of the young ones and the first to try anything. Wants to be watched; the flaw is that she can't do anything without turning it into a show. At rest: hands on hips, head tipped, a lopsided smirk, brows arched. Her hair is pulled back smooth into a high bun with a ribbon, and one curl has escaped. Her ability is Stretch: she bends like rubber — into a bridge, a knot, a shape no one else can make.",
+      "Fearless and showy, about twelve: the oldest of the young ones and the first to try anything. Wants to be watched; the flaw is that she can't do anything without turning it into a show. At rest she balances on one leg, the other knee up, arms out as if on a beam — head tipped, a lopsided smirk, brows arched. Her hair is pulled back smooth into a high bun with a ribbon, and one curl has escaped. Her ability is Stretch: she bends like rubber — into a bridge, a knot, a shape no one else can make.",
     risk: "Showy, never showing off at anyone's expense: she spots the others, hands out and ready. Stretching stays playful, never contortion that looks painful.",
     pal: palInes,
     body: C.clothes,

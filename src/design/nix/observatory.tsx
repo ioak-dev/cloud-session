@@ -268,6 +268,36 @@ type EyeStyle = {
   rest?: { top?: number; bottom?: number; tilt?: number; look?: P; raise?: number; browTilt?: number; k?: [number, number] };
 };
 
+/**
+ * Lashes at the outer corner: tapered flicks that fan out from the end of the lash line, each a
+ * little shorter than the last. When the lid is down they sit on the lid's edge, turned with it.
+ */
+function Lashes({ x, y, s, rx, ry, top, tilt, n, color, w }: { x: number; y: number; s: -1 | 1; rx: number; ry: number; top: number; tilt: number; n: number; color: string; w: number }) {
+  if (n === 0) return null;
+  const lid = top >= 0.05;
+  const y0 = lid ? y - ry + 2 * ry * top : y - ry * 0.12;
+  const bx = x + s * (lid ? rx * 0.98 : rx + 0.2);
+  return (
+    <g transform={lid ? `rotate(${s * tilt} ${x} ${y0})` : undefined}>
+      {Array.from({ length: n }, (_, i) => {
+        const a = ((-28 - i * 26) * Math.PI) / 180;
+        const len = 4.6 - i * 0.7;
+        const sx = bx - s * i * 1.6;
+        const sy = y0 - (lid ? 0 : i * 1.4);
+        const ex = sx + s * Math.cos(a) * len;
+        const ey = sy + Math.sin(a) * len;
+        return (
+          <path
+            key={i}
+            d={`M${sx} ${sy} Q${(sx + ex) / 2 + s * 0.6} ${(sy + ey) / 2 + 0.8} ${ex} ${ey}`}
+            {...line(color, w * (0.78 - i * 0.12))}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
 export function eyesOf(st: EyeStyle): EyeKit {
   return ({ mood, s, x, y, look, id }) => {
     const b = (raise: number, tilt: number) => st.brow({ x, y: y - st.browY, s, raise, tilt });
@@ -280,7 +310,17 @@ export function eyesOf(st: EyeStyle): EyeKit {
       const top = o.top ?? 0;
       return (
         <g>
-          <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={st.fill} lid={{ top, bottom: o.bottom ?? 0, tilt: o.tilt ?? 0, color: st.lid }}>
+          <Orb
+            id={id}
+            x={x}
+            y={y}
+            rx={rx}
+            ry={ry}
+            s={s}
+            fill={st.fill}
+            lid={{ top, bottom: o.bottom ?? 0, tilt: o.tilt ?? 0, color: st.lid }}
+            edge={st.rim && top >= 0.05 ? { color: st.rim.color, width: st.rim.w * 0.6 } : undefined}
+          >
             {st.iris && <circle cx={x + dx} cy={y + dy + 0.6} r={st.iris.r * k} fill={st.iris.color} />}
             {st.pupil.slit && (o.pupil ?? 1) < 1.4 ? (
               <ellipse cx={x + dx} cy={y + dy} rx={pr * 0.42} ry={ry * 0.8} fill={st.pupil.color ?? INK} />
@@ -297,15 +337,9 @@ export function eyesOf(st: EyeStyle): EyeKit {
             )}
           </Orb>
           {st.rim && top < 0.05 && (
-            <path d={`M${x - rx - 0.6} ${y - ry * 0.1} A${rx + 0.6} ${ry + 0.6} 0 0 1 ${x + rx + 0.6} ${y - ry * 0.1}`} {...line(st.rim.color, st.rim.w)} />
+            <path d={`M${x - rx - 0.4} ${y - ry * 0.12} A${rx + 0.4} ${ry + 0.4} 0 0 1 ${x + rx + 0.4} ${y - ry * 0.12}`} {...line(st.rim.color, st.rim.w)} />
           )}
-          {st.rim &&
-            Array.from({ length: st.rim.lashes }, (_, i) => {
-              const a = (-0.42 + i * 0.22) * Math.PI;
-              const ex = x + s * rx * Math.cos(a + 0.9);
-              const ey = y - ry * Math.sin(a + 0.9) + (top > 0 ? ry * top * 1.6 : 0);
-              return <path key={i} d={`M${ex} ${ey} l${s * 3.4} ${-2.6 + i * 1.4}`} {...line(st.rim!.color, st.rim!.w * 0.75)} />;
-            })}
+          {st.rim && <Lashes x={x} y={y} s={s} rx={rx} ry={ry} top={top} tilt={o.tilt ?? 0} n={st.rim.lashes} color={st.rim.color} w={st.rim.w} />}
         </g>
       );
     };
