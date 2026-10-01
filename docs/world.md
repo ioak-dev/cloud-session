@@ -1,49 +1,65 @@
-# World — proposal: the Lantern Tree
+# World
 
-**Status: proposal, not chosen.** Nothing here is drawn. The user will pick the direction (the open questions below) before any side character is redrawn.
+**Status: the world is not chosen yet.** Nothing here is drawn.
 
-**Decision (2026-10-01): the side characters start from scratch.** Every existing side-character drawing — the chameleon, fruit bat, chick, Juno, Lulu, their eye and mouth kits, ability previews and practice states — is dropped as a design. The *roles* of the five chosen characters may carry over (the proposal below keeps them); their current drawings do not. The removal happens when the redraw starts, once the direction is chosen. Wisp is not affected.
+## Decided (2026-10-01)
 
-## The world
+- **All six side characters are new.** None of the existing side characters (drawn or proposed) carries over: not their species, roles, abilities, faces or running jokes. The new six are designed together, around the world, fresh. The old drawings are removed when the redraw starts. Wisp, the main character, is not affected.
+- **The characters speak.** Fixed lines, with their mouths moving to the words (lip-sync), each in a voice of its own. What they may say is bounded below.
 
-Behind the houses stands a huge old hollow tree with a reading room inside: shelves, rope ladders and lanterns. When the sun goes down the lanterns are dark, and Wisp lights them. Everyone comes to the tree after school, and Wisp is the reason it is warm and bright there.
+The Lantern Tree proposal (a hollow-tree reading room, built around the old five) is superseded by the first decision.
 
-## The six
+## What the world has to do
 
-| # | Character | Role | Want | Running joke / tie | Ability |
+Sparkles turns any source material into a lesson and runs the learner's practice through interactive activities, as Duolingo does for languages. A world fits when it:
+
+1. **Holds any subject.** A lesson may be fractions, the Romans, photosynthesis or a poem. The world must not lean towards one subject (a reading room leans to literacy, a lighthouse to the sea).
+2. **Gives Wisp its job.** Wisp is a small light; the product is called Sparkles. The world should need a light, and be at its best around dusk and night, when a firefly matters.
+3. **Matches how learning works in the product.** Later material stays closed until earlier mastery is shown, and the level unlock is one of the three practice events. The world should have something that naturally opens, once, when it is earned.
+4. **Gives the cast a reason to gather, again and again.** Practice is a habit. The characters need a place they come back to, not a one-off adventure.
+5. **Spans the ages.** The learner may be six or sixteen. Not a nursery, not a school.
+6. **Leaves room for a cast of different kinds** — animals and people, a grown-up, a newcomer — each with a role in the activities: the one who sets the challenge, the one who cheers, the one who gets it wrong first (which makes a wrong answer safe), the one who is new like the learner.
+
+## The candidates
+
+| World | Any subject | Wisp's job | Unlock | Reason to gather | Weakness |
 |---|---|---|---|---|---|
-| 1 | **Juno**, the big sister | A show-off with a big heart: first up the ladder, first to cheer someone else on | To be the best at everything; most of all, for Lulu to look up to her | Cartwheels into every scene | Cartwheel |
-| 2 | **Lulu**, the little sister | A small schemer who always wants something: the last biscuit, a later bedtime, Juno's hair clip | To win once | Tries to outdo Juno and fails in some new way every time; then the puppy eyes | Puppy eyes |
-| 3 | **The chameleon**, Lulu's partner in crime | Lives in the tree's leaves and helps with every plan, but can't hide its feelings | To be braver than its colours | Its colour gives away every one of Lulu's plans (pink when it lies, green when it's proud — see conflicts). A soft spot for the chick it pretends not to have | Colour change |
-| 4 | **The fruit bat**, Wisp's oldest friend | The only other one awake at night; they have talked through a thousand dark hours. Dry and dozy by day, naps upside down in the rafters, says the one clever thing just before it drops off | Someone to stay up with it | Sleeps through every one of Juno's big moments | Upside-down |
-| 5 | **The chick**, the newest arrival | Hatched in the tree this spring. Saw Juno first, so it is sure she is its mother; follows her everywhere, copying her cartwheels and falling over. Everything is its first time, like the learner's | A mother | Copies Juno, falls over | Fluff up |
-| 6 | **Nana Rosa**, the grown-up (new) | The sisters' grandmother, who runs the reading room. Looks strict, is the biggest softie there. Everyone performs for her; one "well done" from her means more than anyone's cheering. The adult the cast pushes against (as Duolingo's Oscar or Bea) | The tree full | — | A whistle, from herself, she can shape into anything: one note and the whole tree comes running, or goes quiet |
+| Lantern Tree (reading room) | Leans to reading | Lights the lanterns | Weak | After school | Literacy-biased; small, static |
+| Night market | Yes — a stall per thing | Lights the stalls | Weak | Every evening | Built on buying and selling, which sits badly with a guide whose clothes can't be bought; busy and loud |
+| Lighthouse | Leans to the sea | Is the beam | Weak | None — a lighthouse is lonely | Too few people for six characters |
+| Travelling caravan | Yes — a new place each stop | Lights the road | Strong — the next stop | Strong — they live together | Rootless; no home to come back to; a road suggests a race to the end |
+| **Observatory on the hill** (recommended) | Yes — they look at everything | Lights the way up the hill, and is the first light in the sky | Strong — a new star | Strong — a club that meets every clear night | Must stay warm, not technical |
 
-Wisp keeps the lights on.
+## Recommended: the Observatory on the hill
 
-## How they fit
+Above the town is a hill, and on the hill an old, round observatory with a dome that creaks open. When the sky darkens, a club meets there to look: at stars, at the town below, at anything they are curious about. Wisp lights the path up the hill and is the first light in the sky each evening.
 
-- **A family at the centre:** two sisters and their grandmother.
-- **Two pairs that play off each other:** Lulu and the chameleon (scheme and give-away); Juno and the chick (hero and copycat).
-- **Two outsiders:** Wisp and the bat, the night friends who see the tree when it is empty.
+Why it fits best:
 
-**Stakes** come from the relationships, inside the brief's rules: Juno wants Lulu's respect, Lulu wants to win once, the chick wants a mother, the chameleon wants to be braver than its colours, the bat wants someone to stay up with it, Nana wants the tree full, and Wisp keeps the lights on. Each also wants something from the learner: to be there, to watch the show, to be on their side.
+- **It is named after the product.** Sparkles are stars. The learner's practice is the club's nightly looking; the material, whatever its subject, is what they are looking at today.
+- **The level unlock is a star coming out.** Once, with the unlock itself, a new star appears — the next part of the lesson is now in view. Nothing accumulates: it is the same moment the first time and the fiftieth, and no running count of stars is shown as a reward (a progress display is a Sparkles decision, not this studio's).
+- **Curiosity is subject-neutral.** A telescope can point at anything; so can a question. No subject is the world's own.
+- **A club is a team.** Sparkles has one word for a workspace, *team*; a club is the friendliest version of it, whether it is a school, a household or one person.
+- **It holds a cast.** A club has regulars, a keeper, a newcomer, and night creatures who were there first. Each can have a role in practice and a relationship with the others and with the learner.
+- **It is good-looking at every age.** Dusk blues and the glow of the stars sit on the product's primary and the firefly's light, and it is neither a nursery nor a classroom.
 
-## Open questions (the user decides)
+The runner-up is the travelling caravan: the strongest picture of progress, but nowhere to come home to.
 
-1. **The sixth:** an adult human like Nana Rosa, or another animal (an owl as the tree's librarian, an old tortoise-like fixture)?
-2. **The world:** the Lantern Tree, or somewhere else (a night market, a lighthouse, a travelling caravan)?
-3. **The cast:** keep the five chosen roles and build the world around them, or start all six fresh around a new world?
-4. **Speech:** fixed lines with mouths moving (Duolingo's strongest hook), or silent?
+## Speaking: the bounds
 
-## Against the brief and cast rules
+The brief allows speech only as fixed product copy, shown as real text beside the figure.
 
-Points to settle before drawing; none is decided.
+- **They say authored lines**: greetings, the reaction to a correct answer, a gentle line on an incorrect one, the unlock, banter with each other. Lip-sync and a voice of its own for each character.
+- **They do not voice generated text.** Unlike Duolingo, where the characters say the lesson's sentences, Sparkles' items are generated from the source material. A character reading an item aloud would skip the review gate. Whether an editor-approved item may be voiced is a question for Sparkles, not this studio.
+- **Every line is the same each time it plays** (variants rotate; they do not escalate), and no line reacts to a streak, a score, a session count or opening the app.
 
-- **The chameleon's green when proud.** `docs/cast.md` lets the chameleon take a status hue only on a practice event, paired with words or a status mark, and at rest it wears its own non-status colour. Green for pride would read as "correct". Its tells need non-status colours (pink when lying is fine; pride needs another hue), or the rule changes.
-- **"To be there."** A character that wants the learner to show up must never turn into a reaction to opening the app, a streak or a session count (`docs/brief.md`, "Three practice events, and no fourth"). The want can live in the story; it cannot be a reaction.
-- **Nana's "well done".** It can only be fixed copy on one of the three practice events, the same the first time and the fiftieth. A strict-looking grown-up must still be gentle on an incorrect answer, never a scold.
-- **Speech.** Lines must be fixed product copy, shown as text beside the figure. Lip-sync to fixed lines is allowed; generated speech is not.
-- **Wisp in the tree.** Today Wisp appears only on the sign-up form. A world where Wisp lights the lanterns is story; placing Wisp on more surfaces is a product decision for Sparkles.
-- **A third human.** Nana Rosa must read apart from Juno and Lulu by silhouette alone at 32px (height, posture, hair).
-- **Nana's whistle** comes from herself, not a prop, so it meets the ability rule. It must not overlap Juno's or Lulu's abilities, and "the tree goes quiet" must not become a mid-item reaction.
+## Rules the new cast must keep
+
+Carried from `docs/brief.md` and `docs/cast.md`, and what the Lantern Tree review taught:
+
+- One ability each, from the character itself, never a prop; none may overlap Wisp's glow and spark trail, or each other's.
+- No status hue on a body (a green character reads as "correct"), unless an ability is semantic on purpose, paired with words or a status mark, and only on a practice event.
+- A want from the learner lives in the story, never in a reaction: no "you came back", no "you missed a day".
+- A grown-up, however strict-looking, is gentle on a wrong answer and never scolds.
+- Every character reads apart from the rest by silhouette alone at 32px.
+- Never copy a copyrighted character: the spirit, not the look.
