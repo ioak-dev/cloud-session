@@ -19,7 +19,13 @@ import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
-import { WISP_EYES_RIBBON, WISP_RIBBON, WISP_RIBBON_FINISHES, WISP_WARM_RIBBON } from "./wisp-ribbon";
+import {
+  WISP_EYES_RIBBON,
+  WISP_RIBBON,
+  WISP_RIBBON_FINISHES,
+  WISP_SPIRITS,
+  WISP_WARM_RIBBON,
+} from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -82,6 +88,7 @@ const ALL: Candidate[] = [
   ...WISP_RIBBON,
   ...WISP_WARM_RIBBON,
   ...WISP_RIBBON_FINISHES,
+  ...WISP_SPIRITS,
   ...WISP_EYES,
   ...WISP_EYES_RIBBON,
   ...SPIRITS,
@@ -508,6 +515,8 @@ const LINES: Record<WingStyle, Line> = {
   ribbon: { wings: "ribbon", main: WISP_RIBBON, warm: WISP_WARM_RIBBON, eyes: WISP_EYES_RIBBON },
 };
 
+const SPIRIT_BASE_TILE = byId(WISP_RIBBON_FINISHES, "wisp-ribbon-spirit");
+
 const REFERENCE_GROUPS: Group[] = [
   ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
   ["Reference — Pip", PIP_FAMILY],
@@ -584,6 +593,20 @@ export function WispPage({ wings }: { wings: WingStyle }) {
               </figure>
             ))}
           </div>
+
+          <h2 className="material-heading mt-10 text-lg text-foreground">
+            Spirit — minor variations
+          </h2>
+          <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+            The spirit, then five variations that each change one thing: longer tails, tails that
+            curl in toward the flame, a frayed hem, motes as small stars in the glow’s colour, and
+            the ribbon alone. Shown at rest, then in every expression — the spirit must stay
+            friendly at worried and oops.
+          </p>
+          <MoodSheet
+            list={[SPIRIT_BASE_TILE, ...WISP_SPIRITS]}
+            name={(x) => (x.id === SPIRIT_BASE_TILE.id ? "Spirit (as drawn)" : x.label.replace("Spirit · ", ""))}
+          />
         </>
       )}
 
@@ -720,7 +743,12 @@ export function WispPage({ wings }: { wings: WingStyle }) {
       <Bench
         groups={[
           [ribbon ? "Main character — Wisp · Ribbon, the pairings" : "Main character — Wisp", line.main],
-          ...(ribbon ? ([["Ribbon finishes", WISP_RIBBON_FINISHES]] as Group[]) : []),
+          ...(ribbon
+            ? ([
+                ["Ribbon finishes", WISP_RIBBON_FINISHES],
+                ["Spirit — minor variations", WISP_SPIRITS],
+              ] as Group[])
+            : []),
           [ribbon ? "Wisp, warmer — proposals on the ribbons" : "Wisp, warmer — proposals", line.warm],
           ["Wisp, warmer — eye styles", line.eyes],
           ...REFERENCE_GROUPS,

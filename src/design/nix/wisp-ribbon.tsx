@@ -95,6 +95,57 @@ const SPIRIT_MOTES = [
   [30, 222, 1.1, 0.4],
 ] as const;
 
+/**
+ * The spirit's shape, so its variations can each change one thing:
+ * - `tail`: `out`, curling out like smoke; `long`, reaching past the flame's tip; `in`, curling
+ *   back toward the flame.
+ * - `strands`: 1, the ribbon alone; 2, a thinner strand inside it; 3, and a wisp off its outer
+ *   edge, so the hem frays.
+ * - `motes`: fading dots in `C.hi`, fading stars in the glow's colour, or none.
+ */
+export type SpiritForm = {
+  tail: "out" | "long" | "in";
+  strands: 1 | 2 | 3;
+  motes: "dots" | "stars" | "none";
+};
+export const SPIRIT: SpiritForm = { tail: "out", strands: 2, motes: "dots" };
+
+type Pt = readonly [number, number];
+/** A closed curve through outward offsets and heights: a start point, then cubic triples. */
+const curve = ([p0, ...rest]: readonly Pt[], X: (dx: number) => number) => {
+  let d = `M${X(p0[0])} ${p0[1]}`;
+  for (let i = 0; i < rest.length; i += 3) {
+    d += ` C${rest
+      .slice(i, i + 3)
+      .map(([dx, y]) => `${X(dx)} ${y}`)
+      .join(" ")}`;
+  }
+  return `${d} Z`;
+};
+
+const SPIRIT_TAIL: Record<SpiritForm["tail"], readonly Pt[]> = {
+  out: [
+    [10, 156], [40, 136], [66, 146], [64, 172], [62, 194], [50, 208], [48, 226],
+    [46, 240], [52, 250], [60, 254], [48, 258], [38, 248], [38, 232], [37, 210], [32, 182], [10, 166],
+  ],
+  long: [
+    [10, 156], [40, 136], [66, 146], [64, 172], [62, 196], [52, 214], [50, 234],
+    [48, 252], [54, 266], [64, 272], [50, 278], [38, 266], [38, 248], [37, 218], [32, 184], [10, 166],
+  ],
+  in: [
+    [10, 156], [40, 136], [66, 146], [64, 172], [62, 194], [54, 210], [48, 228],
+    [42, 244], [32, 252], [22, 250], [32, 246], [38, 238], [38, 226], [37, 208], [32, 182], [10, 166],
+  ],
+};
+const STRAND_INNER: readonly Pt[] = [
+  [30, 182], [28, 204], [20, 222], [24, 240], [26, 248], [32, 250], [34, 247],
+  [29, 243], [29, 230], [33, 216], [36, 204], [36, 192], [30, 182],
+];
+const STRAND_OUTER: readonly Pt[] = [
+  [60, 184], [64, 200], [62, 216], [66, 232], [67, 238], [71, 240], [73, 237],
+  [68, 232], [68, 218], [66, 204], [65, 194], [63, 188], [60, 184],
+];
+
 const star = (x: number, y: number, r: number) => {
   const k = r * 0.28;
   return `M${x} ${y - r} Q${x + k} ${y - k} ${x + r} ${y} Q${x + k} ${y + k} ${x} ${y + r} Q${x - k} ${y + k} ${x - r} ${y} Q${x - k} ${y - k} ${x} ${y - r} Z`;
@@ -105,12 +156,16 @@ export function FinishedRibbons({
   frame = WISP,
   uid,
   finish,
+  form = SPIRIT,
 }: {
   frame?: Body;
   uid: string;
   finish: RibbonFinish;
+  /** The spirit's shape; ignored by the other finishes. */
+  form?: SpiritForm;
 }) {
   const spirit = finish === "spirit";
+  const reach = spirit && form.tail === "long" ? 274 : 256;
   return (
     <>
       {sides.map(([side, s]) => {
@@ -120,7 +175,7 @@ export function FinishedRibbons({
           <g key={side} data-joint={`wing${side}`} style={pivot(`wing${side}`, frame.j)}>
             <defs>
               {/* shaded from the shoulder down: the colour is the edge */}
-              <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={X(14)} y1={150} x2={X(44)} y2={spirit ? 256 : 228}>
+              <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={X(14)} y1={150} x2={X(44)} y2={spirit ? reach : 228}>
                 <stop offset="0" stopColor={C.soft} stopOpacity={0.95} />
                 <stop offset={spirit ? 0.35 : 0.45} stopColor={C.tint} stopOpacity={0.88} />
                 {/* toward the tip it turns back to the product colour, so a fade still reads on a
@@ -131,19 +186,24 @@ export function FinishedRibbons({
             </defs>
             {spirit ? (
               <>
-                {/* a thinner strand trailing inside the ribbon, fading sooner */}
-                <path
-                  d={`M${X(30)} 182 C${X(28)} 204 ${X(20)} 222 ${X(24)} 240 C${X(26)} 248 ${X(32)} 250 ${X(34)} 247 C${X(29)} 243 ${X(29)} 230 ${X(33)} 216 C${X(36)} 204 ${X(36)} 192 ${X(30)} 182 Z`}
-                  fill={`url(#${g})`}
-                />
-                {/* the ribbon, longer, its tail curling out like smoke */}
-                <path
-                  d={`M${X(10)} 156 C${X(40)} 136 ${X(66)} 146 ${X(64)} 172 C${X(62)} 194 ${X(50)} 208 ${X(48)} 226 C${X(46)} 240 ${X(52)} 250 ${X(60)} 254 C${X(48)} 258 ${X(38)} 248 ${X(38)} 232 C${X(37)} 210 ${X(32)} 182 ${X(10)} 166 Z`}
-                  fill={`url(#${g})`}
-                />
-                {SPIRIT_MOTES.map(([dx, y, r, o]) => (
-                  <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} opacity={o} />
-                ))}
+                {form.strands >= 2 && (
+                  /* a thinner strand trailing inside the ribbon, fading sooner */
+                  <path d={curve(STRAND_INNER, X)} fill={`url(#${g})`} />
+                )}
+                {form.strands >= 3 && (
+                  /* a wisp coming off the outer edge: the hem frays */
+                  <path d={curve(STRAND_OUTER, X)} fill={`url(#${g})`} />
+                )}
+                {/* the ribbon, longer, its tail curling like smoke */}
+                <path d={curve(SPIRIT_TAIL[form.tail], X)} fill={`url(#${g})`} />
+                {form.motes === "dots" &&
+                  SPIRIT_MOTES.map(([dx, y, r, o]) => (
+                    <circle key={`${dx}${y}`} cx={X(dx)} cy={y} r={r} fill={C.hi} opacity={o} />
+                  ))}
+                {form.motes === "stars" &&
+                  SPIRIT_MOTES.map(([dx, y, r, o]) => (
+                    <path key={`${dx}${y}`} d={star(X(dx), y, r * 1.9)} fill={GLOW} opacity={o} />
+                  ))}
               </>
             ) : (
               <>
@@ -274,6 +334,61 @@ export const WISP_RIBBON_FINISHES: Candidate[] = (
   behind: (x: Ctx) => (
     <g>
       <FinishedRibbons frame={SLIM.frame} uid={x.uid} finish={finish} />
+      <Flame {...x} />
+    </g>
+  ),
+}));
+
+const SPIRIT_BASE = WISP_RIBBON_FINISHES.find((x) => x.id === "wisp-ribbon-spirit")!;
+
+/** Minor variations of the spirit: each changes one thing from it. */
+export const WISP_SPIRITS: Candidate[] = (
+  [
+    [
+      "long",
+      "Long tails",
+      { ...SPIRIT, tail: "long" },
+      "The tails reach past the flame's tip before they curl out",
+      "Longer, so it trails more like a ghost's hem and the faded tips still reach below the flame at small sizes. The figure gets taller, not wider.",
+    ],
+    [
+      "in",
+      "Curl in",
+      { ...SPIRIT, tail: "in" },
+      "The tails curl back in toward the flame",
+      "The tails turn inward under the body, cupping the flame, so the figure closes into one drop of light: drop head above, drop of mist below. Calmer and more enclosed than curling out.",
+    ],
+    [
+      "frayed",
+      "Frayed",
+      { ...SPIRIT, strands: 3 },
+      "A third strand: a wisp comes off each ribbon's outer edge",
+      "The hem frays: a thin wisp peels off the outer edge of each ribbon as well as the strand inside, so the ribbon reads more as smoke and less as cloth.",
+    ],
+    [
+      "starry",
+      "Starry motes",
+      { ...SPIRIT, motes: "stars" },
+      "The motes are small stars in the glow's colour, fading with the ribbon",
+      "The motes in the ribbon become tiny four-point stars in the firefly's glow, fading as the ribbon fades: its light caught in the mist. Fixed, never twinkling.",
+    ],
+    [
+      "clean",
+      "Clean",
+      { ...SPIRIT, strands: 1, motes: "none" },
+      "The ribbon alone: no inner strand, no motes",
+      "The simplest spirit: one ribbon each side, fading to nothing, nothing inside it. The fade does all the work.",
+    ],
+  ] as const
+).map(([key, title, form, signature, pitch]) => ({
+  ...SPIRIT_BASE,
+  id: `wisp-spirit-${key}`,
+  label: `Spirit · ${title}`,
+  signature,
+  pitch,
+  behind: (x: Ctx) => (
+    <g>
+      <FinishedRibbons frame={SLIM.frame} uid={x.uid} finish="spirit" form={form} />
       <Flame {...x} />
     </g>
   ),

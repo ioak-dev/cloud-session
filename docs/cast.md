@@ -108,6 +108,8 @@ The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): a clone of th
 | No outline · sparkles | The same shaded ribbon with four small fixed four-point stars in the glow's colour: the firefly's light caught in its wings. Never animated, never a highlight |
 | Spirit | The ribbons dissolve: longer, the tails curling out like smoke, a thinner strand trailing inside each, fading from `C.soft` through frost to a last `C.hi` wisp and then nothing. A few motes fade with them. Every edge below the head now dissolves |
 
+**Spirit — minor variations** (`WISP_SPIRITS`; `SpiritForm` in `wisp-ribbon.tsx`), each changing one thing from the spirit: **Long tails** (the tails reach past the flame's tip), **Curl in** (the tails curl back under the body, cupping the flame), **Frayed** (a third wisp peels off each ribbon's outer edge), **Starry motes** (the motes are small fixed stars in the glow's colour) and **Clean** (one ribbon each side, no strand, no motes). The faces stay friendly at worried and oops on all of them. At 48 and 32px, Long tails keeps the most of the hem and Clean has the clearest silhouette; Frayed's outer wisps begin to read as tentacles.
+
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 
 The Wisp page (`#/wisp`) still shows Wisp as drawn, with two pairs; the side characters have their own page (`#/side`).
