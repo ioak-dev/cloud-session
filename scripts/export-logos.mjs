@@ -15,9 +15,9 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const out = path.join(root, "docs/logo");
 const server = await createServer({ root, server: { middlewareMode: true }, appType: "custom" });
 try {
-  const { LOGOS, LogoMark, K_SPARKLES } = await server.ssrLoadModule("/src/design/nix/wisp-logo.tsx");
+  const { LOGOS, LOGO_VARIANTS, LogoMark, K_SPARKLES } = await server.ssrLoadModule("/src/design/nix/wisp-logo.tsx");
   await mkdir(out, { recursive: true });
-  for (const logo of LOGOS) {
+  for (const logo of [...LOGOS, ...LOGO_VARIANTS]) {
     for (const [size, name] of [
       ["full", `${logo.id}.svg`],
       ["small", `${logo.id}-favicon.svg`],

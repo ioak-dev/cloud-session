@@ -191,6 +191,23 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 
 None is chosen. The eye style is still between Bean and Gumdrop; the marks use plain ink eyes until it is decided.
 
+**Drop and Glow — variations** (`LOGO_VARIANTS`; `docs/logo/sheet-variants.png`):
+
+| Mark | What changes |
+|---|---|
+| Drop · Night | Drop on a night tile, sparks haloed, a soft light rising from below: for dark home screens and dark mode |
+| Drop · Scamp | One antenna flopped over in a curl, a wink, a lopsided grin: the asymmetry makes the silhouette only Wisp's |
+| Drop · Flat | Two flat tones (mid, with its own deeper shade underneath) on white: for print and merchandise |
+| Drop · Lit | The head warms toward its chin as if its flame were just below the frame, on the deep primary |
+| Glow · Halo | The primary silhouette in a disc of its own light on a night tile |
+| Glow · Scamp | Glow with the flopped antenna and a wink |
+| Glow · Light | Reversed: a yellow drop with ink eyes on the primary. A mark only; the character's body stays in the primary |
+| Glow · Round | In a circle, inside the inner 80% safe zone: for avatars and launchers that cut a circle |
+
+**What the platforms require.** An app icon is solid: the App Store icon has no alpha; iOS 26 icons are layered in Icon Composer and the system adds the glass, so each layer is supplied flat and opaque; an Android adaptive or a PWA `maskable` icon needs an opaque background with the mark inside the inner 80%; an `apple-touch-icon` with transparency turns black on iOS. Only the browser favicon may be transparent, and then the mark must hold on both a light and a dark tab, which a drop in `C.mid` does. So the tile stays; Glow · Round shows the safe-zone layout.
+
+**Wordmark — candidates** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
+
 ## Side characters
 
 | # | Character | Ability | Status |

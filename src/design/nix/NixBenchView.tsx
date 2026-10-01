@@ -20,7 +20,7 @@ import { WISP_EYES, WISP_WARM } from "./wisp-warm";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
-import { LOGOS, LogoMark, type Logo } from "./wisp-logo";
+import { LOGO_VARIANTS, LOGOS, LogoMark, type Logo } from "./wisp-logo";
 import { WispFlight, WispTurnScrub, WispView } from "./wisp-views";
 import { FIREFLY_KEPT } from "./firefly-variants";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
@@ -304,6 +304,12 @@ export function NixBenchView() {
       </p>
       <div className="mt-3 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
         {LOGOS.map((l) => (
+          <LogoCard key={l.id} logo={l} />
+        ))}
+      </div>
+      <h3 className="material-heading mt-6 text-base text-foreground">Drop and Glow — variations</h3>
+      <div className="mt-2 grid gap-4 sm:max-w-[64rem] sm:grid-cols-2 lg:grid-cols-3">
+        {LOGO_VARIANTS.map((l) => (
           <LogoCard key={l.id} logo={l} />
         ))}
       </div>
