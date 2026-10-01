@@ -17,6 +17,7 @@ import { SPIRITS } from "./firefly-spirits";
 import { SPIRITS_2 } from "./firefly-spirits-2";
 import { WISP_MAIN } from "./firefly-wisp";
 import { WISP_EYES, WISP_WARM } from "./wisp-warm";
+import { WISP_RIBBON } from "./wisp-ribbon";
 import { EYE_STYLES } from "./wisp-eyes";
 import { ActFigure, WISP_ACTS } from "./wisp-acts";
 import { WispForm } from "./wisp-form";
@@ -74,6 +75,7 @@ const ANIMAL_REFERENCE: Candidate[] = [
 const ALL: Candidate[] = [
   WISP_MAIN,
   ...WISP_WARM,
+  ...WISP_RIBBON,
   ...WISP_EYES,
   ...SPIRITS,
   ...SPIRITS_2,
@@ -355,6 +357,23 @@ export function NixBenchView() {
       </div>
 
       <h2 className="material-heading mt-10 text-lg text-foreground">
+        Wisp · Ribbon wings — proposal
+      </h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Wisp started with one pair of ribbon wings that trailed down like a scarf or a ghost’s hem;
+        “Finalise Wisp” swapped them for two pairs of spotted wings. Here the current Wisp, and the
+        warmer, keep everything they have and take the ribbons back, redrawn in the scheme with a
+        hairline edge. Static figures only.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {[WISP_MAIN, WISP_RIBBON[0], byId(WISP_WARM, "wisp-warmer"), WISP_RIBBON[1]].map((x) => (
+          <Tile key={x.id} title={x.id === WISP_MAIN.id ? "Wisp (as is)" : x.label}>
+            <NixFigure c={x} className="h-56 w-full" />
+          </Tile>
+        ))}
+      </div>
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">
         Wisp, warmer — eye styles
       </h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
@@ -481,6 +500,7 @@ export function NixBenchView() {
         [
           ["Main character — Wisp", [WISP_MAIN]],
           ["Wisp, warmer — proposals", WISP_WARM],
+          ["Wisp · Ribbon wings — proposal", WISP_RIBBON],
           ["Wisp, warmer — eye styles", WISP_EYES],
           ["Reference — wispy directions", [...SPIRITS, ...SPIRITS_2]],
           ["Reference — Pip", PIP_FAMILY],
