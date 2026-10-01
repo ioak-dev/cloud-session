@@ -1012,7 +1012,7 @@ export function SidePage() {
         glows, flies or leaves a trail: that is Wisp's.
       </p>
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {OBSERVATORY_ABILITIES.map((a) => (
+        {OBSERVATORY_ABILITIES.filter((a) => CLUB.some((c) => c.id === a.id)).map((a) => (
           <AbilityTile key={a.id} a={a} />
         ))}
       </div>

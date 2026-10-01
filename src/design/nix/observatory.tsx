@@ -182,71 +182,207 @@ function talk(
   );
 }
 
-/* ——— Hob, a star-nosed mole: the keeper ——— */
+/* ——— The cute frame (`docs/character-guidelines.md` §1) ———
+ * About two heads tall: the head is drawn in chibi head space and scaled up by `headFit` about the
+ * neck, so it is half the figure; the body is a small bean under it, and the arms and legs are
+ * short, thick nubs. Outfits are drawn on the chibi torso and carried onto the small body by
+ * `torsoFit`. */
+
+const TORSO_FIT = "translate(100 196) scale(1.18 0.9) translate(-100 -148)";
+/** Undoes `TORSO_FIT`, so a tail or wings behind the body are authored in figure space. */
+const UNFIT = "translate(100 148) scale(0.8475 1.1111) translate(-100 -196)";
+
+function cute(
+  id: string,
+  o: { k?: number; neck?: number; torso: string; headVB?: string; w?: Partial<Body["w"]>; j?: Partial<Body["j"]> },
+): Body {
+  const k = o.k ?? 1.5;
+  const neck = o.neck ?? 200;
+  return {
+    ...CHIBI,
+    id,
+    j: {
+      ...J,
+      root: [100, 284],
+      torso: [100, 244],
+      head: [100, neck],
+      shoulderL: [84, 210],
+      elbowL: [78, 226],
+      wristL: [75, 240],
+      shoulderR: [116, 210],
+      elbowR: [122, 226],
+      wristR: [125, 240],
+      hipL: [91, 254],
+      kneeL: [90, 264],
+      footL: [89, 273],
+      hipR: [109, 254],
+      kneeR: [110, 264],
+      footR: [111, 273],
+      tail: [112, 250],
+      wingL: [92, 212],
+      wingR: [108, 212],
+      ...o.j,
+    },
+    headFit: `translate(100 ${neck}) scale(${k}) translate(-100 -150)`,
+    torsoFit: TORSO_FIT,
+    hemFit: TORSO_FIT,
+    handsFit: "translate(100 214) scale(0.9) translate(-100 -158)",
+    packFit: "translate(0 2)",
+    torso: o.torso,
+    headVB: o.headVB ?? "18 36 164 164",
+    w: { upper: 14, fore: 13, thigh: 18, shin: 17, hand: 8.6, cloth: 1.15, ...o.w },
+    neck: { x: 100, y: 150, w: 0, h: 0 },
+  };
+}
+
+/** A soft head: rounder at the top, a little fuller at the cheeks. */
+const blob = (cx: number, cy: number, rx: number, ry: number, jowl = 1.04) =>
+  `M${cx - rx} ${cy} C${cx - rx} ${cy - ry * 0.78} ${cx - rx * 0.56} ${cy - ry} ${cx} ${cy - ry} C${cx + rx * 0.56} ${cy - ry} ${cx + rx} ${cy - ry * 0.78} ${cx + rx} ${cy} C${cx + rx * jowl} ${cy + ry * 0.62} ${cx + rx * 0.62} ${cy + ry} ${cx} ${cy + ry} C${cx - rx * 0.62} ${cy + ry} ${cx - rx * jowl} ${cy + ry * 0.62} ${cx - rx} ${cy} Z`;
+
+/* ——— Eyes: one acting table, each character's own drawing ———
+ * What an eye does in each mood is the same idea for everyone (§5): happy closes into an arc,
+ * delight adds a sparkle, curiosity widens one eye, thinking looks up and away, focus lowers the
+ * lids, worry lifts the brows' inner ends and shrinks the pupils, a fright squeezes them shut, a
+ * wink closes one. How an eye, its pupil, its shine and its brow are drawn is each character's own. */
+
+type Brow = (a: { x: number; y: number; s: -1 | 1; raise: number; tilt: number }) => ReactNode;
+
+type EyeStyle = {
+  rx: number;
+  ry: number;
+  /** The eye's own fill: white for an eye with an iris, a colour for a solid one. */
+  fill: string;
+  iris?: { r: number; color: string };
+  pupil: { r: number; color?: string; slit?: boolean };
+  /** The big catchlight's radius; a small one sits lower right. Both upper left for the cast. */
+  shine: number;
+  lid: string;
+  /** A lash line along the top of the open eye, and lashes at its outer corner. */
+  rim?: { color: string; w: number; lashes: number };
+  /** Ink for the closed shapes. */
+  closed: string;
+  brow: Brow;
+  /** How far above the eye's centre the brow sits. */
+  browY: number;
+  /** The eye at rest: lids, a look, and the brows' raise and tilt. */
+  rest?: { top?: number; bottom?: number; tilt?: number; look?: P; raise?: number; browTilt?: number; k?: [number, number] };
+};
+
+function eyesOf(st: EyeStyle): EyeKit {
+  return ({ mood, s, x, y, look, id }) => {
+    const b = (raise: number, tilt: number) => st.brow({ x, y: y - st.browY, s, raise, tilt });
+    const open = (o: { top?: number; bottom?: number; tilt?: number; k?: number; look?: P; pupil?: number; sparkle?: boolean } = {}) => {
+      const k = o.k ?? 1;
+      const rx = st.rx * k;
+      const ry = st.ry * k;
+      const [dx, dy] = o.look ?? look;
+      const pr = st.pupil.r * (o.pupil ?? 1) * k;
+      const top = o.top ?? 0;
+      return (
+        <g>
+          <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={st.fill} lid={{ top, bottom: o.bottom ?? 0, tilt: o.tilt ?? 0, color: st.lid }}>
+            {st.iris && <circle cx={x + dx} cy={y + dy + 0.6} r={st.iris.r * k} fill={st.iris.color} />}
+            {st.pupil.slit && (o.pupil ?? 1) < 1.4 ? (
+              <ellipse cx={x + dx} cy={y + dy} rx={pr * 0.42} ry={ry * 0.8} fill={st.pupil.color ?? INK} />
+            ) : (
+              <circle cx={x + dx} cy={y + dy + 0.6} r={pr} fill={st.pupil.color ?? INK} />
+            )}
+            <circle cx={x - rx * 0.32 + dx * 0.6} cy={y - ry * 0.34 + dy * 0.6} r={st.shine * k} fill={EYE_WHITE} />
+            <circle cx={x + rx * 0.36 + dx * 0.6} cy={y + ry * 0.32 + dy * 0.6} r={st.shine * 0.42 * k} fill={EYE_WHITE} />
+            {o.sparkle && (
+              <path
+                d={`M${x + rx * 0.3} ${y - ry * 0.62} l1.2 2.8 l2.8 1.2 l-2.8 1.2 l-1.2 2.8 l-1.2 -2.8 l-2.8 -1.2 l2.8 -1.2 Z`}
+                fill={EYE_WHITE}
+              />
+            )}
+          </Orb>
+          {st.rim && top < 0.05 && (
+            <path d={`M${x - rx - 0.6} ${y - ry * 0.1} A${rx + 0.6} ${ry + 0.6} 0 0 1 ${x + rx + 0.6} ${y - ry * 0.1}`} {...line(st.rim.color, st.rim.w)} />
+          )}
+          {st.rim &&
+            Array.from({ length: st.rim.lashes }, (_, i) => {
+              const a = (-0.42 + i * 0.22) * Math.PI;
+              const ex = x + s * rx * Math.cos(a + 0.9);
+              const ey = y - ry * Math.sin(a + 0.9) + (top > 0 ? ry * top * 1.6 : 0);
+              return <path key={i} d={`M${ex} ${ey} l${s * 3.4} ${-2.6 + i * 1.4}`} {...line(st.rim!.color, st.rim!.w * 0.75)} />;
+            })}
+        </g>
+      );
+    };
+    const shut = (d: string) => <path d={d} {...line(st.closed, Math.max(2.6, st.rx * 0.36))} />;
+    const r = st.rest ?? {};
+    const restK = r.k ? (s === -1 ? r.k[0] : r.k[1]) : 1;
+    switch (mood) {
+      case "happy":
+        return g2(shut(arcUp(x, y + st.ry * 0.2, st.rx * 0.9, st.ry * 0.5)), b(4, 0));
+      case "delighted":
+        return g2(open({ k: 1.14, pupil: 1.35, sparkle: true }), b(8, -2));
+      case "curious":
+        return s === 1 ? g2(open({ k: 1.12 }), b(9, -6)) : g2(open({ k: 0.9, top: 0.16 }), b(0, 8));
+      case "thinking":
+        return g2(open({ top: 0.3, look: [s === 1 ? 2.4 : 2.4, -2.6] }), s === -1 ? b(6, 12) : b(-1, -4));
+      case "focused":
+        return g2(open({ top: 0.42, bottom: 0.08, tilt: -8, pupil: 0.86 }), b(-3, -16));
+      case "worried":
+        return g2(open({ top: 0.06, tilt: 14, pupil: 0.62, look: [0, 1.4] }), b(4, 24));
+      case "oops":
+        return g2(shut(chevron(x, y, s, st.rx * 0.7, st.ry * 0.55)), b(5, 18));
+      case "wink":
+        return s === 1 ? g2(shut(arcUp(x, y + st.ry * 0.2, st.rx * 0.9, st.ry * 0.5)), b(-1, -6)) : g2(open(), b(5, 0));
+      default:
+        return g2(open({ top: r.top, bottom: r.bottom, tilt: r.tilt, look: r.look, k: restK }), b(r.raise ?? 0, r.browTilt ?? 0));
+    }
+  };
+}
+
+/** A brow as a thick rounded stroke, an arc that tilts about its middle. */
+const arcBrow =
+  (color: string, w: number, len: number): Brow =>
+  ({ x, y, s, raise, tilt }) => {
+    const by = y - raise;
+    return <path d={`M${x - len} ${by + 1.6} Q${x} ${by - 2.6} ${x + len} ${by + 1.6}`} {...line(color, w)} transform={turnAt(s, tilt, x, by)} />;
+  };
+
+/** A short pill of a brow: a floating dash, for an animal. */
+const dashBrow =
+  (color: string, w: number, len: number): Brow =>
+  ({ x, y, s, raise, tilt }) => {
+    const by = y - raise;
+    return <path d={`M${x - len} ${by} L${x + len} ${by}`} {...line(color, w)} transform={turnAt(s, tilt, x, by)} />;
+  };
+
+/* ——— Hob, a star-nosed mole: the keeper. A circle ——— */
 
 const HOB_FUR = C.deep;
 const HOB_SHADE = mix(C.deep, "black", 72);
-const HOB_SOCKET = mix(C.primary, C.deep, 70);
-const HOB_BROW = "#efe6d4";
+const HOB_FACE = C.mid;
+const HOB_BELLY = C.primary;
+const HOB_WHITE = "#f4eee2";
 
-const HOB: Body = {
-  ...CHIBI,
-  id: "hob",
-  j: {
-    ...J,
-    head: [100, 154],
-    shoulderL: [76, 164],
-    elbowL: [67, 186],
-    wristL: [63, 206],
-    shoulderR: [124, 164],
-    elbowR: [133, 186],
-    wristR: [137, 206],
-    hipL: [89, 214],
-    kneeL: [88, 244],
-    footL: [87, 272],
-    hipR: [111, 214],
-    kneeR: [112, 244],
-    footR: [113, 272],
-  },
-  torso: "M80 146 Q100 140 120 146 Q137 156 139 186 Q141 224 100 226 Q59 224 61 186 Q63 156 80 146 Z",
-  headFit: "translate(0 6)",
-  headVB: "30 36 140 140",
-  w: { upper: 15, fore: 15, thigh: 21, shin: 20, hand: 11.5, cloth: 1.4 },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
-};
+const HOB = cute("hob", {
+  k: 1.42,
+  neck: 204,
+  torso: "M76 152 Q100 140 124 152 Q140 168 138 196 Q134 226 100 226 Q66 226 62 196 Q60 168 76 152 Z",
+  w: { upper: 15, fore: 14, thigh: 20, shin: 19, hand: 10.5, cloth: 1.3 },
+  j: { shoulderL: [80, 214], elbowL: [72, 228], wristL: [68, 241], shoulderR: [120, 214], elbowR: [128, 228], wristR: [132, 241], hipL: [88, 256], kneeL: [87, 265], hipR: [112, 256], kneeR: [113, 265], footL: [86, 273], footR: [114, 273] },
+});
 
-const HOB_HEAD = "M54 112 C52 78 74 62 100 62 C126 62 148 78 146 112 C145 138 126 152 100 152 C74 152 55 138 54 112 Z";
-
-/** The star: twenty-two fleshy rays round the nostrils, eleven a side, drawn as a ring of petals. */
-function Star({ x, y }: { x: number; y: number }) {
-  const rays = Array.from({ length: 11 }, (_, i) => (i / 11) * 360 + 8);
+/** The star on his nose: ten soft pink rays round a button, drawn small and round. */
+function StarNose({ x, y }: { x: number; y: number }) {
+  const rays = Array.from({ length: 10 }, (_, i) => (i / 10) * 360 + 18);
+  const at = (a: number, r: number) => [x + r * Math.cos((a * Math.PI) / 180), y + r * Math.sin((a * Math.PI) / 180)] as const;
   return (
     <g>
-      {rays.map((a) => (
-        <ellipse
-          key={a}
-          cx={x + 9.6 * Math.cos((a * Math.PI) / 180) + 0.8}
-          cy={y + 9.6 * Math.sin((a * Math.PI) / 180) + 0.8}
-          rx={6.4}
-          ry={2.9}
-          transform={`rotate(${a} ${x + 9.6 * Math.cos((a * Math.PI) / 180) + 0.8} ${y + 9.6 * Math.sin((a * Math.PI) / 180) + 0.8})`}
-          fill={PINK_SHADE}
-        />
-      ))}
-      {rays.map((a) => (
-        <ellipse
-          key={a}
-          cx={x + 9.6 * Math.cos((a * Math.PI) / 180)}
-          cy={y + 9.6 * Math.sin((a * Math.PI) / 180)}
-          rx={6.2}
-          ry={2.6}
-          transform={`rotate(${a} ${x + 9.6 * Math.cos((a * Math.PI) / 180)} ${y + 9.6 * Math.sin((a * Math.PI) / 180)})`}
-          fill={PINK}
-        />
-      ))}
-      <circle cx={x} cy={y} r={6.4} fill={PINK_SHADE} />
-      <circle cx={x - 2.2} cy={y - 0.4} r={1.4} fill={MOUTH_IN} />
-      <circle cx={x + 2.2} cy={y - 0.4} r={1.4} fill={MOUTH_IN} />
+      {rays.map((a) => {
+        const [px, py] = at(a, 6.6);
+        return <ellipse key={a} cx={px + 0.6} cy={py + 0.6} rx={4.6} ry={2.8} transform={`rotate(${a} ${px + 0.6} ${py + 0.6})`} fill={PINK_SHADE} />;
+      })}
+      {rays.map((a) => {
+        const [px, py] = at(a, 6.6);
+        return <ellipse key={a} cx={px} cy={py} rx={4.4} ry={2.5} transform={`rotate(${a} ${px} ${py})`} fill={PINK} />;
+      })}
+      <circle cx={x} cy={y} r={4.6} fill={PINK_SHADE} />
+      <circle cx={x - 1.4} cy={y - 1.4} r={1.4} fill="#ffd0dc" />
     </g>
   );
 }
@@ -254,115 +390,96 @@ function Star({ x, y }: { x: number; y: number }) {
 function HobHead() {
   return (
     <g>
-      {/* fur that stands up on top, and two tufts at the cheeks */}
-      <path d="M84 66 L88 52 L94 64 L100 48 L106 63 L113 54 L116 67 Z" fill={HOB_FUR} />
-      <path d="M56 118 L44 122 L54 128 L46 136 L60 134 Z M144 118 L156 122 L146 128 L154 136 L140 134 Z" fill={HOB_FUR} />
-      <Two d={HOB_HEAD} fill={HOB_FUR} shade={HOB_SHADE} k={2.5} />
-      {/* soft sockets so his tiny eyes read on dark fur */}
-      <ellipse cx={81} cy={98} rx={9} ry={8} fill={HOB_SOCKET} />
-      <ellipse cx={119} cy={98} rx={9} ry={8} fill={HOB_SOCKET} />
-      {/* the spectacles he never wears, pushed up on his forehead and crooked */}
-      <g transform="rotate(-7 100 74)">
-        <circle cx={88} cy={74} r={7.5} fill={C.tint} opacity={0.35} />
-        <circle cx={112} cy={74} r={7.5} fill={C.tint} opacity={0.35} />
-        <g {...line(C.accent, 2.6)}>
-          <circle cx={88} cy={74} r={7.5} />
-          <circle cx={112} cy={74} r={7.5} />
-          <path d="M95.5 73 Q100 70 104.5 73" />
-        </g>
-      </g>
+      <Two d={blob(100, 108, 46, 44, 1.08)} fill={HOB_FUR} shade={HOB_SHADE} k={2.4} />
+      {/* an old man's tuft, three white wisps, the right one won't lie down */}
+      <path d="M92 66 C88 56 92 50 98 52 M100 64 C100 52 106 48 110 54 M108 66 C114 58 122 60 124 52" {...line(HOB_WHITE, 3.2)} />
+      {/* a lighter face, so his features read on dark fur */}
+      <path d={blob(100, 122, 36, 26, 1.02)} fill={HOB_FACE} />
+      {/* his spectacles' lenses, under the eyes */}
+      <circle cx={81} cy={114} r={13} fill={EYE_WHITE} opacity={0.45} />
+      <circle cx={119} cy={114} r={13} fill={EYE_WHITE} opacity={0.45} />
     </g>
   );
 }
 
+/** Over the eyes: the frames, the nose, and the star. */
 function HobTop() {
-  return <Star x={100} y={120} />;
+  return (
+    <g>
+      <g {...line(C.accent, 3.2)}>
+        <circle cx={81} cy={114} r={13} />
+        <circle cx={119} cy={114} r={13} />
+        <path d="M94 112 Q100 108 106 112" />
+      </g>
+      <StarNose x={100} y={134} />
+    </g>
+  );
 }
 
-/** Hob: tiny bead eyes he squints with — the left half-shut at rest — under big bushy pale brows
- *  that do all his acting. */
-const hobEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const brow = (raise: number, tilt: number) => {
-    const by = y - 13 - raise;
+const hobEyes = eyesOf({
+  rx: 6.4,
+  ry: 7.4,
+  fill: INK,
+  pupil: { r: 0 },
+  shine: 2.4,
+  lid: HOB_FACE,
+  closed: INK,
+  browY: 16,
+  /** Fluffy white brows that stick out past his frames. */
+  brow: ({ x, y, s, raise, tilt }) => {
+    const by = y - raise;
     return (
       <g transform={turnAt(s, tilt, x, by)}>
         <path
-          d={`M${x - 10} ${by + 3} Q${x - 6} ${by - 5} ${x} ${by - 4} Q${x + 6} ${by - 7} ${x + 11} ${by + 1} Q${x + 4} ${by} ${x - 2} ${by + 2} Q${x - 7} ${by + 4} ${x - 10} ${by + 3} Z`}
-          fill={HOB_BROW}
+          d={`M${x - 11} ${by + 2.4} Q${x - 8} ${by - 4.6} ${x - 1} ${by - 3.4} Q${x + 6} ${by - 6} ${x + 11} ${by} Q${x + 4} ${by + 1} ${x - 2} ${by + 2.6} Q${x - 7} ${by + 4} ${x - 11} ${by + 2.4} Z`}
+          fill={HOB_WHITE}
         />
-        <path d={`M${x + s * 10} ${by} l${s * 4} -3`} {...line(HOB_BROW, 2.4)} />
+        <path d={`M${x + s * 10} ${by - 1} l${s * 4} -2.6`} {...line(HOB_WHITE, 2.4)} />
       </g>
     );
-  };
-  const open = (r = 3.6, top = 0, extra = false) => (
-    <Orb id={id} x={x} y={y} rx={r} ry={r * 1.08} s={s} fill={INK} lid={{ top, color: HOB_SOCKET }}>
-      <circle cx={x - r * 0.35 + dx * 0.3} cy={y - r * 0.4 + dy * 0.3} r={r * 0.36} fill={EYE_WHITE} />
-      {extra && <circle cx={x + r * 0.4} cy={y + r * 0.3} r={r * 0.2} fill={EYE_WHITE} />}
-    </Orb>
-  );
-  const shut = (d: string) => <path d={d} {...line(INK, 2.8)} />;
-  switch (mood) {
-    case "happy":
-      return g2(shut(arcUp(x, y + 1, 5, 3)), brow(4, 0));
-    case "delighted":
-      return g2(open(4.4, 0, true), brow(8, -4));
-    case "curious":
-      /* the squint: one eye screwed up, the other wide, as if through a lens */
-      return s === -1 ? g2(open(2.8, 0.45), brow(-2, -10)) : g2(open(4.8, 0, true), brow(9, -6));
-    case "thinking":
-      return g2(open(3.4, 0.2), s === 1 ? brow(7, -8) : brow(1, 6));
-    case "focused":
-      return g2(shut(`M${x - 4.5} ${y} L${x + 4.5} ${y}`), brow(-3, -16));
-    case "worried":
-      return g2(open(3, 0.1), brow(3, 22));
-    case "oops":
-      return g2(shut(chevron(x, y, s, 4, 3.6)), brow(5, 18));
-    case "wink":
-      return s === 1 ? g2(shut(arcUp(x, y + 1, 5, 3)), brow(-1, -6)) : g2(open(), brow(4, 0));
-    default:
-      return s === -1 ? g2(open(3.4, 0.42), brow(-1, -8)) : g2(open(3.8), brow(3, 0));
-  }
-};
+  },
+  rest: { k: [0.92, 1.04], top: 0.12, raise: 1 },
+});
 
 /** Hob: a small mouth under the star, with two old front teeth. */
 const hobMouth: MouthKit = ({ mood, y, viseme }) => {
-  if (viseme) return talk(viseme, mood, y, { W: 10, H: 8, inside: MOUTH_IN, lip: PINK_SHADE, lipW: 2.6, teeth: EYE_WHITE });
+  if (viseme) return talk(viseme, mood, y, { W: 8, H: 7, inside: MOUTH_IN, lip: PINK_SHADE, lipW: 2.4, teeth: EYE_WHITE });
   const buck = (dy = 0) => (
     <g fill={EYE_WHITE}>
-      <rect x={96.6} y={y + dy - 0.5} width={3.2} height={4.2} rx={0.9} />
-      <rect x={100.4} y={y + dy - 0.5} width={3.2} height={4.2} rx={0.9} />
+      <rect x={97} y={y + dy - 0.4} width={2.8} height={3.6} rx={0.9} />
+      <rect x={100.4} y={y + dy - 0.4} width={2.8} height={3.6} rx={0.9} />
     </g>
   );
   switch (mood) {
     case "happy":
-      return g2(<OpenMouth d={dMouth(y, 9, 6)} fill={MOUTH_IN} tongue={[100, y + 8, 4, 2.4]} />, buck());
+      return g2(<OpenMouth d={dMouth(y, 7, 5)} fill={MOUTH_IN} tongue={[100, y + 7, 3.4, 2.2]} />, buck());
     case "delighted":
-      return g2(<OpenMouth d={dMouth(y - 1, 11, 9)} fill={MOUTH_IN} tongue={[100, y + 12, 5, 3]} />, buck(-1));
+      return g2(<OpenMouth d={dMouth(y - 1, 9, 8)} fill={MOUTH_IN} tongue={[100, y + 10, 4.4, 2.8]} />, buck(-1));
     case "curious":
-      return <ellipse cx={101} cy={y + 2.5} rx={3} ry={3.6} fill={MOUTH_IN} />;
+      return <ellipse cx={101} cy={y + 2} rx={2.4} ry={3} fill={MOUTH_IN} />;
     case "thinking":
-      return <path d={`M94 ${y + 2} Q100 ${y + 1} 107 ${y - 1}`} {...line(PINK_SHADE, 2.6)} />;
+      return <path d={`M95 ${y + 2} Q100 ${y + 1} 106 ${y - 1}`} {...line(PINK_SHADE, 2.4)} />;
     case "focused":
-      return <path d={`M95 ${y + 1} L105 ${y + 1}`} {...line(PINK_SHADE, 2.8)} />;
+      return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(PINK_SHADE, 2.6)} />;
     case "worried":
-      return <path d={wave(y + 2, 7, 2.6)} {...line(PINK_SHADE, 2.6)} />;
+      return <path d={wave(y + 2, 6, 2.4)} {...line(PINK_SHADE, 2.4)} />;
     case "oops":
-      return g2(<OpenMouth d={dMouth(y + 1, 6, 4, 102)} fill={MOUTH_IN} />, buck(1));
+      return g2(<OpenMouth d={dMouth(y + 1, 5, 3.6, 101)} fill={MOUTH_IN} />, buck(1));
     case "wink":
-      return g2(<path d={`M93 ${y} Q100 ${y + 6} 108 ${y - 2}`} {...line(PINK_SHADE, 2.6)} />, buck(1.6));
+      return g2(<path d={`M94 ${y} Q100 ${y + 5} 107 ${y - 2}`} {...line(PINK_SHADE, 2.4)} />, buck(1.4));
     default:
-      return g2(<path d={curve(y, 7, 4)} {...line(PINK_SHADE, 2.6)} />, buck(1.8));
+      return g2(<path d={`M95 ${y} Q97.5 ${y + 3} 100 ${y} Q102.5 ${y + 3} 105 ${y}`} {...line(PINK_SHADE, 2.2)} />, buck(1.6));
   }
 };
 
-/* ——— Tavi, a girl of about ten: the loudest member ——— */
+/* ——— Tavi, a girl of about ten: the loudest member. Triangles, softened ——— */
 
-const TAVI_SKIN = "#c98d60";
-const TAVI_SHADE = "#a96f45";
-const TAVI_HAIR = "#9c3b1e";
-const TAVI_HAIR_HI = "#c65a33";
-const TAVI_LIP = "#8a4030";
+const TAVI_SKIN = "#d39a6c";
+const TAVI_SHADE = "#b77d50";
+const TAVI_HAIR = "#a8401f";
+const TAVI_HAIR_SHADE = "#80301a";
+const TAVI_HAIR_HI = "#d06a3f";
+const TAVI_LIP = "#94463a";
 
 const palTavi = palette(TAVI_SKIN, TAVI_SKIN, TAVI_SKIN, TAVI_SHADE, {
   line: "none",
@@ -375,269 +492,207 @@ const palTavi = palette(TAVI_SKIN, TAVI_SKIN, TAVI_SKIN, TAVI_SHADE, {
   bottom: C.deep,
   shoe: C.deep,
   accent: C.accent,
-  blush: "#ec8a86",
+  blush: "#f08a86",
 });
 
-/** Her hair is always blown back, as if she has just arrived at a run: a mass streaming to the
- *  left in points. */
+const TAVI = cute("tavi", {
+  k: 1.5,
+  torso: "M84 150 Q100 146 116 150 Q124 156 123 172 L121 210 Q120 222 100 222 Q80 222 79 210 L77 172 Q76 156 84 150 Z",
+  w: { upper: 12.5, fore: 11.5, thigh: 13, shin: 12, hand: 7.8, cloth: 1.05 },
+  headVB: "8 26 176 176",
+});
+
+/** Her hair: a big soft mass, blown back to the left in rounded points as if she has just arrived
+ *  at a run. */
 const TAVI_MASS =
-  "M142 100 C150 64 128 36 98 36 C74 36 56 46 44 60 C34 56 20 58 10 68 C24 70 32 76 36 82 C22 86 12 96 8 110 C22 104 34 104 42 108 C34 116 30 126 30 138 C40 128 50 126 58 128 L60 142 L140 142 C148 128 146 112 142 100 Z";
+  "M146 108 C152 70 130 46 100 44 C80 44 64 52 54 64 C42 58 28 60 16 70 C30 74 38 80 42 86 C28 90 18 102 14 116 C28 110 40 110 48 114 C40 124 38 136 42 148 C50 138 58 136 64 136 L136 136 C146 128 148 118 146 108 Z";
 
 function TaviBack() {
   return (
     <g>
-      <Two d={TAVI_MASS} fill={TAVI_HAIR} shade={mix(TAVI_HAIR, "black", 75)} k={2} />
-      <path d="M118 46 C98 40 72 46 54 62 M98 54 C80 56 62 66 44 84 M74 74 C60 80 48 92 40 104" {...line(TAVI_HAIR_HI, 2.6)} opacity={0.75} />
+      <Two d={TAVI_MASS} fill={TAVI_HAIR} shade={TAVI_HAIR_SHADE} k={2.4} />
+      <path d="M116 54 C96 50 74 56 58 68 M88 62 C70 66 56 76 44 90" {...line(TAVI_HAIR_HI, 3)} opacity={0.7} />
     </g>
   );
 }
 
-function TaviHead() {
+/** Her cowlick acts: it springs up when she is pleased, hooks into a question when she is
+ *  curious, and droops when she is worried. */
+const TAVI_COWLICK: Partial<Record<Mood, string>> = {
+  happy: "M104 58 C100 40 110 30 120 34",
+  delighted: "M104 58 C98 36 106 22 118 24",
+  curious: "M104 58 C100 40 116 32 120 42 C122 48 114 50 112 46",
+  worried: "M104 58 C110 50 122 52 126 60",
+  oops: "M104 58 C112 52 124 56 126 64",
+  thinking: "M104 58 C104 44 112 38 118 42",
+};
+
+function TaviHead({ mood }: Ctx) {
   return (
     <g>
-      <circle cx={142} cy={110} r={7} fill={TAVI_SKIN} />
-      <circle cx={143} cy={111} r={3} fill={TAVI_SHADE} />
-      <ellipse cx={101.5} cy={106} rx={41} ry={39.5} fill={TAVI_SHADE} />
-      <ellipse cx={99.5} cy={103.5} rx={40} ry={38} fill={TAVI_SKIN} />
-      {/* the fringe's shadow, then the fringe, swept back and to the left */}
-      <path d="M64 90 Q100 98 138 88 L138 93 Q100 102 64 95 Z" fill={TAVI_SHADE} opacity={0.35} />
-      <path
-        d="M58 94 C56 62 80 50 104 52 C130 54 146 72 142 96 C134 84 122 78 110 76 C106 84 96 90 82 90 C88 84 90 80 90 76 C78 82 68 88 58 94 Z"
-        fill={TAVI_HAIR}
-      />
-      <path d="M78 62 Q96 54 114 58" {...line(TAVI_HAIR_HI, 3.2)} />
-      {/* a plaster across her nose: she arrives at speed, and not always upright */}
-      <g transform="rotate(-16 100 118)">
-        <rect x={92} y={115.5} width={16} height={5.6} rx={2.8} fill="#f3d6b3" />
-        <rect x={98} y={115.5} width={4} height={5.6} fill="#e9c49b" />
+      <circle cx={145} cy={120} r={8} fill={TAVI_SHADE} />
+      <circle cx={144} cy={119} r={7} fill={TAVI_SKIN} />
+      <Two d={blob(100, 112, 42, 40, 1.06)} fill={TAVI_SKIN} shade={TAVI_SHADE} k={2.2} />
+      {/* the fringe's shadow, then the fringe: a swoop to the left with a parting on the right */}
+      <path d="M56 108 C52 70 76 56 102 56 C130 56 150 74 144 104 C138 92 128 84 116 82 C112 92 96 98 78 98 C84 92 86 88 86 84 C74 90 64 98 56 108 Z" fill={TAVI_HAIR} />
+      <path d="M76 70 Q94 62 112 64" {...line(TAVI_HAIR_HI, 3.4)} />
+      <path d={TAVI_COWLICK[mood ?? "neutral"] ?? "M104 58 C102 42 110 34 120 38"} {...line(TAVI_HAIR, 5)} />
+      {/* a star clip in her hair, and a plaster on her cheek: she arrives at speed */}
+      <path d="M128 72 l2.2 4.6 l5 0.7 l-3.6 3.5 l0.9 5 l-4.5 -2.4 l-4.5 2.4 l0.9 -5 l-3.6 -3.5 l5 -0.7 Z" fill={C.accent} />
+      <g transform="rotate(-24 128 132)">
+        <rect x={120} y={129} width={16} height={6} rx={3} fill="#f6dcbc" />
+        <circle cx={126} cy={132} r={0.8} fill="#d9b48c" />
+        <circle cx={130} cy={132} r={0.8} fill="#d9b48c" />
       </g>
     </g>
   );
 }
 
-/** Tavi: almond eyes with an amber-brown iris and a keen top lash line; thick auburn brows angled
- *  in, as if she is already on her way. */
-const taviEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const brow = (raise: number, tilt: number) => {
-    const by = y - 15 - raise;
-    return (
-      <path
-        d={`M${x - 8} ${by + 2} Q${x - 1} ${by - 3} ${x + 8} ${by - 0.5}`}
-        {...line(TAVI_HAIR, 4.4)}
-        transform={`${turnAt(s, tilt - 6, x, by)} ${s === 1 ? `scale(-1 1) translate(${-2 * x} 0)` : ""}`}
-      />
-    );
-  };
-  const open = (top = 0, bottom = 0, tilt = 0, k = 1, extra = false) => {
-    const rx = 8.4 * k;
-    const ry = 7.6 * k;
-    return (
-      <g>
-        <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={EYE_WHITE} lid={{ top, bottom, tilt, color: TAVI_SKIN }} edge={{ color: INK, width: 1.6 }}>
-          <circle cx={x + dx} cy={y + 0.8 + dy} r={5.8 * k} fill="#9a5a22" />
-          <circle cx={x + dx} cy={y + 0.8 + dy} r={2.8 * k} fill={INK} />
-          <circle cx={x - 2.2 + dx} cy={y - 2 + dy} r={2.1 * k} fill={EYE_WHITE} />
-          {extra && <circle cx={x + 2.6 + dx} cy={y + 2.8 + dy} r={1.2} fill={EYE_WHITE} />}
-        </Orb>
-        {top === 0 && <path d={`M${x - rx} ${y} A${rx} ${ry} 0 0 1 ${x + rx} ${y - 1} l${s * 2.6} -2.2`} {...line(INK, 2.8)} />}
-      </g>
-    );
-  };
-  const shut = (d: string) => <path d={d} {...line(INK, 3)} />;
-  switch (mood) {
-    case "happy":
-      return g2(shut(arcUp(x, y + 1, 7.5, 4.5)), brow(4, 4));
-    case "delighted":
-      return g2(open(0, 0, 0, 1.15, true), brow(8, 6));
-    case "curious":
-      return g2(open(0, 0, 0, s === 1 ? 1.08 : 0.94), s === 1 ? brow(8, -2) : brow(0, 8));
-    case "thinking":
-      return g2(open(0.32, 0.1), s === -1 ? brow(6, 12) : brow(-1, 0));
-    case "focused":
-      return g2(open(0.4, 0.12, -8), brow(-3, -6));
-    case "worried":
-      return g2(open(0.08, 0, 14, 1, true), brow(3, 26));
-    case "oops":
-      return g2(shut(chevron(x, y, s, 6, 5.5)), brow(4, 22));
-    case "wink":
-      return s === 1 ? g2(shut(arcUp(x, y + 1, 7.5, 4.5)), brow(-1, -2)) : g2(open(0, 0.1), brow(5, 6));
-    default:
-      return g2(open(0.08, 0.06), brow(1, 2));
-  }
-};
+const taviEyes = eyesOf({
+  rx: 9.4,
+  ry: 11,
+  fill: EYE_WHITE,
+  iris: { r: 7.6, color: "#8a4b1e" },
+  pupil: { r: 3.6 },
+  shine: 2.8,
+  lid: TAVI_SKIN,
+  rim: { color: INK, w: 3, lashes: 2 },
+  closed: INK,
+  browY: 17,
+  brow: arcBrow(TAVI_HAIR, 4.6, 7),
+  rest: { look: [1.2, 0], raise: 2, browTilt: -4 },
+});
 
-/** Tavi: a wide, lopsided grin with one front tooth missing. */
+/** Tavi: a big grin with one front tooth missing. */
 const taviMouth: MouthKit = ({ mood, y, viseme }) => {
-  if (viseme) return talk(viseme, mood, y, { W: 11, H: 9, inside: MOUTH_IN, lip: TAVI_LIP, lipW: 3, teeth: EYE_WHITE, gap: true });
+  if (viseme) return talk(viseme, mood, y, { W: 9, H: 8, inside: MOUTH_IN, lip: TAVI_LIP, lipW: 2.8, teeth: EYE_WHITE, gap: true });
   const grin = (w: number, h: number, cx = 101) => (
     <g>
-      <OpenMouth d={dMouth(y - 1, w, h, cx)} fill={MOUTH_IN} tongue={[cx, y + h * 1.3, w * 0.45, h * 0.35]} />
-      <rect x={cx - w * 0.62} y={y - 1.4} width={w * 0.5} height={3.8} rx={1} fill={EYE_WHITE} />
-      <rect x={cx + w * 0.16} y={y - 1.4} width={w * 0.46} height={3.8} rx={1} fill={EYE_WHITE} />
+      <OpenMouth d={dMouth(y - 1, w, h, cx)} fill={MOUTH_IN} tongue={[cx, y + h * 1.25, w * 0.5, h * 0.4]} />
+      <rect x={cx - w * 0.62} y={y - 1.4} width={w * 0.5} height={3.6} rx={1} fill={EYE_WHITE} />
+      <rect x={cx + w * 0.16} y={y - 1.4} width={w * 0.46} height={3.6} rx={1} fill={EYE_WHITE} />
     </g>
   );
   switch (mood) {
     case "happy":
-      return grin(11, 7);
+      return grin(9, 6.4);
     case "delighted":
-      return grin(13, 10);
+      return grin(11, 9);
     case "curious":
-      return <ellipse cx={102} cy={y + 2} rx={3.6} ry={4.4} fill={MOUTH_IN} />;
+      return <ellipse cx={102} cy={y + 2} rx={3} ry={3.8} fill={MOUTH_IN} />;
     case "thinking":
-      return g2(<path d={`M92 ${y + 1} Q100 ${y + 3} 108 ${y - 1}`} {...line(TAVI_LIP, 3)} />, <ellipse cx={95} cy={y + 3} rx={2.6} ry={1.6} fill={TONGUE_PINK} />);
+      /* pulled to one side */
+      return <path d={`M98 ${y + 2} Q103 ${y + 3} 108 ${y - 1}`} {...line(TAVI_LIP, 2.8)} />;
     case "focused":
-      /* tongue poked out at the corner: concentrating */
-      return g2(<path d={`M93 ${y + 1} L107 ${y}`} {...line(TAVI_LIP, 3)} />, <ellipse cx={106} cy={y + 3} rx={2.8} ry={2.4} fill={TONGUE_PINK} />);
+      /* the tip of her tongue at the corner */
+      return g2(<path d={`M94 ${y + 1} L106 ${y}`} {...line(TAVI_LIP, 2.8)} />, <ellipse cx={105} cy={y + 2.6} rx={2.6} ry={2.2} fill={TONGUE_PINK} />);
     case "worried":
-      return <path d={`M92 ${y + 3} Q96 ${y - 1} 100 ${y + 2} Q104 ${y + 5} 108 ${y + 1}`} {...line(TAVI_LIP, 3)} />;
+      return <path d={`M94 ${y + 3} Q97 ${y} 100 ${y + 2} Q103 ${y + 4} 106 ${y + 1}`} {...line(TAVI_LIP, 2.8)} />;
     case "oops":
-      return <OpenMouth d={`M91 ${y + 4} Q100 ${y - 4} 109 ${y + 4} Q100 ${y + 2} 91 ${y + 4} Z`} fill={MOUTH_IN} />;
+      return <OpenMouth d={`M93 ${y + 4} Q100 ${y - 3} 107 ${y + 4} Q100 ${y + 2} 93 ${y + 4} Z`} fill={MOUTH_IN} />;
     case "wink":
-      return grin(10, 6, 103);
+      return grin(8, 5.6, 103);
     default:
-      return grin(9.5, 4.6, 102);
+      return grin(7.4, 4, 102);
   }
 };
 
-/* ——— Grit, a small gargoyle: three hundred years on one corner of the dome ——— */
+/* ——— Grit, a small gargoyle: three hundred years on one corner of the dome. A rounded square ——— */
 
-const STONE = mix(C.mid, "#8d8780", 50);
-const STONE_SHADE = mix(C.deep, "#6b665f", 45);
-const STONE_LIGHT = mix(C.soft, "#bcb6ad", 50);
+const STONE = mix(C.mid, "#9a948c", 52);
+const STONE_SHADE = mix(C.deep, "#6f6a63", 42);
+const STONE_LIGHT = mix(C.soft, "#c9c3ba", 50);
 
-const GRIT: Body = {
-  ...CHIBI,
-  id: "grit",
-  j: {
-    ...J,
-    head: [100, 156],
-    shoulderL: [78, 164],
-    elbowL: [70, 190],
-    wristL: [68, 214],
-    shoulderR: [122, 164],
-    elbowR: [130, 190],
-    wristR: [132, 214],
-    hipL: [88, 216],
-    kneeL: [82, 246],
-    footL: [84, 272],
-    hipR: [112, 216],
-    kneeR: [118, 246],
-    footR: [116, 272],
-    tail: [112, 214],
-    earL: [56, 98],
-    earR: [144, 98],
-  },
-  torso: "M80 152 Q100 146 120 152 Q135 162 133 192 Q131 224 100 226 Q69 224 67 192 Q65 162 80 152 Z",
-  headFit: "translate(0 8)",
-  headVB: "24 28 152 152",
-  w: { upper: 14, fore: 14, thigh: 16, shin: 15, hand: 9.5, cloth: 1.2 },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
-};
+const GRIT = cute("grit", {
+  k: 1.46,
+  neck: 204,
+  torso: "M78 154 Q100 146 122 154 Q132 164 131 192 Q129 224 100 224 Q71 224 69 192 Q68 164 78 154 Z",
+  w: { upper: 15, fore: 14, thigh: 19, shin: 18, hand: 9.6, cloth: 1.25 },
+  j: { earL: [58, 104], earR: [142, 104], kneeL: [87, 265], kneeR: [113, 265], footL: [86, 273], footR: [114, 273] },
+});
 
-const GRIT_HEAD = "M56 92 C56 70 72 62 100 62 C128 62 144 70 144 92 L146 120 C146 142 128 152 100 152 C72 152 54 142 54 120 Z";
+const GRIT_HEAD = "M58 92 C58 72 72 64 100 64 C128 64 142 72 142 92 L144 124 C144 144 128 152 100 152 C72 152 56 144 56 124 Z";
 
 function GritHead() {
   return (
     <g>
-      {/* stubby horns, the left one chipped flat with a crack */}
-      <path d="M70 72 C62 60 60 46 66 36 C74 44 82 56 84 66 Z" fill={STONE_SHADE} />
-      <path d="M68 70 C61 60 60 50 64 42 L70 48 C74 54 79 60 82 66 Z" fill={STONE} />
-      <path d="M66 46 L71 53" {...line(STONE_SHADE, 1.6)} />
-      <path d="M130 72 C138 58 142 42 136 28 C126 38 118 54 116 66 Z" fill={STONE_SHADE} />
-      <path d="M132 70 C139 58 141 44 136 32 C128 42 120 56 118 66 Z" fill={STONE} />
-      {/* pointed ears out to the sides */}
+      {/* stubby round horns; the left one chipped flat */}
+      <path d="M72 76 C64 64 64 50 70 42 C78 46 86 58 88 70 Z" fill={STONE_SHADE} />
+      <path d="M71 73 C65 63 65 54 68 48 L76 50 C80 56 84 62 86 69 Z" fill={STONE} />
+      <path d="M68 48 L76 50" {...line(STONE_SHADE, 2)} />
+      <path d="M128 76 C136 62 140 48 134 38 C124 44 116 58 112 70 Z" fill={STONE_SHADE} />
+      <path d="M129 73 C135 62 138 50 134 42 C126 48 119 60 115 69 Z" fill={STONE} />
       {sides.map(([side, s]) => (
         <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, GRIT.j)}>
-          <path d={`M${mirror(s, 58)} 90 L${mirror(s, 32)} 84 L${mirror(s, 56)} 108 Z`} fill={STONE_SHADE} />
-          <path d={`M${mirror(s, 57)} 92 L${mirror(s, 38)} 88 L${mirror(s, 56)} 104 Z`} fill={STONE} />
+          <path d={`M${mirror(s, 60)} 96 Q${mirror(s, 40)} 90 ${mirror(s, 34)} 96 Q${mirror(s, 44)} 108 ${mirror(s, 60)} 116 Z`} fill={STONE_SHADE} />
+          <path d={`M${mirror(s, 60)} 99 Q${mirror(s, 44)} 94 ${mirror(s, 39)} 98 Q${mirror(s, 47)} 106 ${mirror(s, 60)} 112 Z`} fill={STONE} />
         </g>
       ))}
-      <Two d={GRIT_HEAD} fill={STONE} shade={STONE_SHADE} k={2.5} />
-      {/* a lighter, worn face, and two spots of lichen */}
-      <path d="M70 112 C70 96 86 92 100 98 C114 92 130 96 130 112 C130 134 116 144 100 144 C84 144 70 134 70 112 Z" fill={STONE_LIGHT} opacity={0.45} />
-      <circle cx={126} cy={74} r={3.4} fill={C.accent} opacity={0.75} />
-      <circle cx={131} cy={79} r={2} fill={C.accent} opacity={0.75} />
-      <circle cx={74} cy={138} r={2.4} fill={C.accent} opacity={0.6} />
-      {/* its snout: two flared nostrils */}
-      <path d="M92 116 Q100 110 108 116 Q106 121 100 121 Q94 121 92 116 Z" fill={STONE_SHADE} />
-      <circle cx={96.5} cy={117} r={1.5} fill={MOUTH_IN} />
-      <circle cx={103.5} cy={117} r={1.5} fill={MOUTH_IN} />
+      <Two d={GRIT_HEAD} fill={STONE} shade={STONE_SHADE} k={2.6} />
+      {/* a worn, paler snout and chin, two spots of lichen, a hairline crack */}
+      <path d={blob(100, 132, 28, 18, 1.02)} fill={STONE_LIGHT} />
+      <circle cx={130} cy={78} r={3.4} fill={C.accent} opacity={0.8} />
+      <circle cx={135} cy={84} r={2} fill={C.accent} opacity={0.8} />
+      <path d="M62 120 L67 124 L64 129" {...line(STONE_SHADE, 1.6)} />
+      <path d="M93 124 Q100 118 107 124 Q105 129 100 129 Q95 129 93 124 Z" fill={STONE_SHADE} />
+      <circle cx={97} cy={125} r={1.3} fill={MOUTH_IN} />
+      <circle cx={103} cy={125} r={1.3} fill={MOUTH_IN} />
     </g>
   );
 }
 
 function GritBehind() {
   return (
-    <g data-joint="tail" style={pivot("tail", GRIT.j)}>
-      <Taper
-        segs={[
-          [
-            [112, 214],
-            [136, 228],
-            [160, 226],
-            [164, 202],
-          ],
-        ]}
-        w0={12}
-        w1={5}
-        fill={STONE_SHADE}
-      />
-      {/* the spade at its tip */}
-      <path d="M164 202 L156 194 L164 178 L172 194 Z" fill={STONE_SHADE} />
-      <path d="M163 198 L157 193 L163 182 L169 193 Z" fill={STONE} />
+    <g transform={UNFIT}>
+      <g data-joint="tail" style={pivot("tail", GRIT.j)}>
+        <Taper
+          segs={[
+            [
+              [114, 254],
+              [136, 266],
+              [158, 260],
+              [160, 236],
+            ],
+          ]}
+          w0={11}
+          w1={6}
+          fill={STONE_SHADE}
+        />
+        <path d="M160 238 Q150 232 152 224 Q158 220 160 212 Q162 220 168 224 Q170 232 160 238 Z" fill={STONE_SHADE} />
+      </g>
     </g>
   );
 }
 
-/** Grit: big round white eyes — its sweet heart — under a heavy stone brow ledge that sits low, so
- *  at rest it looks grumpy. The ledges carry every mood. */
-const gritEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const ledge = (raise: number, tilt: number) => {
-    const by = y - 10 - raise;
+const gritEyes = eyesOf({
+  rx: 9.6,
+  ry: 10.4,
+  fill: EYE_WHITE,
+  pupil: { r: 5.2 },
+  shine: 2.2,
+  lid: STONE,
+  closed: INK,
+  browY: 14,
+  /** A stone ledge for a brow: thick, square-ended, low. */
+  brow: ({ x, y, s, raise, tilt }) => {
+    const by = y - raise;
     return (
-      <g transform={turnAt(s, tilt, x, by)}>
-        <path d={`M${x - 12} ${by + 3} Q${x} ${by - 5} ${x + 12} ${by + 3} L${x + 12} ${by + 7} Q${x} ${by + 1} ${x - 12} ${by + 7} Z`} fill={STONE_SHADE} />
-      </g>
+      <path
+        d={`M${x - 11} ${by + 2} Q${x} ${by - 4} ${x + 11} ${by + 2} L${x + 11} ${by + 6} Q${x} ${by + 1} ${x - 11} ${by + 6} Z`}
+        fill={STONE_SHADE}
+        transform={turnAt(s, tilt, x, by)}
+      />
     );
-  };
-  const open = (top = 0, k = 1, pupil = 3.6, extra = false) => (
-    <Orb id={id} x={x} y={y} rx={9 * k} ry={9.4 * k} s={s} fill={EYE_WHITE} lid={{ top, color: STONE }}>
-      <circle cx={x + dx} cy={y + 1 + dy} r={pupil * k} fill={INK} />
-      <circle cx={x - 1.4 + dx} cy={y - 0.6 + dy} r={1.3 * k} fill={EYE_WHITE} />
-      {extra && <circle cx={x + 2 + dx} cy={y + 3 + dy} r={0.9} fill={EYE_WHITE} />}
-    </Orb>
-  );
-  const shut = (d: string) => <path d={d} {...line(INK, 3)} />;
-  switch (mood) {
-    case "happy":
-      return g2(shut(arcUp(x, y + 1, 7, 4)), ledge(6, 0));
-    case "delighted":
-      return g2(open(0, 1.12, 4.6, true), ledge(10, 4));
-    case "curious":
-      return g2(open(0, 1.05, 3), s === 1 ? ledge(9, -4) : ledge(1, 10));
-    case "thinking":
-      return g2(open(0.36, 1, 3.4), s === -1 ? ledge(5, 6) : ledge(-1, -4));
-    case "focused":
-      return g2(open(0.5, 1, 3), ledge(-3, -16));
-    case "worried":
-      return g2(open(0.06, 1.06, 2.6, true), ledge(6, 26));
-    case "oops":
-      return g2(shut(chevron(x, y, s, 6, 5)), ledge(5, 18));
-    case "wink":
-      return s === 1 ? g2(shut(arcUp(x, y + 1, 7, 4)), ledge(-1, -8)) : g2(open(0.2), ledge(4, 0));
-    default:
-      /* grumpy: lids low, ledges down at the middle */
-      return g2(open(0.34, 1, 3.6), ledge(-2, -14));
-  }
-};
+  },
+  /* grumpy at rest: lids low, ledges down at the middle */
+  rest: { top: 0.3, tilt: -6, raise: -1, browTilt: -14 },
+});
 
-/** Grit: a jutting underbite — the lower jaw wider than the top, two little tusks standing up from
- *  it. Talking, the jaw drops on its hinge and the tusks go with it. */
+/** Grit: a jutting underbite with one tusk standing up from it on the left; talking, the jaw drops
+ *  on its hinge and the tusk goes with it. */
 const gritMouth: MouthKit = ({ mood, y, viseme }) => {
   const jaw = (drop: number, smile = 0, wide = 1) => {
-    const w = 16 * wide;
+    const w = 13 * wide;
     const top = y - smile * 0.4;
     return (
       <g>
@@ -648,576 +703,461 @@ const gritMouth: MouthKit = ({ mood, y, viseme }) => {
             tongue={[100, top + drop, w * 0.45, Math.max(1.5, drop * 0.4)]}
           />
         )}
-        {/* the lower lip of the jaw, then the tusks standing on it */}
-        <path d={`M${100 - w} ${top + drop - 1} Q100 ${top + drop + 7 + smile} ${100 + w} ${top + drop - 1}`} {...line(STONE_SHADE, 4.2)} />
-        <path d={`M${100 - w * 0.62} ${top + drop + 1} l1.6 -6.4 l2.6 6`} fill={EYE_WHITE} />
-        <path d={`M${100 + w * 0.62} ${top + drop + 1} l-1.6 -6.4 l-2.6 6`} fill={EYE_WHITE} />
+        <path d={`M${100 - w} ${top + drop - 1} Q100 ${top + drop + 6 + smile} ${100 + w} ${top + drop - 1}`} {...line(STONE_SHADE, 3.6)} />
+        <path d={`M${100 - w * 0.55} ${top + drop + 1.2} l1.4 -6 l2.6 5.6`} fill={EYE_WHITE} />
+        <path d={`M${100 + w * 0.5} ${top + drop + 1.6} l-1 -3 l-1.6 3`} fill={EYE_WHITE} />
       </g>
     );
   };
   if (viseme) {
     const sh = SHAPE[viseme];
-    const lift = SMILE[mood] ?? 0;
-    return jaw(sh.h * 10, lift, sh.round ? 0.7 : sh.w);
+    return jaw(sh.h * 9, SMILE[mood] ?? 0, sh.round ? 0.7 : sh.w);
   }
   switch (mood) {
     case "happy":
-      return jaw(5, 4);
+      return jaw(4, 4);
     case "delighted":
-      return jaw(10, 5);
+      return jaw(9, 5);
     case "curious":
-      return jaw(4, 0, 0.6);
+      return jaw(3.4, 0, 0.6);
     case "thinking":
-      return jaw(0, -1, 0.9);
+      return jaw(0, -1, 0.85);
     case "focused":
       return jaw(0, -2, 0.8);
     case "worried":
-      return jaw(2, -3, 0.85);
+      return jaw(2, -3, 0.8);
     case "oops":
-      return jaw(6, -2, 0.9);
+      return jaw(5, -2, 0.9);
     case "wink":
-      return jaw(3, 3);
+      return jaw(2.6, 3);
     default:
       return jaw(0, -2);
   }
 };
 
-/* ——— Lyra, a lyrebird: the performer ——— */
+/* ——— Lyra, a lyrebird: the performer. An S-curve ——— */
 
 const LYRA_BODY = C.primary;
 const LYRA_SHADE = C.deep;
 const LYRA_MASK = C.soft;
 
-const LYRA: Body = {
-  ...CHIBI,
-  id: "lyra",
-  j: { ...J, tail: [100, 206] },
-  torso: "M84 148 Q100 142 116 148 Q129 158 127 186 Q123 216 100 219 Q77 216 73 186 Q71 158 84 148 Z",
-  headVB: "34 34 132 132",
-  w: { upper: 13, fore: 11, thigh: 6.5, shin: 5.5, hand: 7, cloth: 1 },
-  neck: { x: 94, y: 134, w: 12, h: 20 },
-};
+const LYRA = cute("lyra", {
+  k: 1.4,
+  neck: 206,
+  torso: "M80 150 Q100 140 120 150 Q134 164 132 192 Q128 224 100 224 Q72 224 68 192 Q66 164 80 150 Z",
+  w: { upper: 14, fore: 13, thigh: 6, shin: 5.4, hand: 8, cloth: 1 },
+  j: { hipL: [94, 258], kneeL: [93, 266], footL: [92, 273], hipR: [106, 258], kneeR: [107, 266], footR: [108, 273] },
+  headVB: "14 30 172 172",
+});
 
-/** One of the two lyre feathers: out from the rump, up past its head, curling out at the top.
- *  Banded with notches, as a lyrebird's are. */
+/** One lyre feather: up from the rump in a wide curve, past its head, curling out at the top.
+ *  Banded, as a lyrebird's are. Figure space. */
 function Lyrate({ s }: { s: number }) {
   const m = (x: number) => mirror(s, x);
   const segs: Cubic[] = [
     [
-      [m(98), 206],
-      [m(70), 190],
-      [m(56), 150],
-      [m(64), 100],
+      [m(104), 250],
+      [m(150), 244],
+      [m(166), 176],
+      [m(150), 118],
     ],
     [
-      [m(64), 100],
-      [m(70), 64],
-      [m(52), 30],
-      [m(32), 34],
+      [m(150), 118],
+      [m(140), 80],
+      [m(156), 44],
+      [m(180), 50],
     ],
   ];
   return (
     <g>
-      <Taper segs={segs} w0={13} w1={9} fill={LYRA_SHADE} />
-      <g transform={`translate(${-1.4 * s} -1.2)`}>
-        <Taper segs={segs} w0={10.5} w1={7} fill={C.accent} />
+      <Taper segs={segs} w0={15} w1={10} fill={LYRA_SHADE} />
+      <g transform={`translate(${-1.6 * s} -1.4)`}>
+        <Taper segs={segs} w0={12} w1={8} fill={C.accent} />
       </g>
-      {[0.25, 0.45, 0.65, 0.85].map((t) => {
+      {[0.3, 0.52, 0.74, 0.94].map((t) => {
         const [x, y] = bez(segs[0], t);
-        return <circle key={`a${t}`} cx={x} cy={y} r={3.2} fill={LYRA_SHADE} />;
+        return <ellipse key={`a${t}`} cx={x} cy={y} rx={5} ry={2.2} transform={`rotate(${-60 * s} ${x} ${y})`} fill={LYRA_SHADE} />;
       })}
-      {[0.15, 0.4, 0.65].map((t) => {
+      {[0.2, 0.46].map((t) => {
         const [x, y] = bez(segs[1], t);
-        return <circle key={`b${t}`} cx={x} cy={y} r={2.8} fill={LYRA_SHADE} />;
+        return <ellipse key={`b${t}`} cx={x} cy={y} rx={4.4} ry={2} transform={`rotate(${-80 * s} ${x} ${y})`} fill={LYRA_SHADE} />;
       })}
-      <circle cx={m(32)} cy={34} r={5} fill={C.accent} />
+      <circle cx={m(180)} cy={50} r={6.4} fill={C.accent} />
     </g>
   );
 }
 
 function LyraBehind() {
   return (
-    <g data-joint="tail" style={pivot("tail", LYRA.j)}>
-      {/* the filmy plumes between the lyre feathers */}
-      <g {...line(C.soft, 6)} opacity={0.75}>
-        <path d="M100 206 C92 160 84 110 78 52" />
-        <path d="M100 206 C100 150 98 100 96 40" />
-        <path d="M100 206 C108 150 112 100 120 44" />
-        <path d="M100 206 C114 170 124 120 132 66" />
-        <path d="M100 206 C86 170 76 130 70 80" />
+    <g transform={UNFIT}>
+      <g data-joint="tail" style={pivot("tail", LYRA.j)}>
+        {/* the filmy plumes between the lyre feathers: a soft fan */}
+        {[-34, -18, -4, 10, 24, 38].map((a, i) => (
+          <ellipse
+            key={a}
+            cx={100 + a * 0.9}
+            cy={150}
+            rx={9}
+            ry={70}
+            transform={`rotate(${a * 0.55} 100 250)`}
+            fill={i % 2 ? C.soft : C.hi}
+            opacity={0.85}
+          />
+        ))}
+        <Lyrate s={1} />
+        <Lyrate s={-1} />
       </g>
-      <g {...line(C.hi, 2.4)} opacity={0.8}>
-        <path d="M100 206 C96 150 90 110 86 60" />
-        <path d="M100 206 C104 150 106 110 110 56" />
-      </g>
-      <Lyrate s={1} />
-      <Lyrate s={-1} />
     </g>
   );
 }
-
-const LYRA_HEAD = "M64 108 C64 80 80 66 100 66 C120 66 136 80 136 108 C136 132 120 146 100 146 C80 146 64 132 64 108 Z";
 
 function LyraHead() {
   return (
     <g>
-      {/* a small swept crest of two feathers */}
-      <path d="M100 70 C96 56 104 44 116 42 C110 50 108 58 108 68 Z" fill={LYRA_SHADE} />
-      <path d="M96 70 C90 60 92 50 100 44 C98 52 100 60 104 68 Z" fill={LYRA_BODY} />
-      <Two d={LYRA_HEAD} fill={LYRA_BODY} shade={LYRA_SHADE} k={2.2} />
-      {/* the pale mask round the eyes: a performer's make-up */}
-      <ellipse cx={83} cy={103} rx={13} ry={11} fill={LYRA_MASK} />
-      <ellipse cx={117} cy={103} rx={13} ry={11} fill={LYRA_MASK} />
-      <path d="M78 130 Q100 140 122 130 Q118 142 100 144 Q82 142 78 130 Z" fill={C.mid} />
+      {/* one curl of a crest */}
+      <path d="M100 70 C96 54 104 40 118 42 C128 44 128 56 120 58 C114 60 112 54 116 52" {...line(LYRA_SHADE, 6)} />
+      <circle cx={116} cy={52} r={3.6} fill={C.accent} />
+      <Two d={blob(100, 110, 42, 42, 1.08)} fill={LYRA_BODY} shade={LYRA_SHADE} k={2.2} />
+      {/* the pale mask round its eyes: stage make-up */}
+      <path d="M100 124 C92 132 66 132 62 116 C60 102 74 96 84 100 C92 102 96 106 100 108 C104 106 108 102 116 100 C126 96 140 102 138 116 C134 132 108 132 100 124 Z" fill={LYRA_MASK} />
     </g>
   );
 }
 
-/** Lyra: big glossy eyes with three long lashes and a flick of liner at the outer corner; heavy
- *  lids in the body's colour when it acts bored, or proud. */
-const lyraEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const lashes = (by: number) => (
-    <path
-      d={`M${x + s * 4} ${by} l${s * 4} -5 M${x + s * 7} ${by + 1.6} l${s * 5} -3.6 M${x + s * 9} ${by + 4} l${s * 5.4} -1.6`}
-      {...line(INK, 1.9)}
-    />
-  );
-  const open = (top = 0, bottom = 0, tilt = 0, k = 1, extra = false) => {
-    const rx = 7.6 * k;
-    const ry = 8.4 * k;
-    return (
-      <g>
-        <Orb id={id} x={x} y={y} rx={rx} ry={ry} s={s} fill={INK} lid={{ top, bottom, tilt, color: C.mid }}>
-          <circle cx={x + dx} cy={y + 1 + dy} r={5 * k} fill={mix(C.primary, INK, 40)} />
-          <circle cx={x - 2.4 + dx} cy={y - 2.6 + dy} r={2.4 * k} fill={EYE_WHITE} />
-          {extra && <circle cx={x + 2.4 + dx} cy={y + 3 + dy} r={1.2} fill={EYE_WHITE} />}
-        </Orb>
-        <path d={`M${x + s * rx * 0.7} ${y - 2} l${s * 5} -3`} {...line(INK, 2.2)} />
-        {lashes(top > 0 ? y - ry + 2 * ry * top - 3 : y - ry + 1)}
-      </g>
-    );
-  };
-  const shut = (d: string, by: number) => g2(<path d={d} {...line(INK, 3)} />, lashes(by));
-  switch (mood) {
-    case "happy":
-      return shut(arcUp(x, y + 1, 7, 4.5), y - 3);
-    case "delighted":
-      return open(0, 0, 0, 1.14, true);
-    case "curious":
-      return open(0, 0, 0, s === 1 ? 1.08 : 0.96);
-    case "thinking":
-      return open(0.42, 0, s * 4);
-    case "focused":
-      return open(0.48, 0, -6);
-    case "worried":
-      return open(0.1, 0, 16, 1, true);
-    case "oops":
-      return shut(chevron(x, y, s, 6, 5), y - 5);
-    case "wink":
-      return s === 1 ? shut(arcDown(x, y - 1, 7, 4), y - 3) : open(0.15);
-    default:
-      /* at rest, a little pleased with itself: lids half down, chin up */
-      return open(0.3, 0, 4);
-  }
-};
+const lyraEyes = eyesOf({
+  rx: 8.8,
+  ry: 10.2,
+  fill: INK,
+  iris: { r: 6.2, color: mix(C.primary, INK, 45) },
+  pupil: { r: 3.4 },
+  shine: 2.8,
+  lid: C.mid,
+  rim: { color: INK, w: 2.6, lashes: 3 },
+  closed: INK,
+  browY: 17,
+  brow: arcBrow(LYRA_SHADE, 3, 6.4),
+  /* a little pleased with itself: lids half down, brows up */
+  rest: { top: 0.28, tilt: 4, raise: 4, browTilt: 4 },
+});
 
-/** Lyra: a short dark beak. It speaks by opening it: the lower half drops on its hinge. */
+/** Lyra: a small yellow beak. It speaks by opening it: the lower half drops on its hinge. */
 const lyraMouth: MouthKit = ({ mood, y, viseme }) => {
   const beak = (open: number, tilt = 0) => (
-    <g transform={`rotate(${tilt} 100 ${y - 6})`}>
-      {open > 0.3 && <path d={`M93 ${y - 4} L107 ${y - 4} L100 ${y + 4 + open} Z`} fill={MOUTH_IN} />}
-      <path d={`M93 ${y - 4} Q100 ${y - 1 + open * 0.8 + 4} 107 ${y - 4} Q100 ${y + 6 + open} 93 ${y - 4} Z`} fill={LYRA_SHADE} transform={`translate(0 ${open * 0.6})`} />
-      <path d={`M92 ${y - 6} Q100 ${y - 10} 108 ${y - 6} L100 ${y + 4} Z`} fill={LYRA_SHADE} />
-      <path d={`M95 ${y - 6.4} Q100 ${y - 8.6} 105 ${y - 6.4} L100 ${y - 1} Z`} fill={mix(C.deep, "white", 82)} />
+    <g transform={`rotate(${tilt} 100 ${y - 4})`}>
+      {open > 0.3 && <path d={`M94 ${y - 3} L106 ${y - 3} L100 ${y + 3 + open} Z`} fill={MOUTH_IN} />}
+      <path d={`M94 ${y - 3} Q100 ${y + 1 + open} 106 ${y - 3} Q100 ${y + 5 + open} 94 ${y - 3} Z`} fill={C.accentDeep} transform={`translate(0 ${open * 0.5})`} />
+      <path d={`M92 ${y - 5} Q100 ${y - 10} 108 ${y - 5} Q104 ${y + 1} 100 ${y + 3} Q96 ${y + 1} 92 ${y - 5} Z`} fill={C.accent} />
     </g>
   );
-  if (viseme) return beak(SHAPE[viseme].h * 7);
+  if (viseme) return beak(SHAPE[viseme].h * 6.4);
   switch (mood) {
     case "happy":
+      return beak(3);
     case "delighted":
-      return beak(mood === "delighted" ? 7 : 4);
+      return beak(6);
     case "curious":
     case "oops":
-      return beak(3);
+      return beak(2.6);
     case "thinking":
       return beak(0, 8);
     case "worried":
-      return beak(1.5, -4);
+      return beak(1.4, -4);
     case "wink":
-      return beak(2.5, 6);
+      return beak(2, 6);
     default:
       return beak(0);
   }
 };
 
-/* ——— Nox, a cat: owns the roof ——— */
+/* ——— Nox, a cat: owns the roof. A circle: a loaf ——— */
 
 const NOX_FUR = mix(C.deep, "#34323d", 55);
 const NOX_SHADE = mix(C.deep, "#1e1c26", 40);
 const NOX_WHITE = C.tint;
+const NOX_BROW = mix(C.hi, "white", 40);
 
-const NOX: Body = {
-  ...CHIBI,
-  id: "nox",
-  j: {
-    ...J,
-    head: [100, 152],
-    shoulderL: [80, 166],
-    elbowL: [78, 188],
-    wristL: [84, 206],
-    shoulderR: [120, 166],
-    elbowR: [122, 188],
-    wristR: [116, 206],
-    hipL: [86, 216],
-    kneeL: [84, 246],
-    footL: [84, 272],
-    hipR: [114, 216],
-    kneeR: [116, 246],
-    footR: [116, 272],
-    tail: [118, 218],
-    earL: [72, 74],
-    earR: [128, 74],
-  },
-  /* a round loaf */
-  torso: "M78 146 Q100 138 122 146 Q143 162 141 196 Q137 228 100 228 Q63 228 59 196 Q57 162 78 146 Z",
-  headFit: "translate(0 4)",
-  headVB: "32 42 136 136",
-  w: { upper: 13, fore: 12.5, thigh: 15, shin: 14, hand: 8.4, cloth: 1.2 },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
-};
-
-const NOX_HEAD = "M56 108 C56 80 76 66 100 66 C124 66 144 80 144 108 C150 116 152 124 146 128 C140 142 124 150 100 150 C76 150 60 142 54 128 C48 124 50 116 56 108 Z";
+const NOX = cute("nox", {
+  k: 1.42,
+  neck: 206,
+  torso: "M74 152 Q100 140 126 152 Q144 168 142 198 Q138 228 100 228 Q62 228 58 198 Q56 168 74 152 Z",
+  w: { upper: 14, fore: 13, thigh: 17, shin: 16, hand: 8.8, cloth: 1.2 },
+  j: { tail: [118, 256], earL: [72, 80], earR: [128, 80], hipL: [86, 256], kneeL: [85, 265], footL: [84, 273], hipR: [114, 256], kneeR: [115, 265], footR: [116, 273] },
+});
 
 function NoxHead() {
   return (
     <g>
       {sides.map(([side, s]) => (
         <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, NOX.j)}>
-          {/* small ears with round tips; the left one has a notch out of it */}
+          {/* small ears with soft tips; the left one notched */}
           <path
             d={
               s === -1
-                ? "M62 88 L61.4 74 L67 71 L61 67 Q61 58 70 54 Q80 58 90 72 Z"
-                : `M${mirror(s, 62)} 88 Q${mirror(s, 60)} 58 ${mirror(s, 70)} 54 Q${mirror(s, 80)} 58 ${mirror(s, 90)} 72 Z`
+                ? "M60 94 L58 78 L64 76 L58 72 Q58 60 68 58 Q80 64 90 78 Z"
+                : `M${mirror(s, 60)} 94 Q${mirror(s, 56)} 62 ${mirror(s, 68)} 58 Q${mirror(s, 80)} 64 ${mirror(s, 90)} 78 Z`
             }
             fill={NOX_FUR}
           />
-          <path d={`M${mirror(s, 67)} 82 Q${mirror(s, 66)} 64 ${mirror(s, 71)} 62 Q${mirror(s, 77)} 66 ${mirror(s, 83)} 74 Z`} fill={PINK} opacity={0.7} />
+          <path d={`M${mirror(s, 65)} 86 Q${mirror(s, 64)} 70 ${mirror(s, 69)} 67 Q${mirror(s, 76)} 70 ${mirror(s, 82)} 78 Z`} fill={PINK} opacity={0.75} />
         </g>
       ))}
-      <Two d={NOX_HEAD} fill={NOX_FUR} shade={NOX_SHADE} k={2.2} />
-      {/* the white muzzle and chin */}
-      <path d="M82 124 C82 112 92 108 100 114 C108 108 118 112 118 124 C118 138 110 146 100 146 C90 146 82 138 82 124 Z" fill={NOX_WHITE} />
-      <path d="M95 116 L105 116 L100 121 Z" fill={PINK} />
-      <g {...line(mix(C.hi, "white", 60), 1.4)} opacity={0.9}>
-        <path d="M82 124 L56 120 M82 128 L58 130 M118 124 L144 120 M118 128 L142 130" />
+      {/* cheek fluff, then the head */}
+      <path d="M58 122 L46 126 L56 132 L50 138 L64 136 Z M142 122 L154 126 L144 132 L150 138 L136 136 Z" fill={NOX_FUR} />
+      <Two d={blob(100, 112, 46, 40, 1.08)} fill={NOX_FUR} shade={NOX_SHADE} k={2.2} />
+      {/* the white muzzle: two puffs and a chin */}
+      <ellipse cx={92} cy={134} rx={10} ry={8} fill={NOX_WHITE} />
+      <ellipse cx={108} cy={134} rx={10} ry={8} fill={NOX_WHITE} />
+      <ellipse cx={100} cy={140} rx={8} ry={6} fill={NOX_WHITE} />
+      <path d="M96 127 L104 127 L100 131 Z" fill={PINK} />
+      <g {...line(NOX_BROW, 1.4)} opacity={0.9}>
+        <path d="M84 134 L64 130 M84 138 L66 140 M116 134 L136 130 M116 138 L134 140" />
       </g>
     </g>
   );
 }
 
 function NoxBelly() {
-  return <path d="M88 152 Q100 160 112 152 Q118 180 110 206 Q100 212 90 206 Q82 180 88 152 Z" fill={NOX_WHITE} />;
+  return <path d="M90 154 Q100 160 110 154 Q116 182 108 206 Q100 212 92 206 Q84 182 90 154 Z" fill={NOX_WHITE} />;
 }
 
 function NoxBehind() {
   return (
-    <g data-joint="tail" style={pivot("tail", NOX.j)}>
-      {/* a long tail that curls up into a question mark */}
-      <Taper
-        segs={[
-          [
-            [118, 218],
-            [150, 236],
-            [172, 214],
-            [166, 176],
-          ],
-          [
-            [166, 176],
-            [162, 152],
-            [142, 150],
-            [146, 166],
-          ],
-        ]}
-        w0={13}
-        w1={9}
-        fill={NOX_FUR}
-      />
+    <g transform={UNFIT}>
+      <g data-joint="tail" style={pivot("tail", NOX.j)}>
+        {/* a long tail that curls up into a question mark */}
+        <Taper
+          segs={[
+            [
+              [120, 262],
+              [156, 276],
+              [178, 248],
+              [168, 214],
+            ],
+            [
+              [168, 214],
+              [162, 192],
+              [140, 192],
+              [146, 208],
+            ],
+          ]}
+          w0={13}
+          w1={10}
+          fill={NOX_FUR}
+        />
+        <circle cx={146} cy={208} r={5.4} fill={NOX_WHITE} />
+      </g>
     </g>
   );
 }
 
-/** Nox: round eyes in the accent with a slit pupil, lids heavy at rest — unimpressed. The slit
- *  widens to a disc when it is delighted, and it will not admit to that. */
-const noxEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const open = (top = 0, bottom = 0, tilt = 0, pupil = 2, k = 1) => (
-    <Orb id={id} x={x} y={y} rx={8.4 * k} ry={8.6 * k} s={s} fill={mix(C.accent, "white", 85)} lid={{ top, bottom, tilt, color: NOX_FUR }}>
-      <ellipse cx={x + dx} cy={y + dy} rx={pupil} ry={7} fill={INK} />
-      <circle cx={x - 3 + dx} cy={y - 3 + dy} r={1.7} fill={EYE_WHITE} />
-    </Orb>
-  );
-  const shut = (d: string) => <path d={d} {...line(NOX_WHITE, 3)} />;
-  switch (mood) {
-    case "happy":
-      return shut(arcDown(x, y - 1, 7, 3.4));
-    case "delighted":
-      return open(0, 0, 0, 6.4, 1.08);
-    case "curious":
-      return open(0.1, 0, 0, 3.2);
-    case "thinking":
-      return open(0.5, 0.1, s * 4, 1.6);
-    case "focused":
-      return open(0.52, 0.18, -6, 1.4);
-    case "worried":
-      return open(0.12, 0, 14, 4.4);
-    case "oops":
-      return shut(chevron(x, y, s, 6, 5));
-    case "wink":
-      return s === 1 ? shut(arcDown(x, y - 1, 7, 3.4)) : open(0.5, 0, 0, 1.8);
-    default:
-      return open(0.46, 0.08, 0, 1.8);
-  }
-};
+const noxEyes = eyesOf({
+  rx: 10.6,
+  ry: 10.6,
+  fill: mix(C.accent, "white", 70),
+  iris: { r: 8.4, color: mix(C.accent, "white", 30) },
+  pupil: { r: 4.6, slit: true },
+  shine: 2.4,
+  lid: NOX_FUR,
+  closed: NOX_WHITE,
+  browY: 16,
+  brow: dashBrow(NOX_BROW, 3, 4.6),
+  /* unimpressed: lids heavy, brows flat */
+  rest: { top: 0.46, bottom: 0.06, raise: -1 },
+});
 
 /** Nox: a cat's “ω” under its nose; talking, it opens beneath, with two small fangs. */
 const noxMouth: MouthKit = ({ mood, y, viseme }) => {
-  const omega = (dy = 0) => <path d={`M92 ${y + dy} Q96 ${y + 4 + dy} 100 ${y + dy} Q104 ${y + 4 + dy} 108 ${y + dy}`} {...line(NOX_SHADE, 2.2)} />;
-  const open = (h: number, w = 6) => (
+  const omega = (dy = 0) => <path d={`M93 ${y + dy} Q96.5 ${y + 3.6 + dy} 100 ${y + dy} Q103.5 ${y + 3.6 + dy} 107 ${y + dy}`} {...line(NOX_SHADE, 2.2)} />;
+  const open = (h: number, w = 5.4) => (
     <g>
       <OpenMouth d={`M${100 - w} ${y + 1} Q100 ${y + 3} ${100 + w} ${y + 1} Q${100 + w * 0.8} ${y + 2 + h} 100 ${y + 3 + h} Q${100 - w * 0.8} ${y + 2 + h} ${100 - w} ${y + 1} Z`} fill={MOUTH_IN} tongue={[100, y + 2 + h, w * 0.5, Math.max(1.4, h * 0.35)]} />
-      <path d={`M${100 - w * 0.6} ${y + 1.4} l1 3 l1.2 -3 M${100 + w * 0.6} ${y + 1.4} l-1 3 l-1.2 -3`} fill={EYE_WHITE} />
+      <path d={`M${100 - w * 0.6} ${y + 1.4} l1 2.8 l1.2 -2.8 M${100 + w * 0.6} ${y + 1.4} l-1 2.8 l-1.2 -2.8`} fill={EYE_WHITE} />
       {omega()}
     </g>
   );
   if (viseme) {
     const sh = SHAPE[viseme];
-    return sh.h === 0 ? omega(sh.pressed ? -0.4 : 0) : open(sh.h * 8, sh.round ? 4 : 6 * sh.w);
+    return sh.h === 0 ? omega(sh.pressed ? -0.4 : 0) : open(sh.h * 7, sh.round ? 3.6 : 5.4 * sh.w);
   }
   switch (mood) {
     case "happy":
-      return open(3);
+      return open(2.6);
     case "delighted":
-      return open(7, 7);
+      return open(6, 6.4);
     case "curious":
-      return open(2.4, 3.6);
+      return open(2.2, 3.4);
     case "worried":
-      return <path d={wave(y + 3, 7, 2.4)} {...line(NOX_SHADE, 2.2)} />;
+      return <path d={wave(y + 3, 6, 2.2)} {...line(NOX_SHADE, 2.2)} />;
     case "oops":
-      return open(4, 5);
+      return open(3.6, 4.6);
     default:
       return omega();
   }
 };
 
-/* ——— Pim, a fennec fox kit: the newest member ——— */
+/* ——— Pim, a fennec fox kit: the newest member. Triangles: two great ears ——— */
 
 const PIM_FUR = mix(C.accent, "#e9d3b0", 55);
 const PIM_SHADE = mix(C.accentDeep, "#c4a27a", 45);
 const PIM_INNER = "#f7c4c0";
 
-const PIM: Body = {
-  ...CHIBI,
-  id: "pim",
-  j: {
-    ...J,
-    head: [100, 154],
-    shoulderL: [86, 166],
-    elbowL: [82, 186],
-    wristL: [80, 204],
-    shoulderR: [114, 166],
-    elbowR: [118, 186],
-    wristR: [120, 204],
-    hipL: [93, 214],
-    kneeL: [92, 244],
-    footL: [91, 272],
-    hipR: [107, 214],
-    kneeR: [108, 244],
-    footR: [109, 272],
-    tail: [108, 210],
-    earL: [80, 82],
-    earR: [120, 82],
-  },
-  torso: "M86 152 Q100 148 114 152 Q122 158 121 176 L119 206 Q118 220 100 221 Q82 220 81 206 L79 176 Q78 158 86 152 Z",
-  headFit: "translate(0 6)",
+const PIM = cute("pim", {
+  k: 1.36,
+  neck: 206,
+  torso: "M84 152 Q100 146 116 152 Q124 160 123 178 L121 208 Q120 222 100 222 Q80 222 79 208 L77 178 Q76 160 84 152 Z",
+  w: { upper: 12, fore: 11, thigh: 14, shin: 13, hand: 7.6, cloth: 1 },
+  j: { tail: [108, 252], earL: [82, 88], earR: [118, 88] },
   headVB: "4 4 192 192",
-  w: { upper: 11.5, fore: 11, thigh: 13, shin: 12, hand: 7.6, cloth: 1 },
-  neck: { x: 100, y: 150, w: 0, h: 0 },
-};
+});
 
-/** How far the ears turn with the mood: they flatten out when it is shy or startled and stand up
- *  tall when it is delighted. [left, right] in degrees, outward positive. */
+/** How the ears turn with the mood: out and flat when it is shy or startled, up when it is
+ *  delighted. [left, right] in degrees. */
 const PIM_EARS: Partial<Record<Mood, [number, number]>> = {
-  worried: [-42, 42],
-  oops: [-50, 50],
-  thinking: [-6, 18],
+  worried: [-38, 38],
+  oops: [-46, 46],
+  thinking: [-4, 16],
   curious: [8, -14],
   delighted: [10, -10],
   happy: [4, -4],
-  focused: [0, 0],
 };
 
 function PimHead({ mood }: Ctx) {
-  const [l, r] = (mood && PIM_EARS[mood]) ?? [-2, 0];
+  const [l, r] = (mood && PIM_EARS[mood]) ?? [-6, 2];
   return (
     <g>
       {sides.map(([side, s]) => (
         <g key={side} data-joint={`ear${side}`} style={pivot(`ear${side}`, PIM.j)}>
-          <g transform={`rotate(${s === -1 ? l : r} ${mirror(s, 80)} 82)`}>
-            {/* ears bigger than its head: two dishes, turned out to listen */}
-            <path d={`M${mirror(s, 72)} 100 C${mirror(s, 46)} 86 ${mirror(s, 22)} 56 ${mirror(s, 18)} 14 C${mirror(s, 52)} 18 ${mirror(s, 86)} 42 ${mirror(s, 102)} 76 Z`} fill={PIM_SHADE} />
-            <path d={`M${mirror(s, 73)} 97 C${mirror(s, 48)} 84 ${mirror(s, 25)} 56 ${mirror(s, 21)} 17 C${mirror(s, 53)} 21 ${mirror(s, 84)} 44 ${mirror(s, 99)} 75 Z`} fill={PIM_FUR} />
-            <path d={`M${mirror(s, 77)} 88 C${mirror(s, 56)} 76 ${mirror(s, 38)} 54 ${mirror(s, 32)} 30 C${mirror(s, 56)} 34 ${mirror(s, 78)} 52 ${mirror(s, 90)} 74 Z`} fill={PIM_INNER} />
-            <path d={`M${mirror(s, 80)} 80 C${mirror(s, 64)} 70 ${mirror(s, 50)} 58 ${mirror(s, 40)} 44`} {...line(FACE, 2.4)} opacity={0.9} />
+          <g transform={`rotate(${s === -1 ? l : r} ${mirror(s, 82)} 88)`}>
+            {/* ears bigger than its head: two soft dishes */}
+            <path d={`M${mirror(s, 72)} 104 C${mirror(s, 50)} 90 ${mirror(s, 30)} 58 ${mirror(s, 28)} 22 C${mirror(s, 60)} 26 ${mirror(s, 88)} 50 ${mirror(s, 100)} 82 Z`} fill={PIM_SHADE} />
+            <path d={`M${mirror(s, 73)} 101 C${mirror(s, 52)} 88 ${mirror(s, 33)} 58 ${mirror(s, 31)} 25 C${mirror(s, 61)} 29 ${mirror(s, 86)} 52 ${mirror(s, 97)} 81 Z`} fill={PIM_FUR} />
+            <path d={`M${mirror(s, 77)} 92 C${mirror(s, 60)} 80 ${mirror(s, 44)} 58 ${mirror(s, 40)} 38 C${mirror(s, 62)} 42 ${mirror(s, 80)} 58 ${mirror(s, 89)} 78 Z`} fill={PIM_INNER} />
+            <path d={`M${mirror(s, 80)} 84 C${mirror(s, 68)} 74 ${mirror(s, 56)} 62 ${mirror(s, 48)} 50`} {...line(FACE, 2.6)} opacity={0.9} />
           </g>
         </g>
       ))}
-      <Two d="M66 112 C66 88 82 76 100 76 C118 76 134 88 134 112 C134 136 120 148 100 148 C80 148 66 136 66 112 Z" fill={PIM_FUR} shade={PIM_SHADE} k={2} />
-      {/* the cream face and a fennec's dark tear lines */}
-      <path d="M70 116 C76 104 90 102 100 110 C110 102 124 104 130 116 C128 136 116 146 100 146 C84 146 72 136 70 116 Z" fill={FACE} />
-      <path d="M88 112 Q86 120 90 126 M112 112 Q114 120 110 126" {...line(PIM_SHADE, 2)} />
-      <ellipse cx={100} cy={124} rx={4.4} ry={3.2} fill={INK} />
-      <circle cx={98.6} cy={123} r={1} fill={EYE_WHITE} />
+      {/* fox cheeks that come to soft points */}
+      <path d="M62 126 L52 132 L64 138 Z M138 126 L148 132 L136 138 Z" fill={PIM_FUR} />
+      <Two d={blob(100, 118, 38, 34, 1.1)} fill={PIM_FUR} shade={PIM_SHADE} k={2} />
+      {/* the cream face, and a fennec's dark tear lines */}
+      <path d="M64 124 C70 110 88 108 100 116 C112 108 130 110 136 124 C134 142 118 152 100 152 C82 152 66 142 64 124 Z" fill={FACE} />
+      <path d="M86 124 Q85 130 88 135 M114 124 Q115 130 112 135" {...line(PIM_SHADE, 1.8)} />
+      <ellipse cx={100} cy={134} rx={4.2} ry={3} fill={INK} />
+      <circle cx={98.8} cy={133} r={0.9} fill={EYE_WHITE} />
     </g>
   );
 }
 
 function PimBehind() {
   return (
-    <g data-joint="tail" style={pivot("tail", PIM.j)}>
-      <Taper
-        segs={[
-          [
-            [108, 210],
-            [130, 220],
-            [146, 210],
-            [150, 188],
-          ],
-        ]}
-        w0={14}
-        w1={18}
-        fill={PIM_FUR}
-      />
-      {/* a fennec's dark tail tip */}
-      <circle cx={150} cy={186} r={10} fill={PIM_SHADE} />
-      <circle cx={151} cy={182} r={7} fill={mix(C.accentDeep, "#5b4636", 40)} />
+    <g transform={UNFIT}>
+      <g data-joint="tail" style={pivot("tail", PIM.j)}>
+        <Taper
+          segs={[
+            [
+              [108, 256],
+              [130, 266],
+              [148, 254],
+              [150, 228],
+            ],
+          ]}
+          w0={14}
+          w1={22}
+          fill={PIM_FUR}
+        />
+        <circle cx={150} cy={224} r={11} fill={mix(C.accentDeep, "#5b4636", 40)} />
+      </g>
     </g>
   );
 }
 
 function PimBelly() {
-  return <ellipse cx={100} cy={186} rx={13} ry={22} fill={FACE} />;
+  return <ellipse cx={100} cy={188} rx={14} ry={24} fill={FACE} />;
 }
 
-/** Pim: big dark glossy eyes that look away — down and to the side — when it is shy, which is most
- *  of the time; two shines and a bottom glint that make it look on the edge of tears or wonder. */
-const pimEyes: EyeKit = ({ mood, s, x, y, look, id }) => {
-  const [dx, dy] = look;
-  const brow = (raise: number, tilt: number) => {
-    const by = y - 14 - raise;
-    return <path d={`M${x - 5} ${by} Q${x} ${by - 2} ${x + 5} ${by}`} {...line(PIM_SHADE, 2.6)} transform={turnAt(s, tilt, x, by)} />;
-  };
-  const open = (k = 1, top = 0, lx = 0, ly = 0, extra = true) => (
-    <Orb id={id} x={x} y={y} rx={7.6 * k} ry={8.4 * k} s={s} fill={INK} lid={{ top, color: FACE }}>
-      <circle cx={x - 2.4 + dx + lx} cy={y - 2.8 + dy + ly} r={2.8 * k} fill={EYE_WHITE} />
-      <circle cx={x + 2.6 + dx + lx} cy={y + 1.6 + dy + ly} r={1.2 * k} fill={EYE_WHITE} />
-      {extra && <path d={`M${x - 4} ${y + 5.6} Q${x} ${y + 7.2} ${x + 4} ${y + 5.6}`} {...line(EYE_WHITE, 1.2)} opacity={0.7} />}
-    </Orb>
-  );
-  const shut = (d: string) => <path d={d} {...line(INK, 2.8)} />;
-  switch (mood) {
-    case "happy":
-      return g2(shut(arcUp(x, y + 1, 6.4, 4)), brow(3, 0));
-    case "delighted":
-      return g2(open(1.16), brow(7, 0));
-    case "curious":
-      return g2(open(1.06, 0, 1.4, -1), s === 1 ? brow(6, -10) : brow(1, 4));
-    case "thinking":
-      return g2(open(1, 0.2, 2, -2.4), brow(3, s * -8));
-    case "focused":
-      return g2(open(0.96, 0.32), brow(-1, -10));
-    case "worried":
-      return g2(open(1.08, 0.04, -1.8, 1.6), brow(3, 22));
-    case "oops":
-      return g2(shut(chevron(x, y, s, 5.6, 5)), brow(4, 18));
-    case "wink":
-      return s === 1 ? g2(shut(arcUp(x, y + 1, 6.4, 4)), brow(0, 0)) : g2(open(), brow(3, 0));
-    default:
-      /* shy: looking down and away */
-      return g2(open(1, 0.06, -2, 1.8), brow(2, 12));
-  }
-};
+const pimEyes = eyesOf({
+  rx: 9,
+  ry: 10.6,
+  fill: INK,
+  pupil: { r: 0 },
+  shine: 3.4,
+  lid: FACE,
+  closed: INK,
+  browY: 16,
+  brow: dashBrow(PIM_SHADE, 2.8, 4),
+  /* shy: looking down and away, brows up at the middle */
+  rest: { look: [-1.8, 1.6], raise: 2, browTilt: 12 },
+});
 
-/** Pim: a small mouth on its muzzle, under the black nose; a little tongue shows when it laughs. */
+/** Pim: a small mouth under the black nose; a little tongue shows when it laughs. */
 const pimMouth: MouthKit = ({ mood, y, viseme }) => {
   const c = PIM_SHADE;
-  if (viseme) return talk(viseme, mood, y, { W: 7.6, H: 7, inside: MOUTH_IN, lip: c, lipW: 2.4 });
+  if (viseme) return talk(viseme, mood, y, { W: 6.6, H: 6, inside: MOUTH_IN, lip: c, lipW: 2.2 });
   switch (mood) {
     case "happy":
-      return <OpenMouth d={dMouth(y, 6, 5)} fill={MOUTH_IN} tongue={[100, y + 7, 3.4, 2.2]} />;
+      return <OpenMouth d={dMouth(y, 5.4, 4.6)} fill={MOUTH_IN} tongue={[100, y + 6, 3, 2]} />;
     case "delighted":
-      return <OpenMouth d={dMouth(y - 1, 8, 7)} fill={MOUTH_IN} tongue={[100, y + 9, 4.4, 2.8]} />;
+      return <OpenMouth d={dMouth(y - 1, 7, 6.4)} fill={MOUTH_IN} tongue={[100, y + 8, 4, 2.6]} />;
     case "curious":
-      return <ellipse cx={100} cy={y + 2} rx={2.4} ry={3} fill={MOUTH_IN} />;
+      return <ellipse cx={100} cy={y + 2} rx={2.2} ry={2.8} fill={MOUTH_IN} />;
     case "thinking":
-      return <path d={`M95 ${y + 2} Q100 ${y + 1} 105 ${y - 0.6}`} {...line(c, 2.2)} />;
+      return <path d={`M96 ${y + 2} Q100 ${y + 1} 104 ${y - 0.6}`} {...line(c, 2.2)} />;
     case "focused":
-      return <path d={`M96 ${y + 1} L104 ${y + 1}`} {...line(c, 2.2)} />;
+      return <path d={`M97 ${y + 1} L103 ${y + 1}`} {...line(c, 2.2)} />;
     case "worried":
-      return <path d={wave(y + 2, 5, 2)} {...line(c, 2.2)} />;
+      return <path d={wave(y + 2, 4.6, 1.8)} {...line(c, 2.2)} />;
     case "oops":
-      return <ellipse cx={100} cy={y + 2.4} rx={3.2} ry={2.6} fill={MOUTH_IN} />;
+      return <ellipse cx={100} cy={y + 2.4} rx={3} ry={2.4} fill={MOUTH_IN} />;
     case "wink":
-      return <path d={`M94 ${y} Q100 ${y + 5} 106 ${y - 1}`} {...line(c, 2.2)} />;
+      return <path d={`M95 ${y} Q100 ${y + 4.4} 105 ${y - 1}`} {...line(c, 2.2)} />;
     default:
-      /* a small, shy smile, pressed to one side */
-      return <path d={`M96 ${y + 1} Q99 ${y + 3} 103 ${y + 1}`} {...line(c, 2.2)} />;
+      return <path d={`M96 ${y + 0.6} Q98 ${y + 2.6} 100 ${y + 0.6} Q102 ${y + 2.6} 104 ${y + 0.6}`} {...line(c, 2)} />;
   }
 };
 
 /* ——— The club ——— */
 
-export const OBSERVATORY: Candidate[] = [
+const CLUB_ALL: Candidate[] = [
   {
     id: "obs-hob",
     kind: "animal",
     frame: HOB,
     outline: false,
     hands: "mitten",
-    attitude: { mood: "neutral", tilt: -4, hands: { L: [92, 196], R: [138, 146], outL: false, outR: true } },
+    attitude: { mood: "neutral", tilt: -5, hands: { L: [94, 196], R: [136, 150], outL: false, outR: true } },
     label: "Hob",
-    signature: "A low, wide star-nosed mole with huge pink spade hands — he burrows",
+    signature: "A round velvet mole in big gold spectacles, with a pink star for a nose — he burrows",
     pitch:
-      "The keeper. He built the observatory with his own paws and has rebuilt the dome's hinge a hundred times. Wants everyone to see what he sees; can barely see a thing himself without the telescope, and won't admit it — his spectacles live pushed up on his forehead, crooked, and he squints instead. Fussy, proud, and the softest touch on the hill. At rest he squints with one eye, one spade hand raised to make a point. Species-true: the star of twenty-two pink rays on his nose, velvet fur that stands up on top, and digging hands bigger than his head. His ability is Burrow: he dives into the ground and pops up anywhere else.",
-    risk: "A grown-up the club pushes against, never a scold: on an incorrect answer he is gentle. The star must read at 32px; it is what he is named by.",
+      "The keeper, and a circle: round head, round body, round spectacles. He built the observatory with his own paws and has rebuilt the dome's hinge a hundred times. Wants everyone to see what he sees; can barely see a thing without his spectacles, which are so thick his eyes look enormous through them. Fussy, proud, the softest touch on the hill. At rest one spade paw is up to make a point, head tipped. Species-true: the star of pink rays on his nose, big pink digging paws, velvet fur; an old man's tuft and fluffy white brows that stick out past his frames. His ability is Burrow: he dives into the ground and pops up anywhere else.",
+    risk: "A grown-up the club pushes against, never a scold: on an incorrect answer he is gentle. The spectacles must stay part of him (they are his silhouette), not a prop that comes off.",
     pal: pal(HOB_FUR, PINK, { skin: HOB_FUR, skinShade: HOB_SHADE, blush: "#ff9fb5" }),
     body: HOB_FUR,
-    face: face({ eyeY: 98, eyeGap: 19, mouthY: 140, lid: HOB_SOCKET, kit: hobEyes, mouthKit: hobMouth }),
+    face: face({ eyeY: 114, eyeGap: 19, mouthY: 146, lid: HOB_FACE, kit: hobEyes, mouthKit: hobMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     head: () => <HobHead />,
     top: () => <HobTop />,
+    belly: () => <ellipse cx={100} cy={194} rx={22} ry={24} fill={HOB_BELLY} />,
   },
   {
     id: "obs-tavi",
     kind: "human",
-    frame: { ...CHIBI, id: "tavi", w: CHUNKY, headVB: "18 26 152 152" },
+    frame: TAVI,
     outline: false,
     hands: "mitten",
-    attitude: { mood: "happy", tilt: 6, hands: { L: [66, 186], R: [132, 200], outL: true, outR: true } },
+    attitude: { mood: "happy", tilt: 7, hands: { L: [76, 202], R: [126, 200], outL: true, outR: true } },
     label: "Tavi",
-    signature: "A girl with auburn hair blown back in points and a plaster on her nose — she zooms",
+    signature: "A girl with a big swoosh of auburn hair blown back, a cowlick and a gap-toothed grin — she zooms",
     pitch:
-      "The club's loudest member, about ten. She means to discover a comet and name it after herself, and has named three already; none was a comet. Wants to be first to everything; rushes, is wrong often and out loud, and laughs it off — the one who makes a wrong answer safe. At rest she is already on her way: arms up and ready, head tipped, grinning. Her imperfections tell you who she is: one front tooth missing, a plaster across her nose, hair blown back as if she has just arrived at a run, a jumper too big for her. Her ability is Zoom: she runs so fast she blurs, and arrives in a skid.",
+      "The club's loudest member, about ten, and all triangles, softened: hair swept back in points, a cowlick, elbows out. She means to discover a comet and name it after herself, and has named three already; none was a comet. Wants to be first to everything; rushes, is wrong often and out loud, and laughs first — the one who makes a wrong answer safe. At rest her hands are on her hips, head tipped, grinning. Her imperfections: one front tooth missing, a plaster on her cheek, a cowlick that won't lie down and acts with her (up when she is pleased, a hook when she is curious, a droop when she is worried), a star clip, a jumper too big for her. Her ability is Zoom: she runs so fast she blurs, and arrives in a skid.",
     risk: "Speed kept small: a blur and a skid, never a celebration that grows. Being wrong is funny because she laughs first, never because anyone laughs at her.",
     pal: palTavi,
     body: C.clothes,
-    face: face({ eyes: "anime", eyeY: 104, eyeGap: 17, mouthY: 129, nose: "dot", lid: TAVI_SKIN, kit: taviEyes, mouthKit: taviMouth }),
+    face: face({ eyes: "anime", eyeY: 118, eyeGap: 18, mouthY: 137, nose: "dot", lid: TAVI_SKIN, kit: taviEyes, mouthKit: taviMouth }),
     outfit: "hoodie",
     outfits: PERSON_OUTFITS,
     headBack: () => <TaviBack />,
-    head: () => <TaviHead />,
+    head: (c) => <TaviHead {...c} />,
   },
   {
     id: "obs-grit",
@@ -1225,15 +1165,15 @@ export const OBSERVATORY: Candidate[] = [
     frame: GRIT,
     outline: false,
     hands: "mitten",
-    attitude: { mood: "neutral", tilt: -3, hands: { L: [112, 190], R: [88, 192], outL: false, outR: false } },
+    attitude: { mood: "neutral", tilt: -4, hands: { L: [110, 192], R: [90, 194], outL: false, outR: false } },
     label: "Grit",
-    signature: "A squat stone gargoyle with stubby horns, one chipped, and a big underbite — it turns to stone",
+    signature: "A small rounded-square stone gargoyle with stubby horns, one chipped, and one tusk — it turns to stone",
     pitch:
-      "Carved last and smallest, it has sat on the same corner of the dome for three hundred years, and comes alive at night. Wants to see the town below; too scared to leave its corner. A grumpy face and the sweetest heart: under the heavy stone brows are big round eyes. At rest it crouches with its arms folded, brows down. Species-true: horns, pointed ears, a spade-tipped tail, worn stone with spots of lichen, a chipped horn with a crack. No wings, so it never reads as Wisp. Its ability is Turn to stone: when it is startled or embarrassed it freezes solid mid-pose, then cracks back out.",
+      "Carved last and smallest, a rounded square: it has sat on the same corner of the dome for three hundred years and comes alive at night. Wants to see the town below; too scared to leave its corner. A grumpy face and the sweetest heart: under its stone ledges of brows are big round eyes. At rest it sits with its arms folded and its brows down. Species-true: stubby horns (the left one chipped flat), small pointed ears, an underbite with one tusk standing up on the left, a spade-tipped tail, worn stone with spots of lichen and a hairline crack. No wings, so it never reads as Wisp. Its ability is Turn to stone: when it is startled or embarrassed it freezes solid mid-pose, then cracks back out.",
     risk: "Grumpy-looking, never frightening: a six-year-old should want to pick it up. Alive, it is drawn in the scheme's colour; only its ability turns it grey.",
-    pal: pal(STONE, STONE, { skin: STONE, skinShade: STONE_SHADE, limb: STONE, paw: STONE_SHADE, blush: "#e7a3a8" }),
+    pal: pal(STONE, STONE, { skin: STONE, skinShade: STONE_SHADE, limb: STONE, paw: STONE_SHADE, blush: "#ec9ea4" }),
     body: STONE,
-    face: face({ eyeY: 104, eyeGap: 19, mouthY: 130, lid: STONE, kit: gritEyes, mouthKit: gritMouth }),
+    face: face({ eyeY: 110, eyeGap: 20, mouthY: 137, lid: STONE, kit: gritEyes, mouthKit: gritMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     behind: () => <GritBehind />,
@@ -1244,15 +1184,15 @@ export const OBSERVATORY: Candidate[] = [
     kind: "animal",
     frame: LYRA,
     outline: false,
-    attitude: { mood: "neutral", tilt: 8, hands: { L: [96, 178], R: [150, 122], outL: false, outR: true } },
+    attitude: { mood: "neutral", tilt: 9, hands: { L: [94, 180], R: [150, 124], outL: false, outR: true } },
     label: "Lyra",
-    signature: "An upright lyrebird with a lyre of a tail taller than itself — it can do any voice",
+    signature: "A round little lyrebird with a curl of a crest and a lyre of a tail taller than itself — it can do any voice",
     pitch:
-      "The performer, named after the constellation. Does a show every night whether anyone asked or not. Wants applause; can do anyone's voice but has never found its own — what it really wants is to be liked as itself. At rest, chin up, one wing flung out mid-flourish, lids half down: pleased with itself. Species-true: the two banded lyre feathers that curl out at the top, filmy plumes between them, long thin legs; a pale mask round its eyes like stage make-up, and three long lashes. Its ability is Mimic: any voice or sound — another character's, the dome creaking, a camera shutter.",
+      "The performer, named after the constellation, and an S-curve: a curl on top, a body like an egg, and the two great curves of its tail. Does a show every night whether anyone asked or not. Wants applause; can do anyone's voice but has never found its own — what it really wants is to be liked as itself. At rest, chin up, lids half down, one wing flung out mid-flourish: pleased with itself. Species-true: two banded lyre feathers that curl out at the top with soft plumes fanned between them; a pale mask round its eyes like stage make-up, three long lashes, a small yellow beak. Its ability is Mimic: any voice or sound — another character's, the dome creaking, a camera shutter.",
     risk: "It only mimics fixed lines, never anything generated, and never mocks: mimicry is affection. The tail must not crowd a surface that carries material.",
-    pal: pal(LYRA_BODY, LYRA_BODY, { skin: LYRA_BODY, skinShade: LYRA_SHADE, limb: LYRA_BODY, paw: LYRA_BODY, blush: "#ffa3c4" }),
+    pal: pal(LYRA_BODY, LYRA_BODY, { skin: LYRA_BODY, skinShade: LYRA_SHADE, limb: LYRA_BODY, paw: LYRA_BODY, shoe: C.accentDeep, blush: "#ffa3c4" }),
     body: LYRA_BODY,
-    face: face({ eyeY: 103, eyeGap: 17, mouthY: 128, lid: C.mid, kit: lyraEyes, mouthKit: lyraMouth }),
+    face: face({ eyeY: 114, eyeGap: 18, mouthY: 132, lid: C.mid, kit: lyraEyes, mouthKit: lyraMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     behind: () => <LyraBehind />,
@@ -1263,15 +1203,15 @@ export const OBSERVATORY: Candidate[] = [
     kind: "animal",
     frame: NOX,
     outline: false,
-    attitude: { mood: "neutral", tilt: -5, hands: { L: [94, 208], R: [106, 208], outL: false, outR: false } },
+    attitude: { mood: "neutral", tilt: -6, hands: { L: [94, 206], R: [106, 206], outL: false, outR: false } },
     label: "Nox",
-    signature: "A round charcoal loaf of a cat with a white bib and a question-mark tail — it pours",
+    signature: "A round charcoal loaf of a cat with a white bib, heavy lids and a question-mark tail — it pours",
     pitch:
-      "Lives on the dome's roof; was there before the club and acts as if it still owns the place. Wants company and would rather die than say so. Deadpan and unimpressed — Lyra's one audience it can't win. At rest it sits like a loaf, paws together, lids heavy, head on one side. Species-true: a white muzzle, bib and socks, whiskers, small round-tipped ears (the left one notched), a long tail curled into a question mark, slit pupils that open to discs when it is secretly delighted. Its ability is Pour: it goes liquid and pours itself into anything — a teacup, the telescope tube, a gap under a door.",
-    risk: "Unimpressed, never unkind: its deadpan is a joke the learner is in on. Its ears are small and round so it never reads as Pim.",
+      "Lives on the dome's roof; was there before the club and acts as if it still owns the place. A circle: a loaf with a round head on it. Wants company and would rather die than say so. Deadpan and unimpressed — Lyra's one audience it can't win. At rest it sits like a loaf, paws together, lids heavy, head on one side. Species-true: a white muzzle in two puffs, a bib and socks, whiskers, cheek fluff, small soft-tipped ears (the left one notched), a long tail curled into a question mark with a white tip, slit pupils that open to discs when it is secretly delighted. Its ability is Pour: it goes liquid and pours itself into anything — a teacup, the telescope tube, a gap under a door.",
+    risk: "Unimpressed, never unkind: its deadpan is a joke the learner is in on. Its ears are small and soft so it never reads as Pim.",
     pal: pal(NOX_FUR, NOX_WHITE, { skin: NOX_FUR, skinShade: NOX_SHADE, limb: NOX_FUR, paw: NOX_WHITE, blush: "#ff9fb5" }),
     body: NOX_FUR,
-    face: face({ eyeY: 102, eyeGap: 19, mouthY: 124, lid: NOX_FUR, kit: noxEyes, mouthKit: noxMouth }),
+    face: face({ eyeY: 116, eyeGap: 21, mouthY: 136, lid: NOX_FUR, kit: noxEyes, mouthKit: noxMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     behind: () => <NoxBehind />,
@@ -1284,15 +1224,15 @@ export const OBSERVATORY: Candidate[] = [
     frame: PIM,
     outline: false,
     hands: "mitten",
-    attitude: { mood: "neutral", tilt: 9, hands: { L: [97, 192], R: [104, 184], outL: false, outR: false } },
+    attitude: { mood: "neutral", tilt: 10, hands: { L: [97, 190], R: [104, 182], outL: false, outR: false } },
     label: "Pim",
-    signature: "A small fennec fox kit under two enormous ears — it hears anything",
+    signature: "A tiny fennec fox kit under two enormous ears, with big shiny eyes — it hears anything",
     pitch:
-      "The newest member, new to the hill this term — new to everything, like the learner. Wants to belong; so shy it hides behind its own ears. At rest it looks down and away, head on one side, one paw holding the other. Species-true: ears bigger than its head with pale fur inside, a cream face with a fennec's dark tear lines, a black nose, a bushy tail with a dark tip. Its ability is Radar ears: they swivel to hear anything, anywhere, like the observatory's dishes, and flatten when it is shy.",
+      "The newest member, new to the hill this term — new to everything, like the learner — and the smallest of the club, all ears: two great triangles over a small round face. Wants to belong; so shy it hides behind its own ears. At rest it looks down and away, head on one side, one paw holding the other. Species-true: ears bigger than its head with pale fur inside, pointed fox cheeks, a cream face with a fennec's dark tear lines, a black nose, a bushy tail with a dark tip. Its ability is Radar ears: they swivel to hear anything, anywhere, like the observatory's dishes, and flatten when it is shy.",
     risk: "Shy, never sad: its stake is belonging, and it is always found, never left out. Ears must stay huge and pointed so it never reads as Nox.",
     pal: pal(PIM_FUR, PIM_FUR, { skin: PIM_FUR, skinShade: PIM_SHADE, limb: PIM_FUR, paw: PIM_SHADE, blush: "#ffa3b5" }),
     body: PIM_FUR,
-    face: face({ eyeY: 108, eyeGap: 16, mouthY: 132, lid: FACE, kit: pimEyes, mouthKit: pimMouth }),
+    face: face({ eyeY: 122, eyeGap: 17, mouthY: 140, lid: FACE, kit: pimEyes, mouthKit: pimMouth }),
     outfit: "bare",
     outfits: ANIMAL_OUTFITS,
     behind: () => <PimBehind />,
@@ -1300,3 +1240,8 @@ export const OBSERVATORY: Candidate[] = [
     head: (c) => <PimHead {...c} />,
   },
 ];
+
+/** Shown in the studio: Hob and Tavi are being refined first; the other four are drawn but parked
+ *  until those two are agreed (`CLUB_ALL`). */
+export const OBSERVATORY: Candidate[] = CLUB_ALL.filter((c) => c.id === "obs-hob" || c.id === "obs-tavi");
+export const OBSERVATORY_PARKED: Candidate[] = CLUB_ALL.filter((c) => !OBSERVATORY.includes(c));
