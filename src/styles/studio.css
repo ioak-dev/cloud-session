@@ -56,6 +56,11 @@
   --char-line: oklch(0.2 0.04 262 / 0.3);
   --char-thin: var(--char-primary);
   --char-glow-edge: #e3a41b;
+  /* The ribbons' smoke: a mist of the product colour, quieter than the glow and the sparks on
+     either ground. On light a mid tint, so it shows on the pale ground; on dark a pale tint, held
+     lower, so it does not shine. */
+  --char-smoke: color-mix(in oklab, var(--char-primary) 42%, white);
+  --char-smoke-peak: 0.5;
 
   --guide-ink: oklch(0.249 0.022 354);
   --guide-body: oklch(0.373 0.112 278);
@@ -91,6 +96,8 @@
     --accent-deep: oklch(0.800 0.150 80);
     --read-w: 370;
     --char-thin: var(--char-hi);
+    --char-smoke: color-mix(in oklab, var(--char-primary) 30%, white);
+    --char-smoke-peak: 0.38;
     color-scheme: dark;
   }
 }
@@ -109,6 +116,8 @@
   --accent-deep: oklch(0.800 0.150 80);
   --read-w: 370;
   --char-thin: var(--char-hi);
+  --char-smoke: color-mix(in oklab, var(--char-primary) 30%, white);
+  --char-smoke-peak: 0.38;
   color-scheme: dark;
 }
 
@@ -284,6 +293,56 @@ svg[data-still="true"] .spark-still {
 
   .spark-still {
     display: inline;
+  }
+}
+
+/* The ribbons' smoke (wisp-ribbon.tsx, every variant): puffs peel off each tip, drift out
+   and up, swell and thin to nothing; the motes in the ribbon rise slowly and fade. The ribbon
+   paths' own drift is SMIL, which the figure's motion pauses (rig/motion.ts). Stilled, off screen
+   or under reduced motion, the puffs are gone and the motes hold where they are drawn. */
+.smoke-puff {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.spirit-mote {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  svg:not([data-still]):not([data-offscreen]) .smoke-puff {
+    animation: smoke-puff 4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite both;
+  }
+
+  svg:not([data-still]):not([data-offscreen]) .spirit-mote {
+    animation: spirit-mote 5.2s ease-in-out infinite;
+  }
+}
+
+@keyframes smoke-puff {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--char-smoke-peak);
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes spirit-mote {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -5px) scale(0.8);
+    opacity: 0.25;
   }
 }
 

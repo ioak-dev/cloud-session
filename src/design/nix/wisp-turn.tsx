@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { CLEAN, RIBBON_REACH, RIBBON_TAIL, SEED, smoke, SPIRIT_MOTES, STRAND_INNER, useSmokeClock, type Pt, type SpiritForm } from "./wisp-ribbon";
+import { Core } from "./wisp-clean";
 import { C } from "./theme";
 
 /**
@@ -108,61 +110,52 @@ function bez(pts: { x: number; y: number }[]) {
   return `${d} Z`;
 }
 
-/** The original ribbon wing (`wisp-ribbon.tsx`): out from the shoulder, then trailing to a point. */
-const ribbon = (s: number): P[] => [
-  [100 + 10 * s, 156],
-  [100 + 40 * s, 136],
-  [100 + 66 * s, 146],
-  [100 + 62 * s, 172],
-  [100 + 60 * s, 192],
-  [100 + 44 * s, 204],
-  [100 + 44 * s, 228],
-  [100 + 34 * s, 206],
-  [100 + 32 * s, 180],
-  [100 + 10 * s, 166],
-];
-/** The fold the ribbon turns on. */
-const fold = (s: number): P[] => [
-  [100 + 16 * s, 160],
-  [100 + 40 * s, 150],
-  [100 + 56 * s, 160],
-  [100 + 50 * s, 186],
-];
-
 /**
  * Which wings the puppet and the back view draw: Wisp's two spotted pairs, or the single pair of
  * ribbons proposed in `wisp-ribbon.tsx`. A page sets it once for every view inside it.
  */
 export type WingStyle = "pairs" | "ribbon";
 export const WingStyleContext = React.createContext<WingStyle>("pairs");
+/** The ribbon variant (`wisp-ribbon.tsx`) every ribbon view draws; only read when the style is `ribbon`. */
+export const RibbonFormContext = React.createContext<SpiritForm>(CLEAN);
 
 type Part = { d: number; el: React.ReactNode };
 
+/** Offsets and heights of a ribbon curve as figure-space points on one side. */
+const onSide = (pts: readonly Pt[], s: number): P[] => pts.map(([dx, y]) => [100 + dx * s, y]);
+
 /** The ribbons: one pair, flapped as the upper pair is, swept back in depth like the others. */
-function ribbons(yaw: number, flap: number): Part[] {
+function ribbons(yaw: number, flap: number, form: SpiritForm, uid: string, t: number): Part[] {
+  const fade = form.glow ? GLOW : C.hi;
   return [-1, 1].map((s) => {
     const root: P = [100 + 10 * s, 158];
-    const r = ribbon(s).map((p) => wingPoint(p, root, flap * s, yaw));
-    const [f0, f1, f2, f3] = fold(s).map((p) => wingPoint(p, root, flap * s, yaw));
+    /* the trailing edge drifts on its own, per ribbon and strand, before the wing is flapped */
+    const seed = SEED[s < 0 ? "L" : "R"];
+    const project = (pts: readonly Pt[], k = 0) =>
+      onSide(form.smoke ? smoke(pts, t, seed + k, form.smoke) : pts, s).map((p) => wingPoint(p, root, flap * s, yaw));
+    const r = project(RIBBON_TAIL);
+    const g = `${uid}-tr${s}`;
+    const top = wingPoint([100 + 14 * s, 150], root, flap * s, yaw);
+    const end = wingPoint([100 + 44 * s, RIBBON_REACH], root, flap * s, yaw);
     return {
       d: r.reduce((a, p) => a + p.d, 0) / r.length,
       el: (
         <g key={`r${s}`}>
-          <path
-            d={bez(r)}
-            fill={C.tint}
-            fillOpacity={0.82}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            strokeLinejoin="round"
-          />
-          <path
-            d={`M${f0.x} ${f0.y} C${f1.x} ${f1.y} ${f2.x} ${f2.y} ${f3.x} ${f3.y}`}
-            stroke={C.hi}
-            strokeWidth={HAIR}
-            fill="none"
-            strokeLinecap="round"
-          />
+          <defs>
+            <linearGradient id={g} gradientUnits="userSpaceOnUse" x1={top.x} y1={top.y} x2={end.x} y2={end.y}>
+              <stop offset="0" stopColor={C.soft} stopOpacity={0.95} />
+              <stop offset="0.35" stopColor={C.tint} stopOpacity={0.88} />
+              <stop offset="0.72" stopColor={fade} stopOpacity={form.glow ? 0.7 : 0.5} />
+              <stop offset="1" stopColor={fade} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          {form.strands >= 2 && <path d={bez(project(STRAND_INNER, 2.3))} fill={`url(#${g})`} />}
+          <path d={bez(r)} fill={`url(#${g})`} />
+          {form.motes === "dots" &&
+            SPIRIT_MOTES.map(([dx, y, rad, o]) => {
+              const q = wingPoint([100 + dx * s, y], root, flap * s, yaw);
+              return <circle key={`${dx}${y}`} cx={q.x} cy={q.y} r={rad} fill={C.hi} opacity={o} />;
+            })}
         </g>
       ),
     };
@@ -223,37 +216,49 @@ function wings(yaw: number, flapU: number, flapL: number): Part[] {
 
 /* ——— arms: hanging tendrils, a little forward of the body ——— */
 
-function arms(yaw: number): Part[] {
+/** Arm widths: upper stroke, forearm half-widths at elbow and wrist, hand tip radius. On the ribbon
+ *  page Wisp has Snug's thicker arms (`SNUG_ARM_W` in `wisp-clean.tsx`), scaled the same way. */
+const ARMS = { upper: 9, w0: 4.25, w1: 3.4, hand: 5.9 };
+const SNUG_ARMS = { upper: 11.5, w0: 5.5, w1: 4.4, hand: 8 };
+
+/**
+ * The arms, hanging (`cover` 0) or raised so the hands cover the eyes (`cover` 1): the elbows
+ * lift out to the sides and the hands come up in front of the face, where the eyes are, and grow
+ * a little, as a hand held close does.
+ */
+function arms(yaw: number, { upper, w0, w1, hand } = ARMS, cover = 0): Part[] {
+  const u = cover * cover * (3 - 2 * cover);
+  const mix = (a: number, b: number) => a + (b - a) * u;
   return [-1, 1].map((s) => {
     const sh = proj(16 * s, 0, yaw);
-    const el = proj(24 * s, 4, yaw);
-    const hd = proj(28.5 * s, 7, yaw);
-    const a: P = [el.x, 178];
-    const b: P = [hd.x, 196];
+    const el = proj(mix(24, 34) * s, mix(4, 16), yaw);
+    const hd = proj(mix(28.5, 22) * s, mix(7, 30), yaw);
+    const a: P = [el.x, mix(178, 138)];
+    const b: P = [hd.x, mix(196, 98)];
+    const r = mix(hand, hand * 1.45);
     const dx = b[0] - a[0];
     const dy = b[1] - a[1];
     const len = Math.hypot(dx, dy) || 1;
     const nx = -dy / len;
     const ny = dx / len;
-    const w0 = 4.25;
-    const w1 = 3.4;
     return {
-      d: (sh.d + hd.d) / 2,
+      /* raised, the arms are in front of the face */
+      d: Math.max((sh.d + hd.d) / 2, u > 0.2 ? 40 * u : -Infinity),
       el: (
         <g key={`a${s}`} fill={C.primary}>
           <line
             x1={sh.x}
             y1={160}
             x2={el.x}
-            y2={178}
+            y2={a[1]}
             stroke={C.primary}
-            strokeWidth={9}
+            strokeWidth={upper}
             strokeLinecap="round"
           />
           <path
             d={`M${a[0] + nx * w0} ${a[1] + ny * w0} L${b[0] + nx * w1} ${b[1] + ny * w1} L${b[0] - nx * w1} ${b[1] - ny * w1} L${a[0] - nx * w0} ${a[1] - ny * w0} Z`}
           />
-          <circle cx={b[0]} cy={b[1]} r={5.9} />
+          <ellipse cx={b[0]} cy={b[1]} rx={r} ry={r * (1 + 0.12 * u)} />
         </g>
       ),
     };
@@ -296,10 +301,46 @@ function Antennae({ yaw }: { yaw: number }) {
   );
 }
 
-function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?: number }) {
+/**
+ * Feather (`BEAN_FEATHER` in `wisp-eyes.tsx`), the main character's eyes: a white eye with a
+ * translucent hairline rim, an ink pupil that roams inside it, and a tapered ink brow. Where the
+ * puppet looks moves the pupil, not the eye, so a glance reads as Feather's does.
+ */
+function FeatherEye({ look, lookX }: { look: number; lookX: number }) {
+  const px = clamp(lookX * 0.8, -4, 4);
+  const py = 1 + clamp(look * 0.6, -4, 4);
+  const r = 5.4;
+  return (
+    <>
+      <ellipse cx={0} cy={0} rx={9.4} ry={12} fill="#fff" stroke={C.line} strokeWidth={1.1} />
+      <circle cx={px} cy={py} r={r} fill={EYE} />
+      <circle cx={px - r * 0.4} cy={py - r * 0.45} r={r * 0.34} fill="#fff" />
+      <path
+        d="M-7.6 -15.4 Q0 -23.2 7.6 -15.4 Q0 -16.4 -7.6 -15.4 Z"
+        fill={EYE}
+        stroke={EYE}
+        strokeWidth={1.3}
+        strokeLinejoin="round"
+      />
+    </>
+  );
+}
+
+function Face({
+  yaw,
+  look = 0,
+  lookX = 0,
+  feather = false,
+}: {
+  yaw: number;
+  look?: number;
+  lookX?: number;
+  /** The main character's Feather eyes (the Wisp page); otherwise the butterfly Wisp's. */
+  feather?: boolean;
+}) {
   // the eyes and cheeks sit on the head's sphere; the mouth rides the centre line
   const eyes = [-1, 1].map((s) => {
-    const phi = s * Math.asin(19 / 36);
+    const phi = s * Math.asin((feather ? 20 : 19) / 36);
     const a = phi + rad(yaw);
     const x = 100 + 36 * Math.sin(a);
     const k = clamp(Math.cos(a) / Math.cos(phi), 0, 1);
@@ -333,7 +374,16 @@ function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?
           opacity={0.6 * c.o}
         />
       ))}
-      {eyes.map((e, i) => (
+      {eyes.map((e, i) =>
+        feather ? (
+          <g
+            key={i}
+            opacity={e.o}
+            transform={`translate(${e.x} ${107 + 0.4 * look}) scale(${Math.max(e.k, 0.05)} 1)`}
+          >
+            <FeatherEye look={look} lookX={lookX} />
+          </g>
+        ) : (
         <g
           key={i}
           opacity={e.o}
@@ -351,7 +401,8 @@ function Face({ yaw, look = 0, lookX = 0 }: { yaw: number; look?: number; lookX?
             strokeLinecap="round"
           />
         </g>
-      ))}
+        ),
+      )}
       <path
         d={`M${mx - 6 * mk} 125 Q${mx} ${130} ${mx + 6 * mk} 125`}
         stroke={EYE}
@@ -379,8 +430,55 @@ export type TurnProps = {
    *  the upper pair's. */
   flapU?: number;
   flapL?: number;
+  /** 0 → 1: the hands come up over the eyes (a way not to look at a password). */
+  cover?: number;
+  /** 0 → 1: the ribbons sweep up over the head as a blanket, a little ghost under a sheet with its
+   *  antennae poking out (another way not to look). Ribbons only. */
+  blanket?: number;
+  /** The blanket's wiggle, in degrees: it giggles under there. */
+  wiggle?: number;
   uid: string;
 };
+
+/** The blanket: a sheet over the head, peaked where the drop's tip is, hemmed at the chest. */
+const SHEET =
+  "M42 172 C38 126 58 62 88 36 Q100 20 112 36 C142 62 162 126 158 172 Q148 181 138 172 Q129 181 119 172 Q109 181 100 172 Q91 181 81 172 Q71 181 62 172 Q52 181 42 172 Z";
+
+/**
+ * Wisp under its ribbons. The sheet rises from the shoulders over the head as `b` goes 0 → 1
+ * (pulled up, as a child pulls up a blanket); it is the ribbons' own frost, shaded from the head
+ * down, with a hairline edge and two soft folds; the antennae poke out on top.
+ */
+function Blanket({ b, yaw, headYaw, wiggle, uid }: { b: number; yaw: number; headYaw: number; wiggle: number; uid: string }) {
+  const top = 182 - (182 - 14) * b;
+  const k = 1 - 0.1 * Math.abs(Math.sin(rad(yaw)));
+  return (
+    <g>
+      <defs>
+        <clipPath id={`${uid}-blanket`}>
+          <rect x={0} y={top} width={200} height={200} />
+        </clipPath>
+        <linearGradient id={`${uid}-sheet`} gradientUnits="userSpaceOnUse" x1="100" y1="24" x2="100" y2="180">
+          <stop offset="0" stopColor={C.tint} />
+          <stop offset="0.65" stopColor={C.tint} />
+          <stop offset="1" stopColor={C.soft} />
+        </linearGradient>
+      </defs>
+      <g
+        clipPath={`url(#${uid}-blanket)`}
+        transform={`rotate(${wiggle} 100 172) translate(100 0) scale(${k} 1) translate(-100 0)`}
+      >
+        <path d={SHEET} fill={`url(#${uid}-sheet)`} stroke={C.hi} strokeWidth={HAIR} strokeLinejoin="round" />
+        <path d="M72 70 Q66 120 70 166 M128 70 Q134 120 130 166" stroke={C.hi} strokeWidth={HAIR} fill="none" strokeLinecap="round" />
+      </g>
+      {b > 0.85 && (
+        <g transform={HEAD_FIT} opacity={(b - 0.85) / 0.15}>
+          <Antennae yaw={headYaw} />
+        </g>
+      )}
+    </g>
+  );
+}
 
 export function WispTurn({
   yaw,
@@ -389,6 +487,9 @@ export function WispTurn({
   flapL = 0,
   look = 0,
   lookX = 0,
+  cover = 0,
+  blanket = 0,
+  wiggle = 0,
   uid,
 }: TurnProps) {
   const s = Math.sin(rad(yaw));
@@ -397,9 +498,18 @@ export function WispTurn({
   // the flame narrows a little side-on and sweeps back from where it is heading
   const flame = `matrix(${fw} 0 ${-0.16 * s} 1 ${100 - 100 * fw + 0.16 * s * 170} 0)`;
   const style = React.useContext(WingStyleContext);
+  const form = React.useContext(RibbonFormContext);
+  const t = useSmokeClock(style === "ribbon" && !!form.smoke);
+  /* under the blanket the ribbons are the blanket, so they fade from the sides as it rises */
+  const sheet = style === "ribbon" ? blanket : 0;
   const parts = [
-    ...(style === "ribbon" ? ribbons(yaw, flapU) : wings(yaw, flapU, flapL)),
-    ...arms(yaw),
+    ...(style === "ribbon"
+      ? ribbons(yaw, flapU, form, uid, t).map((p, i) =>
+          sheet > 0 ? { ...p, el: <g key={`rb${i}`} opacity={1 - sheet}>{p.el}</g> } : p,
+        )
+      : wings(yaw, flapU, flapL)),
+    /* the Wisp page (ribbons) draws the picks on Clean: Snug's arms and the Core tail */
+    ...arms(yaw, style === "ribbon" ? SNUG_ARMS : ARMS, cover),
   ];
   const behind = parts.filter((p) => p.d < 0).sort((a, b) => a.d - b.d);
   const front = parts.filter((p) => p.d >= 0).sort((a, b) => a.d - b.d);
@@ -436,6 +546,7 @@ export function WispTurn({
       <g transform={flame}>
         <circle cx={104} cy={236} r={38} fill={GLOW} opacity={0.3} />
         <path d={FLAME} fill={`url(#${uid}-tf)`} />
+        {style === "ribbon" && <Core uid={uid} />}
         <path d={RINGS} stroke={AMBER} strokeWidth={2.2} fill="none" strokeLinecap="round" />
       </g>
       <path
@@ -447,9 +558,10 @@ export function WispTurn({
       <g transform={HEAD_FIT}>
         <Antennae yaw={headYaw} />
         <path d={DROPLET} fill={`url(#${uid}-th)`} />
-        <Face yaw={headYaw} look={look} lookX={lookX} />
+        <Face yaw={headYaw} look={look} lookX={lookX} feather={style === "ribbon"} />
       </g>
       {front.map((p) => p.el)}
+      {sheet > 0 && <Blanket b={sheet} yaw={yaw} headYaw={headYaw} wiggle={wiggle} uid={uid} />}
     </g>
   );
 }

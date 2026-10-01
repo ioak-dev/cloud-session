@@ -45,7 +45,9 @@ In the rig, `Palette.line` is the outline colour for the body, limbs, clothes an
 
 ### Wisp
 
-**Wisp is the main character**, in `src/design/nix/firefly-wisp.tsx`. It is the former “True colour” variant. It floats with no legs, has a droplet head, and its body ends in a flame of light. It leaves glowing sparks behind as it flies. The original pale Wisp, Moth, Solid and Curly are dropped.
+**Decision: Wisp's wings are the ribbons.** The main character is Wisp on one pair of ribbon wings (Clean), with the Core tail and Snug's thicker arms: `CLEAN_PICK` in `src/design/nix/wisp-clean.tsx`, on the studio's **Wisp** page (`#/wisp`). Wisp on two pairs of spotted butterfly wings (`WISP_MAIN`) is kept as an **alternate main character, for reference**, on the **Wisp · Butterfly (reference)** page (`#/butterfly`). The old `#/ribbon` link opens the Wisp page. Everything below that is not about the wings still holds for both; the wing rules are the ribbons' (see “Wisp · Ribbon wings”).
+
+**Wisp is the main character**, in `src/design/nix/firefly-wisp.tsx` (the body, head, flame and face; the wings are the ribbons in `wisp-ribbon.tsx`). It is the former “True colour” variant. It floats with no legs, has a droplet head, and its body ends in a flame of light. It leaves glowing sparks behind as it flies. The original pale Wisp, Moth, Solid and Curly are dropped.
 
 How it is drawn. These rules also apply to anything added to Wisp later:
 
@@ -56,7 +58,7 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 | Antennae | Grow from behind the head (drawn before it), in `C.thin`, each tipped with a spark |
 | Body, arms | No outline; parts are told apart by colour: the body in `C.mid`, the arms in the primary |
 | Hands | Wispy: the forearm tapers like a tendril of smoke and ends in a soft round tip of the same colour. No fingers, no thumb (`hands: "wisp"` in the rig) |
-| Wings | Two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
+| Wings | One pair of ribbons on `wingL`/`wingR` (Clean, `wisp-ribbon.tsx`): no outline, shaded from `C.soft` at the shoulder through frost to nothing at the tips, the tails drifting like smoke. The alternate (butterfly) Wisp: two pairs on their own joints: long upper wings swept up and out, small lower paddles. Frosted (`C.tint`, 82% opaque), with veins and a fixed pattern of spots of varying size in `C.hi` |
 | Body and flame | One body turning into light. The body is short and rounded below. The flame starts up inside it in the body’s own colour, so there is no seam at any angle of sway. It pivots where they meet and turns to glow, then amber, below the body. It carries **two rings**, like a firefly’s lantern: fixed anatomy. No edge line on the flame |
 | Edges | Only the translucent parts (wings) and the antenna tips keep an edge, and it is a **hairline** (1.2 at figure scale) in the part’s own tone, never black |
 | Props | A backpack sits behind the wings and flame, fitted to the short body (`packFit`) |
@@ -67,7 +69,7 @@ How it is drawn. These rules also apply to anything added to Wisp later:
 
 1. At rest, and wherever it arrives, Wisp **faces front**.
 2. To travel, it **turns continuously**, head first, to face its way, rising a little as it sets off. It never flips.
-3. It **flies side-on** toward where it is going, banking gently, wings beating as two pairs, and leaves sparks where it has been.
+3. It **flies side-on** toward where it is going, banking gently, its ribbons beating as one pair (the alternate's wings as two pairs), and leaves sparks where it has been.
 4. On arrival it settles and **turns back** to face front.
 
 **Where Wisp appears: the sign-up form only.** It lives in the gutter to the **left** of the form, turned toward it. The demo is `src/design/nix/wisp-form.tsx`.
@@ -107,31 +109,42 @@ The flight demo plays this across a stage and back. Every frame is a pure functi
 
 **The warmer's antennae** (and Scamp's) are soft stalks in three segments on their own joints (`antL` → `antMidL` → `antTipL`, and R; `rig/skeleton.ts`). The left stands up; the right flops over in a smooth curl, not a kink. In every pose each segment follows through, turning a little later and further than the one it hangs from (`secondary` in `rig/poses.ts`). At rest they have a habit of their own (`attitude.motion`, laid over the idle pose on its clock): once a loop the left one twitches, and a beat later the flopped one's tip flicks up and springs back in shrinking bounces. Declared keyframes (`rotAt`); stilled or under reduced motion they hold the first frame.
 
-**Wisp · Ribbon wings — proposal, not adopted.** `WISP_MAIN` is unchanged. The first Wisp (bench `firefly-bodies.tsx`, commit `1cc3b0d`) had one pair of **ribbon wings** that left the shoulders, swelled out and trailed down past the body to a point, like a scarf or a ghost's hem; they matched the drop head and the flame, so every outline tapered to a wisp. “Finalise Wisp” (`43969ae`) replaced them with the two pairs of spotted wings, which read as butterfly or fairy wings. `src/design/nix/wisp-ribbon.tsx` (`WISP_RIBBON`) puts the ribbons back on today's Wisp and on Wisp, warmer, with nothing else changed, redrawn to today's rules: `C.tint` at 82%, a hairline `C.hi` edge and fold line, no ink outline. A ribbon is one pair, on `wingL`/`wingR` only, so adopting it would mean changing the two-pair rule for Wisp.
+**Wisp · Ribbon wings — adopted.** These are now the main character's wings; `WISP_MAIN`, with two pairs, is the alternate main character (reference). The first Wisp (bench `firefly-bodies.tsx`, commit `1cc3b0d`) had one pair of **ribbon wings** that left the shoulders, swelled out and trailed down past the body to a point, like a scarf or a ghost's hem; they matched the drop head and the flame, so every outline tapered to a wisp. “Finalise Wisp” (`43969ae`) replaced them with the two pairs of spotted wings, which read as butterfly or fairy wings. `src/design/nix/wisp-ribbon.tsx` (`WISP_RIBBON`) puts the ribbons back on today's Wisp and on Wisp, warmer, with nothing else changed, redrawn to today's rules: `C.tint` at 82%, a hairline `C.hi` edge and fold line, no ink outline. A ribbon is one pair, on `wingL`/`wingR` only; the two-pair rule now applies only to the alternate (butterfly) Wisp.
 
-The studio gives it its own page (**Wisp · Ribbon**, `#/ribbon`): a clone of the Wisp page with the ribbons as the main character, shown in the recommended pairings (Wisp · Ribbon, Warmer · Ribbon, and Warmer · Ribbon, no ruff). Every figure on that page wears the ribbons — the warmer proposals, the eye styles and the acting (`WISP_WARM_RIBBON`, `WISP_EYES_RIBBON`), and the turn puppet, back view, flight and form, which read `WingStyleContext` (`wisp-turn.tsx`). In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. **Warmer · Ribbon, no ruff** (recommended) is the warmer slimmed back to Wisp's line so the ribbons carry it: no ruff, Wisp's own drop with the curl (`CURL`) instead of the rounder one, and Wisp's narrow body, neck and arms instead of Snug's. It keeps the warmer's temperament: the chest flame and the warmth in the face, the curl, the stalks with the flopped antenna, honey eyes and talking brows, the lopsided smile, the tipped head and the hey, and the alive idle. At 48 and 32px its silhouette keeps a neck and the ribbons flare to points, where the ruffed warmer reads as one rounder mass. It is drawn facing front only; the puppet, flight and form on that page still show plain Wisp · Ribbon.
+On the studio's **Wisp** page (`#/wisp`, formerly the separate Wisp · Ribbon page) every figure wears the ribbons in the chosen variant, **Clean**. It applies to the whole page — the main character and its turnaround, back view, flight and form (`WingStyleContext` and `RibbonFormContext` in `wisp-turn.tsx`), the warmer proposals, the eye styles and the acting — so every ability and possibility of Wisp can be judged on Clean. In the puppet the ribbons flap with the upper pair's beat and sweep back in depth like the other wings, so side-on they stream behind. Everything is drawn with no outline: the colour is the edge (`C.soft` at the shoulder, frost `C.tint` through the middle, fading to nothing). One ribbon pair rides `wingL`/`wingR` only.
 
-**Ribbon finishes — proposals** (`WISP_RIBBON_FINISHES`, on Warmer · Ribbon, no ruff; facing front only):
+**Ribbon variants** (`RIBBON_VARIANTS` in `wisp-ribbon.tsx`). **Clean is chosen** and is the main character's. Glow tips and Spirit move to the References page (`#/references`) as reference. Dots, sparkles, lantern bands, ghost hem, swept up and breeze were tried and dropped.
 
-| Finish | What changes |
+| Variant | What it is |
 |---|---|
-| No outline · dots | The hairline edge goes. The ribbon is shaded instead — `C.soft` at the shoulder, frost (`C.tint`) through the middle, `C.soft` again at the point — so its own colour is its edge on both grounds. Five fixed dots in `C.hi` |
-| No outline · sparkles | The same shaded ribbon with four small fixed four-point stars in the glow's colour: the firefly's light caught in its wings. Never animated, never a highlight |
-| Spirit | The ribbons dissolve: longer, the tails curling out like smoke, a thinner strand trailing inside each, fading from `C.soft` through frost to a last `C.hi` wisp and then nothing. A few motes fade with them. Every edge below the head now dissolves |
+| Clean | One ribbon each side, fading to nothing, nothing inside it. Its tails sway slowly (`smoke: "calm"`) and soft frost puffs leave the tips |
+| Glow tips | Clean, but the mist turns the glow's gold as it fades: its light leaking out through the ribbons, and a little of it drifting off each tip as soft gold puffs. The tails sway as Clean's do. The only Wisp whose wings carry its ability |
+| Spirit | A thinner strand trailing inside each ribbon, and a few `C.hi` motes rising slowly through it. The trailing edges drift on their own like smoke (`smoke: "full"`), and soft frost puffs peel off each tip, drift out and up, swell and thin to nothing |
 
-**Spirit — variations** (`WISP_SPIRITS`; `SpiritForm` in `wisp-ribbon.tsx`). The spirit as drawn and **Clean** (one ribbon each side, no strand, no motes) are kept; long tails, curl in, frayed and starry motes were tried and dropped. Each of the rest adds one distinctive thing to Clean:
+**The drift** (`smoke` in `wisp-ribbon.tsx`). On top of the wing's flap, each ribbon's tail moves on its own: the drift grows from nothing at the shoulder to full at the tip, and runs down the ribbon as a wave (a point's phase follows its height), so the tip lags the middle and the tail rolls and curls instead of swinging stiff, while an anchor and its handles move together and the edge stays smooth. Each point turns a small loop with a second beat at twice the speed, and the tail breathes wider and narrower. Each ribbon and strand has its own seed; one 8 s loop. Spirit drifts wide and lags far; Clean and Glow tips only sway. The puffs ride the tip as it drifts, so the smoke always leaves from the end. The puppet (turn, flight, form) drifts the same way but draws no puffs. Every term is zero at rest, so a stilled figure shows the drawing as drawn; the figure's motion pauses the drift off screen, and under reduced motion nothing drifts and the puffs are gone.
 
-| Variation | What it adds | Reads at 48 / 32px |
-|---|---|---|
-| Glow tips | The mist turns the glow's gold as it fades: its light leaking out through the ribbons. The only Wisp whose wings carry its ability | Colour only; silhouette as Clean |
-| Lantern bands | Two faint amber bands across each ribbon (clipped to it), echoing the flame's rings | Colour only; silhouette as Clean |
-| Ghost hem | Each ribbon ends in a small, tapered scalloped hem, like a ghost's sheet | Slightly; the scallops merge |
-| Swept up | The ribbons rise above the shoulders, nearly to the cheeks, before they fall | Yes: the widest shoulders of any Wisp |
-| Breeze | The right ribbon is blown out and its tail lifted: an asymmetry with the curl and flopped antenna | Yes: the most distinctive silhouette |
+**The smoke's colour** (`--char-smoke` in `studio.css`) is set per ground so it is seen on both and never competes with the glow and the sparks: on light, a mid tint of the product colour (42%) peaking at 0.5 opacity, so it shows on the pale ground; on dark, a paler tint (30%) held to 0.38, so it does not shine. It stays smaller and fainter than a spark's halo. Glow tips' puffs keep the glow's gold.
+
+**Clean — proposals** (`wisp-clean.tsx`, on the Wisp page; tail, head and arms; front only, the puppet still draws Clean). Each changes one thing on Clean.
+
+| Proposal | What changes |
+|---|---|
+| Lantern (tail) | Lit like a real firefly's lantern, where only the last segments light: the segment above the first ring dims to amber, the segment between the rings is the palest and brightest. The rings stay |
+| Core (tail) | A paler tongue inside the flame, narrowing into its curl, as a flame is palest at its heart. Fixed anatomy, not a highlight: it follows the flame's shape, never the light's direction |
+| Candle (head) | The drop's tip rises a few units taller and leans to Wisp's left with a soft S, as a candle's flame does in still air. The bulb and face are unchanged |
+| Dewdrop (head) | The point goes: a short, rounded tip with straight flanks and a fuller drop below, a drop of light about to fall. Close to Snug's rounder drop; judge them side by side |
+| Snug arms (arms) | Snug's limb widths (upper arm 11.5, forearm 11, hand tip 8.4) on Clean's own frame: Wisp's joints and slim torso, so only the arms change. Gestures read from further away; Wisp's stick arms are its weakest part at 32px |
+
+**Picked on Clean: the Core tail and Snug arms; the head stays the drop** (`CLEAN_PICK` in `wisp-clean.tsx`). It is the main character on the Wisp page, and the turn puppet, back view, flight and form there draw the same (`wisp-turn.tsx`, `wisp-views.tsx`, when the wing style is `ribbon`). The Wisp · Butterfly (reference) page is unchanged.
+- **Core over Lantern and the current tail**: depth along the flame rather than bands across it; Lantern's dim amber band drew a seam where the body turns into the flame, against the no-seam rule. Core disappears at 32px, so it refines the larger figure only.
+- **The drop head over Candle and Dewdrop**: the drop is Wisp's most recognisable shape and the app icon's. Candle's taller tip crowds the antennae at small sizes and overlaps Scamp's curl; Dewdrop loses the flame's point and sits close to Snug's drop.
+- **Snug arms over Wisp's stick arms**: the stick arms were the first thing lost at small sizes; Snug's widths read at 48px, on Wisp's own joints and slim body, so the silhouette and the taper are unchanged.
+
+Lantern, Candle and Dewdrop stay on the Wisp page beside Clean as it was, for comparison.
 
 Dropping the wing edge for these finishes departs from Wisp's rule of a hairline edge on the wings; it applies to the proposals only.
 
-The Wisp page (`#/wisp`) still shows Wisp as drawn, with two pairs; the side characters have their own page (`#/side`).
+The Wisp page (`#/wisp`) shows the main character on its ribbons; Wisp with two pairs is on Wisp · Butterfly (reference, `#/butterfly`); the side characters have their own page (`#/side`).
 
 **Wisp's own expressions.** The shared nine cannot say mischief, surprise or clowning. `MORE_MOODS` (`rig/face.tsx`) adds five for the main character only: sly, silly, surprised, proud, party. Side characters' kits are not asked to draw them.
 
@@ -145,7 +158,30 @@ The Wisp page (`#/wisp`) still shows Wisp as drawn, with two pairs; the side cha
 | Lidded | White eyes, small pupils, heavy lids in its own colour | Sly, proud, professional; rests cooler |
 | Starry | Dark eyes with a spark of its own light for a catchlight | Ties the eyes to the glow; the eye becomes a spark at a party |
 
-The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference.
+The eye style is between **Bean and Gumdrop**; the user will decide later. Honey, Lidded and Starry stay as reference. **Recommended: Bean.** Wisp's one job on the sign-up form is to watch: its eyes follow the text as it is typed, and look away at the password. Bean's pupil moves inside a white eye, so where it looks reads at a glance, even small; Gumdrop's solid eyes show a glance only by their shine and shape. Bean also has the widest acting range (side-eye, a pinprick of shock), and its white eyes with ink pupils are the icon face that keeps white and still reads (Glow · Light · Bean eyes). The risk is Duolingo: keep Bean's whites tall ovals with small round pupils, never Duo's big round whites. Gumdrop is the runner-up: the cutest and the best at the smallest sizes, if gaze matters less than charm.
+
+**Bean, softer — proposals** (`BEAN_STYLES` in `wisp-eyes.tsx`; on the Wisp page, on the main character, at rest and in every expression). Bean read as chunky because of its line, not its acting: a 4.2 ink brow of even weight, a 1.8 ink rim round each eye, a 2.6 lash. Every variant keeps the same acting table (`act`): the roaming pupil, the lids, the brows' tilt and lift, so each is as expressive.
+
+| Variant | What changes |
+|---|---|
+| Soft | Every line lighter: the rim a translucent hairline (`C.line`, 1.1), brows 2.8, lash 1.8 |
+| Feather | Soft's rim and lash; the brows tapered, full in the middle and thinning to round tips, like a brush stroke |
+| Blue brows | Feather's brows in the body's own deep blue (`C.deep`) instead of ink: only the pupils and mouth are dark |
+| Round | A rounder eye with a bigger pupil and a second small shine, rimmed in the face's own blue (`C.hi`), tapered brows. Youngest; the pupil has less room to roam |
+
+**At the password — three ways not to look (proposals)** (`PASSWORD_FIELDS` in `wisp-form.tsx`, a three-field demo under the sign-up form on the Wisp page). Each password field names its way (`hide`); Wisp hops to it, and once it lands it stops looking in that way, and faces the form again when focus leaves. None of them peeks; none reacts to what is typed.
+
+| Way | What it does |
+|---|---|
+| Turns its back (`back`, as chosen) | Turns right round, head first, continuously |
+| Hands over its eyes (`hands`) | Faces you and lifts both hands over its eyes, like hide and seek: the elbows lift out, the soft hand tips come up in front of the eyes and grow a little (`cover` on the turn puppet) |
+| Hides under its ribbons (`blanket`, new) | Pulls its own ribbons up over its head like a blanket: a sheet in the ribbons' frost rises from the shoulders to a peak over the drop's tip, the side ribbons fade into it, the antennae poke out on top, and it wiggles, giggling, while you type (`blanket` and `wiggle` on the turn puppet). A little ghost: the ribbons started as a ghost's hem, so this is its own body doing it |
+
+Under reduced motion each holds its pose without easing or wiggling.
+
+**The studio's pages after the choices.** The Wisp page (`#/wisp`) holds only what is chosen: Wisp (Clean ribbons, Core tail, Snug arms, drop head, Feather eyes) at rest and in every expression; the app icon (Glow · Light with Feather eyes, its circle and one-colour mark); the wordmark (Gabarito 700); the turnaround, flight and sign-up form; and the bench for the main character. Everything it was chosen from is on the References page (`#/references`) as backup: the proposals on Clean, Bean, softer, the app icon eyes and proposals not chosen, the wordmark candidates, Glow tips and Spirit, and the warmer proposals with their eye styles and acting (on the ribbons), then the wispy directions, Pip and the earlier fireflies. The butterfly-winged Wisp keeps its own full page (`#/butterfly`).
+
+**Wisp's eyes — chosen: Feather** (`BEAN_FEATHER`). Bean's acting (the roaming pupil, the lids, the brows' tilt and lift) with a translucent hairline rim (`C.line`), a 2.0 lash and tapered ink brows. On the main character (`CLEAN_PICK.face`), and drawn the same by the turn puppet on the Wisp page (`FeatherEye` in `wisp-turn.tsx`), so the turnaround, flight and form match; there the puppet's glance moves the pupil inside the white rather than the whole eye. The butterfly Wisp keeps its own eyes.
 
 **Wisp, warmer — acting (proposals).** What kept Wisp laid back, and what the acting does about it:
 
@@ -171,7 +207,7 @@ At rest the warmer now leans in, drifts up and hangs, then drops with a squash a
 
 None of them reacts to what is typed, and none says anything about a valid or an invalid entry. "Lights out" plays on the form being complete, not on the entries being right. These are proposals: the form's rules (hops, turning into the field, turning its back at the password) are unchanged until chosen.
 
-None of them is in the turn puppet, the views, the flight or the form: that waits until one, or a mix, is picked into `WISP_MAIN`.
+None of them is in the turn puppet, the views, the flight or the form: that waits until one, or a mix, is picked into the main character (`CLEAN_PICK`).
 
 **Wispy directions — reference.** These were drawn from scratch rather than from the droplet. Each floats, puts its light somewhere of its own, and leaves a spark trail. They are kept as inspiration for side characters or later details. Round one is in `src/design/nix/firefly-spirits.tsx`:
 
@@ -215,7 +251,15 @@ The original bench firefly stays in `candidates.tsx` for reference. **Next step:
 
 Once one is chosen, the main character’s silhouette, palette and ability stay fixed across every context. Only pose, expression and authored wardrobe change. The glow is its signature, not a status.
 
-**App icon — proposals.** Six marks made from Wisp's shape, not the full character, the way Duolingo's icon is Duo's head (`src/design/nix/wisp-logo.tsx`, `LOGOS`; shown in the studio as “Wisp — app icon”). Each has an app-icon drawing and a simplified one for 32px and under (favicon, tab, notification): no mouth, rings or wing spots, eyes without shines, nothing thinner than a pixel at 16px. Wisp's drawing rules hold: no black outlines, no highlights, the product's primary, the glow as its own colour. They draw with the scheme's tokens, so the header recolours them; `npm run logos` writes them in the Sparkles scheme to `docs/logo/` as `<id>.svg` and `<id>-favicon.svg`, with `sheet.png` showing all six at 220, 64, 32 and 16px on both grounds.
+**App icon — chosen: Glow · Light** (`APP_ICON` in `wisp-logo.tsx`). Wisp's drop drawn as its own light: a solid yellow drop (the glow, `#ffcf4a`) with ink eyes, a smile and two antennae, on a solid primary tile. Why: it reads at 16px (two colours, one shape); the mark is the firefly's light, its ability; a primary tile holds on light and dark home screens, where the pale tiles glare on dark; and the product's colour is the tile, as the norm is for app icons. Decided with it:
+- **Solid, never gradient.** No gradient, halo or shine in the logo: it stays crisp from the store listing to a 16px tab, prints in one colour, and platforms can recolour it (iOS dark and tinted icons, Android themed icons). The character keeps its gradients; it is an illustration, the logo is a mark.
+- **On the primary, not the accent.** A full yellow tile is loud on a home screen (the brief: warmth must not make the product loud), sits close to warning colours, and puts a second yellow beside the glow, which should be the only yellow in the mark.
+- **In the product's fixed colours** (`K_SPARKLES`), never the studio's scheme switch; the studio shows the chosen set in them whatever the header says.
+- **Contrast** (Sparkles scheme): the glow on the primary 3.9:1 and the ink eyes on the glow 11.1:1, above the 3:1 for graphics; the primary tile 5.7:1 on a white home screen and 3.1:1 on a dark one. Blue and yellow is the pair that holds up under the common colour blindnesses.
+- **Its set** (`APP_ICON_SET`): the app icon; **Glow · Light · Round**, the yellow drop on a primary disc inside the inner 80%, for launchers and avatars that cut a circle; and **Glow · Light · One colour**, the drop and antennae as one solid shape with the eyes cut out and no tile, for Android's themed layer, iOS tinted icons and one-colour print. Each has its 32px-and-under drawing. `npm run logos` writes them as `docs/logo/app-icon.svg`, `app-icon-round.svg` and `app-icon-mono.svg`, each with a `-favicon.svg`.
+- **Figure and Flight are retired**: drawn from the whole figure, they carry the butterfly wings; they are shown on the Wisp · Butterfly (reference) page.
+
+**App icon — the proposals it was chosen from.** Six marks made from Wisp's shape, not the full character, the way Duolingo's icon is Duo's head (`src/design/nix/wisp-logo.tsx`, `LOGOS`; shown in the studio as “Wisp — app icon”). Each has an app-icon drawing and a simplified one for 32px and under (favicon, tab, notification): no mouth, rings or wing spots, eyes without shines, nothing thinner than a pixel at 16px. Wisp's drawing rules hold: no black outlines, no highlights, the product's primary, the glow as its own colour. They draw with the scheme's tokens, so the header recolours them; `npm run logos` writes them in the Sparkles scheme to `docs/logo/` as `<id>.svg` and `<id>-favicon.svg`, with `sheet.png` showing all six at 220, 64, 32 and 16px on both grounds.
 
 | Mark | What it is | Strong / weak |
 |---|---|---|
@@ -226,7 +270,7 @@ Once one is chosen, the main character’s silhouette, palette and ability stay 
 | Peek | The top of the head rising from the bottom edge, looking up, on the deep primary | Most personality; cropped, so at 16px it is a blue hill with eyes |
 | Ember | Head and flame as one shape: the drop's colour runs into light and curls off | An abstract mark that is still Wisp; works without the face as a wordmark's dot |
 
-None is chosen. The eye style is still between Bean and Gumdrop; the marks use plain ink eyes until it is decided.
+Glow · Light is chosen (above). The eye style is still between Bean and Gumdrop; the marks use plain ink eyes until it is decided.
 
 **Drop and Glow — variations** (`LOGO_VARIANTS`; `docs/logo/sheet-variants.png`):
 
@@ -238,14 +282,51 @@ None is chosen. The eye style is still between Bean and Gumdrop; the marks use p
 | Drop · Lit | The head warms toward its chin as if its flame were just below the frame, on the deep primary |
 | Glow · Halo | The primary silhouette in a disc of its own light on a night tile |
 | Glow · Scamp | Glow with the flopped antenna and a wink |
-| Glow · Light | Reversed: a yellow drop with ink eyes on the primary. A mark only; the character's body stays in the primary |
+| Glow · Light | **Chosen.** Reversed: a yellow drop with ink eyes on the primary. A mark only; the character's body stays in the primary |
 | Glow · Round | In a circle, inside the inner 80% safe zone: for avatars and launchers that cut a circle |
 
-**What the platforms require.** An app icon is solid: the App Store icon has no alpha; iOS 26 icons are layered in Icon Composer and the system adds the glass, so each layer is supplied flat and opaque; an Android adaptive or a PWA `maskable` icon needs an opaque background with the mark inside the inner 80%; an `apple-touch-icon` with transparency turns black on iOS. Only the browser favicon may be transparent, and then the mark must hold on both a light and a dark tab, which a drop in `C.mid` does. So the tile stays; Glow · Round shows the safe-zone layout.
+**What the platforms require.** An app icon is solid: the App Store icon has no alpha; iOS 26 icons are layered in Icon Composer and the system adds the glass, so each layer is supplied flat and opaque; an Android adaptive or a PWA `maskable` icon needs an opaque background with the mark inside the inner 80%; an `apple-touch-icon` with transparency turns black on iOS. Only the browser favicon may be transparent, and then the mark must hold on both a light and a dark tab, which a drop in `C.mid` does. So the tile stays; Glow · Light · Round is the chosen icon's safe-zone layout.
 
-**Wordmark — candidates** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
+**The icon's eyes, after Feather — proposals** (`APP_ICON_EYES` in `wisp-logo.tsx`; on the Wisp page under Glow · Light, which is now the only icon shown there; every other proposal, the circle and one-colour shapes and the earlier faces are on the References page until the eyes are chosen). Each is Glow · Light with only the eyes changed, with its own 32px-and-under drawing:
+
+| Eyes | What it is |
+|---|---|
+| Ink | Solid ink ovals, as Glow · Light was drawn |
+| Ink · shine | Solid ink ovals with a white shine: Feather's pupil without the white |
+| Feather | Feather's eye: white, translucent hairline rim, ink pupil and shine |
+| Feather · amber rim | The same, rimmed in the drop's own deeper amber |
+| Feather · ink rim | Outline and eyeball: white ringed in ink, ink pupil |
+| Eyeball on white | White eye, ink pupil, no rim (white on the glow is 1.47:1, so the edge fades) |
+| Big pupil | A crescent of white round a big ink pupil, amber rim |
+| Ring | An ink outline round the pupil, no white |
+| Feather · brows | Feather · amber rim with tapered ink brows (left out at 32px and under) |
+
+**Chosen: Feather** (`APP_ICON` in `wisp-logo.tsx`): Feather's white eye, its soft rim laid over the yellow as one solid tone (`#bd9945`, so the icon stays opaque), an ink pupil with its shine; icon and character share one face. The circle and the one-colour marks are redrawn with it (`APP_ICON_SET`). The one-colour mark comes in three colours: the primary and black (for light grounds) draw the eyes' whites and the smile in white, so the eyes are white on any ground, with pupils in the mark's own colour and a white shine; white (for dark grounds) cuts a thin ring round each eye to part it from the white head, and cuts the pupils and smile through to the ground. `npm run logos` writes them as `docs/logo/app-icon.svg`, `app-icon-round.svg`, `app-icon-mono.svg`, `app-icon-mono-black.svg` and `app-icon-mono-white.svg`. The other eyes, and Glow · Light with its first ink eyes, are on the References page. Recommended before the choice, top two: Big pupil, then Ink · shine. Big pupil is Feather's eye at icon scale: the white, the amber rim and the shine say it is Wisp up close, and because the pupil fills the eye it reads like Ink at 16px; it is also the warmest and youngest. Ink · shine is the strongest at every size and still carries Feather's catchlight; choose it if the 16px tab matters most. The plain white-eye versions make the eyes look small and the pupils float on the yellow; the ink rim brings back the chunky line Feather removed.
+
+**The icon's face — ink, white, or Bean's white eyes** (`APP_ICON_FACES` in `wisp-logo.tsx`; `docs/logo/app-icon-faces.png`). Asked: white eyes and mouth. Drawn as **Glow · Light · White face**: white on the glow is 1.47:1, under the 3:1 a graphic needs, so the face washes out and is gone at 16px. The alternative that keeps white in the face is **Glow · Light · Bean eyes**: white eyes, each with an ink pupil, and an ink smile; the pupils carry the contrast (ink on white 16.4:1, on the glow 11.1:1), so it holds at every size, and it is the Bean eye style, one of the two left for the character. Undecided between ink (as chosen) and Bean eyes; white alone is not recommended.
+
+**Wordmark — chosen: Gabarito 700** (`WORDMARK` in `wisp-wordmark.tsx`). “sparkles” set in lowercase, always, with −0.01em tracking: in the primary on light grounds, white on dark and on the primary. Geometric with soft, round counters and a little bounce, so it sits beside the round, solid icon without competing with it. The Wisp page shows it beside the icon on white, dark, the primary and at 16px; every other face is on the References page.
+
+**Wordmark — the candidates it was chosen from: the top three and round three** (`src/design/nix/wisp-wordmark.tsx`, `WORDMARKS`; shown on the Wisp page beside the chosen icon; `docs/logo/wordmarks-3.png`). Chosen to fit the mark: round bowls, round or soft terminals like the antennae's caps, a stroke near the stalks' weight, open letters that stay legible for a child and at 16px. Each is set in lowercase beside the icon on white, on dark, reversed on the primary, and at 16px; all on Google Fonts under the OFL.
+
+| Face | | Fit |
+|---|---|---|
+| M PLUS Rounded 1c 800 | Top three | Fully rounded terminals like the antennae's caps, at a weight close to the stalks: the closest match to the mark |
+| Gabarito 700 | Top three | Geometric with soft round counters and a little bounce; between Figtree's clarity and M PLUS's roundness |
+| Figtree 800 | Top three | Clean geometric with round bowls; the most neutral, crisp small |
+| Zen Maru Gothic 700 | New | A round ('maru') gothic: every stroke end rounded, like M PLUS but calmer and lighter |
+| Andika 700 | New | Designed by SIL for beginning readers: letters that cannot be confused. Pairs by purpose, less by shape |
+| Urbanist 800 | New | Geometric on circles, low and wide; the drop's roundness in a modern product face |
+| Plus Jakarta Sans 800 | New | Friendly modern sans, round bowls, slightly bouncy; confident for parents and teachers |
+| Bricolage Grotesque 700 | New | The most character: ink-trap quirks, hand-made warmth; less round, check it at small sizes |
+
+Round two's other five (Varela Round, Comfortaa, Sniglet, Rubik, Atkinson Hyperlegible Next) are dropped; `docs/logo/wordmarks-2.png` keeps that round. Gabarito 700 is chosen (above).
+
+**Wordmark — candidates, round one** (`docs/logo/wordmarks.png`, “sparkles” beside Drop): Fraunces 600 with SOFT 100 (already the product's display face), Fredoka 600, Nunito 800, Baloo 2 700, Lexend 600, Quicksand 700. All are on Google Fonts under the OFL. None is chosen.
 
 ## Side characters
+
+**Reset (2026-10-01): all six side characters are new.** None of the characters below carries over — not species, roles, abilities, faces or jokes; they stay in the studio only until the redraw starts. The new six are designed together around one world, and they speak (fixed lines, lip-synced). The world is chosen: the Observatory on the hill. The proposed six (Hob, Tavi, Grit, Lyra, Nox, Pim) and the lip-sync plan are in `docs/world.md`; none is drawn or confirmed yet.
 
 | # | Character | Ability | Status |
 |---|---|---|---|
