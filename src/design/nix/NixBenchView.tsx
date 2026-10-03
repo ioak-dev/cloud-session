@@ -69,15 +69,25 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
 /** The shortlist: the pond four (`side-pond.tsx`, `side-garden.tsx`) and Ada, Kai and Thistle
  *  (`side-shortlist.tsx`). */
 const SHORTLIST: Candidate[] = [...POND, ...SHORTLISTED];
-const findSide = (id: string) => [...SHORTLIST, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].find((c) => c.id === id)!;
-/** The top six, picked for range (ages 6 to elder, one animal, people of different backgrounds),
- *  distinct silhouettes and the strongest hooks; then two runners-up. */
-const TOP_SIX: Candidate[] = ["garden-bun", "fresh-tilly", "pond-ines", "cand-kai", "people-noor", "more-otto"].map(findSide);
-const RUNNERS_UP: Candidate[] = ["more-imani", "cand-ada"].map(findSide);
-const CLUB: Candidate[] = TOP_SIX;
+const findSide = (id: string) => [...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].find((c) => c.id === id)!;
+/** The side characters kept on the page, in order; every other candidate is off the Side page. */
+const KEPT: Candidate[] = [
+  "fresh-tilly", "cand-kai", "people-noor", "more-otto", "more-imani", "cand-ada", "pond-mina",
+  "garden-bean", "cand-bodhi", "fresh-theo", "people-ezra", "people-grace", "people-lena",
+  "people-june", "more-haru", "more-sofia", "more-leo",
+].map(findSide);
+/** Shortlisted for now; the rest of KEPT stay open until new open candidates replace them. */
+const SHORT_IDS = ["more-haru", "people-grace", "cand-ada", "more-otto", "people-noor", "cand-kai", "more-sofia"];
+const SHORTLISTED_NOW: Candidate[] = SHORT_IDS.map(findSide);
+const OPEN: Candidate[] = KEPT.filter((c) => !SHORT_IDS.includes(c.id));
+const CLUB: Candidate[] = SHORTLISTED_NOW;
 /** Every side character on the page: the shortlist, the backup and the fresh candidates. */
-const EVERY_SIDE: Candidate[] = [...new Map([...TOP_SIX, ...RUNNERS_UP, ...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].map((c) => [c.id, c])).values()];
+const EVERY_SIDE: Candidate[] = [...new Map([...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].map((c) => [c.id, c])).values()];
 
+/** Every side character off the shortlist. */
+const REFERENCE_SIDE: Candidate[] = [...new Map([...OPEN, ...EVERY_SIDE].map((c) => [c.id, c])).values()].filter(
+  (c) => !SHORT_IDS.includes(c.id),
+);
 /** Every drawing in the studio, for looking one up by id. */
 const ALL: Candidate[] = [
   WISP_MAIN,
@@ -1061,32 +1071,10 @@ export function ReferencesPage() {
   );
 }
 
-/** The side characters' page. */
-export function SidePage() {
+/** Eyes, mouths and talking mouths of a cast, then the bench to pick one and pose it. */
+function SideSections({ cast, groups }: { cast: Candidate[]; groups: Group[] }) {
   return (
     <>
-      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
-      <h1 className="display mt-1">Side characters — top six</h1>
-      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Picked for review: Bun, Tilly, Ines, Kai, Noor and Professor Otto, with Dr Imani and Ada as
-        runners-up. Every other candidate is below them. All drawn to
-        docs/character-guidelines.md; proposals, none final.
-      </p>
-      <Tests />
-
-      <h2 className="material-heading mt-10 text-lg text-foreground">The club and their abilities</h2>
-      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-        Each ability comes from the character itself, its body and its nature, never a prop. None
-        glows, flies or leaves a trail: that is Wisp's.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {SIDE_ABILITIES.filter((a) => CLUB.some((c) => c.id === a.id)).map((a) => (
-          <AbilityTile key={a.id} a={a} />
-        ))}
-      </div>
-
-      <LipSyncDemo cast={CLUB} />
-
       <h2 className="material-heading mt-10 text-lg text-foreground">Eyes and mouths — each character's own</h2>
       <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
         No two characters share eyes or a mouth: a squint under bushy brows, keen almond eyes, round
@@ -1106,7 +1094,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {EVERY_SIDE.map((x) => (
+            {cast.map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {MOODS.map((m) => (
@@ -1139,7 +1127,7 @@ export function SidePage() {
             </tr>
           </thead>
           <tbody>
-            {EVERY_SIDE.map((x) => (
+            {cast.map((x) => (
               <tr key={x.id}>
                 <th className="instrument pr-2 text-left text-xs font-normal text-foreground">{x.label}</th>
                 {VISEMES.map((v) => (
@@ -1153,19 +1141,60 @@ export function SidePage() {
         </table>
       </div>
 
-      <Bench
+      <Bench groups={groups} />
+    </>
+  );
+}
+
+/** The side characters' page. */
+export function SidePage() {
+  return (
+    <>
+      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
+      <h1 className="display mt-1">Side characters</h1>
+      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+        Seventeen kept for review: Tilly, Kai, Noor, Professor Otto, Dr Imani, Ada, Mina, Bean,
+        Bodhi, Theo, Ezra, Grace, Lena, June, Haru, Sofia and Leo. All drawn to
+        docs/character-guidelines.md; proposals, none final.
+      </p>
+      <Tests />
+
+      <h2 className="material-heading mt-10 text-lg text-foreground">Shortlisted characters</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Haru, Grace, Ada, Professor Otto, Noor, Kai and Sofia, kept as the shortlist for now. The
+        rest are open candidates, below.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {SHORTLISTED_NOW.map((c) => (
+          <figure key={c.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={c} mood="happy" still className="h-56 w-full" />
+            <figcaption className="material-heading text-sm text-foreground">{c.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <LipSyncDemo cast={CLUB} />
+
+      <SideSections cast={SHORTLISTED_NOW} groups={[["Shortlisted", SHORTLISTED_NOW]]} />
+    </>
+  );
+}
+
+/** Side characters not on the shortlist, kept as backup. */
+export function SideReferencesPage() {
+  return (
+    <>
+      <p className="spec-cap m-0 text-muted-foreground">Sparkles / the guide bench</p>
+      <h1 className="display mt-1">Side characters — references</h1>
+      <p className="material mt-3 max-w-[64ch] text-muted-foreground">
+        Every side character that is not on the shortlist, kept as backup. Move one back to the
+        Side characters page to shortlist it.
+      </p>
+      <SideSections
+        cast={REFERENCE_SIDE}
         groups={[
-          ["Top six (picked)", TOP_SIX],
-          ["Runners-up", RUNNERS_UP],
-          ["Shortlist", SHORTLIST],
-          ["Backup", BACKUP],
-          ["Fresh candidates to shortlist against", FRESH],
-          ["Elders — Ada in a second look, and two more", ELDERS],
-          ["Teachers in their twenties", TEACHERS],
-          ["Scientists", SCIENTISTS],
-          ["More women in their twenties", WOMEN],
-          ["Boys under ten", BOYS],
-          ["Young teen boys", TEENS],
+          ["Open candidates", REFERENCE_SIDE.filter((c) => OPEN.some((o) => o.id === c.id))],
+          ["Everyone else", REFERENCE_SIDE.filter((c) => !OPEN.some((o) => o.id === c.id))],
         ]}
       />
     </>

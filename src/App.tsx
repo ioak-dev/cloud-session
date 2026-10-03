@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ReferencesPage, SidePage, WispPage } from "@/design/nix/NixBenchView";
+import { ReferencesPage, SideReferencesPage, SidePage, WispPage } from "@/design/nix/NixBenchView";
 import { Shell } from "@/studio/Shell";
 
 /** The studio's pages, by hash: the main character (Wisp, on its ribbon wings), the side
@@ -9,6 +9,7 @@ import { Shell } from "@/studio/Shell";
 const PAGES = [
   { hash: "#/wisp", label: "Wisp", page: () => <WispPage wings="ribbon" /> },
   { hash: "#/side", label: "Side characters", page: () => <SidePage /> },
+  { hash: "#/side-references", label: "Side characters · References", page: () => <SideReferencesPage /> },
   { hash: "#/references", label: "References", page: () => <ReferencesPage /> },
   { hash: "#/butterfly", label: "Wisp · Butterfly (reference)", page: () => <WispPage wings="pairs" /> },
 ] as const;
