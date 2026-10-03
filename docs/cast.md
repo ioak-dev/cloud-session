@@ -241,15 +241,19 @@ None of them is in the turn puppet, the views, the flight or the form: that wait
 
 | Spinner | What happens | Loop |
 |---|---|---|
-| Tumble | Leans back (anticipation), tucks its hands in, turns a full somersault about its middle with wings buzzing and antennae trailing, overshoots, settles, hovers a beat | 2.4 s |
 | Glow breath | Hands at its heart; on the in-breath it rises, grows a little taller, its flame swells and its glow comes up; then it all eases back | 3.6 s |
 | Spark ring | Ten sparks round it light up one after another, clockwise from the top; its head and body lean after the lit one and its antennae trail | 2.4 s |
-| Counting dots | Three sparks beside it hop in turn like a typing indicator; it nods to each with a boing of its antenna, then straightens | 2.4 s |
+| Counting dots | Three sparks beside it hop in turn like a typing indicator; it watches them with a patient nod for each. Focused face throughout: no smile, no straightening and no wing flick after the third, so nothing reads as "done" while a user is still waiting | 2.4 s |
+| Lantern sway | Hangs like a lantern in a light wind: swings side to side, antennae and tail trailing a beat behind, glow brightest through the middle. Neutral face | 3.2 s |
+| Orbit | One spark with a short fainter tail circles it on a tilted loop, behind and in front; head, body and antennae follow it. Curious face | 2.8 s |
+| Ripple | Rings of its glow widen and fade across the water, two alternating; flame brightens as one leaves | 3.2 s |
+| Glow breath · words, Lantern sway · words, Orbit · words | The same figures with a fixed line beside them that changes every loop (see below) | as above |
 
+- **Words.** The lines are fixed copy shown as text beside the figure (never lettering in the SVG) and are the spinner's status text. They say what Wisp is doing, never how far along it is, never "almost there"; the last line of each set owns up to a long wait ("Taking a little longer than usual — still on it"). The face does not change with the line.
+- Tumble was removed. Counting dots used to end its round with a smile and a straighten, which read as "done" to someone still waiting; the loop is now the same from first frame to last.
 - Each loop is seamless and the same every time. A spinner reacts to nothing: not an answer, a count, an approval or an emptied queue.
-- The tumble turns Wisp over in its own plane; it never mirrors, so it does not break "never flips".
-- The ring's and the dots' sparks are an effects layer in the glow's colour with the glow's edge, not sparks drawn into the figure; the figure's own spark trail is unchanged. Their animations take the figure's start time, so the face, the joints and the dots run on one clock.
-- A spinner's loop runs on linear time and each keyframe segment carries its own easing, so a tumble's one long ease is not bent by a second ease over the whole loop.
+- The ring's, orbit's, ripple's and dots' sparks are an effects layer in the glow's colour with the glow's edge, not sparks drawn into the figure; the figure's own spark trail is unchanged. Their animations take the figure's start time, so the face, the joints and the dots run on one clock.
+- A spinner's loop runs on linear time and each keyframe segment carries its own easing, so one long ease is not bent by a second ease over the whole loop.
 - Under reduced motion the figure holds its first frame and resting face, and the dots hold one still frame of the loop. The figure is `aria-hidden`; the spinner is a `role="status"` with a text label.
 - **Open:** Wisp appears only on the sign-up form. Using any of these elsewhere (while a lesson loads, say) widens where Wisp appears, and that is the user's decision. Nothing here is adopted.
 

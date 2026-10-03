@@ -731,17 +731,21 @@ export function WispPage({ wings }: { wings: WingStyle }) {
             {front.label} — loading spinners (proposals)
           </h2>
           <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
-            Loops that say "one moment" with the main character as drawn, in place of a ring spinner: a somersault, a
-            breath of its glow, a ring of its sparks it watches go round, and three sparks that hop like
-            a typing indicator. Each is seamless and the same every time; it reacts to nothing. The dots
-            are an effects layer in the glow's colour on the figure's clock. Below, each at the size a
-            spinner is used. Under reduced motion, a still frame.
+            Loops that say "one moment" with the main character as drawn, in place of a ring spinner: a breath
+            of its glow, a ring of its sparks it watches go round, a lantern swaying, one spark
+            circling it, rings spreading across the water, and three sparks that hop like a typing
+            indicator (patient: it never smiles at the end of a round, so a long wait does not read as
+            a joke). The last three have versions with a line beside them that changes every loop; the
+            lines are fixed copy and never promise an end. Each is seamless and the same every time; it
+            reacts to nothing. The dots, ring, orbit and ripples are an effects layer in the glow's colour
+            on the figure's clock. Below, each at the size a spinner is used. Under reduced motion, a
+            still frame and the first line.
           </p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {WISP_SPINNERS.map((s) => (
               <figure key={s.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
                 <div className="flex h-56 items-center justify-center overflow-hidden">
-                  <SpinnerFigure c={front} s={s} size="h-56" />
+                  <SpinnerFigure c={front} s={s} size="h-48" words="below" />
                 </div>
                 <div className="flex items-end justify-center gap-6 overflow-hidden border-t border-border pt-2">
                   <SpinnerFigure c={front} s={s} size="h-16" />
