@@ -366,6 +366,47 @@ function Lines({ m }: { m: CastMember }) {
   );
 }
 
+/** The refinement: the character as refined so far, beside the studio drawing it started from. */
+function Refinement({ m }: { m: CastMember }) {
+  const refined = m.refinements.length > 0;
+  return (
+    <>
+      <h2 className={SECTION}>Refinement</h2>
+      <p className={LEDE}>
+        {m.name} as refined so far. {refined ? "Beside it, the studio drawing it started from." : "Not refined yet: this is the studio drawing, and refinements will land here first."}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-4">
+        <figure className="m-0 flex flex-col gap-1.5">
+          <div className="rounded-[var(--radius)] bg-muted p-3">
+            <NixFigure c={m.figure} grip={restGrip(m.slug)} className="h-72 w-56" label={`${m.name}, refined`} />
+          </div>
+          <figcaption className="instrument text-xs text-muted-foreground">{refined ? "Refined" : "Current version"}</figcaption>
+        </figure>
+        {refined && (
+          <figure className="m-0 flex flex-col gap-1.5">
+            <div className="rounded-[var(--radius)] bg-muted p-3">
+              <NixFigure c={m.base} className="h-72 w-56" label={`${m.name}, studio drawing`} />
+            </div>
+            <figcaption className="instrument text-xs text-muted-foreground">Studio drawing</figcaption>
+          </figure>
+        )}
+        <div className="max-w-[48ch] text-sm">
+          <div className="instrument text-xs text-muted-foreground">What changed</div>
+          {refined ? (
+            <ul className="m-0 mt-1.5 list-disc pl-5 text-foreground">
+              {m.refinements.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="m-0 mt-1.5 text-muted-foreground">Coming soon</p>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 function Identity({ m }: { m: CastMember }) {
   return (
     <>
@@ -480,6 +521,7 @@ export function CharacterPage({ m }: { m: CastMember }) {
       <p className="instrument m-0 text-xs text-muted-foreground">Side characters / Side character</p>
       <h1 className="display mt-1 text-3xl font-semibold text-foreground">{m.name}</h1>
       <CastNav current={m.slug} />
+      <Refinement m={m} />
       <Identity m={m} />
       <Lines m={m} />
       <States m={m} />
