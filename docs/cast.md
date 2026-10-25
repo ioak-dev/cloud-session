@@ -492,3 +492,25 @@ One exception is worth keeping open: **a younger firefly-family member** (a glow
 A side character must be told apart from the main character and from every other side character by silhouette alone, at small size.
 
 Which side character plays which role in the product is not decided. Record it here when it is.
+
+## Synced back from Sparkles (2026-10-25)
+
+Sparkles (`/design/character`) named the shortlist as its companion cast and refined one drawing. This repo keeps the working names; the product names are Sparkles' own and are not changed here.
+
+| Studio drawing | Sparkles name |
+|---|---|
+| Haru | Haru |
+| Grace | Margot |
+| Ada | Nell |
+| Professor Otto | Otto |
+| Noor | Noor (refined) |
+| Kai | Rio |
+| Sofia | Cleo |
+
+- **Noor, refined** (`side-noor.tsx`, `refineNoor`, applied on the Side page): a hijab with real fabric (underscarf band, wrap crossing under the chin, folds, brooch, drape), a long-sleeved plum dress with gold cuffs and hem, a bow at the hip, a pencil in a pocket, longer arms with bigger hands, and a one-sided resting smile. Her duckling and the marks her pencil draws are `NoorScene`.
+- **Rig additions** (all optional, nothing else changes): `rig/grip.tsx` (hand grips: fist, thumbs-up, point, open palm), `Ctx.grip`, `Candidate.armLine`, `wear`, `overUpperArms`, `Body.elbows: "natural"`, cloth `cap` and `trim`, and `fx-…` targets for a character's own scene.
+- **Not synced:** Sparkles' product layer (`reactions.ts`, fixed lines, voices) and its fourth sign-up moment, Constellation bow.
+
+**One page per side character** (`#/side/<id>`, e.g. `#/side/more-haru`; `SideCharacterPage`): the figure, its temperament and ability where Sparkles has named it (`side-cast.ts`), the lip-sync demo with its demo lines plus Sparkles' fixed lines, its eyes, mouths and talking mouths, and the bench. Every side character has one; the shortlist links to them from `#/side`.
+
+**The cast's pages follow Sparkles' `/design/character/<name>`** (`#/side/haru`, `margot`, `nell`, `otto`, `noor`, `rio`, `cleo`; `side-character-page.tsx`): identity, silhouette and size, eyes and mouth, lines in the character's voice, then every state with each variant (`side-reactions.ts`). Only Noor's states and reactions are drawn; every other state shows “Coming soon”. Characters outside the seven keep the simpler page.

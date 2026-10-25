@@ -11,7 +11,9 @@ import { CHIBI, J, reach, type Body, type JointName, type P } from "./skeleton";
  * declared keyframes, so a motion can be read and bounded by inspection.
  */
 export type Track = Keyframe[];
-export type Target = JointName | "shadow" | "glow";
+/** `fx-…` is a character's own scene element outside its body — a duckling at its feet, a mark it
+ *  draws in the air — animated on the same clock as the joints (2026-10-04). */
+export type Target = JointName | "shadow" | "glow" | `fx-${string}`;
 
 export type Motion = {
   /** Seconds per loop. */
@@ -230,7 +232,7 @@ export function arms(frames: Hands[], body: Body = CHIBI): Partial<Record<Target
       const t = f[side];
       if (!t) return { shoulder: 0, elbow: 0 };
       const target: P = [S[0] + (t[0] - S0[0]) * k, S[1] + (t[1] - S0[1]) * k];
-      return reach(side, target, f[`out${side}`] ?? true, body.j);
+      return reach(side, target, f[`out${side}`] ?? true, body.j, body.elbows);
     });
     out[`shoulder${side}`] = rot(...solved.map((s) => s.shoulder));
     out[`elbow${side}`] = rot(...solved.map((s) => s.elbow));

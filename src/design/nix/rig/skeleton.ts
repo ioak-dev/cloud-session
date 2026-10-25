@@ -88,6 +88,11 @@ export type Body = {
   /** Limb widths: upper arm, forearm, thigh, shin, hand radius; and the factor sleeves scale by. */
   w: { upper: number; fore: number; thigh: number; shin: number; hand: number; cloth: number };
   neck: { x: number; y: number; w: number; h: number };
+  /** How an elbow chooses its side (2026-10-04). `out` (default): away from the body in screen x —
+   *  which is ambiguous for a hand held level with the shoulder, so the elbow can flip up into a
+   *  "chicken wing". `natural`: away from the body *and* down, the way a relaxed arm hangs its elbow
+   *  under gravity; the two candidates only tie for a hand 45° up-and-in or down-and-out. */
+  elbows?: "out" | "natural";
 };
 
 export const CHIBI: Body = {
@@ -160,6 +165,7 @@ export function reach(
   hand: P,
   out = true,
   j: Joints = J,
+  elbows: Body["elbows"] = "out",
 ): { shoulder: number; elbow: number } {
   const S = j[`shoulder${side}`];
   const E0 = j[`elbow${side}`];
@@ -173,7 +179,11 @@ export function reach(
   const h = Math.sqrt(Math.max(0, a * a - x * x));
   const away = side === "R" ? 1 : -1;
   let p: P = [-u[1], u[0]];
-  if (Math.sign(p[0] || 1) !== (out ? away : -away)) p = [u[1], -u[0]];
+  if (elbows === "natural") {
+    /* outward and downward: score each candidate, and `out: false` asks for the other one */
+    const score = (q: P) => away * q[0] + q[1];
+    if ((score(p) < score([u[1], -u[0]])) === out) p = [u[1], -u[0]];
+  } else if (Math.sign(p[0] || 1) !== (out ? away : -away)) p = [u[1], -u[0]];
   const E: P = [S[0] + x * u[0] + h * p[0], S[1] + x * u[1] + h * p[1]];
   const H: P = [S[0] + d * u[0], S[1] + d * u[1]];
   const shoulder = norm(deg(angle(S, E) - angle(S, E0)));

@@ -51,7 +51,10 @@ npm start
 | `src/design/nix/lip-sync.tsx` | The lip-sync demo: a fixed line said with Web Speech, word-synced (or flap, or silent and timed) |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, the spark trail, and the talking shapes (`visemes.ts`) |
 | `src/design/nix/NixBenchView.tsx` | The studio pages: `WispPage` (the chosen Wisp only, or the full butterfly reference page), `SidePage` and `ReferencesPage` (the backup, with `CleanProposals`, `BeanSofter` and `WarmerSections`), sharing one bench |
-| `src/App.tsx` | Routes the four pages by hash (and `#/ribbon` to the Wisp page) |
+| `src/design/nix/side-cast.ts` | The shortlist as Sparkles names them: product name, temperament, ability, voice and fixed lines (`CAST_SPECS`); the lip-sync demo says these lines too |
+| `src/design/nix/side-companion.tsx`, `side-character-page.tsx`, `side-reactions.ts` | The seven cast members with their drawings (`CAST`); the Noor-style page every one of them has at `#/side/<slug>` (identity, silhouette, eyes and mouth, lines, states); the states and reactions, drawn for Noor only so far (the rest show “Coming soon”) |
+| `src/design/nix/side-noor.tsx` | Noor, refined for the product (`refineNoor`), applied on the Side page |
+| `src/App.tsx` | Routes the four pages by hash (and `#/ribbon` to the Wisp page); `#/side/<id>` is one side character's own page (`SideCharacterPage`), linked from the shortlist's names on `#/side` |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |
 | `docs/cast.md` | Status of every character, the one-ability rule, speech and lip-sync |

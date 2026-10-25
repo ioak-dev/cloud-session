@@ -11,6 +11,8 @@
  *   eyes and mouths, and the lip-sync demo.
  * - References: the ribbon variants not chosen, the wispy directions, Pip and earlier fireflies.
  */
+import { refineNoor } from "./side-noor";
+import { castByStudioId } from "./side-cast";
 import * as React from "react";
 
 import { FilterSegment, FilterSet } from "@/components/ui/filter-segment";
@@ -69,7 +71,10 @@ const REFERENCE = ["firefly-fuzzy", "firefly-chonk", "firefly-cube", "firefly-ho
 /** The shortlist: the pond four (`side-pond.tsx`, `side-garden.tsx`) and Ada, Kai and Thistle
  *  (`side-shortlist.tsx`). */
 const SHORTLIST: Candidate[] = [...POND, ...SHORTLISTED];
-const findSide = (id: string) => [...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].find((c) => c.id === id)!;
+const findSide = (id: string) => {
+  const c = [...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].find((c) => c.id === id)!;
+  return id === "people-noor" ? refineNoor(c) : c;
+};
 /** The side characters kept on the page, in order; every other candidate is off the Side page. */
 const KEPT: Candidate[] = [
   "fresh-tilly", "cand-kai", "people-noor", "more-otto", "more-imani", "cand-ada", "pond-mina",
@@ -82,7 +87,7 @@ const SHORTLISTED_NOW: Candidate[] = SHORT_IDS.map(findSide);
 const OPEN: Candidate[] = KEPT.filter((c) => !SHORT_IDS.includes(c.id));
 const CLUB: Candidate[] = SHORTLISTED_NOW;
 /** Every side character on the page: the shortlist, the backup and the fresh candidates. */
-const EVERY_SIDE: Candidate[] = [...new Map([...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].map((c) => [c.id, c])).values()];
+const EVERY_SIDE: Candidate[] = [...new Map([...SHORTLIST, ...BACKUP, ...FRESH, ...ELDERS, ...TEACHERS, ...SCIENTISTS, ...WOMEN, ...BOYS, ...TEENS].map((c) => [c.id, c.id === "people-noor" ? refineNoor(c) : c])).values()];
 
 /** Every side character off the shortlist. */
 const REFERENCE_SIDE: Candidate[] = [...new Map([...OPEN, ...EVERY_SIDE].map((c) => [c.id, c])).values()].filter(
@@ -1168,7 +1173,9 @@ export function SidePage() {
         {SHORTLISTED_NOW.map((c) => (
           <figure key={c.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
             <NixFigure c={c} mood="happy" still className="h-56 w-full" />
-            <figcaption className="material-heading text-sm text-foreground">{c.label}</figcaption>
+            <figcaption className="material-heading text-sm text-foreground">
+              <a href={`#/side/${c.id}`}>{c.label}</a>
+            </figcaption>
           </figure>
         ))}
       </div>
@@ -1197,6 +1204,61 @@ export function SideReferencesPage() {
           ["Everyone else", REFERENCE_SIDE.filter((c) => !OPEN.some((o) => o.id === c.id))],
         ]}
       />
+    </>
+  );
+}
+
+/** The ids of every side character that has a page of its own (`#/side/<id>`). */
+export const SIDE_IDS: string[] = EVERY_SIDE.map((c) => c.id);
+
+/** One side character on a page of its own: who it is, its lines, eyes, mouths and the bench. */
+export function SideCharacterPage({ id }: { id: string }) {
+  const c = EVERY_SIDE.find((x) => x.id === id);
+  if (!c) {
+    return (
+      <>
+        <h1 className="display mt-1">No such side character</h1>
+        <p className="material mt-3 text-muted-foreground">
+          <a href="#/side">Back to the side characters</a>
+        </p>
+      </>
+    );
+  }
+  const spec = castByStudioId(c.id);
+  const shortlisted = SHORT_IDS.includes(c.id);
+  return (
+    <>
+      <p className="spec-cap m-0 text-muted-foreground">
+        <a href={shortlisted ? "#/side" : "#/side-references"}>
+          {shortlisted ? "Side characters" : "Side characters · References"}
+        </a>
+      </p>
+      <h1 className="display mt-1">{c.label}</h1>
+      {spec && (
+        <p className="material mt-1 text-sm text-muted-foreground">Sparkles calls this character {spec.name}.</p>
+      )}
+      <div className="mt-4 grid gap-6 sm:grid-cols-[minmax(0,18rem)_1fr]">
+        <figure className="m-0 rounded-[var(--radius)] bg-muted p-3">
+          <NixFigure c={c} mood="happy" className="h-80 w-full" />
+        </figure>
+        <div className="material max-w-[64ch] text-sm text-muted-foreground">
+          {c.signature && <p className="mt-0">{c.signature}</p>}
+          {spec && (
+            <dl className="m-0 mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+              <dt className="instrument text-foreground">Temperament</dt>
+              <dd className="m-0">{spec.temperament}</dd>
+              <dt className="instrument text-foreground">Ability</dt>
+              <dd className="m-0">
+                {spec.ability.name} — {spec.ability.line}
+              </dd>
+            </dl>
+          )}
+        </div>
+      </div>
+
+      <LipSyncDemo cast={[c]} />
+
+      <SideSections cast={[c]} groups={[[c.label, [c]]]} />
     </>
   );
 }

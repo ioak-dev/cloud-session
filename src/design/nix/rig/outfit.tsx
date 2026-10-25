@@ -34,7 +34,16 @@ export const OUTFITS: { id: OutfitId; title: string; use: string }[] = [
 ];
 
 /** Cloth over a limb segment, as a fraction of it: [from, to], width, colour. */
-export type Cloth = { from: number; to: number; w: number; color: string } | null;
+export type Cloth = {
+  from: number;
+  to: number;
+  w: number;
+  color: string;
+  /** A square lower end instead of a round one: a sleeve that stops at a cuff, not a stub. */
+  cap?: "round" | "butt";
+  /** A band of another colour at the cloth's lower end, as a fraction of the segment. */
+  trim?: { color: string; len: number };
+} | null;
 
 export type OutfitParts = {
   /** Behind the head and torso: a hood, a backpack. */

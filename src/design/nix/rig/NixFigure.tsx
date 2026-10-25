@@ -4,6 +4,7 @@ import * as React from "react";
 
 import type { Candidate } from "../candidates";
 import { Face, type Mood } from "./face";
+import { GripHand, type Grips } from "./grip";
 import { Hair, type HairId } from "./hair";
 import { useJointMotion } from "./motion";
 import { outfitParts, type Cloth, type OutfitId } from "./outfit";
@@ -40,6 +41,15 @@ export type FigureProps = {
   act?: Pose;
   /** The mouth shape while it talks (`visemes.ts`); drawn by the character's own mouth kit. */
   viseme?: Viseme;
+  /** What each hand is doing (`grip.tsx`): a fist, a thumbs-up, a point, an open palm. */
+  grip?: Grips;
+  /** Carry the hand's thin edge up the bare arm too, so a forearm crossing the face still reads. */
+  armEdge?: boolean;
+  /** A character's own scene, in figure space, outside its body (2026-10-04): `under` is drawn on
+   *  the ground behind it (a duckling at its feet), `over` in front of everything (a tick it draws
+   *  in the air). Elements carry `data-joint="fx-…"` to move on the act's clock. */
+  under?: React.ReactNode;
+  over?: React.ReactNode;
 };
 
 function Seg({ a, b, w, color, ink }: { a: P; b: P; w: number; color: string; ink: string }) {
@@ -135,14 +145,19 @@ function Tongs({ el, wr, at, r, color }: { el: P; wr: P; at: P; r: number; color
 
 function ClothOn({ a, b, cloth, ink }: { a: P; b: P; cloth: Cloth; ink: string }) {
   if (!cloth) return null;
+  const from = lerp(a, b, cloth.from);
+  const to = lerp(a, b, cloth.to);
+  const trim = cloth.trim && lerp(a, b, cloth.to + cloth.trim.len);
+  if (cloth.cap !== "butt") return <Seg a={from} b={to} w={cloth.w} color={cloth.color} ink={ink} />;
   return (
-    <Seg
-      a={lerp(a, b, cloth.from)}
-      b={lerp(a, b, cloth.to)}
-      w={cloth.w}
-      color={cloth.color}
-      ink={ink}
-    />
+    <g strokeLinecap="butt">
+      {/* the upper end stays round, so it joins the cloth above it at the joint */}
+      <circle cx={from[0]} cy={from[1]} r={cloth.w / 2} fill={cloth.color} />
+      <line x1={from[0]} y1={from[1]} x2={to[0]} y2={to[1]} stroke={cloth.color} strokeWidth={cloth.w} />
+      {trim && (
+        <line x1={to[0]} y1={to[1]} x2={trim[0]} y2={trim[1]} stroke={cloth.trim!.color} strokeWidth={cloth.w} />
+      )}
+    </g>
   );
 }
 
@@ -161,6 +176,10 @@ export function NixFigure({
   headFx,
   act,
   viseme,
+  grip,
+  armEdge = true,
+  under,
+  over,
 }: FigureProps) {
   const ref = React.useRef<SVGSVGElement>(null);
   const uid = React.useId().replace(/:/g, "");
@@ -192,11 +211,12 @@ export function NixFigure({
   const ink = pal.line ?? pal.ink;
   /** The body's own outline: none when the character is drawn by colour alone. */
   const bodyLine = c.outline === false ? "none" : ink;
-  const o = outfitParts(outfit ?? c.outfit, pal, f.torso);
+  const worn = outfitParts(outfit ?? c.outfit, pal, f.torso);
+  const o = c.wear ? c.wear(worn) : worn;
   const on = new Set<PropId>([...(c.props ?? []), ...props, ...(o.brings ?? [])]);
   const h = c.kind === "animal" || c.hair === undefined ? null : Hair({ id: hair ?? c.hair, pal });
   const face = mood ?? p.mood;
-  const ctx = { pal, uid, mood: face };
+  const ctx = { pal, uid, mood: face, grip };
   const k = f.w.cloth;
   const scaled = (cl: Cloth): Cloth => (cl ? { ...cl, w: cl.w * k } : null);
 
@@ -244,23 +264,33 @@ export function NixFigure({
     );
   };
 
-  const arm = (s: "L" | "R") => {
+  /** One arm, or one part of it on the same joints: the upper arm alone, or the forearm and hand. */
+  const arm = (s: "L" | "R", part: "all" | "upper" | "fore" = "all") => {
     const sh = j[`shoulder${s}`];
     const el = j[`elbow${s}`];
     const wr = j[`wrist${s}`];
     const hand: P = lerp(el, wr, 1.12);
+    const edge = `color-mix(in oklab, ${pal.skinShade} 70%, #3a2416)`;
+    const limbLine = armEdge && grip?.[s] ? (c.armLine ?? edge) : bodyLine;
     return (
       <g data-joint={`shoulder${s}`} style={pivot(`shoulder${s}`, j)}>
-        <Seg a={sh} b={el} w={f.w.upper} color={pal.limb} ink={bodyLine} />
-        <ClothOn a={sh} b={el} cloth={scaled(o.upper)} ink={ink} />
+        {part !== "fore" && (
+          <>
+            <Seg a={sh} b={el} w={f.w.upper} color={pal.limb} ink={limbLine} />
+            <ClothOn a={sh} b={el} cloth={scaled(o.upper)} ink={ink} />
+          </>
+        )}
+        {part !== "upper" && (
         <g data-joint={`elbow${s}`} style={pivot(`elbow${s}`, j)}>
           {c.hands === "wisp" ? (
             <Tendril a={el} b={hand} w={f.w.fore} tip={f.w.hand} color={pal.limb} />
           ) : (
-            <Seg a={el} b={wr} w={f.w.fore} color={pal.limb} ink={bodyLine} />
+            <Seg a={el} b={wr} w={f.w.fore} color={pal.limb} ink={limbLine} />
           )}
           <ClothOn a={el} b={wr} cloth={scaled(o.fore)} ink={ink} />
-          {c.hands === "wisp" ? null : c.hands === "tong" ? (
+          {grip?.[s] && c.hands !== "wisp" ? (
+            <GripHand grip={grip[s]!} el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} crease={edge} side={s} />
+          ) : c.hands === "wisp" ? null : c.hands === "tong" ? (
             <Tongs el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} />
           ) : c.hands === "mitten" ? (
             <Mitten el={el} wr={wr} at={hand} r={f.w.hand} color={pal.paw} />
@@ -275,6 +305,7 @@ export function NixFigure({
             />
           )}
         </g>
+        )}
       </g>
     );
   };
@@ -293,15 +324,16 @@ export function NixFigure({
     >
       <ellipse
         data-joint="shadow"
+        className="char-shadow"
         style={pivot("root", j)}
         cx={100}
         cy={282}
         rx={42}
         ry={6}
-        fill={pal.ink}
-        opacity={0.12}
+        fill={`var(--char-shadow, ${pal.ink})`}
       />
       {c.trail && <SparkTrail at={c.trail} glow={pal.glow} edge="var(--char-glow-edge)" />}
+      {under}
       <g data-joint="root" style={pivot("root", j)}>
         <g data-joint="torso" style={pivot("torso", j)}>
           <g transform={f.torsoFit}>
@@ -386,10 +418,25 @@ export function NixFigure({
             </g>
           </g>
 
-          {c.arms !== false && arm("L")}
-          {c.arms !== false && arm("R")}
+          {c.arms !== false && c.overUpperArms ? (
+            <>
+              {arm("L", "upper")}
+              {arm("R", "upper")}
+              {c.overUpperArms(ctx)}
+              {arm("L", "fore")}
+              {arm("R", "fore")}
+            </>
+          ) : (
+            c.arms !== false && (
+              <>
+                {arm("L")}
+                {arm("R")}
+              </>
+            )
+          )}
         </g>
       </g>
+      {over}
     </svg>
   );
 }

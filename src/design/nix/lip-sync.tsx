@@ -5,6 +5,7 @@ import * as React from "react";
 import { FilterSegment, FilterSet } from "@/components/ui/filter-segment";
 
 import type { Candidate } from "./candidates";
+import { castByStudioId } from "./side-cast";
 import type { Mood } from "./rig/face";
 import { NixFigure } from "./rig/NixFigure";
 import { HEAD_VB } from "./rig/skeleton";
@@ -86,6 +87,20 @@ const LINES: Record<string, Line[]> = {
   ],
 };
 
+/** The drawing's own demo lines, then Sparkles' fixed lines for it (`side-cast.ts`). */
+function linesOf(id: string): Line[] {
+  const spec = castByStudioId(id);
+  const sparkles: Line[] = spec
+    ? [
+        { text: spec.lines.greet, mood: "happy" },
+        ...spec.lines.right.map((text): Line => ({ text, mood: "delighted" })),
+        ...spec.lines.nearly.map((text): Line => ({ text, mood: "thinking" })),
+        ...spec.lines.gentle.map((text): Line => ({ text, mood: "oops" })),
+      ]
+    : [];
+  return [...(LINES[id] ?? []), ...sparkles];
+}
+
 type Mode = "words" | "flap";
 type Sound = "speech" | "silent";
 
@@ -105,7 +120,7 @@ type Current = { i: number; seq: Viseme[]; start: number; dur: number };
 export function LipSyncDemo({ cast }: { cast: Candidate[] }) {
   const [id, setId] = React.useState(cast[0].id);
   const c = cast.find((x) => x.id === id) ?? cast[0];
-  const lines = LINES[c.id] ?? [];
+  const lines = linesOf(c.id);
   const [li, setLi] = React.useState(0);
   const line = lines[Math.min(li, lines.length - 1)];
   const [mode, setMode] = React.useState<Mode>("words");

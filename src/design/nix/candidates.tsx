@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 
 import type { FaceStyle, Mood } from "./rig/face";
+import type { Grips } from "./rig/grip";
 import type { Hands, Motion } from "./rig/motion";
 import type { HairId } from "./rig/hair";
-import type { OutfitId } from "./rig/outfit";
+import type { OutfitId, OutfitParts } from "./rig/outfit";
 import { WHITE, type Palette } from "./rig/palette";
 import type { PropId } from "./rig/props";
 import { pivot, type Body } from "./rig/skeleton";
@@ -12,8 +13,9 @@ import { pivot, type Body } from "./rig/skeleton";
  * A character on the shared rig, and the bench's original firefly, kept as reference. The side
  * characters are the club in `observatory.tsx`.
  */
-/** `mood` lets a signature react to the expression — an antenna that droops when worried. */
-export type Ctx = { pal: Palette; uid: string; mood?: Mood };
+/** `mood` lets a signature react to the expression — an antenna that droops when worried; `grip`
+ *  lets the drawing know what the hands hold — a pencil out of its pocket is not still in it. */
+export type Ctx = { pal: Palette; uid: string; mood?: Mood; grip?: Grips };
 
 export type Candidate = {
   id: string;
@@ -67,6 +69,15 @@ export type Candidate = {
   belly?: (c: Ctx) => ReactNode;
   /** On the torso over any outfit: a pendant. */
   pendant?: (c: Ctx) => ReactNode;
+  /** The edge drawn round an arm whose hand is gripping; defaults to a deeper skin tone. A
+   *  character in long sleeves sets it to the sleeve's own deep tone so the sleeve is not outlined. */
+  armLine?: string;
+  /** The character's own take on whatever outfit it wears: long sleeves, a hem band. */
+  wear?: (o: OutfitParts) => OutfitParts;
+  /** Drawn over the upper arms and under the forearms and hands (2026-10-04), in figure space: what
+   *  lies over the shoulders — a hijab, a cape — so an upper arm comes out from under it while a hand
+   *  raised in front of the body stays in front. */
+  overUpperArms?: (c: Ctx) => ReactNode;
 };
 
 const INK = "#2a1d22";
