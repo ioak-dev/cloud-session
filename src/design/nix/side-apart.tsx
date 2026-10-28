@@ -5,7 +5,7 @@ import { EYE_WHITE, line } from "./rig/eyes";
 import type { OutfitParts } from "./rig/outfit";
 import { blob, mix, Two } from "./side-kit";
 import { SCIENTISTS, WOMEN } from "./side-more";
-import { AdaBunBack, AdaBunHead, ELDERS } from "./side-people";
+import { ELDERS } from "./side-people";
 import { SHORTLISTED } from "./side-shortlist";
 import { C } from "./theme";
 
@@ -17,17 +17,29 @@ import { C } from "./theme";
  * mouth and ability of the drawing it comes from and changes only the body's cut, the hair and the
  * pose, so the line-up differs in silhouette. The drawings they come from stay as they are.
  *
- * Clothes are drawn in `C.clothes` and its own lighter and darker tones (so every clothes switch
- * keeps them apart), trims in `C.accent`; Otto keeps the lab coat, the one place a person leaves the
- * clothes colour.
+ * Each one's main garment is in a different scheme colour, not the header's clothes switch, so no
+ * two of them are dressed alike in any scheme: Grace's wrap in the primary, Ada's cardigan in the
+ * deep accent, Sofia's stripes in the primary's mid tone, Haru's vest in the deep primary; Otto
+ * keeps the white lab coat, the one place a person leaves the scheme. Each colour brings its own
+ * lighter and darker tones for prints, pockets and edges. Trims stay in `C.accent`.
  */
 
 const CREAM = "#fff3de";
 const LAB = "#f3f1ec";
-const CLOTH_DEEP = mix(C.clothes, "#231c33", 62);
-const CLOTH_LIGHT = mix(C.clothes, "#ffffff", 45);
-const CLOTH_EDGE = mix(C.clothes, "#231c33", 80);
 const TROUSERS = C.deep;
+
+/** A garment colour with its own darker and lighter tones and an edge. */
+const tones = (main: string) => ({
+  main,
+  deep: mix(main, "#231c33", 62),
+  light: mix(main, "#ffffff", 45),
+  edge: mix(main, "#231c33", 80),
+});
+
+/** Each character's main garment, one scheme colour apiece. */
+const GRACE_CLOTH = tones(C.primary);
+const ADA_CLOTH = tones(C.accentDeep);
+const SOFIA_STRIPE = C.mid;
 
 const by = (list: Candidate[], id: string) => {
   const c = list.find((x) => x.id === id);
@@ -42,10 +54,10 @@ const fill = (d: string, color: string) => <path d={d} fill={color} />;
 
 const HARU = by(SCIENTISTS, "more-haru");
 const HARU_TORSO = HARU.frame!.torso;
-/** His vest is in the primary's deep tone, his trousers in the clothes colour's dark tone, so his
- *  torso is not the clothes colour that Grace's dress and Ada's cardigan wear. */
+/** His vest is in the deep primary; his trousers darker still. */
 const VEST = C.deep;
 const VEST_LIGHT = mix(C.deep, "#ffffff", 70);
+const HARU_TROUSERS = mix(C.deep, "#231c33", 55);
 
 /** A knitted vest over a cream shirt, a collar's two points, pens clipped to the vest's edge. */
 function haruWear(o: OutfitParts): OutfitParts {
@@ -70,8 +82,8 @@ function haruWear(o: OutfitParts): OutfitParts {
     ),
     upper: { from: 0, to: 1, w: 15, color: CREAM },
     fore: { from: 0, to: 0.45, w: 15.5, color: CREAM, cap: "butt" },
-    thigh: { from: 0, to: 1, w: 15, color: CLOTH_DEEP },
-    shin: { from: 0, to: 0.9, w: 14, color: CLOTH_DEEP },
+    thigh: { from: 0, to: 1, w: 15, color: HARU_TROUSERS },
+    shin: { from: 0, to: 0.9, w: 14, color: HARU_TROUSERS },
     shoe: TROUSERS,
   };
 }
@@ -83,7 +95,7 @@ const HARU_APART: Candidate = {
   signature: "Haru out of the lab coat: a knitted sweater vest over a cream shirt, sleeves rolled, pens clipped to the vest",
   pitch: HARU.pitch,
   risk: "The lab coat is Otto's alone now; Haru keeps his square glasses as his hook.",
-  pal: { ...HARU.pal, top: VEST, topAlt: CREAM, bottom: CLOTH_DEEP, shoe: TROUSERS },
+  pal: { ...HARU.pal, top: VEST, topAlt: CREAM, bottom: HARU_TROUSERS, shoe: TROUSERS },
   body: CREAM,
   outfit: "blazer",
   pendant: undefined,
@@ -132,15 +144,15 @@ const GRACE_SKIN = GRACE.pal.skin;
 const GRACE_SHADE = GRACE.pal.skinShade;
 const GRACE_TORSO = GRACE.frame!.torso;
 
-/** A bold print: dots and rings in the clothes colour's own light and dark tones. */
+/** A bold print: dots and rings in the wrap colour's own light and dark tones. */
 function Print({ at, r = 3.4 }: { at: readonly (readonly [number, number])[]; r?: number }) {
   return (
     <g>
       {at.map(([x, y], i) =>
         i % 2 ? (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={r} {...line(CLOTH_LIGHT, 1.8)} />
+          <circle key={`${x}${y}`} cx={x} cy={y} r={r} {...line(GRACE_CLOTH.light, 1.8)} />
         ) : (
-          <circle key={`${x}${y}`} cx={x} cy={y} r={r * 0.7} fill={CLOTH_DEEP} />
+          <circle key={`${x}${y}`} cx={x} cy={y} r={r * 0.7} fill={GRACE_CLOTH.deep} />
         ),
       )}
     </g>
@@ -153,15 +165,15 @@ function GraceWrapHead(): ReactNode {
   return (
     <g>
       <Two d={blob(100, 114, 40, 38, 1.04)} fill={GRACE_SKIN} shade={GRACE_SHADE} k={2.2} />
-      <path d={crown} fill={CLOTH_DEEP} transform="translate(2.4 2)" />
-      <path d={crown} fill={C.clothes} />
-      <path d="M64 94 Q100 78 136 94" {...line(CLOTH_EDGE, 3)} />
-      <path d="M72 70 Q96 52 126 58 M66 84 Q98 64 134 74" {...line(CLOTH_EDGE, 1.8)} opacity={0.6} />
+      <path d={crown} fill={GRACE_CLOTH.deep} transform="translate(2.4 2)" />
+      <path d={crown} fill={GRACE_CLOTH.main} />
+      <path d="M64 94 Q100 78 136 94" {...line(GRACE_CLOTH.edge, 3)} />
+      <path d="M72 70 Q96 52 126 58 M66 84 Q98 64 134 74" {...line(GRACE_CLOTH.edge, 1.8)} opacity={0.6} />
       {/* the knot's two fans, leaning to her left */}
-      <path d="M104 46 C96 26 112 16 124 24 C130 30 122 42 108 48 Z" fill={C.clothes} />
-      <path d="M110 48 C124 34 142 38 142 50 C140 58 124 56 112 52 Z" fill={C.clothes} />
-      <path d="M108 46 Q114 34 122 28 M114 50 Q128 44 138 48" {...line(CLOTH_EDGE, 1.6)} />
-      <circle cx={109} cy={49} r={5} fill={CLOTH_DEEP} />
+      <path d="M104 46 C96 26 112 16 124 24 C130 30 122 42 108 48 Z" fill={GRACE_CLOTH.main} />
+      <path d="M110 48 C124 34 142 38 142 50 C140 58 124 56 112 52 Z" fill={GRACE_CLOTH.main} />
+      <path d="M108 46 Q114 34 122 28 M114 50 Q128 44 138 48" {...line(GRACE_CLOTH.edge, 1.6)} />
+      <circle cx={109} cy={49} r={5} fill={GRACE_CLOTH.deep} />
       <Print at={[[80, 62], [96, 56], [124, 60], [76, 76], [96, 70], [116, 66], [132, 80], [88, 88], [110, 84]]} />
       <circle cx={58} cy={132} r={8} {...line(C.accent, 3)} />
       <circle cx={142} cy={132} r={8} {...line(C.accent, 3)} />
@@ -175,22 +187,22 @@ function graceWear(o: OutfitParts): OutfitParts {
     ...o,
     torso: (
       <g>
-        {fill(GRACE_TORSO, C.clothes)}
-        <path d="M84 150 L104 186 M116 150 L96 178" {...line(CLOTH_EDGE, 2.4)} />
+        {fill(GRACE_TORSO, GRACE_CLOTH.main)}
+        <path d="M84 150 L104 186 M116 150 L96 178" {...line(GRACE_CLOTH.edge, 2.4)} />
         <path d="M88 150 L100 170 L112 150 Q100 146 88 150 Z" fill={GRACE_SKIN} />
         <Print at={[[84, 168], [116, 166], [92, 196], [110, 202], [82, 210], [118, 214]]} r={3} />
-        <path d="M76 190 Q100 196 124 190 L124 198 Q100 204 76 198 Z" fill={CLOTH_DEEP} />
-        <path d="M118 196 Q128 206 124 220 M120 196 Q132 200 134 212" {...line(CLOTH_DEEP, 3.4)} />
+        <path d="M76 190 Q100 196 124 190 L124 198 Q100 204 76 198 Z" fill={GRACE_CLOTH.deep} />
+        <path d="M118 196 Q128 206 124 220 M120 196 Q132 200 134 212" {...line(GRACE_CLOTH.deep, 3.4)} />
       </g>
     ),
     hem: (
       <g>
-        <path d="M78 198 L122 198 L138 258 Q100 266 62 258 Z" fill={C.clothes} />
-        <path d="M100 204 Q96 230 88 260" {...line(CLOTH_EDGE, 2)} opacity={0.5} />
+        <path d="M78 198 L122 198 L138 258 Q100 266 62 258 Z" fill={GRACE_CLOTH.main} />
+        <path d="M100 204 Q96 230 88 260" {...line(GRACE_CLOTH.edge, 2)} opacity={0.5} />
         <Print at={[[84, 216], [106, 220], [120, 236], [92, 242], [74, 250], [114, 254], [100, 232]]} r={3.2} />
       </g>
     ),
-    upper: { from: 0, to: 0.7, w: 18, color: C.clothes, cap: "butt" },
+    upper: { from: 0, to: 0.7, w: 18, color: GRACE_CLOTH.main, cap: "butt" },
     fore: null,
     thigh: null,
     shin: null,
@@ -203,7 +215,7 @@ const GRACE_APART: Candidate = {
   id: "apart-grace",
   label: "Grace · headwrap",
   signature: "Grace in a tall printed headwrap knotted into a fan, gold hoops, a long wrap dress in the same print — no glasses",
-  risk: "The headwrap is drawn neatly and in the scheme's clothes colour; it is hers, never a costume. Her glasses go so the hoops and the wrap carry her.",
+  risk: "The headwrap is drawn neatly and in the scheme's primary; it is hers, never a costume. Her glasses go so the hoops and the wrap carry her.",
   frame: { ...GRACE.frame!, headVB: "14 8 172 172" },
   top: undefined,
   head: () => <GraceWrapHead />,
@@ -211,7 +223,7 @@ const GRACE_APART: Candidate = {
   wear: graceWear,
 };
 
-/* ——— Ada: hair up in a bun, a cardigan with deep pockets, mid-laugh ——— */
+/* ——— Ada: her own silver curls, a cardigan with deep pockets, mid-laugh ——— */
 
 const ADA = by(SHORTLISTED, "cand-ada");
 const ADA_TORSO = ADA.frame!.torso;
@@ -223,15 +235,15 @@ function adaWear(o: OutfitParts): OutfitParts {
     torso: (
       <g>
         {fill(ADA_TORSO, CREAM)}
-        <path d="M80 150 Q90 148 94 152 L96 222 Q80 222 75 212 L72 178 Q71 158 80 150 Z" fill={C.clothes} />
-        <path d="M120 150 Q110 148 106 152 L104 222 Q120 222 125 212 L128 178 Q129 158 120 150 Z" fill={C.clothes} />
-        <path d="M94 152 L96 222 M106 152 L104 222" {...line(CLOTH_EDGE, 2.6)} />
-        <path d="M74 214 Q85 220 96 218 M104 218 Q115 220 126 214" {...line(CLOTH_LIGHT, 3)} />
+        <path d="M80 150 Q90 148 94 152 L96 222 Q80 222 75 212 L72 178 Q71 158 80 150 Z" fill={ADA_CLOTH.main} />
+        <path d="M120 150 Q110 148 106 152 L104 222 Q120 222 125 212 L128 178 Q129 158 120 150 Z" fill={ADA_CLOTH.main} />
+        <path d="M94 152 L96 222 M106 152 L104 222" {...line(ADA_CLOTH.edge, 2.6)} />
+        <path d="M74 214 Q85 220 96 218 M104 218 Q115 220 126 214" {...line(ADA_CLOTH.light, 3)} />
         {[168, 182, 196].map((y) => (
           <circle key={y} cx={93} cy={y} r={2.2} fill={C.accent} />
         ))}
-        <rect x={76} y={194} width={14} height={14} rx={3} fill={CLOTH_DEEP} />
-        <rect x={110} y={194} width={14} height={14} rx={3} fill={CLOTH_DEEP} />
+        <rect x={76} y={194} width={14} height={14} rx={3} fill={ADA_CLOTH.deep} />
+        <rect x={110} y={194} width={14} height={14} rx={3} fill={ADA_CLOTH.deep} />
         <path d="M112 196 Q117 190 122 196" {...line(EYE_WHITE, 2)} />
         <path d="M90 150 Q100 160 110 150" {...line(mix(CREAM, C.mid, 70), 2)} />
       </g>
@@ -242,11 +254,11 @@ function adaWear(o: OutfitParts): OutfitParts {
         <path d="M76 244 Q100 250 124 244" {...line(C.accent, 2.4)} />
       </g>
     ),
-    upper: { from: 0, to: 1, w: 17, color: C.clothes },
-    fore: { from: 0, to: 0.8, w: 16, color: C.clothes, cap: "butt", trim: { color: CLOTH_LIGHT, len: 0.18 } },
+    upper: { from: 0, to: 1, w: 17, color: ADA_CLOTH.main },
+    fore: { from: 0, to: 0.8, w: 16, color: ADA_CLOTH.main, cap: "butt", trim: { color: ADA_CLOTH.light, len: 0.18 } },
     thigh: null,
     shin: null,
-    shoe: CLOTH_DEEP,
+    shoe: ADA_CLOTH.deep,
   };
 }
 
@@ -254,11 +266,8 @@ const ADA_APART: Candidate = {
   ...ADA,
   id: "apart-ada",
   label: "Ada · cardigan",
-  signature: "Ada with her silver hair up in a lopsided bun (from Ada · Bun), half-moon spectacles kept on, a chunky cardigan with deep pockets, mid-laugh",
-  risk: "She keeps her half-moon spectacles: of the three who wore glasses, only Haru and Ada still do, and their frames differ in shape.",
-  frame: { ...ADA.frame!, headVB: "12 12 176 176" },
-  headBack: () => <AdaBunBack />,
-  head: () => <AdaBunHead />,
+  signature: "Ada with her own cloud of silver curls and half-moon spectacles, in a chunky cardigan with deep pockets, mid-laugh",
+  risk: "Her curls and half-moon spectacles stay as drawn; Grace and Otto change instead, so her cloud of curls is hers alone among the elders.",
   attitude: { mood: "delighted", tilt: -8, hands: { L: [96, 206], R: [128, 158], outL: false, outR: true } },
   wear: adaWear,
 };
@@ -275,15 +284,15 @@ function sofiaWear(o: OutfitParts): OutfitParts {
       <g>
         {fill(SOFIA_TORSO, CREAM)}
         {[160, 172, 184, 196].map((y) => (
-          <path key={y} d={`M74 ${y} L126 ${y}`} {...line(C.clothes, 6)} />
+          <path key={y} d={`M74 ${y} L126 ${y}`} {...line(SOFIA_STRIPE, 6)} />
         ))}
         <path d="M88 150 Q100 158 112 150" {...line(mix(CREAM, C.mid, 70), 2)} />
         <path d="M76 204 L124 204 L124 222 Q100 226 76 222 Z" fill={TROUSERS} />
       </g>
     ),
     hem: undefined,
-    upper: { from: 0, to: 1, w: 15, color: CREAM, trim: { color: C.clothes, len: 0.3 } },
-    fore: { from: 0, to: 0.5, w: 14, color: CREAM, cap: "butt", trim: { color: C.clothes, len: 0.2 } },
+    upper: { from: 0, to: 1, w: 15, color: CREAM, trim: { color: SOFIA_STRIPE, len: 0.3 } },
+    fore: { from: 0, to: 0.5, w: 14, color: CREAM, cap: "butt", trim: { color: SOFIA_STRIPE, len: 0.2 } },
     thigh: { from: 0, to: 1, w: 18, color: TROUSERS },
     shin: { from: 0, to: 0.86, w: 19, color: TROUSERS, cap: "butt" },
     shoe: C.accentDeep,
@@ -314,17 +323,17 @@ export const APART: readonly { before: Candidate; after: Candidate; changes: rea
   {
     before: GRACE,
     after: GRACE_APART,
-    changes: ["A tall printed headwrap in place of the white curls", "No glasses: the hoops and the wrap carry her", "A long wrap dress in the same print, a sash at the side", "One hand on her hip, the other raised to the side: a dancer's flourish"],
+    changes: ["A tall printed headwrap in the primary in place of the white curls", "No glasses: the hoops and the wrap carry her", "A long wrap dress in the same print, in the primary, a sash at the side", "One hand on her hip, the other raised to the side: a dancer's flourish"],
   },
   {
     before: ADA,
     after: ADA_APART,
-    changes: ["Hair up in a lopsided bun (from Ada · Bun)", "A chunky cardigan with deep pockets over a long skirt", "Mid-laugh, one hand raised"],
+    changes: ["Her silver curls and half-moon spectacles stay as they were", "A chunky cardigan in the deep accent, with deep pockets, over a long skirt", "Mid-laugh, one hand raised"],
   },
   {
     before: SOFIA,
     after: SOFIA_APART,
-    changes: ["A striped top and wide trousers in place of the cream dress", "A scarf tied in her curls", "Hands up to one side, mid-clap"],
+    changes: ["A top striped in the primary's mid tone and wide trousers in place of the cream dress", "A scarf tied in her curls", "Hands up to one side, mid-clap"],
   },
   {
     before: HARU,
