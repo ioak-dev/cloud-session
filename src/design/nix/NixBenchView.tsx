@@ -42,6 +42,7 @@ import { POND } from "./side-pond";
 import { BACKUP, SHORTLISTED } from "./side-shortlist";
 import { FRESH } from "./side-fresh";
 import { ELDERS, TEACHERS } from "./side-people";
+import { APART } from "./side-apart";
 import { BOYS, SCIENTISTS, TEENS, WOMEN } from "./side-more";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
@@ -1151,6 +1152,57 @@ function SideSections({ cast, groups }: { cast: Candidate[]; groups: Group[] }) 
   );
 }
 
+/** The shortlist's look-alikes, each beside a proposal that tells it apart (`side-apart.tsx`). */
+function ToldApart() {
+  const lineup = (pick: "before" | "after") =>
+    SHORTLISTED_NOW.map((c) => APART.find((a) => a.before.id === c.id)?.[pick] ?? c);
+  return (
+    <>
+      <h2 className="material-heading mt-10 text-lg text-foreground">Told apart (proposals)</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Grace, Ada and Sofia wore the same cream dress with the same belt and the same clasped hands;
+        Haru and Otto the same lab coat; Grace, Ada and Otto the same white cloud of hair. Each
+        proposal keeps the face, eyes, mouth and ability and changes the cut, the hair and the pose.
+        The drawings on the left stay as they are.
+      </p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {APART.map(({ before, after, changes }) => (
+          <figure key={after.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
+            <div className="grid grid-cols-2 gap-2">
+              <NixFigure c={before} mood="happy" still className="h-48 w-full" />
+              <NixFigure c={after} mood="happy" still className="h-48 w-full" />
+            </div>
+            <figcaption className="material text-sm text-muted-foreground">
+              <span className="material-heading text-foreground">
+                {before.label} → {after.label}
+              </span>
+              <ul className="m-0 mt-1 pl-4">
+                {changes.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <p className="material mt-6 text-sm text-muted-foreground">
+        The shortlist in silhouette at 96 and 48px: as drawn, then with the proposals.
+      </p>
+      {(["before", "after"] as const).map((pick) => (
+        <div key={pick} className="mt-2 flex flex-wrap items-end gap-3 rounded-[var(--radius)] bg-muted p-3">
+          <span className="instrument w-16 text-xs text-muted-foreground">{pick === "before" ? "As drawn" : "Proposed"}</span>
+          {lineup(pick).map((c) => (
+            <NixFigure key={c.id} c={c} still silhouette className="h-24 w-16" />
+          ))}
+          {lineup(pick).map((c) => (
+            <NixFigure key={`${c.id}-s`} c={c} still silhouette className="h-12 w-8" />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
 /** The side characters' page. */
 export function SidePage() {
   return (
@@ -1179,6 +1231,8 @@ export function SidePage() {
           </figure>
         ))}
       </div>
+
+      <ToldApart />
 
       <LipSyncDemo cast={CLUB} />
 

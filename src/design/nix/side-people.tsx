@@ -26,7 +26,7 @@ const ADA_BUN = cute("ada-bun", {
   headVB: "12 12 176 176",
 });
 
-function AdaBunBack() {
+export function AdaBunBack() {
   return (
     <g>
       {/* a soft silver bun on top, a little lopsided, with a flower pinned in it */}
@@ -44,7 +44,7 @@ function AdaBunBack() {
   );
 }
 
-function AdaBunHead() {
+export function AdaBunHead() {
   return (
     <g>
       <Two d={blob(100, 116, 41, 38, 1.1)} fill={ADA_SKIN} shade={ADA_SHADE} k={2.2} />
