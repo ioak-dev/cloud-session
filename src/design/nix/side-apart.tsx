@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import type { Candidate } from "./candidates";
 import { EYE_WHITE, line } from "./rig/eyes";
 import type { OutfitParts } from "./rig/outfit";
-import { arcBrow, blob, eyesOf, INK, mix, Two } from "./side-kit";
+import { withEyes } from "./side-eyes";
+import { blob, mix, Two } from "./side-kit";
 import { SCIENTISTS, WOMEN } from "./side-more";
 import { ELDERS } from "./side-people";
 import { SHORTLISTED } from "./side-shortlist";
@@ -143,24 +144,10 @@ const OTTO_APART: Candidate = {
 
 const GRACE = by(ELDERS, "people-grace");
 /** A warmer, lighter brown than the studio drawing's, so her face holds against the wrap and on the
- *  dark ground; the eye kit is rebuilt with it so a blink's lid matches. */
+ *  dark ground; her proposed eyes (`side-eyes.tsx`) are drawn with it, so a blink's lid matches. */
 const GRACE_SKIN = "#9a6544";
 const GRACE_SHADE = "#7c4d30";
 
-const graceEyes = eyesOf({
-  rx: 7.6,
-  ry: 8.4,
-  fill: EYE_WHITE,
-  iris: { r: 6, color: "#3a2214" },
-  pupil: { r: 3 },
-  shine: 2.2,
-  lid: GRACE_SKIN,
-  rim: { color: INK, w: 2.6, lashes: 2 },
-  closed: INK,
-  browY: 16,
-  brow: arcBrow(mix("#ece8e2", C.mid, 70), 3, 6),
-  rest: { top: 0.14, raise: 3, browTilt: -6, k: [0.98, 1.04] },
-});
 const GRACE_TORSO = GRACE.frame!.torso;
 
 /** A bold print: dots and rings in the wrap colour's own light and dark tones. */
@@ -237,7 +224,7 @@ const GRACE_APART: Candidate = {
   risk: "The headwrap is drawn neatly and in the primary's mid tone; it is hers, never a costume. Her glasses go so the hoops and the wrap carry her.",
   frame: { ...GRACE.frame!, headVB: "14 8 172 172" },
   pal: { ...GRACE.pal, skin: GRACE_SKIN, skinShade: GRACE_SHADE, limb: GRACE_SKIN, paw: GRACE_SKIN },
-  face: { ...GRACE.face, lid: GRACE_SKIN, kit: graceEyes },
+  face: { ...GRACE.face, lid: GRACE_SKIN },
   top: undefined,
   head: () => <GraceWrapHead />,
   attitude: { mood: "happy", tilt: 8, hands: { L: [78, 202], R: [152, 150], outL: true, outR: true } },
@@ -336,8 +323,8 @@ const SOFIA_APART: Candidate = {
       {SOFIA.head(c)}
       {/* a soft headband in her stripes' colour, tucked under the front curls so it sits in her
           hair rather than on it */}
-      <path d="M60 100 Q100 20 140 100" {...line(SOFIA_STRIPE, 7)} />
-      <path d="M66 88 Q100 26 134 88" {...line(mix(SOFIA_STRIPE, "#ffffff", 60), 1.6)} opacity={0.7} />
+      <path d="M68 90 Q100 22 132 90" {...line(SOFIA_STRIPE, 7)} />
+      <path d="M72 82 Q100 28 128 82" {...line(mix(SOFIA_STRIPE, "#ffffff", 60), 1.6)} opacity={0.7} />
       <g fill={SOFIA_HAIR}>
         {SOFIA_FRONT.map(([x, y, r]) => (
           <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
@@ -364,8 +351,9 @@ const KAI_APART: Candidate = {
   body: KAI_HOODIE,
 };
 
-/** The proposals, each beside the drawing it comes from, with what changed. */
-export const APART: readonly { before: Candidate; after: Candidate; changes: readonly string[] }[] = [
+/** The proposals, each beside the drawing it comes from, with what changed; each wears its proposed
+ *  eyes (`side-eyes.tsx`) too. */
+export const APART: readonly { before: Candidate; after: Candidate; changes: readonly string[] }[] = ([
   {
     before: GRACE,
     after: GRACE_APART,
@@ -396,4 +384,4 @@ export const APART: readonly { before: Candidate; after: Candidate; changes: rea
     after: KAI_APART,
     changes: ["His hoodie fixed in the accent, no longer following the header's clothes switch"],
   },
-];
+] as const).map((x) => ({ ...x, after: withEyes(x.after, x.before.id) }));

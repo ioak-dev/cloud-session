@@ -43,6 +43,7 @@ import { BACKUP, SHORTLISTED } from "./side-shortlist";
 import { FRESH } from "./side-fresh";
 import { ELDERS, TEACHERS } from "./side-people";
 import { APART } from "./side-apart";
+import { EYE_NOTES } from "./side-eyes";
 import { BOYS, SCIENTISTS, TEENS, WOMEN } from "./side-more";
 import { SIDE_ABILITIES, type Ability } from "./side-abilities";
 import { ALL_MOODS, MOODS, type Mood } from "./rig/face";
@@ -1203,6 +1204,57 @@ function ToldApart() {
   );
 }
 
+/** Each shortlisted face's eyes as drawn, then as proposed (`side-eyes.tsx`), in every mood. */
+function EyesApart() {
+  const rows = APART.filter((a) => EYE_NOTES[a.before.id]);
+  return (
+    <>
+      <h2 className="material-heading mt-10 text-lg text-foreground">Eyes told apart (proposals)</h2>
+      <p className="material mt-1 max-w-[64ch] text-sm text-muted-foreground">
+        Every shortlisted face had the same almond eye, the same ^ ^ when happy and the same &gt; &lt;
+        for oops, under nearly the same brow. Each proposal gives a character an eye of its own shape,
+        its own happy and oops, and its own brow. Noor's eyes already read as hers and stay.
+      </p>
+      <div className="mt-3 overflow-x-auto">
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th />
+              {MOODS.map((m) => (
+                <th key={m.id} className="instrument text-xs font-normal text-muted-foreground">
+                  {m.title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.flatMap(({ before, after }) =>
+              [
+                [before, `${before.label} · as drawn`],
+                [after, `${before.label} · proposed`],
+              ].map(([x, title]) => (
+                <tr key={(x as Candidate).id}>
+                  <th className="instrument max-w-[10rem] pr-2 text-left text-xs font-normal text-foreground">
+                    {title as string}
+                    {x === after && (
+                      <span className="mt-1 block text-muted-foreground">{EYE_NOTES[before.id]}</span>
+                    )}
+                  </th>
+                  {MOODS.map((m) => (
+                    <td key={m.id} className="rounded-[var(--radius)] bg-muted">
+                      <NixFigure c={x as Candidate} mood={m.id} still viewBox={HEAD_VB} className="h-24 w-24" />
+                    </td>
+                  ))}
+                </tr>
+              )),
+            )}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
 /** The side characters' page. */
 export function SidePage() {
   return (
@@ -1224,7 +1276,7 @@ export function SidePage() {
       <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {SHORTLISTED_NOW.map((c) => (
           <figure key={c.id} className="m-0 flex flex-col gap-2 rounded-[var(--radius)] bg-muted p-3">
-            <NixFigure c={c} mood="happy" still className="h-56 w-full" />
+            <NixFigure c={c} mood="neutral" still className="h-56 w-full" />
             <figcaption className="material-heading text-sm text-foreground">
               <a href={`#/side/${c.id}`}>{c.label}</a>
             </figcaption>
@@ -1233,6 +1285,8 @@ export function SidePage() {
       </div>
 
       <ToldApart />
+
+      <EyesApart />
 
       <LipSyncDemo cast={CLUB} />
 
