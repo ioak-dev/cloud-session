@@ -47,7 +47,7 @@ npm start
 | `src/design/nix/side-fresh.tsx` | Fresh candidates (`FRESH`): Arjun, Tilly, Theo |
 | `src/design/nix/side-people.tsx` | Elders (`ELDERS`: Ada · Bun, Ezra, Grace) and teachers in their twenties (`TEACHERS`: Lena, Noor, June) to shortlist |
 | `src/design/nix/side-more.tsx` | More people to shortlist, on one person-builder (`makePerson`): scientists (Otto, Imani, Haru), women in their twenties (Priya, Sofia, Ama), boys under ten (Leo, Kofi, Sami), young teen boys (Mateo, Finn, Dev) |
-| `src/design/nix/side-apart.tsx` | Told apart (proposals, `APART`): Grace, Ada, Sofia, Haru and Otto redrawn so the shortlist differs in cut, hair and pose (Ada keeps her curls), each main garment in a different scheme colour, each beside its drawing on the Side page |
+| `src/design/nix/side-apart.tsx` | Told apart (proposals, `APART`): Grace, Ada, Sofia, Haru and Otto redrawn, and Kai's hoodie fixed in the accent, so the shortlist differs in cut, hair and pose (Ada keeps her curls), each main garment in a different scheme colour, each beside its drawing on the Side page |
 | `src/design/nix/side-abilities.tsx` | Ability previews for the shortlist |
 | `src/design/nix/lip-sync.tsx` | The lip-sync demo: a fixed line said with Web Speech, word-synced (or flap, or silent and timed) |
 | `src/design/nix/rig/` | The shared rig: joints, poses, expressions, outfits, props, the spark trail, and the talking shapes (`visemes.ts`) |

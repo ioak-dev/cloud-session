@@ -3,14 +3,15 @@ import type { ReactNode } from "react";
 import type { Candidate } from "./candidates";
 import { EYE_WHITE, line } from "./rig/eyes";
 import type { OutfitParts } from "./rig/outfit";
-import { blob, mix, Two } from "./side-kit";
+import { arcBrow, blob, eyesOf, INK, mix, Two } from "./side-kit";
 import { SCIENTISTS, WOMEN } from "./side-more";
 import { ELDERS } from "./side-people";
 import { SHORTLISTED } from "./side-shortlist";
 import { C } from "./theme";
 
 /**
- * Told apart (proposals, 2026-10-28): the five shortlisted people who read alike on the Side page.
+ * Told apart (proposals, 2026-10-28): the five shortlisted people who read alike on the Side page,
+ * and Kai, whose hoodie is fixed in the accent.
  * Grace, Ada and Sofia stood in the same cream dress with the same belt, hands clasped at the
  * chest; Haru and Otto wore the same lab coat, trousers and shoes; Grace, Ada and Otto had the same
  * white cloud of hair; Haru, Grace and Ada all wore glasses. Each proposal keeps the face, eyes,
@@ -18,9 +19,9 @@ import { C } from "./theme";
  * pose, so the line-up differs in silhouette. The drawings they come from stay as they are.
  *
  * Each one's main garment is in a different scheme colour, not the header's clothes switch, so no
- * two of them are dressed alike in any scheme: Grace's wrap in the primary, Ada's cardigan in the
- * deep accent, Sofia's stripes in the primary's mid tone, Haru's vest in the deep primary; Otto
- * keeps the white lab coat, the one place a person leaves the scheme. Each colour brings its own
+ * two of them are dressed alike in any scheme: Grace's wrap in the primary's mid tone, Ada's cardigan
+ * in the deep accent, Sofia's stripes in the primary, Haru's vest in the deep primary, Kai's hoodie in
+ * the accent; Otto keeps the white lab coat, the one place a person leaves the scheme. Each colour brings its own
  * lighter and darker tones for prints, pockets and edges. Trims stay in `C.accent`.
  */
 
@@ -37,9 +38,10 @@ const tones = (main: string) => ({
 });
 
 /** Each character's main garment, one scheme colour apiece. */
-const GRACE_CLOTH = tones(C.primary);
+const GRACE_CLOTH = tones(C.mid);
 const ADA_CLOTH = tones(C.accentDeep);
-const SOFIA_STRIPE = C.mid;
+const SOFIA_STRIPE = C.primary;
+const KAI_HOODIE = C.accent;
 
 const by = (list: Candidate[], id: string) => {
   const c = list.find((x) => x.id === id);
@@ -140,8 +142,25 @@ const OTTO_APART: Candidate = {
 /* ——— Grace: a printed headwrap and a long wrap dress; no glasses ——— */
 
 const GRACE = by(ELDERS, "people-grace");
-const GRACE_SKIN = GRACE.pal.skin;
-const GRACE_SHADE = GRACE.pal.skinShade;
+/** A warmer, lighter brown than the studio drawing's, so her face holds against the wrap and on the
+ *  dark ground; the eye kit is rebuilt with it so a blink's lid matches. */
+const GRACE_SKIN = "#9a6544";
+const GRACE_SHADE = "#7c4d30";
+
+const graceEyes = eyesOf({
+  rx: 7.6,
+  ry: 8.4,
+  fill: EYE_WHITE,
+  iris: { r: 6, color: "#3a2214" },
+  pupil: { r: 3 },
+  shine: 2.2,
+  lid: GRACE_SKIN,
+  rim: { color: INK, w: 2.6, lashes: 2 },
+  closed: INK,
+  browY: 16,
+  brow: arcBrow(mix("#ece8e2", C.mid, 70), 3, 6),
+  rest: { top: 0.14, raise: 3, browTilt: -6, k: [0.98, 1.04] },
+});
 const GRACE_TORSO = GRACE.frame!.torso;
 
 /** A bold print: dots and rings in the wrap colour's own light and dark tones. */
@@ -215,8 +234,10 @@ const GRACE_APART: Candidate = {
   id: "apart-grace",
   label: "Grace · headwrap",
   signature: "Grace in a tall printed headwrap knotted into a fan, gold hoops, a long wrap dress in the same print — no glasses",
-  risk: "The headwrap is drawn neatly and in the scheme's primary; it is hers, never a costume. Her glasses go so the hoops and the wrap carry her.",
+  risk: "The headwrap is drawn neatly and in the primary's mid tone; it is hers, never a costume. Her glasses go so the hoops and the wrap carry her.",
   frame: { ...GRACE.frame!, headVB: "14 8 172 172" },
+  pal: { ...GRACE.pal, skin: GRACE_SKIN, skinShade: GRACE_SHADE, limb: GRACE_SKIN, paw: GRACE_SKIN },
+  face: { ...GRACE.face, lid: GRACE_SKIN, kit: graceEyes },
   top: undefined,
   head: () => <GraceWrapHead />,
   attitude: { mood: "happy", tilt: 8, hands: { L: [78, 202], R: [152, 150], outL: true, outR: true } },
@@ -272,14 +293,19 @@ const ADA_APART: Candidate = {
   wear: adaWear,
 };
 
-/* ——— Sofia: a striped top and wide trousers, a scarf in her curls, mid-clap ——— */
+/* ——— Sofia: a striped top and wide trousers, a headband in her curls, mid-clap ——— */
 
 const SOFIA = by(WOMEN, "more-sofia");
 const SOFIA_TORSO = SOFIA.frame!.torso;
+const SOFIA_HAIR = SOFIA.pal.hair;
+/** Her front curls, drawn again over the headband (as in `side-more.tsx`). */
+const SOFIA_FRONT = [[72, 90, 11], [86, 80, 12], [100, 78, 12], [114, 80, 12], [128, 90, 11]] as const;
 
 function sofiaWear(o: OutfitParts): OutfitParts {
   return {
     ...o,
+    /* no hood: the hoodie is only the cut her top is built on */
+    back: undefined,
     torso: (
       <g>
         {fill(SOFIA_TORSO, CREAM)}
@@ -295,7 +321,7 @@ function sofiaWear(o: OutfitParts): OutfitParts {
     fore: { from: 0, to: 0.5, w: 14, color: CREAM, cap: "butt", trim: { color: SOFIA_STRIPE, len: 0.2 } },
     thigh: { from: 0, to: 1, w: 18, color: TROUSERS },
     shin: { from: 0, to: 0.86, w: 19, color: TROUSERS, cap: "butt" },
-    shoe: C.accentDeep,
+    shoe: CREAM,
   };
 }
 
@@ -303,14 +329,20 @@ const SOFIA_APART: Candidate = {
   ...SOFIA,
   id: "apart-sofia",
   label: "Sofia · stripes",
-  signature: "Sofia in a striped top and wide trousers, a scarf tied in her red curls with the knot on top, hands up mid-clap",
-  risk: "The only one of the five in trousers and the only stripes; the scarf's knot adds a bump to her cloud of curls.",
+  signature: "Sofia in a striped top and wide trousers, a soft headband tucked into her red curls, canvas shoes, hands up mid-clap",
+  risk: "The only one in trousers and the only stripes; the headband matches the stripes, so she wears one colour, not a trim.",
   head: (c) => (
     <g>
       {SOFIA.head(c)}
-      <path d="M60 96 Q100 72 140 96" {...line(C.accent, 7)} />
-      <path d="M118 78 C114 62 126 56 132 64 C134 70 128 76 120 80 Z M122 80 C134 70 146 74 144 82 C140 88 130 86 122 82 Z" fill={C.accent} />
-      <circle cx={121} cy={80} r={3.6} fill={C.accentDeep} />
+      {/* a soft headband in her stripes' colour, tucked under the front curls so it sits in her
+          hair rather than on it */}
+      <path d="M60 100 Q100 20 140 100" {...line(SOFIA_STRIPE, 7)} />
+      <path d="M66 88 Q100 26 134 88" {...line(mix(SOFIA_STRIPE, "#ffffff", 60), 1.6)} opacity={0.7} />
+      <g fill={SOFIA_HAIR}>
+        {SOFIA_FRONT.map(([x, y, r]) => (
+          <circle key={`${x}${y}`} cx={x} cy={y} r={r} />
+        ))}
+      </g>
     </g>
   ),
   outfit: "hoodie",
@@ -318,12 +350,26 @@ const SOFIA_APART: Candidate = {
   wear: sofiaWear,
 };
 
-/** The five proposals, each beside the drawing it comes from, with what changed. */
+/* ——— Kai: his hoodie in a fixed colour ——— */
+
+const KAI = by(SHORTLISTED, "cand-kai");
+
+const KAI_APART: Candidate = {
+  ...KAI,
+  id: "apart-kai",
+  label: "Kai · fixed hoodie",
+  signature: KAI.signature,
+  risk: "Drawn as before; only the hoodie's colour is fixed, in the accent, so the header's clothes switch no longer dresses him like anyone else.",
+  pal: { ...KAI.pal, top: KAI_HOODIE },
+  body: KAI_HOODIE,
+};
+
+/** The proposals, each beside the drawing it comes from, with what changed. */
 export const APART: readonly { before: Candidate; after: Candidate; changes: readonly string[] }[] = [
   {
     before: GRACE,
     after: GRACE_APART,
-    changes: ["A tall printed headwrap in the primary in place of the white curls", "No glasses: the hoops and the wrap carry her", "A long wrap dress in the same print, in the primary, a sash at the side", "One hand on her hip, the other raised to the side: a dancer's flourish"],
+    changes: ["A lighter, warmer skin tone", "A tall printed headwrap in the primary's mid tone in place of the white curls", "No glasses: the hoops and the wrap carry her", "A long wrap dress in the same print, a sash at the side", "One hand on her hip, the other raised to the side: a dancer's flourish"],
   },
   {
     before: ADA,
@@ -333,7 +379,7 @@ export const APART: readonly { before: Candidate; after: Candidate; changes: rea
   {
     before: SOFIA,
     after: SOFIA_APART,
-    changes: ["A top striped in the primary's mid tone and wide trousers in place of the cream dress", "A scarf tied in her curls", "Hands up to one side, mid-clap"],
+    changes: ["A top striped in the primary and wide trousers in place of the cream dress", "A soft headband in the same colour, tucked under her front curls; canvas shoes", "Hands up to one side, mid-clap"],
   },
   {
     before: HARU,
@@ -344,5 +390,10 @@ export const APART: readonly { before: Candidate; after: Candidate; changes: rea
     before: OTTO,
     after: OTTO_APART,
     changes: ["The only lab coat now, longer and flared past the knee", "A bow tie in the accent, chalk on one cuff"],
+  },
+  {
+    before: KAI,
+    after: KAI_APART,
+    changes: ["His hoodie fixed in the accent, no longer following the header's clothes switch"],
   },
 ];
