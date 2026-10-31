@@ -18,10 +18,11 @@ import { J, reach, type Body, type P } from "./rig/skeleton";
 
 import { castMember, type CastSlug } from "./side-companion";
 import type { HaruSceneId } from "./side-haru";
+import type { MargotSceneId } from "./side-margot";
 import type { NoorSceneId } from "./side-noor";
 
 /** A character's own scene elements, drawn by its scene component. */
-export type SceneId = NoorSceneId | HaruSceneId;
+export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId;
 
 export type ReactionState =
   | "greet"
@@ -1227,10 +1228,252 @@ const HARU: Reaction[] = [
     [[0, "focused"], [0.6, "neutral"], [0.78, "happy"]], "happy", undefined, "minimal", [[0.64, { R: "finger" }], [0.84, {}]])),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru). */
+/* ——— Margot's own reactions (2026-10-31) ———
+ * Drawn from who she is: a dancer once, and still — tall, regal, warm; wants everyone standing tall
+ * and enjoying themselves; turns any moment into a dance lesson. She moves the way a dancer does:
+ * arms that travel in arcs (port de bras), a curtsy, a rise onto her toes, a plié, hands on her hips,
+ * and her ability, Shimmy. Her scene (`MargotScene`) is a swish of light that trails a flourish and a
+ * pool of light for a bow. Nothing she does is a hop or a fist: her biggest moments rise, they never
+ * jump. Hand targets are authored on Noor's frame; the rig carries them onto hers. */
+
+/** Hands on her hips, elbows out — a dancer's rest. */
+const HIPS = { L: [82, 228], R: [118, 228], outL: true, outR: true } as const satisfies HandKey[1];
+/** Her right arm up and out beside her head, the left still on her hip: the flourish. */
+const FLOURISH = { L: HIPS.L, R: [152, 176], outL: true } as const satisfies HandKey[1];
+const SWEEP_MID = { L: HIPS.L, R: [150, 208], outL: true } as const satisfies HandKey[1];
+/** Arms open low at her sides, palms forward: the curtsy's arms. */
+const OPEN_LOW = { L: [54, 226], R: [146, 226] } as const satisfies HandKey[1];
+/** A finger under her own chin — chin up. */
+const CHIN_UP = { L: HIPS.L, R: [116, 194], outL: true } as const satisfies HandKey[1];
+const CHIN_UP_HI = { L: HIPS.L, R: [116, 190], outL: true } as const satisfies HandKey[1];
+/** Shimmy: hands up at her shoulders, palms out. */
+const SHIMMY = { L: [60, 192], R: [140, 192] } as const satisfies HandKey[1];
+/** Bravo: claps held high to her right. */
+const BRAVO_OPEN = { L: [116, 198], R: [144, 196] } as const satisfies HandKey[1];
+const BRAVO_SHUT = { L: [127, 197], R: [133, 197] } as const satisfies HandKey[1];
+/** First position: arms rounded low in front of her, fingertips nearly meeting. */
+const FIRST = { L: [90, 228], R: [110, 228] } as const satisfies HandKey[1];
+/** Arms out to the sides for balance. */
+const BALANCE = { L: [48, 206], R: [152, 206] } as const satisfies HandKey[1];
+/** Presenting the key like a stage: an open palm out to her right, the other on her hip. */
+const PRESENT = { L: HIPS.L, R: [158, 208], outL: true } as const satisfies HandKey[1];
+/** A long, elegant point to the key. */
+const ARM_POINT = { L: HIPS.L, R: [162, 198], outL: true } as const satisfies HandKey[1];
+/** The finale: both arms high and wide. */
+const HIGH_V = { L: [52, 174], R: [148, 174] } as const satisfies HandKey[1];
+/** Halfway up — the step not finished. */
+const HALF = { L: HIPS.L, R: [150, 206], outL: true } as const satisfies HandKey[1];
+
+/** A curtsy: the knees bend and the body lowers with a small bow, then rises past standing. */
+const curtsy = (start: number, hold: number): Tracks => ({
+  root: keys([0, {}], [start, { e: EASE.settle }], [start + 0.14, { y: 5, e: EASE.settle }], [start + 0.14 + hold, { y: 5, e: EASE.settle }], [start + 0.3 + hold, { y: -1, e: EASE.settle }], [start + 0.38 + hold, {}], [1, {}]),
+  hipL: turn([0, 0], [start, 0], [start + 0.14, 10], [start + 0.14 + hold, 10], [start + 0.3 + hold, 0], [1, 0]),
+  kneeL: turn([0, 0], [start, 0], [start + 0.14, -18], [start + 0.14 + hold, -18], [start + 0.3 + hold, 0], [1, 0]),
+  hipR: turn([0, 0], [start, 0], [start + 0.14, -10], [start + 0.14 + hold, -10], [start + 0.3 + hold, 0], [1, 0]),
+  kneeR: turn([0, 0], [start, 0], [start + 0.14, 18], [start + 0.14 + hold, 18], [start + 0.3 + hold, 0], [1, 0]),
+  head: keys([0, {}], [start, { e: EASE.settle }], [start + 0.16, { y: 2.4, r: 3, e: EASE.settle }], [start + 0.14 + hold, { y: 2.2, r: 3, e: EASE.settle }], [start + 0.32 + hold, { r: 4, e: EASE.settle }], [1, {}]),
+  torso: keys([0, {}], [start, { e: EASE.settle }], [start + 0.16, { y: 1.4, r: 2, e: EASE.settle }], [start + 0.14 + hold, { y: 1.2, r: 2, e: EASE.settle }], [start + 0.3 + hold, {}], [1, {}]),
+});
+
+/** The shimmy: the shoulders shake quickly side to side while the hips hold still, `n` beats. */
+function shimmy(start: number, end: number, n = 8): Tracks {
+  const torso: [number, Key][] = [at(0), at(start, { e: EASE.settle })];
+  const step = (end - start) / n;
+  for (let i = 1; i < n; i++) torso.push(at(start + i * step, { x: i % 2 ? 1.6 : -1.6, r: i % 2 ? 1.6 : -1.6, e: "ease-in-out" }));
+  torso.push(at(end, { e: EASE.settle }), at(1));
+  return { torso: keys(...torso), ...sway(0.6) };
+}
+
+/** The flourish's swish of light: drawn on as the hand sweeps up, held, faded. */
+const swish = (on: number, off: number): Keyframe[] => [
+  { offset: 0, opacity: 0 },
+  { offset: Math.max(0, on - 0.02), opacity: 0 },
+  { offset: on + 0.08, opacity: 1 },
+  { offset: off, opacity: 0.8 },
+  { offset: Math.min(1, off + 0.08), opacity: 0 },
+  { offset: 1, opacity: 0 },
+];
+/** The pool of light: it widens in under her, holds, and goes. */
+const spot = (on: number, off: number): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "0.4 1" },
+  { offset: on, opacity: 0, scale: "0.4 1" },
+  { offset: Math.min(1, on + 0.12), opacity: 1, scale: "1 1", easing: EASE.settle },
+  { offset: off, opacity: 1, scale: "1 1" },
+  { offset: Math.min(1, off + 0.08), opacity: 0, scale: "1.1 1" },
+  { offset: 1, opacity: 0, scale: "1.1 1" },
+];
+
+const MARGOT: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "margot-reverence", "Révérence", "A dancer's curtsy: arms open low, knees bend and her head bows — then she rises, chin up, into the light. Shall we begin?",
+    act("margot-reverence", 3.2, [[0, HIPS], [0.16, OPEN_LOW], [0.6, OPEN_LOW], [0.8, HIPS], [1, HIPS]], [curtsy(0.12, 0.2), {
+      "fx-spot": spot(0.08, 0.84),
+    }]),
+    [[0, "neutral"], [0.14, "happy"], [0.6, "delighted"], [0.82, "happy"]], "happy", HIPS, "both", [[0.1, { L: "palm", R: "palm" }], [0.76, {}]]), ["spot"]),
+  own(r("greet", "margot-port-de-bras", "Port de bras hello", "Her right arm travels up in a slow arc beside her — a swish of light follows it — and turns into a wave at the top.",
+    act("margot-port-de-bras", 3, [
+      [0, HIPS], [0.16, SWEEP_MID], [0.3, FLOURISH], [0.42, { ...FLOURISH, R: swing("R", FLOURISH.R, 12) }], [0.54, { ...FLOURISH, R: swing("R", FLOURISH.R, -10) }],
+      [0.66, FLOURISH], [0.84, FLOURISH], [1, HIPS],
+    ], [lift(0.6, { at: 0.14 }), {
+      head: turn([0, 0], [0.16, 3], [0.3, -4], [0.84, -4], [1, 0]),
+      torso: turn([0, 0], [0.3, -2], [0.84, -2], [1, 0]),
+      "fx-swish": swish(0.14, 0.5),
+    }]),
+    [[0, "neutral"], [0.2, "happy"], [0.46, "delighted"], [0.7, "happy"]], "happy", FLOURISH, "both", [[0.14, { R: "palm" }], [0.92, {}]]), ["swish"]),
+  own(r("greet", "margot-chin-up", "Chin up", "Lifts her own chin with one finger and holds it, eyebrow raised — chin up, darling — then a knowing nod.",
+    act("margot-chin-up", 2.8, [[0, HIPS], [0.18, CHIN_UP], [0.3, CHIN_UP_HI, "line"], [0.66, CHIN_UP_HI], [0.84, HIPS], [1, HIPS]], [lift(0.6, { at: 0.26 }), {
+      head: keys([0, {}], [0.18, { y: 1, e: EASE.settle }], [0.32, { r: -5, y: -1.2, e: EASE.settle }], [0.66, { r: -5, y: -1.2, e: EASE.settle }], [0.76, { y: 2, r: 3, e: EASE.settle }], [0.86, { e: EASE.settle }], [1, {}]),
+    }]),
+    [[0, "neutral"], [0.3, "curious"], [0.7, "happy"]], "happy", HIPS, "both", [[0.12, { R: "finger" }], [0.8, {}]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "margot-follow", "Turns like a dancer", "Hands on her hips, she turns her head and shoulders to where the learner points — spotting it, as a dancer spots a turn — a beat behind them.",
+    act("margot-follow", 3.6, [[0, HIPS], [1, HIPS]], {
+      head: turn([0, 0], [0.12, -8], [0.42, -8], [0.56, 8], [0.86, 8], [1, 0]),
+      torso: turn([0, 0], [0.14, -2.4], [0.42, -2.4], [0.58, 2.4], [0.86, 2.4], [1, 0]),
+    }),
+    [[0, "curious"]], "curious", HIPS)),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "margot-gracious-nod", "Gracious nod", "A slow, gracious nod with her hand turning out a little at her side — noted, darling. No verdict in it.",
+    act("margot-gracious-nod", 2, [[0, HIPS], [0.14, { ...HIPS, R: [136, 226] }], [0.5, { ...HIPS, R: [136, 226] }], [0.7, HIPS], [1, HIPS]], {
+      head: keys([0, {}], [0.12, { e: EASE.settle }], [0.3, { y: 2.6, r: 2.4, e: EASE.settle }], [0.48, { y: -0.4, e: EASE.settle }], [0.58, {}], [1, {}]),
+    }),
+    [[0, "neutral"], [0.16, "happy"], [0.5, "neutral"]], "neutral", HIPS, "rich", [[0.1, { R: "palm" }], [0.66, {}]])),
+  own(r("notice", "margot-releve", "Relevé", "Rises onto her toes, hands on hips, and glances at Check — no hop.",
+    act("margot-releve", 2, [[0, HIPS], [1, HIPS]], [lift(1.2, { at: 0.04 }), { head: turn([0, 0], [0.36, 0], [0.48, 8], [0.85, 8], [1, 0]) }]),
+    [[0, "neutral"], [0.44, "curious"]], "curious", HIPS, "minimal")),
+
+  /* ——— think, doze ——— */
+  own(r("think", "margot-counting-beat", "Counting the beat", "Sways from side to side, tapping the beat on her hip with one finger, eyes up — five, six, seven, eight. Never hurry up.",
+    act("margot-counting-beat", 4, [
+      [0, HIPS], [0.12, { ...HIPS, R: [122, 222] }], [0.2, { ...HIPS, R: [120, 228] }, "line"], [0.28, { ...HIPS, R: [122, 222] }, "line"], [0.36, { ...HIPS, R: [120, 228] }, "line"],
+      [0.62, { ...HIPS, R: [122, 222] }], [0.7, { ...HIPS, R: [120, 228] }, "line"], [0.78, { ...HIPS, R: [122, 222] }, "line"], [0.86, { ...HIPS, R: [120, 228] }, "line"], [1, HIPS],
+    ], {
+      torso: turn([0, 0], [0.25, -2.4], [0.5, 0], [0.75, 2.4], [1, 0]),
+      root: keys([0, {}], [0.25, { x: -1.6, e: "ease-in-out" }], [0.5, { e: "ease-in-out" }], [0.75, { x: 1.6, e: "ease-in-out" }], [1, {}]),
+      head: turn([0, 6], [0.25, 3], [0.5, 6], [0.75, 9], [1, 6]),
+    }),
+    [[0, "thinking"]], "thinking", HIPS, "both", [[0.08, { R: "finger" }], [0.94, {}]])),
+  own(r("doze", "margot-doze", "Dozing, still swaying", "Eyes shut, hands folded in first position, still swaying to a tune only she can hear — slower and slower.",
+    act("margot-doze", 5.6, [[0, FIRST], [1, FIRST]], {
+      head: keys([0, { y: 2, r: -4 }], [0.5, { y: 4.6, r: -7, e: "ease-in-out" }], [1, { y: 2, r: -4 }]),
+      torso: turn([0, -1.2], [0.5, 1.2], [1, -1.2]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", FIRST, "both", [[0, { R: "clasp" }]])),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "margot-poised", "Poised", "Arms come round into first position and she rises onto her toes, held — the breath before the music.",
+    act("margot-poised", 1.6, [[0, HIPS], [0.1, FIRST], [1, FIRST]], {
+      root: keys([0, {}], [0.1, { y: -1.6, e: EASE.snap }], [1, { y: -1.6 }]),
+      head: keys([0, {}], [0.1, { r: -3, y: -0.6, e: EASE.snap }], [1, { r: -3, y: -0.6 }]),
+    }, 1),
+    [[0, "focused"]], "focused", FIRST)),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "margot-shimmy", "Shimmy", "Her ability: hands up at her shoulders, and her shoulders shimmy while her hips hold still — and the whole pond wants to join in.",
+    act("margot-shimmy", 2.6, [[0, HIPS], [0.14, SHIMMY], [0.8, SHIMMY], [1, HIPS]], [shimmy(0.16, 0.76), {
+      head: turn([0, 0], [0.16, -4], [0.46, 4], [0.76, -2], [1, 0]),
+      root: keys([0, {}], [0.14, { y: 1.6, e: EASE.settle }], [0.76, { y: 1.6 }], [0.86, {}], [1, {}]),
+    }]),
+    [[0, "happy"], [0.14, "delighted"], [0.8, "happy"]], "delighted", SHIMMY, "both", [[0.08, { L: "palm", R: "palm" }], [0.92, {}]])),
+  own(r("correct", "margot-bravo", "Bravo!", "Three claps held high to one side, chin up, as from the best seat in the house — bravo.",
+    act("margot-bravo", 2.4, [
+      [0, HIPS], [0.14, BRAVO_OPEN], [0.22, BRAVO_SHUT, "line"], [0.3, BRAVO_OPEN, "line"], [0.38, BRAVO_SHUT, "line"], [0.46, BRAVO_OPEN, "line"], [0.54, BRAVO_SHUT, "line"],
+      [0.84, BRAVO_SHUT], [1, HIPS],
+    ], [lift(0.6, { at: 0.2 }), {
+      head: turn([0, 0], [0.14, -5], [0.84, -5], [1, 0]),
+      torso: turn([0, 0], [0.14, 2], [0.84, 2], [1, 0]),
+    }]),
+    [[0, "happy"], [0.2, "delighted"]], "delighted", BRAVO_SHUT, "both", [[0.08, { L: "palm", R: "palm" }], [0.92, {}]])),
+  own(r("correct", "margot-flourish", "Flourish", "One hand on her hip, the other sweeps up in a flourish with a swish of light behind it, and she holds the pose — beautifully done.",
+    act("margot-flourish", 2.6, [[0, HIPS], [0.14, SWEEP_MID], [0.28, FLOURISH], [0.84, FLOURISH], [1, HIPS]], [lift(1, { at: 0.12 }), {
+      head: turn([0, 0], [0.28, -5], [0.84, -5], [1, 0]),
+      torso: turn([0, 0], [0.28, -2.4], [0.84, -2.4], [1, 0]),
+      "fx-swish": swish(0.12, 0.6),
+    }]),
+    [[0, "happy"], [0.26, "delighted"]], "delighted", FLOURISH, "both", [[0.1, { R: "palm" }], [0.92, {}]]), ["swish"]),
+  own(r("correct", "margot-bow-to-you", "A bow to you", "Gestures an open palm to the learner and curtsies to them — the applause is theirs.",
+    act("margot-bow-to-you", 3, [[0, HIPS], [0.14, PRESENT], [0.3, PRESENT], [0.4, OPEN_LOW], [0.7, OPEN_LOW], [0.86, HIPS], [1, HIPS]], [curtsy(0.32, 0.16), {
+      "fx-spot": spot(0.04, 0.86),
+    }]),
+    [[0, "happy"], [0.14, "delighted"], [0.4, "happy"], [0.76, "delighted"]], "delighted", HIPS, "both", [[0.08, { R: "palm" }], [0.36, { L: "palm", R: "palm" }], [0.82, {}]]), ["spot"]),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "margot-finish-step", "Now finish the step", "Her arm sweeps up and stops halfway, held there with a tipped head — lovely start; now finish it. Never says how much.",
+    act("margot-finish-step", 2.8, [[0, HIPS], [0.18, HALF], [0.3, { ...HALF, R: [151, 202] }], [0.4, HALF], [0.84, HALF], [1, HIPS]], [lift(0.5, { at: 0.12 }), {
+      head: turn([0, 0], [0.2, -3], [0.4, 7], [0.84, 7], [1, 0]),
+    }]),
+    [[0, "happy"], [0.36, "curious"]], "curious", HALF, "both", [[0.12, { R: "palm" }], [0.92, {}]])),
+  own(r("partial", "margot-almost-toes", "Almost on your toes", "Rises halfway onto her toes, finger and thumb a hair apart beside her face — this close — with a wink.",
+    act("margot-almost-toes", 2.6, [[0, HIPS], [0.18, { ...HIPS, R: PINCH.R }], [0.3, { ...HIPS, R: [151, 176] }], [0.4, { ...HIPS, R: PINCH.R }], [0.82, { ...HIPS, R: PINCH.R }], [1, HIPS]], [lift(0.6, { at: 0.12 }), {
+      head: turn([0, 0], [0.2, 7], [0.82, 7], [1, 0]),
+    }]),
+    [[0, "curious"], [0.34, "wink"], [0.7, "curious"]], "curious", { ...HIPS, R: PINCH.R }, "both", [[0.1, { R: "pinch" }], [0.9, {}]])),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "margot-every-dancer-slips", "Every dancer slips", "A small comic wobble, arms out for balance — whoops — she catches it with a laugh, smooths herself down and turns to the key.",
+    act("margot-every-dancer-slips", 3, [[0, HIPS], [0.12, BALANCE], [0.5, BALANCE], [0.66, HIPS], [1, HIPS]], {
+      root: keys([0, {}], [0.12, { r: -3, x: -1.5, e: EASE.settle }], [0.24, { r: 3, x: 1.5, e: "ease-in-out" }], [0.36, { r: -1.6, x: -0.8, e: "ease-in-out" }], [0.48, { e: EASE.settle }], [1, {}]),
+      head: turn([0, 0], [0.12, 4], [0.24, -4], [0.36, 2], [0.5, 0], [0.7, 7], [1, 7]),
+      torso: turn([0, 0], [0.6, 0], [0.72, 2], [1, 2]),
+    }),
+    [[0, "oops"], [0.4, "happy"], [0.66, "curious"]], "curious", HIPS, "both", [[0.08, { L: "palm", R: "palm" }], [0.6, {}]])),
+  own(r("incorrect", "margot-watch-this", "Watch this", "Never mind, darling: she presents the key with an open palm, the way a dancer presents the stage — watch this.",
+    act("margot-watch-this", 2.8, [[0, HIPS], [0.2, HIPS], [0.4, PRESENT], [0.84, PRESENT], [1, HIPS]], {
+      head: turn([0, 0], [0.14, -3], [0.3, -3], [0.44, 8], [0.84, 8], [1, 0]),
+      torso: turn([0, 0], [0.2, 0], [0.42, 3], [0.84, 3], [1, 0]),
+      root: keys([0, {}], [0.2, { e: EASE.settle }], [0.42, { x: 3, e: EASE.settle }], [0.84, { x: 3 }], [1, {}]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.46, "curious"]], "curious", PRESENT, "both", [[0.3, { R: "palm" }], [0.92, {}]])),
+  own(r("incorrect", "margot-shake-it-off", "Shake it off", "Lets her hands drop and shakes them out at her sides like a dancer between takes, then rolls her shoulders back and looks at the key.",
+    act("margot-shake-it-off", 2.8, [
+      [0, HIPS], [0.12, SIDES], [0.18, { L: [62, 214], R: [138, 214] }, "line"], [0.24, SIDES, "line"], [0.3, { L: [62, 214], R: [138, 214] }, "line"], [0.36, SIDES, "line"],
+      [0.42, { L: [62, 214], R: [138, 214] }, "line"], [0.5, SIDES, "line"], [0.66, HIPS], [1, HIPS],
+    ], {
+      torso: keys([0, {}], [0.5, { e: EASE.settle }], [0.58, { y: -1.4, r: -1.5, e: EASE.settle }], [0.66, {}], [1, {}]),
+      head: turn([0, 0], [0.14, -3], [0.5, -3], [0.66, 7], [1, 7]),
+    }),
+    [[0, "oops"], [0.2, "happy"], [0.6, "curious"]], "curious", HIPS, "both", [[0.1, { L: "palm", R: "palm" }], [0.56, {}]])),
+  own(r("incorrect", "margot-point", "A long point to the key", "Rich only: one hand on her hip, the other extends in one long line to the key beside her, her shoulders turned to it.",
+    act("margot-point", 2.8, [[0, HIPS], [0.18, HIPS], [0.38, ARM_POINT], [0.82, ARM_POINT], [1, HIPS]], {
+      head: turn([0, 0], [0.14, -3], [0.3, -3], [0.42, 8], [0.82, 8], [1, 0]),
+      torso: turn([0, 0], [0.3, 0], [0.42, 3], [0.82, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.44, "curious"]], "curious", ARM_POINT, "rich", [[0.3, { R: "point" }], [0.92, {}]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "margot-finale", "Grand finale", "Arms sweep up and wide and she rises onto her toes as a pool of light opens under her — and a deep curtsy to close. Once, with the unlock.",
+    act("margot-finale", 3.4, [[0, HIPS], [0.12, FIRST], [0.3, HIGH_V], [0.56, HIGH_V], [0.68, OPEN_LOW], [0.88, OPEN_LOW], [1, HIPS]], [lift(1.4, { at: 0.14 }), curtsy(0.56, 0.04), {
+      head: turn([0, 0], [0.3, -4], [0.56, -4], [0.66, 0], [1, 0]),
+      "fx-spot": spot(0.16, 0.9),
+    }]),
+    [[0, "focused"], [0.2, "delighted"], [0.66, "happy"], [0.9, "delighted"]], "delighted", OPEN_LOW, "both", [[0.24, { L: "palm", R: "palm" }], [0.94, {}]]), ["spot"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "margot-chasse", "Chassé across", "Dock to verdict in gliding side-steps, arms out, chin up — and a little pose on arrival, hand on hip.",
+    act("margot-chasse", 2.8, [
+      [0, HIPS], [0.08, BALANCE], [0.62, BALANCE], [0.74, FLOURISH], [0.88, FLOURISH], [1, HIPS],
+    ], {
+      root: keys(
+        [0, { x: -28 }], [0.08, { x: -28 }], [0.18, { x: -18, y: -3, e: "ease-out" }], [0.26, { x: -10, e: "ease-in" }], [0.36, { x: 0, y: -3, e: "ease-out" }],
+        [0.44, { x: 8, e: "ease-in" }], [0.54, { x: 18, y: -3, e: "ease-out" }], [0.62, { x: 28, e: EASE.settle }], [0.94, { x: 28 }], [1, { x: -28 }],
+      ),
+      head: turn([0, 0], [0.08, -4], [0.62, -4], [0.74, -6], [0.88, -6], [1, 0]),
+      torso: turn([0, 0], [0.62, 0], [0.74, -2], [0.88, -2], [1, 0]),
+    }),
+    [[0, "happy"], [0.7, "delighted"], [0.9, "happy"]], "happy", undefined, "minimal", [[0.06, { L: "palm", R: "palm" }], [0.7, { R: "palm" }], [0.94, {}]])),
+];
+
+/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
   haru: HARU,
+  margot: MARGOT,
 };
 
 /** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
