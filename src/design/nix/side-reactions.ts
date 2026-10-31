@@ -20,10 +20,11 @@ import { castMember, type CastSlug } from "./side-companion";
 import type { HaruSceneId } from "./side-haru";
 import type { MargotSceneId } from "./side-margot";
 import type { NellSceneId } from "./side-nell";
+import type { OttoSceneId } from "./side-otto";
 import type { NoorSceneId } from "./side-noor";
 
 /** A character's own scene elements, drawn by its scene component. */
-export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId;
+export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId | OttoSceneId;
 
 export type ReactionState =
   | "greet"
@@ -1696,12 +1697,234 @@ const NELL: Reaction[] = [
     [[0, "happy"], [0.72, "delighted"], [0.9, "happy"]], "happy", HELD, "minimal", [[0, { R: "cup" }]])),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell). */
+/* ——— Otto's own reactions (2026-10-31) ———
+ * Drawn from who he is: brilliant, absent-minded, delighted by every question — most of all the ones
+ * he can't answer yet; forgets what he came into the room for. Three things carry him: a finger that
+ * goes up when a thought arrives, the stick of chalk he is never without (the `chalk` grip, and its
+ * dust — he never writes anything), and his ability, Eureka: his hair stands straight up when an idea
+ * lands (`OttoScene`). A wrong answer fascinates him: he leans in to it rather than away. */
+
+/** A finger up beside him: a thought arriving. */
+const IDEA = { L: DOWN.L, R: [142, 190], outR: true } as const satisfies HandKey[1];
+/** The finger shot up beside his head: Eureka. */
+const IDEA_HIGH = { L: DOWN.L, R: [148, 172], outR: true } as const satisfies HandKey[1];
+/** Chalk held up beside him, and the small strokes it makes in the air. */
+const CHALK_UP = { L: DOWN.L, R: [150, 194] } as const satisfies HandKey[1];
+const CHALK_A = { L: DOWN.L, R: [144, 190] } as const satisfies HandKey[1];
+const CHALK_B = { L: DOWN.L, R: [156, 196] } as const satisfies HandKey[1];
+const CHALK_C = { L: DOWN.L, R: [150, 184] } as const satisfies HandKey[1];
+/** Rubbing his hands together: the hands meet in front of him and slide past each other. */
+const RUB_A = { L: [94, 214], R: [104, 212] } as const satisfies HandKey[1];
+const RUB_B = { L: [97, 212], R: [107, 214] } as const satisfies HandKey[1];
+/** A finger tapping his temple. */
+const TEMPLE = { L: DOWN.L, R: [138, 174] } as const satisfies HandKey[1];
+/** Patting his coat pockets for the missing bit. */
+const POCKETS = { L: [80, 230], R: [120, 230] } as const satisfies HandKey[1];
+const POCKETS_PAT = { L: [80, 236], R: [120, 236] } as const satisfies HandKey[1];
+/** A point the wrong way, then the right one. */
+const POINT_WRONG = { L: [40, 192], R: DOWN.R } as const satisfies HandKey[1];
+/** Leaning in to a fascinating mistake, hands clasped in front of him. */
+const FASCINATED = { L: [96, 210], R: [104, 210] } as const satisfies HandKey[1];
+/** A hand on his chest — I got that one wrong for years. */
+const OWN_CHEST = { L: [106, 206], R: DOWN.R } as const satisfies HandKey[1];
+
+/** Eureka: the tufts spring up from their roots, overshoot, settle, hold, and lie down again. */
+const eureka = (on: number, off: number): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "1 0" },
+  { offset: on, opacity: 0, scale: "1 0" },
+  { offset: Math.min(1, on + 0.01), opacity: 1, scale: "1 0.2", easing: EASE.overshoot },
+  { offset: Math.min(1, on + 0.08), opacity: 1, scale: "1 1.15", easing: EASE.settle },
+  { offset: Math.min(1, on + 0.14), opacity: 1, scale: "1 1" },
+  { offset: off, opacity: 1, scale: "1 1", easing: "ease-in" },
+  { offset: Math.min(1, off + 0.08), opacity: 0, scale: "1 0.3" },
+  { offset: 1, opacity: 0, scale: "1 0" },
+];
+/** A puff of chalk dust at `on`: it blooms, drifts up and fades. */
+const puff = (on: number, len = 0.22): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "0.3", translate: "0px 0px" },
+  { offset: on, opacity: 0, scale: "0.3", translate: "0px 0px" },
+  { offset: Math.min(1, on + 0.04), opacity: 1, scale: "1", translate: "0px -1px", easing: EASE.settle },
+  { offset: Math.min(1, on + len), opacity: 0, scale: "1.5", translate: "0px -8px" },
+  { offset: 1, opacity: 0, scale: "1.5", translate: "0px -8px" },
+];
+
+const OTTO: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "otto-ah-hello", "Ah, hello!", "A finger goes up as if he's just remembered something — then he sees the learner and waves, delighted. Questions — his favourite thing.",
+    act("otto-ah-hello", 3, [
+      [0, DOWN], [0.14, IDEA], [0.36, IDEA], [0.48, WAVE(WAVE_HAND)], [0.58, WAVE(WAVE_OUT)], [0.68, WAVE(WAVE_IN)], [0.78, WAVE(WAVE_OUT)], [0.88, WAVE(WAVE_HAND)], [1, DOWN],
+    ], [lift(0.6, { at: 0.36 }), {
+      head: turn([0, 0], [0.14, -4], [0.36, -4], [0.46, 5], [0.88, 5], [1, 0]),
+    }]),
+    [[0, "curious"], [0.14, "thinking"], [0.4, "delighted"], [0.7, "happy"]], "happy", WAVE(WAVE_HAND), "both", [[0.08, { R: "finger" }], [0.42, { R: "palm" }], [0.94, {}]])),
+  own(r("greet", "otto-rubs-hands", "A question!", "Rubs his hands together, eyes bright behind his brows — ah, a question; let's begin.",
+    act("otto-rubs-hands", 2.6, [
+      [0, DOWN], [0.16, RUB_A], [0.24, RUB_B, "line"], [0.32, RUB_A, "line"], [0.4, RUB_B, "line"], [0.48, RUB_A, "line"], [0.56, RUB_B, "line"], [0.84, RUB_A], [1, DOWN],
+    ], [lift(0.5, { at: 0.12 }), {
+      head: turn([0, 0], [0.16, 4], [0.84, 4], [1, 0]),
+      torso: keys([0, {}], [0.16, { r: 2, y: 0.8, e: EASE.settle }], [0.84, { r: 2, y: 0.8 }], [1, {}]),
+    }]),
+    [[0, "curious"], [0.16, "delighted"]], "delighted", RUB_A, "both", [[0.1, { L: "palm", R: "palm" }], [0.92, {}]])),
+  own(r("greet", "otto-where-was-i", "Where was I?", "Looks one way, then the other, finger to his chin — what did he come in for? — then spots the learner: of course! A delighted wave.",
+    act("otto-where-was-i", 3.4, [
+      [0, DOWN], [0.12, CHIN], [0.5, CHIN], [0.62, WAVE(WAVE_HAND)], [0.72, WAVE(WAVE_OUT)], [0.82, WAVE(WAVE_IN)], [0.9, WAVE(WAVE_HAND)], [1, DOWN],
+    ], {
+      head: turn([0, 0], [0.12, -8], [0.28, -8], [0.36, 8], [0.5, 8], [0.58, 2], [0.9, 4], [1, 0]),
+      torso: turn([0, 0], [0.12, -2], [0.28, -2], [0.36, 2], [0.5, 2], [0.58, 0], [1, 0]),
+    }),
+    [[0, "thinking"], [0.56, "delighted"], [0.8, "happy"]], "happy", WAVE(WAVE_HAND), "both", [[0.06, { R: "finger", L: "fist" }], [0.56, { R: "palm" }], [0.94, {}]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "otto-peer", "Peers closely", "Leans right in to look at whatever the learner points to, finger at his chin — fascinating — a beat behind them.",
+    act("otto-peer", 3.6, [[0, CHIN], [1, CHIN]], {
+      head: keys([0, {}], [0.12, { r: -7, y: 2, e: EASE.settle }], [0.42, { r: -7, y: 2 }], [0.56, { r: 7, y: 2, e: EASE.settle }], [0.86, { r: 7, y: 2 }], [1, {}]),
+      torso: keys([0, {}], [0.12, { r: 2, y: 1, e: EASE.settle }], [0.86, { r: 2, y: 1 }], [1, {}]),
+    }),
+    [[0, "curious"]], "curious", CHIN, "both", [[0, { R: "finger", L: "fist" }]])),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "otto-hmm", "Hmm!", "Finger up, a quick nod, brows up — hmm! interesting. No verdict in it.",
+    act("otto-hmm", 1.8, [[0, DOWN], [0.12, IDEA], [0.7, IDEA], [1, DOWN]], {
+      head: keys([0, {}], [0.12, { e: EASE.settle }], [0.24, { y: 2.4, r: 2, e: EASE.settle }], [0.38, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.12, "curious"]], "curious", IDEA, "rich", [[0.06, { R: "finger" }], [0.86, {}]])),
+  own(r("notice", "otto-glance", "Brows up at Check", "His brows go up and he glances at Check — no hop.",
+    act("otto-glance", 2, [[0, DOWN], [1, DOWN]], { head: turn([0, 0], [0.36, 0], [0.48, 8], [0.85, 8], [1, 0]) }),
+    [[0, "neutral"], [0.4, "curious"]], "curious", undefined, "minimal")),
+
+  /* ——— think, doze ——— */
+  own(r("think", "otto-chalk-air", "Working it out", "Works it out in the air with his chalk — small strokes, a puff of dust, a pause — eyes up, lost in it. Writes nothing. Never hurry up.",
+    act("otto-chalk-air", 5, [
+      [0, DOWN], [0.12, CHALK_UP], [0.2, CHALK_A, "line"], [0.26, CHALK_B, "line"], [0.32, CHALK_C, "line"], [0.5, CHALK_C], [0.58, CHALK_A, "line"], [0.64, CHALK_B, "line"], [0.86, CHALK_UP], [1, DOWN],
+    ], {
+      head: turn([0, 4], [0.2, 7], [0.34, 9], [0.5, 5], [0.64, 8], [0.86, 6], [1, 4]),
+      "fx-dust": puff(0.33),
+    }),
+    [[0, "thinking"], [0.18, "focused"], [0.36, "thinking"], [0.56, "focused"], [0.7, "thinking"]], "thinking", undefined, "both", [[0.06, { R: "chalk" }], [0.94, {}]]), ["dustChalk"]),
+  own(r("doze", "otto-nods-off", "Nods off mid-thought", "His finger is still up, mid-thought — but his eyes have shut and his head droops lower on each slow breath.",
+    act("otto-nods-off", 5.4, [[0, IDEA], [1, IDEA]], {
+      head: keys([0, { y: 2, r: -4 }], [0.5, { y: 5, r: -8, e: "ease-in-out" }], [1, { y: 2, r: -4 }]),
+      torso: keys([0, {}], [0.5, { y: 1.8, r: -0.6, e: "ease-in-out" }], [1, {}]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", IDEA, "both", [[0, { R: "finger" }]])),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "otto-rubbing", "Can't wait to see", "Rubs his hands together and leans in — before the result is known.",
+    act("otto-rubbing", 1.6, [[0, DOWN], [0.1, RUB_A], [0.3, RUB_B, "line"], [0.5, RUB_A, "line"], [0.7, RUB_B, "line"], [0.9, RUB_A, "line"], [1, RUB_A]], {
+      torso: keys([0, {}], [0.1, { r: 3, y: 1.2, e: EASE.snap }], [1, { r: 3, y: 1.2 }]),
+      head: keys([0, {}], [0.1, { r: 4, y: 1.8, e: EASE.snap }], [1, { r: 4, y: 1.8 }]),
+    }, 1),
+    [[0, "curious"]], "curious", RUB_A, "both", [[0.04, { L: "palm", R: "palm" }]])),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "otto-eureka", "Eureka!", "His ability: the finger shoots up and his hair stands straight up on end — eureka! — holds, and settles back down.",
+    act("otto-eureka", 2.8, [[0, DOWN], [0.12, IDEA], [0.2, IDEA_HIGH], [0.8, IDEA_HIGH], [1, DOWN]], [lift(1, { at: 0.12 }), {
+      head: keys([0, {}], [0.18, { y: -1.4, e: EASE.snap }], [0.28, { e: EASE.settle }], [0.8, {}], [1, {}]),
+      "fx-eureka": eureka(0.18, 0.78),
+    }]),
+    [[0, "curious"], [0.18, "delighted"]], "delighted", IDEA_HIGH, "both", [[0.06, { R: "finger" }], [0.92, {}]]), ["eureka"]),
+  own(r("correct", "otto-splendid", "Splendid!", "Claps his hands together, and a puff of chalk dust flies off them — splendid thinking!",
+    act("otto-splendid", 2.4, [
+      [0, DOWN], [0.14, CLAP_OPEN], [0.22, CLAP_SHUT, "line"], [0.32, CLAP_OPEN, "line"], [0.4, CLAP_SHUT, "line"], [0.84, CLAP_SHUT], [1, DOWN],
+    ], [lift(0.5, { at: 0.36 }), {
+      head: keys([0, {}], [0.22, { y: 1.2, e: EASE.settle }], [0.32, {}], [0.4, { y: 1.2, e: EASE.settle }], [0.52, { r: 4, e: EASE.settle }], [0.84, { r: 4 }], [1, {}]),
+      "fx-dust": puff(0.4, 0.3),
+    }]),
+    [[0, "happy"], [0.2, "delighted"]], "delighted", CLAP_SHUT, "both", [[0.06, { L: "palm", R: "palm" }], [0.94, {}]]), ["dustClap"]),
+  own(r("correct", "otto-yes-yes", "Yes, yes — exactly!", "Quick, delighted nods, his finger wagging up with each one — yes, yes, exactly!",
+    act("otto-yes-yes", 2.4, [
+      [0, DOWN], [0.12, IDEA], [0.2, { ...IDEA, R: [142, 184] }, "line"], [0.28, IDEA, "line"], [0.36, { ...IDEA, R: [142, 184] }, "line"], [0.44, IDEA, "line"], [0.84, IDEA], [1, DOWN],
+    ], [lift(0.4, { at: 0.12 }), {
+      head: keys([0, {}], [0.14, { e: EASE.settle }], [0.2, { y: 2, r: 2, e: EASE.snap }], [0.28, { e: EASE.settle }], [0.36, { y: 2, r: 2, e: EASE.snap }], [0.44, { e: EASE.settle }], [0.52, { y: 2, r: 2, e: EASE.snap }], [0.6, { e: EASE.settle }], [1, {}]),
+    }]),
+    [[0, "happy"], [0.12, "delighted"]], "delighted", IDEA, "both", [[0.06, { R: "finger" }], [0.92, {}]])),
+  own(r("correct", "otto-jig", "A little jig", "Arms out, a small delighted jig on the spot — one foot, then the other — and his hair bounces with it.",
+    act("otto-jig", 2.6, [[0, DOWN], [0.12, BALANCE], [0.8, BALANCE], [1, DOWN]], {
+      root: keys([0, {}], [0.14, { e: EASE.settle }], [0.24, { y: -3, r: -2, e: "ease-out" }], [0.34, { e: "ease-in" }], [0.44, { y: -3, r: 2, e: "ease-out" }], [0.54, { e: "ease-in" }],
+        [0.64, { y: -3, r: -2, e: "ease-out" }], [0.74, { e: EASE.settle }], [1, {}]),
+      hipL: turn([0, 0], [0.14, 0], [0.24, 12], [0.34, 0], [0.64, 12], [0.74, 0], [1, 0]),
+      kneeL: turn([0, 0], [0.14, 0], [0.24, -16], [0.34, 0], [0.64, -16], [0.74, 0], [1, 0]),
+      hipR: turn([0, 0], [0.34, 0], [0.44, -12], [0.54, 0], [1, 0]),
+      kneeR: turn([0, 0], [0.34, 0], [0.44, 16], [0.54, 0], [1, 0]),
+      head: turn([0, 0], [0.24, -4], [0.44, 4], [0.64, -4], [0.8, 0], [1, 0]),
+      ...sway(1.2),
+    }),
+    [[0, "happy"], [0.12, "delighted"]], "delighted", BALANCE, "both", [[0.08, { L: "palm", R: "palm" }], [0.92, {}]])),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "otto-pockets", "The rest is hiding", "Part of it! — and he pats his coat pockets for the missing bit, head tipped, as if it might be in one of them. Never says how much.",
+    act("otto-pockets", 3, [
+      [0, DOWN], [0.12, IDEA], [0.3, IDEA], [0.42, POCKETS], [0.5, POCKETS_PAT, "line"], [0.58, POCKETS, "line"], [0.66, POCKETS_PAT, "line"], [0.74, POCKETS, "line"], [1, POCKETS],
+    ], {
+      head: keys([0, {}], [0.12, { r: -3, e: EASE.settle }], [0.3, { r: -3 }], [0.42, { r: 6, y: 2.4, e: EASE.settle }], [1, { r: 6, y: 2.4 }]),
+    }),
+    [[0, "happy"], [0.12, "delighted"], [0.4, "curious"]], "curious", POCKETS, "both", [[0.06, { R: "finger" }], [0.36, { L: "palm", R: "palm" }], [0.94, {}]])),
+  own(r("partial", "otto-temple", "Find the missing bit", "Taps his temple, twice, with a tipped head and a twinkle — ooh, partly; let's find the missing bit.",
+    act("otto-temple", 2.6, [[0, DOWN], [0.16, TEMPLE], [0.26, { ...TEMPLE, R: [136, 178] }, "line"], [0.34, TEMPLE, "line"], [0.42, { ...TEMPLE, R: [136, 178] }, "line"], [0.5, TEMPLE, "line"], [0.84, TEMPLE], [1, DOWN]], {
+      head: turn([0, 0], [0.16, 6], [0.84, 6], [1, 0]),
+    }),
+    [[0, "curious"], [0.5, "wink"], [0.66, "curious"]], "curious", TEMPLE, "both", [[0.08, { R: "finger" }], [0.92, {}]])),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "otto-fascinating", "Fascinating!", "A wrong answer delights him: he leans right in to it, hands clasped, brows up — fascinating! — then turns to show how it really works.",
+    act("otto-fascinating", 2.8, [[0, DOWN], [0.16, FASCINATED], [0.6, FASCINATED], [0.76, DOWN], [1, DOWN]], {
+      torso: keys([0, {}], [0.16, { r: 3, y: 1.4, e: EASE.settle }], [0.6, { r: 3, y: 1.4 }], [0.74, { e: EASE.settle }], [1, {}]),
+      head: keys([0, {}], [0.16, { r: 4, y: 2, e: EASE.settle }], [0.6, { r: 4, y: 2 }], [0.74, { r: 7, e: EASE.settle }], [1, { r: 7 }]),
+    }),
+    [[0, "curious"], [0.16, "delighted"], [0.64, "curious"]], "curious", DOWN, "both", [[0.1, { R: "clasp" }], [0.7, {}]])),
+  own(r("incorrect", "otto-wrong-for-years", "Wrong for years", "A hand on his chest and a chuckle — I got that one wrong for years — then a nod at the key.",
+    act("otto-wrong-for-years", 2.8, [[0, DOWN], [0.16, OWN_CHEST], [0.6, OWN_CHEST], [0.76, DOWN], [1, DOWN]], [{
+      head: keys([0, {}], [0.16, { r: -4, e: EASE.settle }], [0.6, { r: -4 }], [0.72, { r: 7, y: 1.6, e: EASE.settle }], [0.82, { r: 7, e: EASE.settle }], [1, { r: 7 }]),
+    }, laugh(0.2, 0.56, 4)]),
+    [[0, "oops"], [0.2, "happy"], [0.66, "curious"]], "curious", DOWN, "both", [[0.1, { L: "palm" }], [0.7, {}]])),
+  own(r("incorrect", "otto-wrong-turn", "A wrong turn is still a turn", "Points the wrong way with great confidence — stops, looks, chuckles — and turns to point the right way, at the key.",
+    act("otto-wrong-turn", 3.2, [[0, DOWN], [0.16, POINT_WRONG], [0.46, POINT_WRONG], [0.58, DOWN], [0.72, { L: DOWN.L, R: POINT.R }], [1, { L: DOWN.L, R: POINT.R }]], {
+      head: turn([0, 0], [0.16, -8], [0.36, -8], [0.46, -4], [0.6, 0], [0.72, 8], [1, 8]),
+      torso: turn([0, 0], [0.16, -3], [0.46, -3], [0.6, 0], [0.72, 3], [1, 3]),
+    }),
+    [[0, "delighted"], [0.36, "oops"], [0.5, "happy"], [0.72, "curious"]], "curious", { L: DOWN.L, R: POINT.R }, "both", [[0.1, { L: "point" }], [0.56, {}], [0.66, { R: "point" }]])),
+  own(r("incorrect", "otto-chalk-point", "Chalk to the key", "Rich only: his chalk comes up and points at the key beside him, his shoulders turned to it — here's how it really works.",
+    act("otto-chalk-point", 2.8, [[0, DOWN], [0.18, CHALK_UP], [0.38, POINT], [0.8, POINT], [1, DOWN]], {
+      head: turn([0, 0], [0.14, -3], [0.3, -3], [0.42, 7], [0.8, 7], [1, 0]),
+      torso: turn([0, 0], [0.3, 0], [0.42, 3], [0.8, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.44, "curious"]], "curious", POINT, "rich", [[0.1, { R: "chalk" }], [0.34, { R: "pencilPoint" }], [0.92, {}]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "otto-grand-eureka", "Eureka, and then some", "Both arms up, his hair straight up on end and chalk dust flying off both hands — the biggest idea yet. Once, with the unlock.",
+    act("otto-grand-eureka", 2.8, [[0, DOWN], [0.12, CHEST], [0.24, UP], [0.84, UP], [1, DOWN]], [lift(1.4, { at: 0.12 }), {
+      head: turn([0, 0], [0.24, -3], [0.5, 3], [0.84, 0], [1, 0]),
+      "fx-eureka": eureka(0.22, 0.82),
+      "fx-dustL": puff(0.26, 0.3),
+      "fx-dustR": puff(0.28, 0.3),
+    }]),
+    [[0, "curious"], [0.2, "delighted"]], "delighted", UP, "both", [[0.2, { L: "palm", R: "palm" }], [0.92, {}]]), ["eureka", "dustBoth"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "otto-forgot", "Forgot why", "Dock to verdict at a shuffle — stops halfway, looks about (why was he going there?), finger up — remembers! — and carries on.",
+    act("otto-forgot", 3.4, [[0, DOWN], [0.34, DOWN], [0.42, CHIN], [0.54, CHIN], [0.6, IDEA], [0.66, DOWN], [1, DOWN]], {
+      root: keys(
+        [0, { x: -28 }], [0.04, { x: -28 }], [0.1, { x: -22, y: -0.8 }], [0.16, { x: -16 }], [0.22, { x: -10, y: -0.8 }], [0.3, { x: -4 }],
+        [0.6, { x: -4 }], [0.66, { x: 4, y: -0.8 }], [0.72, { x: 12 }], [0.78, { x: 20, y: -0.8 }], [0.84, { x: 28, e: EASE.settle }], [0.96, { x: 28 }], [1, { x: -28 }],
+      ),
+      hipL: turn([0, 0], [0.1, 6], [0.16, -4], [0.22, 6], [0.3, 0], [0.66, 6], [0.72, -4], [0.78, 6], [0.84, 0], [1, 0]),
+      hipR: turn([0, 0], [0.1, -4], [0.16, 6], [0.22, -4], [0.3, 0], [0.66, -4], [0.72, 6], [0.78, -4], [0.84, 0], [1, 0]),
+      head: turn([0, 0], [0.34, 0], [0.42, -8], [0.48, 8], [0.54, 0], [0.6, -2], [1, 0]),
+    }),
+    [[0, "happy"], [0.36, "thinking"], [0.58, "delighted"], [0.7, "happy"]], "happy", undefined, "minimal", [[0.4, { R: "finger", L: "fist" }], [0.58, { R: "finger" }], [0.66, {}]])),
+];
+
+/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell, Otto). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
   haru: HARU,
   margot: MARGOT,
   nell: NELL,
+  otto: OTTO,
 };
 
 /** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
@@ -1710,6 +1933,7 @@ const REST_SHAPES: Partial<Record<CastSlug, HandShapes>> = {
   noor: { L: "mitt", R: "clasp" },
   haru: { L: "mitt", R: "mitt" },
   nell: { L: "mitt", R: "clasp" },
+  otto: { L: "mitt", R: "finger" },
 };
 
 /** Every variant a character draws from, by state, in `STATE_INFO`'s order. */

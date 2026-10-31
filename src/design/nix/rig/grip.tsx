@@ -15,9 +15,10 @@ import type { P } from "./skeleton";
  * the air; `pencilPoint` holds it along the forearm, pointing. The pencil is drawn under the fist.
  *
  * 2026-10-31: `cup` holds a teacup upright on the hand, whatever angle the forearm is at — Nell's,
- * from her tea stall. The cup sits on the hand, its foot behind the fingers.
+ * from her tea stall. The cup sits on the hand, its foot behind the fingers. `chalk` holds a short
+ * stick of chalk tip-up, like `pencil` — Otto's.
  */
-export type GripShape = "mitt" | "fist" | "thumb" | "point" | "palm" | "finger" | "pinch" | "clasp" | "pencil" | "pencilPoint" | "cup";
+export type GripShape = "mitt" | "fist" | "thumb" | "point" | "palm" | "finger" | "pinch" | "clasp" | "pencil" | "pencilPoint" | "cup" | "chalk";
 export type Grip = { shape: GripShape; turn?: number };
 export type Grips = Partial<Record<"L" | "R", Grip>>;
 
@@ -38,6 +39,17 @@ const CHINA = "#fffaf2";
 const CHINA_EDGE = "#c9b79a";
 const CHINA_BAND = "#e48a7a";
 const TEA = "#a9643a";
+
+/** A short stick of chalk from `a` along `angle`, a little worn at its tip. */
+function Chalk({ a, angle, len, w }: { a: P; angle: number; len: number; w: number }) {
+  const b: P = [a[0] + Math.cos(rad(angle)) * len, a[1] + Math.sin(rad(angle)) * len];
+  return (
+    <g strokeLinecap="round">
+      <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={CHINA_EDGE} strokeWidth={w + 1.2} />
+      <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={CHINA} strokeWidth={w} />
+    </g>
+  );
+}
 
 /** A teacup standing upright at `a` (the bottom of its bowl), `w` across, turned `rot` degrees so it
  *  stays upright on screen whatever the hand's frame is. */
@@ -130,6 +142,7 @@ export function GripHand({
       case "pencil":
       case "pencilPoint":
       case "cup":
+      case "chalk":
         return fist;
       case "clasp":
         /* folded over the other hand: four fingers stacked up the screen, lying across toward the
@@ -220,6 +233,8 @@ export function GripHand({
       <Pencil a={upFrom(-r * 0.2)} angle={up + (side === "R" ? 22 : -22)} len={r * 3.1} w={r * 0.46} />
     ) : grip.shape === "pencilPoint" ? (
       <Pencil a={along(-r * 0.1)} angle={fore} len={r * 3.1} w={r * 0.46} />
+    ) : grip.shape === "chalk" ? (
+      <Chalk a={upFrom(-r * 0.1)} angle={up + (side === "R" ? 18 : -18)} len={r * 2.2} w={r * 0.62} />
     ) : grip.shape === "cup" ? (
       <Teacup a={upFrom(r * 0.55)} w={r * 2.9} rot={up + 90} />
     ) : null;

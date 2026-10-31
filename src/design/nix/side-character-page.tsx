@@ -1,7 +1,7 @@
 /**
  * One side character's page, in the structure of Sparkles' `/design/character/<name>`: who it is,
  * its silhouette at the sizes the product draws it, its own eyes and mouth, its fixed lines in its
- * own voice, and every companion state with each variant. Noor's, Haru's, Margot's and Nell's states are drawn so far
+ * own voice, and every companion state with each variant. Noor's, Haru's, Margot's, Nell's and Otto's states are drawn so far
  * (`side-reactions.ts`); every other character shows "Coming soon" in their place.
  */
 import * as React from "react";
@@ -18,6 +18,7 @@ import { CAST, type CastMember } from "./side-companion";
 import { HaruScene, type HaruSceneId } from "./side-haru";
 import { MargotScene, type MargotSceneId } from "./side-margot";
 import { NellScene, type NellSceneId } from "./side-nell";
+import { OttoScene, type OttoSceneId } from "./side-otto";
 import { NoorScene, type NoorSceneId } from "./side-noor";
 import {
   endGrip,
@@ -50,6 +51,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
   const haru = a.scene as readonly HaruSceneId[];
   const margot = a.scene as readonly MargotSceneId[];
   const nell = a.scene as readonly NellSceneId[];
+  const otto = a.scene as readonly OttoSceneId[];
   return {
     under: (
       <>
@@ -57,6 +59,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
         <HaruScene ids={haru} layer="under" />
         <MargotScene ids={margot} layer="under" />
         <NellScene ids={nell} layer="under" />
+        <OttoScene ids={otto} layer="under" />
       </>
     ),
     over: (
@@ -65,6 +68,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
         <HaruScene ids={haru} layer="over" />
         <MargotScene ids={margot} layer="over" />
         <NellScene ids={nell} layer="over" />
+        <OttoScene ids={otto} layer="over" />
       </>
     ),
   };
@@ -178,9 +182,9 @@ function States({ m }: { m: CastMember }) {
       <>
         <h2 className={SECTION}>States and variations</h2>
         <p className={LEDE}>
-          Not drawn yet. Noor&apos;s, Haru&apos;s, Margot&apos;s and Nell&apos;s are drawn (<a href="#/side/noor">Noor</a>,{" "}
-          <a href="#/side/haru">Haru</a>, <a href="#/side/margot">Margot</a>, <a href="#/side/nell">Nell</a>); {m.name}&apos;s
-          follow, one character at a time.
+          Not drawn yet. Noor&apos;s, Haru&apos;s, Margot&apos;s, Nell&apos;s and Otto&apos;s are drawn (
+          <a href="#/side/noor">Noor</a>, <a href="#/side/haru">Haru</a>, <a href="#/side/margot">Margot</a>,{" "}
+          <a href="#/side/nell">Nell</a>, <a href="#/side/otto">Otto</a>); {m.name}&apos;s follow, one character at a time.
         </p>
         {STATE_INFO.map((info) => (
           <section key={info.state} className="mt-8">
