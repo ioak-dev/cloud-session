@@ -1,7 +1,7 @@
 /**
  * One side character's page, in the structure of Sparkles' `/design/character/<name>`: who it is,
  * its silhouette at the sizes the product draws it, its own eyes and mouth, its fixed lines in its
- * own voice, and every companion state with each variant. Only Noor's states are drawn so far
+ * own voice, and every companion state with each variant. Noor's and Haru's states are drawn so far
  * (`side-reactions.ts`); every other character shows "Coming soon" in their place.
  */
 import * as React from "react";
@@ -15,7 +15,8 @@ import type { Pose } from "./rig/poses";
 import { HEAD_VB } from "./rig/skeleton";
 import { pauseAfter, VISEMES, wordSeconds, wordVisemes, words, visemeAt, type Viseme } from "./rig/visemes";
 import { CAST, type CastMember } from "./side-companion";
-import { NoorScene } from "./side-noor";
+import { HaruScene, type HaruSceneId } from "./side-haru";
+import { NoorScene, type NoorSceneId } from "./side-noor";
 import {
   endGrip,
   gripAt,
@@ -42,7 +43,23 @@ function reducedMotion(): boolean {
 /** A variant's own scene — a duckling at her feet, a mark in the air — as the figure's two layers. */
 function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode } {
   if (!a.scene?.length) return {};
-  return { under: <NoorScene ids={a.scene} layer="under" />, over: <NoorScene ids={a.scene} layer="over" /> };
+  /* each character's scene draws only its own ids */
+  const noor = a.scene as readonly NoorSceneId[];
+  const haru = a.scene as readonly HaruSceneId[];
+  return {
+    under: (
+      <>
+        <NoorScene ids={noor} layer="under" />
+        <HaruScene ids={haru} layer="under" />
+      </>
+    ),
+    over: (
+      <>
+        <NoorScene ids={noor} layer="over" />
+        <HaruScene ids={haru} layer="over" />
+      </>
+    ),
+  };
 }
 
 /** A reaction on its own clock: the act loops, and its face and hands change at the offsets it
@@ -153,8 +170,8 @@ function States({ m }: { m: CastMember }) {
       <>
         <h2 className={SECTION}>States and variations</h2>
         <p className={LEDE}>
-          Not drawn yet. Noor&apos;s are drawn first (<a href="#/side/noor">her page</a>); {m.name}&apos;s follow
-          once hers are agreed.
+          Not drawn yet. Noor&apos;s and Haru&apos;s are drawn (<a href="#/side/noor">Noor</a>,{" "}
+          <a href="#/side/haru">Haru</a>); {m.name}&apos;s follow, one character at a time.
         </p>
         {STATE_INFO.map((info) => (
           <section key={info.state} className="mt-8">

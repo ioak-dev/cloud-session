@@ -405,7 +405,7 @@ function OverShoulders({ frame, uid, tilt }: { frame: Body; uid: string; tilt?: 
 
 /** A hand target on her body, as the chibi-space target the rig retargets (the same conversion
  *  `reactions.ts` makes): measured from the shoulder, scaled by her arm's length over the chibi's. */
-function chibiTarget(f: Body, side: "L" | "R", t: P): P {
+export function chibiTarget(f: Body, side: "L" | "R", t: P): P {
   const len = (j: Body["j"]) =>
     Math.hypot(j[`elbow${side}`][0] - j[`shoulder${side}`][0], j[`elbow${side}`][1] - j[`shoulder${side}`][1]) +
     Math.hypot(j[`wrist${side}`][0] - j[`elbow${side}`][0], j[`wrist${side}`][1] - j[`elbow${side}`][1]);

@@ -17,7 +17,11 @@ import type { Pose } from "./rig/poses";
 import { J, reach, type Body, type P } from "./rig/skeleton";
 
 import { castMember, type CastSlug } from "./side-companion";
+import type { HaruSceneId } from "./side-haru";
 import type { NoorSceneId } from "./side-noor";
+
+/** A character's own scene elements, drawn by its scene component. */
+export type SceneId = NoorSceneId | HaruSceneId;
 
 export type ReactionState =
   | "greet"
@@ -88,7 +92,7 @@ export interface Reaction {
   grips?: [number, HandShapes][];
   /** The character's own scene for this variant (2026-10-04): a duckling at her feet, a mark her
    *  pencil draws in the air. Drawn by the character's scene component; moved by `fx-…` tracks. */
-  scene?: readonly NoorSceneId[];
+  scene?: readonly SceneId[];
 }
 
 export type HandShapes = Partial<Record<"L" | "R", GripShape>>;
@@ -742,7 +746,7 @@ function pick(id: string): Reaction {
 }
 
 /** Her own variant, with the scene it brings. */
-const own = (a: Reaction, scene?: readonly NoorSceneId[]): Reaction => ({ ...a, signature: true, ...(scene ? { scene } : {}) });
+const own = (a: Reaction, scene?: readonly SceneId[]): Reaction => ({ ...a, signature: true, ...(scene ? { scene } : {}) });
 
 /** Hands folded at rest: the right hand lies over the left. */
 const FOLDED: [number, HandShapes][] = [[0, { R: "clasp" }]];
@@ -984,9 +988,256 @@ const NOOR: Reaction[] = [
     [[0, "neutral"], [0.66, "happy"], [0.9, "neutral"]], "neutral", undefined, "minimal", [[0.72, { L: "palm", R: "palm" }], [0.93, {}]]), ["duckAway"]),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; the rest follow). */
+
+/* ——— Haru's own reactions (2026-10-31) ———
+ * Drawn from who he is: shy, precise, quietly thrilled by numbers; wants things to add up; corrects
+ * people mid-sentence and then apologises. Nothing he does is big. Three things carry him: his glasses
+ * (he pushes them up when he is pleased, thinking or caught out), the pens clipped to his vest (one
+ * comes out to click, tap or point), and Count — a finger that counts small dots into the air, one per
+ * beat (`HaruScene`). He celebrates small and close to his chest: a contained fist, a quiet clap, a
+ * glint on his lens. Hand targets are authored on Noor's frame like every move here; the rig carries
+ * them onto his shorter arms. */
+
+/** A finger to the bridge of his glasses, pushing them up. */
+const GLASSES = { L: DOWN.L, R: [106, 176] } as const satisfies HandKey[1];
+const GLASSES_UP = { L: DOWN.L, R: [106, 172] } as const satisfies HandKey[1];
+/** His pens, clipped to his vest: the hand at the clip. */
+const PENS = { L: DOWN.L, R: [110, 214] } as const satisfies HandKey[1];
+/** A pen held up in front of him, ready. */
+const PEN_READY = { L: DOWN.L, R: [128, 204] } as const satisfies HandKey[1];
+const PEN_CLICK = { L: DOWN.L, R: [128, 209] } as const satisfies HandKey[1];
+/** A pen tapping his open left palm. */
+const PEN_PALM_UP = { L: PALM_L, R: [106, 210] } as const satisfies HandKey[1];
+const PEN_PALM_DOWN = { L: PALM_L, R: [99, 219] } as const satisfies HandKey[1];
+/** A shy wave: the hand only as high as his chest, close to his body. */
+const SHY_HAND: P = [134, 200];
+const SHY = (R: P) => ({ L: DOWN.L, R });
+/** Counting into the air: the finger at each dot in turn. */
+const COUNT = [
+  { L: DOWN.L, R: [150, 184] },
+  { L: DOWN.L, R: [158, 176] },
+  { L: DOWN.L, R: [164, 184] },
+] as const satisfies HandKey[1][];
+/** A small fist held close at his chest — a yes he keeps to himself. */
+const SMALL_FIST = { L: DOWN.L, R: [118, 206] } as const satisfies HandKey[1];
+const SMALL_FIST_PULL = { L: DOWN.L, R: [116, 214] } as const satisfies HandKey[1];
+/** Chin resting on his fist. */
+const CHIN_REST = { L: [104, 226], R: [110, 190] } as const satisfies HandKey[1];
+/** An apologetic palm up beside him — sorry, sorry. */
+const SORRY = { L: DOWN.L, R: [150, 184] } as const satisfies HandKey[1];
+/** Both hands up and open: more than he can count. */
+const MANY = { L: [52, 178], R: [148, 178] } as const satisfies HandKey[1];
+/** A dot pops in: hidden, then scaled up past full and settled, held, gone before the loop ends. */
+const pops = (on: number, off = 0.9): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "0" },
+  { offset: Math.max(0, on - 0.01), opacity: 0, scale: "0" },
+  { offset: on, opacity: 1, scale: "0.4", easing: EASE.overshoot },
+  { offset: Math.min(1, on + 0.05), opacity: 1, scale: "1.15", easing: EASE.settle },
+  { offset: Math.min(1, on + 0.09), opacity: 1, scale: "1" },
+  { offset: off, opacity: 1, scale: "1" },
+  { offset: Math.min(1, off + 0.04), opacity: 0, scale: "0.6" },
+  { offset: 1, opacity: 0, scale: "0" },
+];
+
+const HARU: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "haru-shy-wave", "Shy wave", "A small wave held close to his chest, eyes down — then up, with a small smile, once he's sure you've seen him.",
+    act("haru-shy-wave", 2.8, [
+      [0, DOWN], [0.16, SHY(SHY_HAND)], [0.28, SHY(swing("R", SHY_HAND, 14))], [0.4, SHY(swing("R", SHY_HAND, -10))], [0.52, SHY(swing("R", SHY_HAND, 14))],
+      [0.64, SHY(SHY_HAND)], [0.86, SHY(SHY_HAND)], [1, DOWN],
+    ], {
+      head: keys([0, {}], [0.14, { y: 1.4, r: -3, e: EASE.settle }], [0.46, { y: 1.4, r: -3, e: EASE.settle }], [0.6, { r: 5, e: EASE.settle }], [0.86, { r: 5 }], [1, {}]),
+      torso: turn([0, 0], [0.16, -1], [0.86, -1], [1, 0]),
+    }),
+    [[0, "neutral"], [0.12, "worried"], [0.56, "happy"]], "happy", SHY(SHY_HAND), "both", [[0.1, { R: "palm" }], [0.92, {}]])),
+  own(r("greet", "haru-glasses-hello", "Glasses up, hello", "Pushes his glasses up his nose, then gives a small, precise nod — hello, ready when you are.",
+    act("haru-glasses-hello", 2.6, [[0, DOWN], [0.18, GLASSES], [0.28, GLASSES_UP, "line"], [0.4, GLASSES_UP], [0.56, DOWN], [1, DOWN]], {
+      head: keys([0, {}], [0.2, { r: -2, e: EASE.settle }], [0.4, { r: -2 }], [0.6, { e: EASE.settle }], [0.68, { y: 2.4, r: 2, e: EASE.settle }], [0.78, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.2, "focused"], [0.62, "happy"]], "happy", undefined, "both", [[0.12, { R: "finger" }], [0.5, {}]])),
+  own(r("greet", "haru-pen-click", "Pen ready", "Takes a pen from his vest and clicks it twice, held up and ready — like the first day of a new notebook.",
+    act("haru-pen-click", 3, [
+      [0, DOWN], [0.16, PENS], [0.32, PEN_READY], [0.4, PEN_CLICK, "line"], [0.46, PEN_READY, "line"], [0.54, PEN_CLICK, "line"], [0.6, PEN_READY, "line"],
+      [0.82, PEN_READY], [0.94, PENS], [1, DOWN],
+    ], [lift(0.4, { at: 0.5 }), {
+      head: turn([0, 0], [0.2, -3], [0.32, 3], [0.82, 4], [1, 0]),
+    }]),
+    [[0, "neutral"], [0.3, "focused"], [0.62, "happy"]], "happy", PEN_READY, "both", [[0.16, { R: "pencil" }], [0.96, {}]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "haru-follow", "Follows, glasses first", "Turns to where the learner points, a beat behind them — and nudges his glasses as he looks, to see it properly.",
+    act("haru-follow", 3.6, [[0, DOWN], [0.12, GLASSES], [0.18, GLASSES_UP, "line"], [0.3, DOWN], [1, DOWN]], {
+      head: turn([0, 0], [0.12, -7], [0.42, -7], [0.56, 7], [0.86, 7], [1, 0]),
+      torso: turn([0, 0], [0.12, -1.5], [0.42, -1.5], [0.56, 1.5], [0.86, 1.5], [1, 0]),
+    }),
+    [[0, "curious"]], "curious", undefined, "both", [[0.06, { R: "finger" }], [0.28, {}]])),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "haru-noted", "Noted", "Two quick, small nods — noted, noted. It saw the choice; no verdict in it.",
+    act("haru-noted", 1.8, [[0, DOWN], [1, DOWN]], {
+      head: keys([0, {}], [0.08, { y: 2, r: 2, e: EASE.snap }], [0.16, { e: EASE.settle }], [0.24, { y: 2, r: 2, e: EASE.snap }], [0.34, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.06, "focused"], [0.4, "neutral"]], "neutral", undefined, "rich")),
+  own(r("notice", "haru-glance", "Glance at Check", "Pushes his glasses up and glances at Check — no hop.",
+    act("haru-glance", 2, [[0, DOWN], [0.1, GLASSES], [0.18, GLASSES_UP, "line"], [0.32, DOWN], [1, DOWN]], {
+      head: turn([0, 0], [0.36, 0], [0.48, 8], [0.85, 8], [1, 0]),
+    }),
+    [[0, "neutral"], [0.44, "curious"]], "curious", undefined, "minimal", [[0.04, { R: "finger" }], [0.3, {}]])),
+
+  /* ——— think, doze ——— */
+  own(r("think", "haru-counting", "Counting it out", "Counts on his fingers into the air — one, two, three small dots — and starts again, eyes up. Never hurry up.",
+    act("haru-counting", 4.8, [
+      [0, DOWN], [0.1, COUNT[0]], [0.24, COUNT[0]], [0.3, COUNT[1], "line"], [0.44, COUNT[1]], [0.5, COUNT[2], "line"], [0.7, COUNT[2]], [0.86, DOWN], [1, DOWN],
+    ], {
+      head: turn([0, 4], [0.1, 6], [0.3, 7], [0.5, 8], [0.7, 8], [0.86, 5], [1, 4]),
+      "fx-dot1": pops(0.14, 0.84),
+      "fx-dot2": pops(0.32, 0.84),
+      "fx-dot3": pops(0.52, 0.84),
+    }),
+    [[0, "thinking"], [0.12, "focused"], [0.7, "thinking"]], "thinking", undefined, "both", [[0.06, { R: "finger" }], [0.82, {}]]), ["dots"]),
+  own(r("doze", "haru-doze", "Chin on his fist", "Chin propped on his fist, eyes shut; his head slips off it on a slow breath and he settles again.",
+    act("haru-doze", 5, [[0, CHIN_REST], [1, CHIN_REST]], {
+      head: keys([0, { y: 2, r: -3 }], [0.5, { y: 4.6, r: -7, e: "ease-in-out" }], [0.62, { y: 2.4, r: -3, e: EASE.snap }], [1, { y: 2, r: -3 }]),
+      torso: keys([0, {}], [0.5, { y: 1.6, r: -0.6, e: "ease-in-out" }], [0.62, {}], [1, {}]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", CHIN_REST, "both", [[0, { R: "fist" }]])),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "haru-pen-ready", "Pen poised", "A pen comes up, poised, and he leans in — before the result is known.",
+    act("haru-pen-ready", 1.6, [[0, DOWN], [0.1, PEN_READY], [1, PEN_READY]], {
+      torso: keys([0, {}], [0.1, { r: 3, y: 1.2, e: EASE.snap }], [1, { r: 3, y: 1.2 }]),
+      head: keys([0, {}], [0.1, { r: 4, y: 1.8, e: EASE.snap }], [1, { r: 4, y: 1.8 }]),
+    }, 1),
+    [[0, "focused"]], "focused", PEN_READY, "both", [[0.04, { R: "pencil" }]])),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "haru-count", "It adds up", "His ability, Count: one, two, three — a dot for each beat of his finger — then a small fist close to his chest. It adds up.",
+    act("haru-count", 3.2, [
+      [0, DOWN], [0.1, COUNT[0]], [0.2, COUNT[1], "line"], [0.3, COUNT[2], "line"], [0.44, SMALL_FIST], [0.52, SMALL_FIST_PULL, "line"], [0.6, SMALL_FIST, "line"], [0.86, SMALL_FIST], [1, DOWN],
+    ], [lift(0.6, { at: 0.44 }), {
+      head: turn([0, 0], [0.1, 5], [0.3, 7], [0.44, 0], [0.52, -3], [0.86, -3], [1, 0]),
+      "fx-dot1": pops(0.1, 0.84),
+      "fx-dot2": pops(0.2, 0.84),
+      "fx-dot3": pops(0.3, 0.84),
+    }]),
+    [[0, "focused"], [0.4, "delighted"], [0.66, "happy"]], "happy", SMALL_FIST, "both", [[0.04, { R: "finger" }], [0.38, { R: "fist" }], [0.92, {}]]), ["dots"]),
+  own(r("correct", "haru-small-fist", "A small yes", "A fist kept close at his chest, pulled in once — yes — and a glance round, a little embarrassed to have done it.",
+    act("haru-small-fist", 2.2, [[0, DOWN], [0.14, SMALL_FIST], [0.24, SMALL_FIST_PULL, "line"], [0.34, SMALL_FIST, "line"], [0.8, SMALL_FIST], [1, DOWN]], [lift(0.6, { at: 0.2 }), {
+      head: turn([0, 0], [0.24, -4], [0.46, -4], [0.56, 6], [0.8, 6], [1, 0]),
+    }]),
+    [[0, "happy"], [0.22, "delighted"], [0.5, "oops"], [0.66, "happy"]], "happy", SMALL_FIST, "both", [[0.06, { R: "fist" }], [0.9, {}]])),
+  own(r("correct", "haru-glint", "Glint", "Pushes his glasses up, and the light catches the lens — that's exactly right.",
+    act("haru-glint", 2.4, [[0, DOWN], [0.14, GLASSES], [0.24, GLASSES_UP, "line"], [0.7, GLASSES_UP], [0.86, DOWN], [1, DOWN]], [lift(0.5, { at: 0.24 }), {
+      "fx-glint": [
+        { offset: 0, opacity: 0, scale: "0", rotate: "0deg" },
+        { offset: 0.27, opacity: 0, scale: "0", rotate: "0deg" },
+        { offset: 0.33, opacity: 1, scale: "1.3", rotate: "45deg", easing: EASE.settle },
+        { offset: 0.42, opacity: 1, scale: "1", rotate: "90deg" },
+        { offset: 0.56, opacity: 0, scale: "0.4", rotate: "120deg" },
+        { offset: 1, opacity: 0, scale: "0", rotate: "120deg" },
+      ],
+    }]),
+    [[0, "neutral"], [0.18, "focused"], [0.3, "delighted"], [0.74, "happy"]], "happy", undefined, "both", [[0.08, { R: "finger" }], [0.8, {}]]), ["glint"]),
+  own(r("correct", "haru-quiet-clap", "Quiet clap", "Two quick, quiet claps in front of his waist, eyes closed in a smile — he doesn't want to make a fuss.",
+    act("haru-quiet-clap", 2.2, [
+      [0, DOWN], [0.14, CLAP_OPEN], [0.22, CLAP_SHUT, "line"], [0.3, CLAP_OPEN, "line"], [0.38, CLAP_SHUT, "line"], [0.84, CLAP_SHUT], [1, DOWN],
+    ], [lift(0.3, { at: 0.4 }), {
+      head: keys([0, {}], [0.22, { y: 1, e: EASE.settle }], [0.3, {}], [0.38, { y: 1, e: EASE.settle }], [0.5, { r: -3, e: EASE.settle }], [0.84, { r: -3 }], [1, {}]),
+    }]),
+    [[0, "neutral"], [0.14, "happy"]], "happy", CLAP_SHUT, "both", [[0.06, { L: "palm", R: "palm" }], [0.94, {}]])),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "haru-one-to-find", "One to find", "Counts two dots into the air, and his finger stops at an empty ring — one to find. Never says how much.",
+    act("haru-one-to-find", 3.2, [
+      [0, DOWN], [0.1, COUNT[0]], [0.22, COUNT[1], "line"], [0.36, COUNT[2], "line"], [0.44, { L: DOWN.L, R: [164, 180] }, "line"], [0.52, COUNT[2], "line"], [0.86, COUNT[2]], [1, DOWN],
+    ], {
+      head: turn([0, 0], [0.1, 5], [0.36, 8], [0.86, 8], [1, 0]),
+      torso: turn([0, 0], [0.36, 1.5], [0.86, 1.5], [1, 0]),
+      "fx-dot1": pops(0.1, 0.86),
+      "fx-dot2": pops(0.22, 0.86),
+      "fx-ring": pops(0.36, 0.86),
+    }),
+    [[0, "focused"], [0.24, "happy"], [0.38, "curious"]], "curious", COUNT[2], "both", [[0.04, { R: "finger" }], [0.92, {}]]), ["dotsRing"]),
+  own(r("partial", "haru-pen-tap", "Check the rest", "Taps his pen on his palm, once, twice, with a tipped head — most of it adds up; check the rest.",
+    act("haru-pen-tap", 3, [
+      [0, DOWN], [0.12, PENS], [0.24, PEN_PALM_UP], [0.31, PEN_PALM_DOWN, "line"], [0.38, PEN_PALM_UP, "line"], [0.45, PEN_PALM_DOWN, "line"], [0.52, PEN_PALM_UP, "line"],
+      [0.82, PEN_PALM_UP], [0.94, PENS], [1, DOWN],
+    ], {
+      head: turn([0, 0], [0.2, -3], [0.52, -3], [0.6, 7], [0.82, 7], [1, 0]),
+      torso: keys([0, {}], [0.32, { y: 0.8, e: EASE.settle }], [0.4, {}], [0.46, { y: 0.8, e: EASE.settle }], [0.54, {}], [1, {}]),
+    }),
+    [[0, "neutral"], [0.22, "focused"], [0.56, "curious"]], "curious", PEN_PALM_UP, "both",
+    [[0.12, { R: "pencilPoint" }], [0.2, { L: "palm", R: "pencilPoint" }], [0.96, {}]])),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "haru-sorry", "Sorry, sorry", "Starts to say something, stops, and puts a palm up — sorry, sorry — with a small bow; then turns to the key. His flaw, turned kind: he apologises for the question, never the learner.",
+    act("haru-sorry", 2.8, [[0, DOWN], [0.16, SORRY], [0.24, { L: DOWN.L, R: swing("R", SORRY.R, 8) }], [0.32, SORRY], [0.58, SORRY], [0.74, DOWN], [1, DOWN]], {
+      head: keys([0, {}], [0.16, { r: -3, e: EASE.settle }], [0.3, { y: 2.2, r: 2, e: EASE.settle }], [0.5, { y: 2, r: 2, e: EASE.settle }], [0.66, { e: EASE.settle }], [0.78, { r: 7, e: EASE.settle }], [1, { r: 7 }]),
+      torso: keys([0, {}], [0.3, { y: 1.2, r: 1.5, e: EASE.settle }], [0.5, { y: 1, r: 1.5, e: EASE.settle }], [0.66, {}], [0.78, { r: 1.5, e: EASE.settle }], [1, { r: 1.5 }]),
+    }),
+    [[0, "oops"], [0.3, "worried"], [0.66, "curious"]], "curious", DOWN, "both", [[0.08, { R: "palm" }], [0.68, {}]])),
+  own(r("incorrect", "haru-look-again", "Look again", "Pushes his glasses up and leans in to look again — properly, this time — at the key.",
+    act("haru-look-again", 2.6, [[0, DOWN], [0.14, GLASSES], [0.22, GLASSES_UP, "line"], [0.36, DOWN], [1, DOWN]], {
+      head: keys([0, {}], [0.14, { r: -2, e: EASE.settle }], [0.36, { e: EASE.settle }], [0.48, { r: 7, y: 1.6, e: EASE.settle }], [1, { r: 7, y: 1.6 }]),
+      torso: keys([0, {}], [0.36, { e: EASE.settle }], [0.48, { r: 3, y: 1, e: EASE.settle }], [1, { r: 3, y: 1 }]),
+    }),
+    [[0, "oops"], [0.2, "focused"], [0.46, "curious"]], "curious", undefined, "both", [[0.06, { R: "finger" }], [0.32, {}]])),
+  pick("incorrect-shrug"),
+  own(r("incorrect", "haru-pen-point", "Pen to the key", "Rich only: a pen from his vest, pointed at the key beside him, his shoulders turned to it.",
+    act("haru-pen-point", 3, [[0, DOWN], [0.16, PENS], [0.36, POINT], [0.74, POINT], [0.88, PENS], [1, DOWN]], {
+      head: turn([0, 0], [0.14, -4], [0.3, -4], [0.4, 7], [0.74, 7], [1, 0]),
+      torso: turn([0, 0], [0.3, 0], [0.4, 3], [0.74, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.42, "curious"]], "curious", POINT, "rich", [[0.18, { R: "pencilPoint" }], [0.92, {}]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "haru-too-many", "Too many to count", "Both hands come up and open as dots burst round him — more than he can count at a glance, and he loves it. Once, with the unlock.",
+    act("haru-too-many", 2.6, [[0, DOWN], [0.14, CHEST], [0.3, MANY], [0.82, MANY], [1, DOWN]], [lift(1, { at: 0.24 }), {
+      head: turn([0, 0], [0.3, -3], [0.5, 3], [0.7, -2], [0.86, 0], [1, 0]),
+      "fx-burst1": pops(0.3, 0.84),
+      "fx-burst2": pops(0.34, 0.84),
+      "fx-burst3": pops(0.38, 0.84),
+      "fx-burst4": pops(0.32, 0.84),
+      "fx-burst5": pops(0.36, 0.84),
+      "fx-burst6": pops(0.4, 0.84),
+    }]),
+    [[0, "focused"], [0.26, "delighted"]], "delighted", MANY, "both", [[0.24, { L: "palm", R: "palm" }], [0.92, {}]]), ["burst"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "haru-hurry", "Hurried little steps", "Dock to verdict in quick, short steps, eyes on the ground — and on arrival he pushes his glasses up.",
+    act("haru-hurry", 2.6, [
+      [0, DOWN], [0.1, { L: [74, 234], R: [126, 236] }], [0.18, { L: [80, 236], R: [120, 234] }], [0.26, { L: [74, 234], R: [126, 236] }],
+      [0.34, { L: [80, 236], R: [120, 234] }], [0.42, { L: [74, 234], R: [126, 236] }], [0.5, { L: [80, 236], R: [120, 234] }], [0.58, DOWN],
+      [0.7, GLASSES], [0.76, GLASSES_UP, "line"], [0.88, DOWN], [1, DOWN],
+    ], {
+      root: keys(
+        [0, { x: -28 }], [0.06, { x: -28 }], [0.1, { x: -22, y: -0.8 }], [0.18, { x: -14 }], [0.26, { x: -6, y: -0.8 }],
+        [0.34, { x: 2 }], [0.42, { x: 10, y: -0.8 }], [0.5, { x: 20 }], [0.58, { x: 28, e: EASE.settle }], [0.94, { x: 28 }], [1, { x: -28 }],
+      ),
+      hipL: turn([0, 0], [0.06, 0], [0.1, 7], [0.18, -5], [0.26, 7], [0.34, -5], [0.42, 7], [0.5, -5], [0.58, 0], [1, 0]),
+      hipR: turn([0, 0], [0.06, 0], [0.1, -5], [0.18, 7], [0.26, -5], [0.34, 7], [0.42, -5], [0.5, 7], [0.58, 0], [1, 0]),
+      kneeL: turn([0, 0], [0.1, -5], [0.18, 0], [0.26, -5], [0.34, 0], [0.42, -5], [0.5, 0], [0.58, 0], [1, 0]),
+      kneeR: turn([0, 0], [0.1, 0], [0.18, 5], [0.26, 0], [0.34, 5], [0.42, 0], [0.5, 5], [0.58, 0], [1, 0]),
+      head: keys([0, {}], [0.08, { y: 1.6, r: 3, e: EASE.settle }], [0.56, { y: 1.6, r: 3 }], [0.66, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "focused"], [0.6, "neutral"], [0.78, "happy"]], "happy", undefined, "minimal", [[0.64, { R: "finger" }], [0.84, {}]])),
+];
+
+/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
+  haru: HARU,
+};
+
+/** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
+ *  hands hang easy, the right at the pens on his vest. */
+const REST_SHAPES: Partial<Record<CastSlug, HandShapes>> = {
+  noor: { L: "mitt", R: "clasp" },
+  haru: { L: "mitt", R: "mitt" },
 };
 
 /** Every variant a character draws from, by state, in `STATE_INFO`'s order. */
@@ -1016,6 +1267,5 @@ export function poseAt(a: Reaction, t: number): Pose | undefined {
 export function restGrip(slug: CastSlug): Grips | undefined {
   const hands = castMember(slug)?.figure.attitude?.hands;
   if (!DRAWN[slug] || !hands) return undefined;
-  /* the right hand folded over the left, its fingers laid across with the arm's turn undone */
-  return withTurn({ L: "mitt", R: "clasp" }, hands);
+  return withTurn(REST_SHAPES[slug] ?? RELAXED, hands);
 }

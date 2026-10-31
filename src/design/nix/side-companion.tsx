@@ -5,6 +5,7 @@
  */
 import type { Candidate } from "./candidates";
 import { CAST_SPECS, type CastLines, type CastSpec } from "./side-cast";
+import { refineHaru } from "./side-haru";
 import { refineNoor } from "./side-noor";
 import { SCIENTISTS, WOMEN } from "./side-more";
 import { ELDERS, TEACHERS } from "./side-people";
@@ -25,6 +26,11 @@ export type CastMember = Omit<CastSpec, "slug"> & {
 
 /** What each refinement changed. Add a line here with every change to a character. */
 const REFINEMENTS: Partial<Record<CastSlug, readonly string[]>> = {
+  haru: [
+    "Out of the lab coat (Otto's alone now): a knitted sweater vest in the deep primary over a cream shirt, sleeves rolled",
+    "Pens clipped to the vest — the pen he clicks, taps and points with",
+    "His own eyes: round and wide, filling his lenses, small irises, thick straight brows; happy is small neat curves, oops shrinks the pupils to dots",
+  ],
   noor: [
     "A hijab with real fabric: an underscarf band, a wrap crossing under the chin, folds, a brooch and a drape",
     "A long-sleeved plum dress with gold cuffs and hem, a bow at the hip and a pencil in a pocket",
@@ -34,7 +40,7 @@ const REFINEMENTS: Partial<Record<CastSlug, readonly string[]>> = {
 };
 
 const STUDIO = [...SCIENTISTS, ...WOMEN, ...ELDERS, ...TEACHERS, ...SHORTLISTED];
-const REFINED: Partial<Record<CastSlug, (c: Candidate) => Candidate>> = { noor: refineNoor };
+const REFINED: Partial<Record<CastSlug, (c: Candidate) => Candidate>> = { noor: refineNoor, haru: refineHaru };
 
 export const CAST: readonly CastMember[] = CAST_SPECS.map((s) => {
   const base = STUDIO.find((x) => x.id === s.studio.id);
