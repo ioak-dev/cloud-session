@@ -19,10 +19,11 @@ import { J, reach, type Body, type P } from "./rig/skeleton";
 import { castMember, type CastSlug } from "./side-companion";
 import type { HaruSceneId } from "./side-haru";
 import type { MargotSceneId } from "./side-margot";
+import type { NellSceneId } from "./side-nell";
 import type { NoorSceneId } from "./side-noor";
 
 /** A character's own scene elements, drawn by its scene component. */
-export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId;
+export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId;
 
 export type ReactionState =
   | "greet"
@@ -1469,11 +1470,238 @@ const MARGOT: Reaction[] = [
     [[0, "happy"], [0.7, "delighted"], [0.9, "happy"]], "happy", undefined, "minimal", [[0.06, { L: "palm", R: "palm" }], [0.7, { R: "palm" }], [0.94, {}]])),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot). */
+/* ——— Nell's own reactions (2026-10-31) ———
+ * Drawn from who she is: runs the tea stall on the bank and laughs the loudest; wants everyone fed;
+ * can't keep a secret. Three things carry her: her teacup (offered, sipped, raised in a toast — the
+ * `cup` grip), her laugh (head back, a hand on her middle, the shoulders going), and her ability, Hum —
+ * the soft waves of a tune that settles everyone (`NellScene`). She beckons people in, pats the air
+ * to say there, there, and when she knows where the answer is she simply has to whisper it. */
+
+/** Hands folded over her middle, right over left. */
+const FOLD = { L: [94, 228], R: [106, 228] } as const satisfies HandKey[1];
+const FOLD_GRIP: [number, HandShapes][] = [[0, { R: "clasp" }]];
+/** Waving someone over: the hand up at her chest, palm toward her, curling in from the elbow. */
+const BECKON_HAND: P = [146, 198];
+const BECKON = (R: P) => ({ L: FOLD.L, R });
+/** A cup offered out to the learner. */
+const OFFER = { L: FOLD.L, R: [156, 206] } as const satisfies HandKey[1];
+/** The cup at her lips. */
+const SIP = { L: FOLD.L, R: [112, 186] } as const satisfies HandKey[1];
+/** The cup raised in a toast. */
+const TOAST = { L: FOLD.L, R: [150, 176] } as const satisfies HandKey[1];
+/** The cup held at her middle, the other hand under it like a saucer. */
+const HELD = { L: [100, 230], R: [110, 222] } as const satisfies HandKey[1];
+/** Both hands on her middle for a laugh. */
+const LAUGH = { L: [94, 226], R: [112, 226] } as const satisfies HandKey[1];
+/** There, there: a palm patting the air beside her, down and up. */
+const PAT_UP = { L: FOLD.L, R: [148, 206] } as const satisfies HandKey[1];
+const PAT_DOWN = { L: FOLD.L, R: [148, 214] } as const satisfies HandKey[1];
+/** A hand to her cheek — oh, that one's sneaky. */
+const CHEEK = { L: FOLD.L, R: [124, 178] } as const satisfies HandKey[1];
+/** A hand cupped beside her mouth: the secret. */
+const WHISPER = { L: FOLD.L, R: [120, 182] } as const satisfies HandKey[1];
+/** Hands clasped under her chin, bursting to know. */
+const CLASPED = { L: [97, 204], R: [103, 204] } as const satisfies HandKey[1];
+
+/** Her laugh: the head goes back and the shoulders shake, `n` times between `start` and `end`. */
+function laugh(start: number, end: number, n = 6): Tracks {
+  const torso: [number, Key][] = [at(0), at(start, { e: EASE.settle })];
+  const step = (end - start) / n;
+  for (let i = 1; i < n; i++) torso.push(at(start + i * step, { y: i % 2 ? -1.4 : 0.6, e: "ease-in-out" }));
+  torso.push(at(end, { e: EASE.settle }), at(1));
+  return {
+    torso: keys(...torso),
+    head: keys([0, {}], [start, { e: EASE.settle }], [start + 0.08, { r: -6, y: -1, e: EASE.settle }], [end, { r: -6, y: -1, e: EASE.settle }], [Math.min(1, end + 0.1), { e: EASE.settle }], [1, {}]),
+  };
+}
+
+/** Steam that rises from the cup while it is held at a place, and fades as the cup leaves. */
+const steams = (on: number, off: number): Keyframe[] => [
+  { offset: 0, opacity: 0, translate: "0px 4px" },
+  { offset: on, opacity: 0, translate: "0px 4px" },
+  { offset: Math.min(1, on + 0.08), opacity: 1, translate: "0px 0px" },
+  { offset: Math.max(on + 0.09, (on + off) / 2), opacity: 0.8, translate: "0px -2px" },
+  { offset: off, opacity: 0.6, translate: "0px -4px" },
+  { offset: Math.min(1, off + 0.05), opacity: 0, translate: "0px -6px" },
+  { offset: 1, opacity: 0, translate: "0px -6px" },
+];
+/** The waves of her hum: they swell out from her, drift and fade, twice. */
+const hums = (on: number, off: number): Keyframe[] => {
+  const mid = (on + off) / 2;
+  return [
+    { offset: 0, opacity: 0, scale: "0.6" },
+    { offset: on, opacity: 0, scale: "0.6" },
+    { offset: on + (mid - on) * 0.5, opacity: 1, scale: "1" },
+    { offset: mid, opacity: 0.3, scale: "1.15" },
+    { offset: mid + (off - mid) * 0.5, opacity: 1, scale: "1" },
+    { offset: off, opacity: 0, scale: "1.2" },
+    { offset: 1, opacity: 0, scale: "1.2" },
+  ];
+};
+
+const NELL: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "nell-pull-up-a-chair", "Pull up a chair", "Waves the learner over, palm curling in from the elbow — come on, love, pull up a chair — with a big smile.",
+    act("nell-pull-up-a-chair", 2.8, [
+      [0, FOLD], [0.16, BECKON(BECKON_HAND)], [0.28, BECKON(swing("R", BECKON_HAND, -22))], [0.4, BECKON(BECKON_HAND)], [0.52, BECKON(swing("R", BECKON_HAND, -22))],
+      [0.64, BECKON(BECKON_HAND)], [0.84, BECKON(BECKON_HAND)], [1, FOLD],
+    ], [lift(0.6, { at: 0.08 }), {
+      head: turn([0, 0], [0.16, 5], [0.84, 5], [1, 0]),
+      torso: turn([0, 0], [0.16, 2], [0.84, 2], [1, 0]),
+    }]),
+    [[0, "happy"], [0.2, "delighted"], [0.7, "happy"]], "happy", BECKON(BECKON_HAND), "both", [[0.1, { R: "palm" }], [0.92, {}]])),
+  own(r("greet", "nell-cuppa", "Cuppa?", "Holds a steaming cup out to the learner with a wink — hello, love; you'll want one of these.",
+    act("nell-cuppa", 3, [[0, FOLD], [0.2, OFFER], [0.84, OFFER], [1, FOLD]], [lift(0.5, { at: 0.16 }), {
+      head: turn([0, 0], [0.2, 5], [0.84, 5], [1, 0]),
+      torso: turn([0, 0], [0.2, 2], [0.84, 2], [1, 0]),
+      "fx-steam": steams(0.22, 0.82),
+    }]),
+    [[0, "happy"], [0.34, "wink"], [0.56, "happy"]], "happy", OFFER, "both", [[0.08, { R: "cup" }], [0.94, {}]]), ["steamOffer"]),
+  own(r("greet", "nell-laugh-hello", "A laugh for hello", "Laughs before she's even said hello — head back, a hand on her middle — then waves, still giggling.",
+    act("nell-laugh-hello", 3, [
+      [0, FOLD], [0.12, LAUGH], [0.44, LAUGH], [0.56, WAVE(WAVE_HAND)], [0.66, WAVE(WAVE_OUT)], [0.76, WAVE(WAVE_IN)], [0.86, WAVE(WAVE_HAND)], [1, FOLD],
+    ], [laugh(0.12, 0.46), { torso: turn([0, 0], [0.56, 0], [0.86, -1.5], [1, 0]) }]),
+    [[0, "happy"], [0.1, "delighted"], [0.5, "happy"]], "happy", WAVE(WAVE_HAND), "both", [[0.08, { L: "palm", R: "palm" }], [0.5, { R: "palm" }], [0.92, {}]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "nell-peer", "Peers over her spectacles", "Leans and dips her head to look over her half-moon spectacles at whatever the learner points to — a beat behind them.",
+    act("nell-peer", 3.6, [[0, FOLD], [1, FOLD]], {
+      head: keys([0, {}], [0.14, { r: -7, y: 2, e: EASE.settle }], [0.42, { r: -7, y: 2 }], [0.58, { r: 7, y: 2, e: EASE.settle }], [0.86, { r: 7, y: 2 }], [1, {}]),
+      torso: turn([0, 0], [0.14, -2], [0.42, -2], [0.58, 2], [0.86, 2], [1, 0]),
+    }),
+    [[0, "curious"]], "curious", FOLD, "both", FOLD_GRIP)),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "nell-mm-hm", "Mm-hm", "A warm nod and a pat on her middle — mm-hm, I see it. No verdict in it.",
+    act("nell-mm-hm", 1.8, [[0, FOLD], [0.14, { ...FOLD, R: [112, 222] }], [0.22, FOLD, "line"], [0.3, { ...FOLD, R: [112, 222] }, "line"], [0.38, FOLD, "line"], [1, FOLD]], {
+      head: keys([0, {}], [0.1, { e: EASE.settle }], [0.26, { y: 2.4, r: 2, e: EASE.settle }], [0.42, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "happy"], [0.14, "delighted"], [0.42, "happy"]], "happy", FOLD, "rich", FOLD_GRIP)),
+  own(r("notice", "nell-peek", "A peek at Check", "Peeks over her spectacles toward Check, hands still folded — no hop.",
+    act("nell-peek", 2, [[0, FOLD], [1, FOLD]], { head: keys([0, {}], [0.36, { e: EASE.settle }], [0.48, { r: 8, y: 2, e: EASE.settle }], [0.85, { r: 8, y: 2 }], [1, {}]) }),
+    [[0, "happy"], [0.44, "curious"]], "curious", FOLD, "minimal", FOLD_GRIP)),
+
+  /* ——— think, doze ——— */
+  own(r("think", "nell-sip", "A sip of tea", "Takes a slow sip of tea and looks up, thinking it over with the learner — there's always time for a cuppa. Never hurry up.",
+    act("nell-sip", 5, [[0, HELD], [0.2, HELD], [0.34, SIP], [0.52, SIP], [0.66, HELD], [1, HELD]], {
+      head: keys([0, { r: 4 }], [0.3, { r: 2, e: EASE.settle }], [0.38, { r: -4, y: -0.6, e: EASE.settle }], [0.52, { r: -4, y: -0.6 }], [0.66, { r: 6, e: EASE.settle }], [1, { r: 4 }]),
+      "fx-steam": steams(0.34, 0.54),
+    }),
+    [[0, "thinking"], [0.34, "happy"], [0.56, "thinking"]], "thinking", HELD, "both", [[0, { R: "cup" }]]), ["steamSip"]),
+  own(r("doze", "nell-doze", "Dozing over her cuppa", "Eyes shut, the cup held in her lap, her head nodding lower on each slow breath — the steam still curling.",
+    act("nell-doze", 5.4, [[0, HELD], [1, HELD]], {
+      head: keys([0, { y: 2, r: -4 }], [0.5, { y: 5, r: -8, e: "ease-in-out" }], [1, { y: 2, r: -4 }]),
+      torso: keys([0, {}], [0.5, { y: 1.8, r: -0.6, e: "ease-in-out" }], [1, {}]),
+      "fx-steam": keys([0, { o: 0.7 }], [0.5, { o: 0.35, y: -2, e: "ease-in-out" }], [1, { o: 0.7 }]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", HELD, "both", [[0, { R: "cup" }]]), ["steamHeld"]),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "nell-cant-wait", "Can't wait", "Hands clasped under her chin and a little bounce on her toes — she can never wait to hear.",
+    act("nell-cant-wait", 1.6, [[0, FOLD], [0.1, CLASPED], [1, CLASPED]], {
+      root: keys([0, {}], [0.1, { y: -1, e: EASE.snap }], [0.3, { y: 0.4, e: "ease-in-out" }], [0.5, { y: -1, e: "ease-in-out" }], [0.7, { y: 0.4, e: "ease-in-out" }], [1, { y: -1 }]),
+      head: keys([0, {}], [0.1, { r: 3, y: 1.4, e: EASE.snap }], [1, { r: 3, y: 1.4 }]),
+    }, 1),
+    [[0, "delighted"]], "delighted", CLASPED, "both", [[0.04, { R: "clasp" }]])),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "nell-hum", "Hum", "Her ability: eyes closed, she sways and hums a happy little tune — its waves drift out round her, and everyone settles.",
+    act("nell-hum", 3.6, [[0, FOLD], [1, FOLD]], {
+      torso: turn([0, 0], [0.2, -2.6], [0.45, 2.6], [0.7, -2.6], [0.9, 0], [1, 0]),
+      head: turn([0, 0], [0.2, -5], [0.45, 5], [0.7, -5], [0.9, 0], [1, 0]),
+      root: keys([0, {}], [0.2, { x: -1.4, e: "ease-in-out" }], [0.45, { x: 1.4, e: "ease-in-out" }], [0.7, { x: -1.4, e: "ease-in-out" }], [0.9, { e: "ease-in-out" }], [1, {}]),
+      "fx-humR": hums(0.12, 0.88),
+      ...sway(0.6),
+    }),
+    [[0, "happy"]], "happy", FOLD, "both", FOLD_GRIP), ["hum"]),
+  own(r("correct", "nell-big-laugh", "The loudest laugh", "Throws her head back and laughs the loudest, a hand on her middle, shoulders going — oh, well done you!",
+    act("nell-big-laugh", 2.6, [[0, FOLD], [0.12, LAUGH], [0.8, LAUGH], [1, FOLD]], [laugh(0.12, 0.78, 8), lift(0.4, { at: 0.1 })]),
+    [[0, "happy"], [0.1, "delighted"], [0.8, "happy"]], "delighted", LAUGH, "both", [[0.08, { L: "palm", R: "palm" }], [0.92, {}]])),
+  own(r("correct", "nell-pat-pat", "Well done you", "Quick, delighted pat-pat claps in front of her, with a nod on each — well done, you!",
+    act("nell-pat-pat", 2.2, [
+      [0, FOLD], [0.12, CLAP_OPEN], [0.2, CLAP_SHUT, "line"], [0.28, CLAP_OPEN, "line"], [0.36, CLAP_SHUT, "line"], [0.44, CLAP_OPEN, "line"], [0.52, CLAP_SHUT, "line"], [0.84, CLAP_SHUT], [1, FOLD],
+    ], [lift(0.4, { at: 0.5 }), {
+      head: keys([0, {}], [0.2, { y: 1.4, e: EASE.settle }], [0.28, {}], [0.36, { y: 1.4, e: EASE.settle }], [0.44, {}], [0.52, { y: 1.4, e: EASE.settle }], [0.62, { r: 4, e: EASE.settle }], [0.84, { r: 4 }], [1, {}]),
+    }]),
+    [[0, "happy"], [0.12, "delighted"]], "delighted", CLAP_SHUT, "both", [[0.06, { L: "palm", R: "palm" }], [0.94, {}]])),
+  own(r("correct", "nell-toast", "Raise a cup", "Raises her cup to the learner in a toast, steam curling off it — lovely, that's it.",
+    act("nell-toast", 2.8, [[0, HELD], [0.2, TOAST], [0.84, TOAST], [1, HELD]], [lift(0.7, { at: 0.16 }), {
+      head: turn([0, 0], [0.2, 4], [0.84, 4], [1, 0]),
+      "fx-steam": steams(0.22, 0.82),
+    }]),
+    [[0, "happy"], [0.2, "delighted"], [0.7, "happy"]], "delighted", TOAST, "both", [[0, { R: "cup" }]]), ["steamToast"]),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "nell-half-pot", "Half the pot's brewed", "Lifts her cup halfway and peers into it with a tipped head — half the pot's brewed; a bit left yet. Never says how much.",
+    act("nell-half-pot", 3, [[0, HELD], [0.2, OFFER], [0.84, OFFER], [1, HELD]], {
+      head: keys([0, {}], [0.22, { r: 6, y: 2, e: EASE.settle }], [0.84, { r: 6, y: 2 }], [1, {}]),
+      torso: turn([0, 0], [0.22, 2], [0.84, 2], [1, 0]),
+      "fx-steam": steams(0.24, 0.8),
+    }),
+    [[0, "happy"], [0.24, "curious"]], "curious", OFFER, "both", [[0, { R: "cup" }]]), ["steamOffer"]),
+  own(r("partial", "nell-nearly", "Nearly there, love", "Two gentle pats of the air beside her — nearly there, love — and a nod at what's left.",
+    act("nell-nearly", 2.6, [[0, FOLD], [0.16, PAT_UP], [0.26, PAT_DOWN, "line"], [0.36, PAT_UP, "line"], [0.46, PAT_DOWN, "line"], [0.56, PAT_UP, "line"], [0.84, PAT_UP], [1, FOLD]], {
+      head: keys([0, {}], [0.2, { r: 4, e: EASE.settle }], [0.56, { r: 4 }], [0.66, { r: 7, y: 1.8, e: EASE.settle }], [0.76, { r: 7, e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "happy"], [0.56, "curious"]], "curious", PAT_UP, "both", [[0.1, { R: "palm" }], [0.92, {}]])),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "nell-sneaky", "Oh, that one's sneaky", "A hand to her cheek in mock surprise — ooh, that one's sneaky — a chuckle, and she turns to look at the key.",
+    act("nell-sneaky", 2.8, [[0, FOLD], [0.16, CHEEK], [0.5, CHEEK], [0.66, FOLD], [1, FOLD]], [{
+      head: turn([0, 0], [0.16, -5], [0.5, -5], [0.66, 7], [1, 7]),
+    }, laugh(0.3, 0.5, 3)]),
+    [[0, "oops"], [0.3, "happy"], [0.6, "curious"]], "curious", FOLD, "both", [[0.1, { R: "palm" }], [0.6, { R: "clasp" }]])),
+  own(r("incorrect", "nell-there-there", "There, there", "Pats the air toward the learner — there, there, happens to us all, love — then a nod at the key.",
+    act("nell-there-there", 2.8, [[0, FOLD], [0.16, PAT_UP], [0.26, PAT_DOWN, "line"], [0.36, PAT_UP, "line"], [0.46, PAT_DOWN, "line"], [0.6, FOLD], [1, FOLD]], {
+      head: keys([0, {}], [0.16, { r: 5, e: EASE.settle }], [0.5, { r: 5 }], [0.62, { r: 7, y: 1.8, e: EASE.settle }], [0.74, { r: 7, e: EASE.settle }], [1, { r: 7 }]),
+      torso: turn([0, 0], [0.16, 2], [0.5, 2], [1, 1]),
+    }),
+    [[0, "worried"], [0.2, "happy"], [0.6, "curious"]], "curious", FOLD, "both", [[0.1, { R: "palm" }], [0.56, { R: "clasp" }]])),
+  own(r("incorrect", "nell-whisper", "She can't keep a secret", "Cups a hand beside her mouth and leans toward the key, as if to whisper — she never could keep a secret. The answer's there.",
+    act("nell-whisper", 2.8, [[0, FOLD], [0.18, WHISPER], [0.8, WHISPER], [1, FOLD]], {
+      head: keys([0, {}], [0.2, { r: 8, y: 1.6, e: EASE.settle }], [0.8, { r: 8, y: 1.6 }], [1, {}]),
+      torso: turn([0, 0], [0.2, 3.5], [0.8, 3.5], [1, 0]),
+      root: keys([0, {}], [0.2, { x: 2.4, e: EASE.settle }], [0.8, { x: 2.4 }], [1, {}]),
+    }),
+    [[0, "oops"], [0.2, "wink"], [0.5, "curious"]], "curious", WHISPER, "both", [[0.12, { R: "palm" }], [0.9, {}]])),
+  own(r("incorrect", "nell-point", "Over here, love", "Rich only: a finger to the key beside her, the other hand folded on her middle, leaning to it.",
+    act("nell-point", 2.8, [[0, FOLD], [0.18, FOLD], [0.38, { L: FOLD.L, R: POINT.R }], [0.82, { L: FOLD.L, R: POINT.R }], [1, FOLD]], {
+      head: turn([0, 0], [0.14, -3], [0.3, -3], [0.42, 7], [0.82, 7], [1, 0]),
+      torso: turn([0, 0], [0.3, 0], [0.42, 3], [0.82, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.3, "happy"], [0.44, "curious"]], "curious", { L: FOLD.L, R: POINT.R }, "rich", [[0.3, { R: "point" }], [0.92, {}]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "nell-everyone", "Everyone's invited", "Both arms up and open and the loudest laugh of all, humming as she goes — everyone's invited. Once, with the unlock.",
+    act("nell-everyone", 3, [[0, FOLD], [0.14, CHEST], [0.3, UP], [0.84, UP], [1, FOLD]], [lift(1.2, { at: 0.2 }), laugh(0.3, 0.8, 6), {
+      "fx-humR": hums(0.3, 0.9),
+      "fx-humL": hums(0.34, 0.92),
+    }]),
+    [[0, "happy"], [0.26, "delighted"]], "delighted", UP, "both", [[0.24, { L: "palm", R: "palm" }], [0.94, {}]]), ["humBoth"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "nell-bustle", "Bustles across", "Dock to verdict in quick, bustling little steps, her cup held carefully level — and a sip on arrival.",
+    act("nell-bustle", 3, [[0, HELD], [0.6, HELD], [0.72, SIP], [0.84, SIP], [0.94, HELD], [1, HELD]], {
+      root: keys(
+        [0, { x: -28 }], [0.06, { x: -28 }], [0.12, { x: -22, y: -0.8 }], [0.2, { x: -14 }], [0.28, { x: -6, y: -0.8 }],
+        [0.36, { x: 2 }], [0.44, { x: 10, y: -0.8 }], [0.52, { x: 20 }], [0.6, { x: 28, e: EASE.settle }], [0.94, { x: 28 }], [1, { x: -28 }],
+      ),
+      torso: keys([0, {}], [0.12, { y: 0.8 }], [0.2, {}], [0.28, { y: 0.8 }], [0.36, {}], [0.44, { y: 0.8 }], [0.52, {}], [1, {}]),
+      head: turn([0, 0], [0.08, 3], [0.58, 3], [0.7, -3], [0.86, -3], [1, 0]),
+    }),
+    [[0, "happy"], [0.72, "delighted"], [0.9, "happy"]], "happy", HELD, "minimal", [[0, { R: "cup" }]])),
+];
+
+/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
   haru: HARU,
   margot: MARGOT,
+  nell: NELL,
 };
 
 /** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
@@ -1481,6 +1709,7 @@ const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
 const REST_SHAPES: Partial<Record<CastSlug, HandShapes>> = {
   noor: { L: "mitt", R: "clasp" },
   haru: { L: "mitt", R: "mitt" },
+  nell: { L: "mitt", R: "clasp" },
 };
 
 /** Every variant a character draws from, by state, in `STATE_INFO`'s order. */

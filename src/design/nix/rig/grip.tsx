@@ -13,8 +13,11 @@ import type { P } from "./skeleton";
  * 2026-10-04: `clasp` is a resting hand folded over the other, its four fingers lying across toward
  * the body's centre. `pencil` holds a pencil tip-up and tipped a little outward, as for marking in
  * the air; `pencilPoint` holds it along the forearm, pointing. The pencil is drawn under the fist.
+ *
+ * 2026-10-31: `cup` holds a teacup upright on the hand, whatever angle the forearm is at — Nell's,
+ * from her tea stall. The cup sits on the hand, its foot behind the fingers.
  */
-export type GripShape = "mitt" | "fist" | "thumb" | "point" | "palm" | "finger" | "pinch" | "clasp" | "pencil" | "pencilPoint";
+export type GripShape = "mitt" | "fist" | "thumb" | "point" | "palm" | "finger" | "pinch" | "clasp" | "pencil" | "pencilPoint" | "cup";
 export type Grip = { shape: GripShape; turn?: number };
 export type Grips = Partial<Record<"L" | "R", Grip>>;
 
@@ -31,6 +34,28 @@ const WOOD = "#f1d3a0";
 const LEAD = "#3a3340";
 const BARREL = "#e9b730";
 const BARREL_EDGE = "#b98a12";
+const CHINA = "#fffaf2";
+const CHINA_EDGE = "#c9b79a";
+const CHINA_BAND = "#e48a7a";
+const TEA = "#a9643a";
+
+/** A teacup standing upright at `a` (the bottom of its bowl), `w` across, turned `rot` degrees so it
+ *  stays upright on screen whatever the hand's frame is. */
+function Teacup({ a, w, rot }: { a: P; w: number; rot: number }) {
+  const h = w * 0.62;
+  const bowl = `M${-w / 2} ${-h} L${w / 2} ${-h} Q${w * 0.46} 0 0 0 Q${-w * 0.46} 0 ${-w / 2} ${-h} Z`;
+  return (
+    <g transform={`translate(${a[0]} ${a[1]}) rotate(${rot})`}>
+      {/* the handle, on the side away from the body for a right hand */}
+      <ellipse cx={w * 0.52} cy={-h * 0.55} rx={w * 0.2} ry={h * 0.28} fill="none" stroke={CHINA_EDGE} strokeWidth={w * 0.13} />
+      <path d={bowl} fill={CHINA_EDGE} transform={`translate(0.6 0.6)`} />
+      <path d={bowl} fill={CHINA} />
+      <path d={`M${-w * 0.47} ${-h * 0.62} L${w * 0.47} ${-h * 0.62}`} stroke={CHINA_BAND} strokeWidth={w * 0.1} />
+      <ellipse cx={0} cy={-h} rx={w / 2} ry={h * 0.16} fill={CHINA_EDGE} />
+      <ellipse cx={0} cy={-h + h * 0.02} rx={w * 0.42} ry={h * 0.11} fill={TEA} />
+    </g>
+  );
+}
 
 /** A pencil from `a` along `angle`, the tip at the far end. */
 function Pencil({ a, angle, len, w }: { a: P; angle: number; len: number; w: number }) {
@@ -104,6 +129,7 @@ export function GripHand({
       case "fist":
       case "pencil":
       case "pencilPoint":
+      case "cup":
         return fist;
       case "clasp":
         /* folded over the other hand: four fingers stacked up the screen, lying across toward the
@@ -194,6 +220,8 @@ export function GripHand({
       <Pencil a={upFrom(-r * 0.2)} angle={up + (side === "R" ? 22 : -22)} len={r * 3.1} w={r * 0.46} />
     ) : grip.shape === "pencilPoint" ? (
       <Pencil a={along(-r * 0.1)} angle={fore} len={r * 3.1} w={r * 0.46} />
+    ) : grip.shape === "cup" ? (
+      <Teacup a={upFrom(r * 0.55)} w={r * 2.9} rot={up + 90} />
     ) : null;
 
   return (

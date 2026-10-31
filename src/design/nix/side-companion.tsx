@@ -7,6 +7,7 @@ import type { Candidate } from "./candidates";
 import { CAST_SPECS, type CastLines, type CastSpec } from "./side-cast";
 import { refineHaru } from "./side-haru";
 import { refineMargot } from "./side-margot";
+import { refineNell } from "./side-nell";
 import { refineNoor } from "./side-noor";
 import { SCIENTISTS, WOMEN } from "./side-more";
 import { ELDERS, TEACHERS } from "./side-people";
@@ -34,6 +35,13 @@ const REFINEMENTS: Partial<Record<CastSlug, readonly string[]>> = {
     "Her own eyes: almond, under heavy lids with a wing, thin arched brows; happy is a knowing half-close",
     "Longer arms, so a dancer's arms read: hands on her hips at rest, a flourish beside her head",
   ],
+  nell: [
+    "Her own cloud of silver curls and half-moon spectacles kept",
+    "A chunky cardigan in the deep accent with deep pockets, over a long skirt, in place of the cream dress",
+    "Her own eyes: smiling crescents with laughter crinkles; happy is a deeper crescent",
+    "Longer arms, so a cup reaches her lips: hands folded over her middle at rest",
+    "A teacup she can hold (a new grip, `cup`), from her tea stall",
+  ],
   haru: [
     "Out of the lab coat (Otto's alone now): a knitted sweater vest in the deep primary over a cream shirt, sleeves rolled",
     "Pens clipped to the vest — the pen he clicks, taps and points with",
@@ -48,7 +56,7 @@ const REFINEMENTS: Partial<Record<CastSlug, readonly string[]>> = {
 };
 
 const STUDIO = [...SCIENTISTS, ...WOMEN, ...ELDERS, ...TEACHERS, ...SHORTLISTED];
-const REFINED: Partial<Record<CastSlug, (c: Candidate) => Candidate>> = { noor: refineNoor, haru: refineHaru, margot: refineMargot };
+const REFINED: Partial<Record<CastSlug, (c: Candidate) => Candidate>> = { noor: refineNoor, haru: refineHaru, margot: refineMargot, nell: refineNell };
 
 export const CAST: readonly CastMember[] = CAST_SPECS.map((s) => {
   const base = STUDIO.find((x) => x.id === s.studio.id);
