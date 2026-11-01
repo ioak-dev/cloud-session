@@ -152,6 +152,9 @@ const OTTO_APART: Candidate = {
   pal: { ...OTTO.pal, top: OTTO_COAT, topAlt: OTTO_COAT },
   body: OTTO_COAT,
   pendant: () => <WarmLabCoat />,
+  /* his halo, a little narrower than the studio's: at full width its outer tufts ran past the
+     figure's frame on the right, and further when an idea puffs it out */
+  headBack: (c) => <g transform="translate(100 0) scale(0.84 1) translate(-100 0)">{OTTO.headBack?.(c)}</g>,
   id: "apart-otto",
   label: "Professor Otto · long coat",
   signature: "Otto in a long, well-worn ivory lab coat that flares to his knees, a bow tie in the accent and chalk on one cuff",
