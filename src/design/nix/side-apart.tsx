@@ -5,7 +5,7 @@ import { EYE_WHITE, line } from "./rig/eyes";
 import type { OutfitParts } from "./rig/outfit";
 import { withEyes } from "./side-eyes";
 import { blob, mix, Two } from "./side-kit";
-import { SCIENTISTS, WOMEN } from "./side-more";
+import { OttoBack, SCIENTISTS, WOMEN } from "./side-more";
 import { ELDERS } from "./side-people";
 import { SHORTLISTED } from "./side-shortlist";
 import { C } from "./theme";
@@ -109,14 +109,15 @@ const HARU_APART: Candidate = {
 
 const OTTO = by(SCIENTISTS, "more-otto");
 
-/** His coat falls past his knees and flares; a bow tie in the accent; chalk on one cuff. */
+/** His coat falls to his knees and flares — his shins and shoes still show below it; a bow tie in the
+ *  accent; chalk on one cuff. */
 function ottoWear(o: OutfitParts): OutfitParts {
   return {
     ...o,
     hem: (
       <g>
-        <path d="M74 196 L126 196 L136 246 Q100 252 64 246 Z" fill={LAB} />
-        <path d="M100 206 L100 248" {...line(mix(LAB, C.mid, 70), 2.2)} />
+        <path d="M74 196 L126 196 L134 226 Q100 231 66 226 Z" fill={OTTO_COAT} stroke={OTTO_EDGE} strokeWidth={2.4} strokeLinejoin="round" />
+        <path d="M100 206 L100 228" {...line(mix(LAB, C.mid, 70), 2.2)} />
         <rect x={80} y={212} width={12} height={10} rx={1.6} fill={mix(LAB, C.mid, 82)} />
       </g>
     ),
@@ -131,11 +132,20 @@ function ottoWear(o: OutfitParts): OutfitParts {
   };
 }
 
+/** The edge of his coat and hair: a deeper, cool tone of the white, so a white coat and a white halo
+ *  of hair still have an outline on a white ground (on the dark ground the white carries itself). */
+const OTTO_EDGE = "#8f9aa9";
+/** His coat in a true white, so it stands apart from the light grey of a card as well. */
+const OTTO_COAT = "#ffffff";
+
 const OTTO_APART: Candidate = {
   ...OTTO,
+  pal: { ...OTTO.pal, line: OTTO_EDGE, top: OTTO_COAT, topAlt: OTTO_COAT },
+  body: OTTO_COAT,
+  headBack: (c) => <OttoBack {...c} edge={OTTO_EDGE} />,
   id: "apart-otto",
   label: "Professor Otto · long coat",
-  signature: "Otto in a long lab coat that flares past his knees, a bow tie in the accent and chalk on one cuff",
+  signature: "Otto in a long white lab coat that flares to his knees, a bow tie in the accent and chalk on one cuff",
   risk: "Now the only lab coat on the shortlist; the long coat widens him at the hem, against his wide hair.",
   wear: ottoWear,
 };
@@ -377,7 +387,7 @@ export const APART: readonly { before: Candidate; after: Candidate; changes: rea
   {
     before: OTTO,
     after: OTTO_APART,
-    changes: ["The only lab coat now, longer and flared past the knee", "A bow tie in the accent, chalk on one cuff"],
+    changes: ["The only lab coat now, longer and flared to the knee, in true white with a cool grey edge so it holds on a white ground", "A bow tie in the accent, chalk on one cuff"],
   },
   {
     before: KAI,

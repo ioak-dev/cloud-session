@@ -162,8 +162,9 @@ const LAB = "#f3f1ec";
 /* ——— Scientists ——— */
 
 /** Otto's hair: an uneven white halo of soft tufts, thin on top, wild at the sides, that
- *  stands out further when an idea lands. */
-function OttoBack({ mood }: Ctx) {
+ *  stands out further when an idea lands. `edge`: a rim in a deeper tone of the hair, so white hair
+ *  still has an outline on a white ground. */
+export function OttoBack({ mood, edge }: Ctx & { edge?: string }) {
   const w = mood === "delighted" || mood === "curious" ? 1.16 : mood === "worried" ? 0.9 : 1;
   const tufts: [number, number, number][] = [
     [48, 118, 16],
@@ -182,6 +183,14 @@ function OttoBack({ mood }: Ctx) {
   const at = tufts.map(([x, y, r]) => [100 + (x - 100) * w, 106 + (y - 106) * w, r] as const);
   return (
     <g>
+      {edge && (
+        <g fill={edge} transform="translate(1 1)">
+          <path d={blob(100, 104, 54 * w + 2, 44 * w + 2, 1.1)} />
+          {at.map(([x, y, r]) => (
+            <circle key={`${x}${y}`} cx={x} cy={y} r={r + 2} />
+          ))}
+        </g>
+      )}
       <path d={blob(100, 104, 54 * w, 44 * w, 1.1)} fill={mix("#f2f2f0", C.mid, 70)} transform="translate(2 2)" />
       <path d={blob(100, 104, 54 * w, 44 * w, 1.1)} fill="#f2f2f0" />
       <g fill={mix("#f2f2f0", C.mid, 70)} transform="translate(2 2)">
