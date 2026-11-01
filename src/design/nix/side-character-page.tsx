@@ -1,8 +1,8 @@
 /**
  * One side character's page, in the structure of Sparkles' `/design/character/<name>`: who it is,
  * its silhouette at the sizes the product draws it, its own eyes and mouth, its fixed lines in its
- * own voice, and every companion state with each variant. Noor's, Haru's, Margot's, Nell's, Otto's and Rio's states are drawn so far
- * (`side-reactions.ts`); every other character shows "Coming soon" in their place.
+ * own voice, and every companion state with each variant (`side-reactions.ts`), drawn for all seven
+ * since 2026-11-01; a character added without them shows "Coming soon" in their place.
  */
 import * as React from "react";
 
@@ -20,6 +20,7 @@ import { MargotScene, type MargotSceneId } from "./side-margot";
 import { NellScene, type NellSceneId } from "./side-nell";
 import { OttoScene, type OttoSceneId } from "./side-otto";
 import { RioScene, type RioSceneId } from "./side-rio";
+import { CleoScene, type CleoSceneId } from "./side-cleo";
 import { NoorScene, type NoorSceneId } from "./side-noor";
 import {
   endGrip,
@@ -54,6 +55,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
   const nell = a.scene as readonly NellSceneId[];
   const otto = a.scene as readonly OttoSceneId[];
   const rio = a.scene as readonly RioSceneId[];
+  const cleo = a.scene as readonly CleoSceneId[];
   return {
     under: (
       <>
@@ -63,6 +65,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
         <NellScene ids={nell} layer="under" />
         <OttoScene ids={otto} layer="under" />
         <RioScene ids={rio} layer="under" />
+        <CleoScene ids={cleo} layer="under" />
       </>
     ),
     over: (
@@ -73,6 +76,7 @@ function scene(a: Reaction): { under?: React.ReactNode; over?: React.ReactNode }
         <NellScene ids={nell} layer="over" />
         <OttoScene ids={otto} layer="over" />
         <RioScene ids={rio} layer="over" />
+        <CleoScene ids={cleo} layer="over" />
       </>
     ),
   };

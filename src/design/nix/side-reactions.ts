@@ -22,10 +22,11 @@ import type { MargotSceneId } from "./side-margot";
 import type { NellSceneId } from "./side-nell";
 import type { OttoSceneId } from "./side-otto";
 import type { RioSceneId } from "./side-rio";
+import type { CleoSceneId } from "./side-cleo";
 import type { NoorSceneId } from "./side-noor";
 
 /** A character's own scene elements, drawn by its scene component. */
-export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId | OttoSceneId | RioSceneId;
+export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId | OttoSceneId | RioSceneId | CleoSceneId;
 
 export type ReactionState =
   | "greet"
@@ -2152,8 +2153,227 @@ const RIO: Reaction[] = [
     [[0, "neutral"]], "neutral", POCKET_HANDS, "minimal"), ["streaks"]),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell, Otto;
- *  2026-11-01: Rio). */
+/* ——— Cleo's own reactions (2026-11-01) ———
+ * Drawn from who she is: bubbly, musical, sings the instructions; wants everyone joining in; can't
+ * stand silence. She is the one who bounces — small hops are hers — and almost everything she does is
+ * on a beat: claps, a foot tapping, a hand conducting, a step-touch. Her ability, Clap, is one big clap
+ * held high: a burst at her hands and a ring that pulses out (`CleoScene`) — and everyone is on the
+ * beat. A miss is a wrong note: she laughs and starts the tune again. */
+
+/** Hands clasped in front of her, about to burst into song. */
+const CLASP = { L: [96, 214], R: [104, 214] } as const satisfies HandKey[1];
+/** The big clap, out to her right below her chin: wide open, then meeting. */
+const HIGH_OPEN = { L: [102, 206], R: [144, 196] } as const satisfies HandKey[1];
+const HIGH_SHUT = { L: [119, 200], R: [125, 200] } as const satisfies HandKey[1];
+/** Conducting: the right hand beats a small pattern in the air, down, out, up. */
+const BEAT_TOP = { L: CLASP.L, R: [152, 188] } as const satisfies HandKey[1];
+const BEAT_DOWN = { L: CLASP.L, R: [150, 206] } as const satisfies HandKey[1];
+const BEAT_OUT = { L: CLASP.L, R: [162, 200] } as const satisfies HandKey[1];
+/** A drumroll on her thighs. */
+const ROLL_A = { L: [80, 236], R: [120, 230] } as const satisfies HandKey[1];
+const ROLL_B = { L: [80, 230], R: [120, 236] } as const satisfies HandKey[1];
+/** Tapping the beat on her open palm. */
+const TAP_PALM_UP = { L: PALM_L, R: [104, 210] } as const satisfies HandKey[1];
+const TAP_PALM_DOWN = { L: PALM_L, R: [98, 219] } as const satisfies HandKey[1];
+/** Hand on her heart as she sings. */
+const SING = { L: [106, 204], R: [146, 196] } as const satisfies HandKey[1];
+
+/** The burst of the clap: lines flash out from her hands at `on` and are gone. */
+const burst = (on: number): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "0.5" },
+  { offset: on, opacity: 0, scale: "0.5" },
+  { offset: Math.min(1, on + 0.02), opacity: 1, scale: "0.9", easing: EASE.settle },
+  { offset: Math.min(1, on + 0.1), opacity: 1, scale: "1.15" },
+  { offset: Math.min(1, on + 0.18), opacity: 0, scale: "1.3" },
+  { offset: 1, opacity: 0, scale: "1.3" },
+];
+/** A ring of the beat: it pulses out from the clap at `on` and fades as it grows. */
+const ring = (on: number): Keyframe[] => [
+  { offset: 0, opacity: 0, scale: "0.4" },
+  { offset: on, opacity: 0, scale: "0.4" },
+  { offset: Math.min(1, on + 0.02), opacity: 0.9, scale: "0.6" },
+  { offset: Math.min(1, on + 0.3), opacity: 0, scale: "2.6" },
+  { offset: 1, opacity: 0, scale: "2.6" },
+];
+
+const CLEO: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "cleo-hiii", "Hiii!", "Both hands up and waving, a little bounce on each wave — hiii, I'm Cleo!",
+    act("cleo-hiii", 2.6, [
+      [0, CLASP], [0.14, UP], [0.24, { L: [52, 172], R: [148, 164] }], [0.34, { L: [60, 164], R: [140, 172] }], [0.44, { L: [52, 172], R: [148, 164] }],
+      [0.54, { L: [60, 164], R: [140, 172] }], [0.64, UP], [0.84, UP], [1, CLASP],
+    ], [hop(6, { at: 0.16, n: 2 }), { head: turn([0, 0], [0.2, -5], [0.4, 5], [0.6, -5], [0.84, 0], [1, 0]) }]),
+    [[0, "happy"], [0.14, "delighted"]], "delighted", UP, "both", [[0.1, { L: "palm", R: "palm" }], [0.92, { R: "clasp" }]])),
+  own(r("greet", "cleo-count-in", "Ready? Let's go!", "Counts the learner in — clap, clap — and points straight at them on the beat: let's go!",
+    act("cleo-count-in", 2.8, [
+      [0, CLASP], [0.12, CLAP_OPEN], [0.2, CLAP_SHUT, "line"], [0.32, CLAP_OPEN, "line"], [0.4, CLAP_SHUT, "line"], [0.54, { L: CLASP.L, R: [146, 200] }], [0.86, { L: CLASP.L, R: [146, 200] }], [1, CLASP],
+    ], [lift(0.8, { at: 0.44 }), {
+      head: keys([0, {}], [0.2, { y: 1.4, e: EASE.settle }], [0.3, {}], [0.4, { y: 1.4, e: EASE.settle }], [0.5, { r: 4, e: EASE.settle }], [0.86, { r: 4 }], [1, {}]),
+    }]),
+    [[0, "happy"], [0.12, "focused"], [0.5, "delighted"]], "delighted", { L: CLASP.L, R: [146, 200] }, "both", [[0.06, { L: "palm", R: "palm" }], [0.48, { R: "point" }], [0.94, { R: "clasp" }]])),
+  own(r("greet", "cleo-sings-hello", "Sings hello", "A hand on her heart, the other out to the learner, swaying as she sings her hello.",
+    act("cleo-sings-hello", 3, [[0, CLASP], [0.18, SING], [0.84, SING], [1, CLASP]], {
+      torso: turn([0, 0], [0.2, -2.4], [0.4, 2.4], [0.6, -2.4], [0.8, 2.4], [0.9, 0], [1, 0]),
+      head: turn([0, 0], [0.2, -6], [0.4, 4], [0.6, -6], [0.8, 4], [0.9, 0], [1, 0]),
+      ...sway(0.8),
+    }),
+    [[0, "happy"], [0.18, "delighted"]], "delighted", SING, "both", [[0.1, { R: "palm" }], [0.92, { R: "clasp" }]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "cleo-bob-along", "Bobs along", "Head bobbing to a tune only she hears, she turns to where the learner points — a beat behind them, still bobbing.",
+    act("cleo-bob-along", 3.6, [[0, CLASP], [1, CLASP]], [{
+      head: turn([0, 0], [0.12, -7], [0.42, -7], [0.56, 7], [0.86, 7], [1, 0]),
+    }, {
+      head: keys([0, {}], [0.125, { y: 1.4, e: "ease-in-out" }], [0.25, { e: "ease-in-out" }], [0.375, { y: 1.4, e: "ease-in-out" }], [0.5, { e: "ease-in-out" }],
+        [0.625, { y: 1.4, e: "ease-in-out" }], [0.75, { e: "ease-in-out" }], [0.875, { y: 1.4, e: "ease-in-out" }], [1, {}]),
+    }]),
+    [[0, "curious"]], "curious", CLASP, "both", [[0, { R: "clasp" }]])),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "cleo-ooh", "Ooh!", "A little delighted ooh, fingertips to her lips — then back to listening. No verdict in it.",
+    act("cleo-ooh", 1.8, [[0, CLASP], [0.12, { L: CLASP.L, R: [106, 194] }], [0.5, { L: CLASP.L, R: [106, 194] }], [0.66, CLASP], [1, CLASP]], {
+      head: keys([0, {}], [0.12, { r: -3, y: -0.8, e: EASE.snap }], [0.5, { r: -3, y: -0.8 }], [0.66, {}], [1, {}]),
+    }),
+    [[0, "happy"], [0.12, "curious"], [0.6, "happy"]], "happy", CLASP, "rich", [[0.06, { R: "finger" }], [0.62, { R: "clasp" }]])),
+  own(r("notice", "cleo-bounce-glance", "Bounce and glance", "A small bounce and a glance at Check.",
+    act("cleo-bounce-glance", 2, [[0, CLASP], [1, CLASP]], [hop(5, { at: 0.04 }), { head: turn([0, 0], [0.4, 0], [0.5, 8], [0.85, 8], [1, 0]) }]),
+    [[0, "happy"], [0.45, "curious"]], "curious", CLASP, "minimal", [[0, { R: "clasp" }]])),
+
+  /* ——— think, doze ——— */
+  own(r("think", "cleo-foot-tap", "Tapping her foot", "Humming, swaying, tapping her foot — she can't stand silence, so she fills it with a tune while she waits. Never hurry up.",
+    act("cleo-foot-tap", 4, [[0, CLASP], [1, CLASP]], {
+      hipR: turn([0, 0], [0.06, -6], [0.125, 0], [0.19, -6], [0.25, 0], [0.31, -6], [0.375, 0], [0.44, -6], [0.5, 0], [0.56, -6], [0.625, 0], [0.69, -6], [0.75, 0], [0.81, -6], [0.875, 0], [0.94, -6], [1, 0]),
+      kneeR: turn([0, 0], [0.06, 8], [0.125, 0], [0.19, 8], [0.25, 0], [0.31, 8], [0.375, 0], [0.44, 8], [0.5, 0], [0.56, 8], [0.625, 0], [0.69, 8], [0.75, 0], [0.81, 8], [0.875, 0], [0.94, 8], [1, 0]),
+      torso: turn([0, 0], [0.25, -2], [0.5, 0], [0.75, 2], [1, 0]),
+      head: turn([0, 5], [0.25, 2], [0.5, 5], [0.75, 8], [1, 5]),
+    }),
+    [[0, "thinking"]], "thinking", CLASP, "both", [[0, { R: "clasp" }]])),
+  own(r("doze", "cleo-doze", "Dozing mid-song", "Eyes shut, hands clasped, still swaying to the end of a song — slower and slower.",
+    act("cleo-doze", 5.4, [[0, CLASP], [1, CLASP]], {
+      head: keys([0, { y: 2, r: -4 }], [0.5, { y: 4.6, r: -8, e: "ease-in-out" }], [1, { y: 2, r: -4 }]),
+      torso: turn([0, -1.4], [0.5, 1.4], [1, -1.4]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", CLASP, "both", [[0, { R: "clasp" }]])),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "cleo-drumroll", "Drumroll", "A quick drumroll on her knees as she leans in — before the result is known.",
+    act("cleo-drumroll", 1.6, [[0, CLASP], [0.1, ROLL_A], [0.2, ROLL_B, "line"], [0.3, ROLL_A, "line"], [0.4, ROLL_B, "line"], [0.5, ROLL_A, "line"], [0.6, ROLL_B, "line"],
+      [0.7, ROLL_A, "line"], [0.8, ROLL_B, "line"], [0.9, ROLL_A, "line"], [1, ROLL_B, "line"]], {
+      torso: keys([0, {}], [0.1, { r: 3, y: 1.6, e: EASE.snap }], [1, { r: 3, y: 1.6 }]),
+      head: keys([0, {}], [0.1, { r: 4, y: 2, e: EASE.snap }], [1, { r: 4, y: 2 }]),
+    }, 1),
+    [[0, "focused"]], "focused", ROLL_A, "both", [[0.04, { L: "palm", R: "palm" }]])),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "cleo-clap", "Clap", "Her ability: one big clap, held high — a burst at her hands and a ring pulsing out — and everyone's on the beat.",
+    act("cleo-clap", 2.6, [[0, CLASP], [0.14, HIGH_OPEN], [0.24, HIGH_OPEN], [0.3, HIGH_SHUT, "line"], [0.8, HIGH_SHUT], [1, CLASP]], [lift(1, { at: 0.2 }), {
+      head: turn([0, 0], [0.14, -4], [0.3, -6], [0.8, -6], [1, 0]),
+      "fx-burst": burst(0.3),
+      "fx-ring1": ring(0.3),
+      "fx-ring2": ring(0.42),
+    }]),
+    [[0, "happy"], [0.14, "focused"], [0.3, "delighted"]], "delighted", HIGH_SHUT, "both", [[0.08, { L: "palm", R: "palm" }], [0.92, { R: "clasp" }]]), ["clap"]),
+  own(r("correct", "cleo-yes-yes-yes", "Yes, yes, yes!", "Three bouncy hops, a fist up on each — yes, yes, yes!",
+    act("cleo-yes-yes-yes", 2.4, [[0, CLASP], [0.1, { L: CLASP.L, R: PUMP.R }], [0.84, { L: CLASP.L, R: PUMP.R }], [1, CLASP]], [hop(8, { at: 0.08, n: 3 }), {
+      head: turn([0, 0], [0.2, -4], [0.45, 4], [0.7, -4], [0.9, 0], [1, 0]),
+    }]),
+    [[0, "happy"], [0.1, "delighted"]], "delighted", { L: CLASP.L, R: PUMP.R }, "both", [[0.06, { R: "fist" }], [0.92, { R: "clasp" }]])),
+  own(r("correct", "cleo-conduct", "That's music!", "Conducts a few bars with one hand, eyes closed, swaying — and a ring of the beat goes out with each down-beat. That's music!",
+    act("cleo-conduct", 3, [
+      [0, CLASP], [0.12, BEAT_TOP], [0.22, BEAT_DOWN], [0.32, BEAT_OUT], [0.42, BEAT_TOP], [0.52, BEAT_DOWN], [0.62, BEAT_OUT], [0.72, BEAT_TOP], [0.86, BEAT_TOP], [1, CLASP],
+    ], {
+      torso: turn([0, 0], [0.22, -2], [0.42, 2], [0.62, -2], [0.8, 0], [1, 0]),
+      head: turn([0, 0], [0.22, -5], [0.42, 4], [0.62, -5], [0.8, 0], [1, 0]),
+      "fx-ring1": ring(0.22),
+      "fx-ring2": ring(0.52),
+    }),
+    [[0, "happy"], [0.12, "delighted"]], "delighted", BEAT_TOP, "both", [[0.08, { R: "finger" }], [0.92, { R: "clasp" }]]), ["conduct"]),
+  own(r("correct", "cleo-step-touch", "Step-touch", "A little step-touch dance, side to side, clapping on each touch.",
+    act("cleo-step-touch", 2.8, [
+      [0, CLASP], [0.1, CLAP_OPEN], [0.2, CLAP_SHUT, "line"], [0.3, CLAP_OPEN, "line"], [0.4, CLAP_SHUT, "line"], [0.5, CLAP_OPEN, "line"], [0.6, CLAP_SHUT, "line"],
+      [0.7, CLAP_OPEN, "line"], [0.8, CLAP_SHUT, "line"], [1, CLASP],
+    ], {
+      root: keys([0, {}], [0.15, { x: -5, e: EASE.settle }], [0.35, { x: 5, e: EASE.settle }], [0.55, { x: -5, e: EASE.settle }], [0.75, { x: 5, e: EASE.settle }], [0.9, { e: EASE.settle }], [1, {}]),
+      hipL: turn([0, 0], [0.1, -6], [0.2, 0], [0.5, -6], [0.6, 0], [1, 0]),
+      hipR: turn([0, 0], [0.3, 6], [0.4, 0], [0.7, 6], [0.8, 0], [1, 0]),
+      head: turn([0, 0], [0.15, -4], [0.35, 4], [0.55, -4], [0.75, 4], [0.9, 0], [1, 0]),
+    }),
+    [[0, "happy"], [0.1, "delighted"]], "delighted", CLAP_SHUT, "both", [[0.06, { L: "palm", R: "palm" }], [0.92, { R: "clasp" }]])),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "cleo-almost-song", "Almost the whole song", "Conducts — and stops on a held note, hand up, head tipped: almost the whole song; just a little more. Never says how much.",
+    act("cleo-almost-song", 2.8, [[0, CLASP], [0.12, BEAT_TOP], [0.22, BEAT_DOWN], [0.32, BEAT_OUT], [0.42, BEAT_TOP], [0.84, BEAT_TOP], [1, CLASP]], {
+      head: turn([0, 0], [0.22, -4], [0.42, 7], [0.84, 7], [1, 0]),
+      "fx-ring1": ring(0.22),
+    }),
+    [[0, "happy"], [0.42, "curious"]], "curious", BEAT_TOP, "both", [[0.08, { R: "finger" }], [0.92, { R: "clasp" }]]), ["conduct"]),
+  own(r("partial", "cleo-off-beat", "A few off the beat", "Claps along — one, two — and the third one misses, hands passing each other; a giggle and a tipped head at what's left.",
+    act("cleo-off-beat", 2.8, [
+      [0, CLASP], [0.12, CLAP_OPEN], [0.2, CLAP_SHUT, "line"], [0.3, CLAP_OPEN, "line"], [0.38, CLAP_SHUT, "line"], [0.48, CLAP_OPEN, "line"], [0.56, { L: [108, 222], R: [92, 222] }, "line"], [0.66, CLAP_OPEN], [0.86, CLAP_OPEN], [1, CLASP],
+    ], [{ head: turn([0, 0], [0.56, 0], [0.66, 7], [0.86, 7], [1, 0]) }, laugh(0.58, 0.72, 3)]),
+    [[0, "happy"], [0.56, "oops"], [0.66, "curious"]], "curious", CLAP_OPEN, "both", [[0.06, { L: "palm", R: "palm" }], [0.92, { R: "clasp" }]])),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "cleo-wrong-note", "A wrong note", "Hands to her cheeks — oops, a wrong note! — a giggle, then a palm toward the key: let's try the tune again.",
+    act("cleo-wrong-note", 2.8, [[0, CLASP], [0.16, CHEEKS], [0.46, CHEEKS], [0.6, SIDES], [0.74, LOOK], [1, LOOK]], [{
+      head: turn([0, 0], [0.16, -4], [0.46, -4], [0.66, 0], [0.76, 7], [1, 7]),
+    }, laugh(0.24, 0.46, 3)]),
+    [[0, "oops"], [0.3, "happy"], [0.7, "curious"]], "curious", LOOK, "both", [[0.1, { L: "palm", R: "palm" }], [0.56, {}], [0.68, { R: "palm" }]])),
+  own(r("incorrect", "cleo-trips-me-up", "Trips me up too", "A little stumble on the spot, arms out — whoops — and she laughs at herself before turning to the key: that one trips me up too!",
+    act("cleo-trips-me-up", 2.8, [[0, CLASP], [0.12, BALANCE], [0.46, BALANCE], [0.62, CLASP], [1, CLASP]], [{
+      root: keys([0, {}], [0.12, { x: 3, r: 3, e: EASE.snap }], [0.22, { x: -1.5, r: -2, e: "ease-in-out" }], [0.32, { r: 1, e: "ease-in-out" }], [0.42, { e: EASE.settle }], [1, {}]),
+      hipR: turn([0, 0], [0.12, -10], [0.22, 0], [1, 0]),
+      head: turn([0, 0], [0.12, -4], [0.3, 3], [0.5, 0], [0.66, 7], [1, 7]),
+    }, laugh(0.32, 0.54, 3)]),
+    [[0, "oops"], [0.34, "happy"], [0.62, "curious"]], "curious", CLASP, "both", [[0.08, { L: "palm", R: "palm" }], [0.58, { R: "clasp" }]])),
+  own(r("incorrect", "cleo-heres-how", "Here's how it goes", "Taps the beat softly on her palm — one, two, three — and nods toward the key: no worries, here's how it goes.",
+    act("cleo-heres-how", 2.8, [
+      [0, CLASP], [0.14, TAP_PALM_UP], [0.22, TAP_PALM_DOWN, "line"], [0.3, TAP_PALM_UP, "line"], [0.38, TAP_PALM_DOWN, "line"], [0.46, TAP_PALM_UP, "line"], [0.54, TAP_PALM_DOWN, "line"], [0.7, CLASP], [1, CLASP],
+    ], {
+      head: keys([0, {}], [0.14, { r: -3, e: EASE.settle }], [0.54, { r: -3 }], [0.68, { r: 7, y: 1.8, e: EASE.settle }], [0.78, { r: 7, e: EASE.settle }], [1, { r: 7 }]),
+    }),
+    [[0, "oops"], [0.14, "happy"], [0.66, "curious"]], "curious", CLASP, "both", [[0.08, { L: "palm", R: "finger" }], [0.64, { R: "clasp" }]])),
+  own(r("incorrect", "cleo-point", "On the key", "Rich only: she points at the key beside her on the beat, her shoulders turned to it.",
+    act("cleo-point", 2.6, [[0, CLASP], [0.22, { L: CLASP.L, R: POINT.R }], [0.84, { L: CLASP.L, R: POINT.R }], [1, CLASP]], {
+      head: turn([0, 0], [0.14, -3], [0.26, 7], [0.84, 7], [1, 0]),
+      torso: turn([0, 0], [0.26, 3], [0.84, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.26, "curious"]], "curious", { L: CLASP.L, R: POINT.R }, "rich", [[0.14, { R: "point" }], [0.92, { R: "clasp" }]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "cleo-big-finish", "Big finish", "A jump with her arms up, and at the top one huge clap — burst, ring after ring — the big finish. Once, with the unlock.",
+    act("cleo-big-finish", 2.6, [[0, CLASP], [0.1, CLASP], [0.22, HIGH_OPEN], [0.32, HIGH_SHUT, "line"], [0.82, HIGH_SHUT], [1, CLASP]], [hop(20, { at: 0.06 }), {
+      head: turn([0, 0], [0.22, -4], [0.32, -6], [0.82, -6], [1, 0]),
+      "fx-burst": burst(0.32),
+      "fx-ring1": ring(0.32),
+      "fx-ring2": ring(0.44),
+    }]),
+    [[0, "focused"], [0.2, "delighted"]], "delighted", HIGH_SHUT, "both", [[0.16, { L: "palm", R: "palm" }], [0.92, { R: "clasp" }]]), ["clap"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "cleo-skip", "Skips across", "Dock to verdict in two happy skips, arms swinging — and a clap on arrival.",
+    act("cleo-skip", 2.6, [[0, CLASP], [0.1, { L: [64, 228], R: [132, 236] }], [0.25, { L: [70, 234], R: [138, 226] }], [0.38, { L: [64, 228], R: [132, 236] }],
+      [0.52, { L: [70, 234], R: [138, 226] }], [0.66, CLAP_OPEN], [0.74, CLAP_SHUT, "line"], [0.9, CLAP_SHUT], [1, CLASP]], {
+      root: keys(
+        [0, { x: -28 }], [0.1, { x: -28, e: "ease-out" }], [0.25, { x: -12, y: -10, e: "ease-in" }], [0.38, { x: 2, e: "ease-out" }],
+        [0.52, { x: 16, y: -10, e: "ease-in" }], [0.66, { x: 28, e: EASE.settle }], [0.94, { x: 28 }], [1, { x: -28 }],
+      ),
+      torso: keys([0, {}], [0.1, { y: 2.4, e: EASE.snap }], [0.2, { y: -0.6, e: "ease-out" }], [0.38, { y: 2.4, e: EASE.snap }], [0.46, { y: -0.6, e: "ease-out" }], [0.66, { y: 2.6, e: EASE.settle }], [0.76, {}], [1, {}]),
+      hipL: turn([0, 0], [0.1, 6], [0.25, -10], [0.38, 6], [0.52, 8], [0.66, 0], [1, 0]),
+      kneeL: turn([0, 0], [0.1, -10], [0.25, 4], [0.38, -10], [0.52, -14], [0.66, 0], [1, 0]),
+      hipR: turn([0, 0], [0.1, -6], [0.25, -8], [0.38, -6], [0.52, 10], [0.66, 0], [1, 0]),
+      kneeR: turn([0, 0], [0.1, 10], [0.25, 14], [0.38, 10], [0.52, -4], [0.66, 0], [1, 0]),
+      head: turn([0, 0], [0.1, 6], [0.66, 6], [0.8, 0], [1, 0]),
+    }),
+    [[0, "happy"], [0.1, "delighted"], [0.9, "happy"]], "happy", undefined, "minimal", [[0.62, { L: "palm", R: "palm" }], [0.94, { R: "clasp" }]])),
+];
+
+/** Every cast member's reactions (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell, Otto;
+ *  2026-11-01: Rio, Cleo). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
   haru: HARU,
@@ -2161,6 +2381,7 @@ const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   nell: NELL,
   otto: OTTO,
   rio: RIO,
+  cleo: CLEO,
 };
 
 /** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
@@ -2170,6 +2391,7 @@ const REST_SHAPES: Partial<Record<CastSlug, HandShapes>> = {
   haru: { L: "mitt", R: "mitt" },
   nell: { L: "mitt", R: "clasp" },
   otto: { L: "mitt", R: "finger" },
+  cleo: { L: "mitt", R: "clasp" },
 };
 
 /** Every variant a character draws from, by state, in `STATE_INFO`'s order. */
