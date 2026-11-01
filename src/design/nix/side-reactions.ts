@@ -21,10 +21,11 @@ import type { HaruSceneId } from "./side-haru";
 import type { MargotSceneId } from "./side-margot";
 import type { NellSceneId } from "./side-nell";
 import type { OttoSceneId } from "./side-otto";
+import type { RioSceneId } from "./side-rio";
 import type { NoorSceneId } from "./side-noor";
 
 /** A character's own scene elements, drawn by its scene component. */
-export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId | OttoSceneId;
+export type SceneId = NoorSceneId | HaruSceneId | MargotSceneId | NellSceneId | OttoSceneId | RioSceneId;
 
 export type ReactionState =
   | "greet"
@@ -1918,13 +1919,248 @@ const OTTO: Reaction[] = [
     [[0, "happy"], [0.36, "thinking"], [0.58, "delighted"], [0.7, "happy"]], "happy", undefined, "minimal", [[0.4, { R: "finger", L: "fist" }], [0.58, { R: "finger" }], [0.66, {}]])),
 ];
 
-/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell, Otto). */
+/* ——— Rio's own reactions (2026-11-01) ———
+ * Drawn from who he is: cool, deadpan, says little — and secretly the kindest, the one who waits for
+ * the slow ones; wants to look like he doesn't care. Small moves, done exactly: hands in his hoodie
+ * pocket, a chin-up nod, a fist bump offered, a point that says called it, a nod to the beat in his
+ * headphones (`RioScene`), and his ability, Moonwalk — he glides backwards as if the ground were ice.
+ * His kindness is in staying: he never hurries anyone, and when it goes wrong he stands beside them. */
+
+/** Both hands in his hoodie's pocket. */
+const POCKET_HANDS = { L: [94, 226], R: [106, 226] } as const satisfies HandKey[1];
+/** A fist held out toward the learner: a fist bump offered. */
+const BUMP = { L: POCKET_HANDS.L, R: [130, 210] } as const satisfies HandKey[1];
+/** A lazy wave, low, at his hip. */
+const LOW_HAND: P = [142, 214];
+const LOW = (R: P) => ({ L: POCKET_HANDS.L, R });
+/** Called it: a point at the learner. */
+const CALLED = { L: POCKET_HANDS.L, R: [146, 202] } as const satisfies HandKey[1];
+/** A thumb held low by his side. */
+const LOW_THUMB = { L: POCKET_HANDS.L, R: [146, 212] } as const satisfies HandKey[1];
+/** Drumming the air: fists out in front, one down, one up. */
+const DRUM_A = { L: [80, 214], R: [120, 222] } as const satisfies HandKey[1];
+const DRUM_B = { L: [80, 222], R: [120, 214] } as const satisfies HandKey[1];
+/** So-so: a flat hand rocking. */
+const SOSO_A = { L: POCKET_HANDS.L, R: [138, 208] } as const satisfies HandKey[1];
+const SOSO_B = { L: POCKET_HANDS.L, R: [138, 214] } as const satisfies HandKey[1];
+/** An open hand toward the key. */
+const LOOK = { L: POCKET_HANDS.L, R: [156, 206] } as const satisfies HandKey[1];
+/** Arms out a little for the glide, loose. */
+const GLIDE = { L: [62, 222], R: [138, 222] } as const satisfies HandKey[1];
+
+/** The moonwalk: `n` gliding steps backwards (to screen right) between `start` and `end` — one heel
+ *  up, the other foot sliding flat, swapping each step — the body level all the way. `back`: he
+ *  strolls back to his spot to close the loop, so the held pose stands where he started. */
+function moonwalk(start: number, end: number, n: number, dist: number, back = true): Tracks {
+  const root: [number, Key][] = [at(0), at(start)];
+  const hipL: [number, number][] = [[0, 0], [start, 0]];
+  const kneeL: [number, number][] = [[0, 0], [start, 0]];
+  const hipR: [number, number][] = [[0, 0], [start, 0]];
+  const kneeR: [number, number][] = [[0, 0], [start, 0]];
+  const step = (end - start) / n;
+  for (let i = 1; i <= n; i++) {
+    const t = start + i * step;
+    root.push(at(t, { x: (dist * i) / n, e: "linear" }));
+    const left = i % 2 === 1;
+    (left ? hipL : hipR).push([t - step / 2, left ? -6 : 6], [t, 0]);
+    (left ? kneeL : kneeR).push([t - step / 2, left ? 14 : -14], [t, 0]);
+  }
+  root.push(at(Math.min(1, end + 0.06), { x: dist, e: EASE.settle }));
+  if (back) {
+    /* two easy steps back to where he started */
+    const s0 = Math.min(0.98, end + 0.14);
+    root.push(at(s0, { x: dist, e: "ease-in-out" }), at(1, {}));
+    hipL.push([s0, 0], [(s0 + 1) / 2 - 0.02, 6], [(s0 + 1) / 2, 0]);
+    hipR.push([(s0 + 1) / 2 + 0.02, 6], [Math.min(0.999, (s0 + 1) / 2 + 0.06), 0]);
+  } else root.push(at(1, { x: dist }));
+  for (const k of [hipL, kneeL, hipR, kneeR]) k.push([1, 0]);
+  return { root: keys(...root), hipL: turn(...hipL), kneeL: turn(...kneeL), hipR: turn(...hipR), kneeR: turn(...kneeR) };
+}
+
+/** The beat in his headphones: two pulses per bar while it plays. */
+function beat(on: number, off: number, bars = 4): Keyframe[] {
+  const out: Keyframe[] = [{ offset: 0, opacity: 0, scale: "0.7" }, { offset: on, opacity: 0, scale: "0.7" }];
+  const step = (off - on) / bars;
+  for (let i = 0; i < bars; i++) {
+    out.push({ offset: on + i * step + step * 0.2, opacity: 1, scale: "1" }, { offset: on + i * step + step * 0.9, opacity: 0.2, scale: "1.2" });
+  }
+  out.push({ offset: Math.min(1, off + 0.02), opacity: 0, scale: "0.7" }, { offset: 1, opacity: 0, scale: "0.7" });
+  return out;
+}
+
+/** The floor's streaks: seen while he glides, following him. */
+const streaks = (start: number, end: number, dist: number): Keyframe[] => [
+  { offset: 0, opacity: 0, translate: "0px 0px" },
+  { offset: start, opacity: 0, translate: "0px 0px" },
+  { offset: Math.min(1, start + 0.06), opacity: 1, translate: `${dist * 0.15}px 0px` },
+  { offset: end, opacity: 1, translate: `${dist}px 0px` },
+  { offset: Math.min(1, end + 0.08), opacity: 0, translate: `${dist}px 0px` },
+  { offset: 1, opacity: 0, translate: `${dist}px 0px` },
+];
+
+const RIO: Reaction[] = [
+  /* ——— greet ×3 ——— */
+  own(r("greet", "rio-sup", "Hey.", "Hands in his pocket, a chin-up nod — hey — and the smallest smile, gone as soon as it came.",
+    act("rio-sup", 2.4, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.16, { e: EASE.settle }], [0.26, { r: -6, y: -1.4, e: EASE.snap }], [0.44, { r: -5, y: -1, e: EASE.settle }], [0.56, { r: 2, e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.3, "happy"], [0.56, "neutral"]], "neutral", POCKET_HANDS)),
+  own(r("greet", "rio-low-wave", "Low wave", "One hand comes out of his pocket for a lazy, low wave at his hip — two beats — and goes back in.",
+    act("rio-low-wave", 2.6, [
+      [0, POCKET_HANDS], [0.18, LOW(LOW_HAND)], [0.3, LOW(swing("R", LOW_HAND, 14))], [0.42, LOW(swing("R", LOW_HAND, -8))], [0.54, LOW(swing("R", LOW_HAND, 14))],
+      [0.66, LOW(LOW_HAND)], [0.82, POCKET_HANDS], [1, POCKET_HANDS],
+    ], { head: turn([0, 0], [0.18, 4], [0.66, 4], [0.82, 0], [1, 0]) }),
+    [[0, "neutral"], [0.3, "happy"], [0.72, "neutral"]], "neutral", POCKET_HANDS, "both", [[0.12, { R: "palm" }], [0.76, {}]])),
+  own(r("greet", "rio-fist-bump", "Fist bump", "Holds a fist out toward the learner and waits, deadpan — then, as if they bumped it, the smallest smile and a nod.",
+    act("rio-fist-bump", 2.8, [[0, POCKET_HANDS], [0.18, BUMP], [0.42, BUMP], [0.48, { ...BUMP, R: [127, 212] }, "line"], [0.56, BUMP, "line"], [0.84, BUMP], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.18, { r: 3, e: EASE.settle }], [0.5, { r: 3 }], [0.6, { r: 3, y: 2, e: EASE.settle }], [0.7, { r: 3, e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.5, "happy"]], "happy", BUMP, "both", [[0.1, { R: "fist" }], [0.92, {}]])),
+
+  /* ——— idle ——— */
+  pick("idle"),
+
+  /* ——— attend ——— */
+  own(r("attend", "rio-side-eye", "Side-eye", "Barely turns — a glance and a small tip of the head toward where the learner points, a beat behind them. Not that he's interested. He is.",
+    act("rio-side-eye", 3.6, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: turn([0, 0], [0.14, -5], [0.42, -5], [0.56, 5], [0.86, 5], [1, 0]),
+    }),
+    [[0, "neutral"]], "neutral", POCKET_HANDS)),
+
+  /* ——— notice, staged per setting ——— */
+  own(r("notice", "rio-slow-nod", "One slow nod", "One slow nod. That's it. No verdict in it.",
+    act("rio-slow-nod", 1.8, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.14, { e: EASE.settle }], [0.34, { y: 2.6, r: 2.4, e: "ease-in-out" }], [0.56, { e: "ease-in-out" }], [1, {}]),
+    }),
+    [[0, "neutral"]], "neutral", POCKET_HANDS, "rich")),
+  own(r("notice", "rio-glance", "Glance at Check", "Eyes slide to Check, the head following a little later — no hop.",
+    act("rio-glance", 2, [[0, POCKET_HANDS], [1, POCKET_HANDS]], { head: turn([0, 0], [0.4, 0], [0.52, 6], [0.85, 6], [1, 0]) }),
+    [[0, "neutral"], [0.42, "curious"]], "neutral", POCKET_HANDS, "minimal")),
+
+  /* ——— think, doze ——— */
+  own(r("think", "rio-beat", "Nodding to the beat", "Hands in his pocket, eyes half shut, his head nodding to a beat in his headphones — he'll wait. Never hurry up.",
+    act("rio-beat", 4, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.125, { y: 1.6, r: 1.5, e: "ease-in-out" }], [0.25, { e: "ease-in-out" }], [0.375, { y: 1.6, r: 1.5, e: "ease-in-out" }], [0.5, { e: "ease-in-out" }],
+        [0.625, { y: 1.6, r: 1.5, e: "ease-in-out" }], [0.75, { e: "ease-in-out" }], [0.875, { y: 1.6, r: 1.5, e: "ease-in-out" }], [1, {}]),
+      "fx-beatL": beat(0, 1, 4),
+      "fx-beatR": beat(0, 1, 4),
+    }),
+    [[0, "thinking"]], "thinking", POCKET_HANDS), ["beat"]),
+  own(r("doze", "rio-doze", "Leaning, asleep", "Leans back as if on a wall that isn't there, hands in his pocket, eyes shut, head tipped — out like a light.",
+    act("rio-doze", 5, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      root: keys([0, { r: -3 }], [1, { r: -3 }]),
+      head: keys([0, { y: 1.6, r: 6 }], [0.5, { y: 3.6, r: 9, e: "ease-in-out" }], [1, { y: 1.6, r: 6 }]),
+      torso: keys([0, {}], [0.5, { y: 1.4, e: "ease-in-out" }], [1, {}]),
+      ...sway(0.3),
+    }),
+    [[0, "happy"]], "happy", POCKET_HANDS)),
+
+  /* ——— anticipate ——— */
+  own(r("anticipate", "rio-hands-out", "Hands out of his pocket", "His hands come out of his pocket and he leans in — he does care, as it turns out — before the result is known.",
+    act("rio-hands-out", 1.6, [[0, POCKET_HANDS], [0.12, CHEST], [1, CHEST]], {
+      torso: keys([0, {}], [0.12, { r: 3, y: 1.2, e: EASE.snap }], [1, { r: 3, y: 1.2 }]),
+      head: keys([0, {}], [0.12, { r: 4, y: 1.8, e: EASE.snap }], [1, { r: 4, y: 1.8 }]),
+    }, 1),
+    [[0, "focused"]], "focused", CHEST, "both", [[0.06, { R: "clasp" }]])),
+
+  /* ——— correct ×4 ——— */
+  own(r("correct", "rio-moonwalk", "Moonwalk", "His ability: hands in his pocket, he glides backwards as if the floor were ice — one heel up, then the other — and stops dead, cool as anything.",
+    act("rio-moonwalk", 3.2, [[0, POCKET_HANDS], [0.1, GLIDE], [0.74, GLIDE], [0.86, POCKET_HANDS], [1, POCKET_HANDS]], [moonwalk(0.1, 0.7, 4, 26), {
+      head: turn([0, 0], [0.1, -4], [0.7, -4], [0.8, 3], [1, 0]),
+      "fx-streaks": streaks(0.1, 0.7, 26),
+    }]),
+    [[0, "neutral"], [0.1, "focused"], [0.72, "happy"]], "happy", POCKET_HANDS, "both", [[0.06, { L: "palm", R: "palm" }], [0.8, {}]]), ["streaks"]),
+  own(r("correct", "rio-called-it", "Called it", "Points at the learner with a wink — called it. Then back in the pocket.",
+    act("rio-called-it", 2.2, [[0, POCKET_HANDS], [0.16, CALLED], [0.24, { ...CALLED, R: [148, 198] }, "line"], [0.3, CALLED, "line"], [0.78, CALLED], [0.92, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: turn([0, 0], [0.16, 5], [0.78, 5], [1, 0]),
+    }),
+    [[0, "neutral"], [0.24, "wink"], [0.5, "happy"]], "happy", CALLED, "both", [[0.1, { R: "point" }], [0.86, {}]])),
+  own(r("correct", "rio-nice", "Nice.", "One thumb up, low by his side, and a single nod. Nice.",
+    act("rio-nice", 2.2, [[0, POCKET_HANDS], [0.18, LOW_THUMB], [0.8, LOW_THUMB], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.22, { e: EASE.settle }], [0.34, { y: 2.2, r: 2, e: EASE.settle }], [0.46, { e: EASE.settle }], [1, {}]),
+    }),
+    [[0, "neutral"], [0.3, "happy"]], "happy", LOW_THUMB, "both", [[0.1, { R: "thumb" }], [0.9, {}]])),
+  own(r("correct", "rio-air-drums", "Air drums", "Hands out of his pocket for four quick hits on drums that aren't there, to the beat in his headphones.",
+    act("rio-air-drums", 2.4, [
+      [0, POCKET_HANDS], [0.12, DRUM_A], [0.22, DRUM_B, "line"], [0.32, DRUM_A, "line"], [0.42, DRUM_B, "line"], [0.52, DRUM_A, "line"], [0.8, DRUM_A], [1, POCKET_HANDS],
+    ], {
+      head: keys([0, {}], [0.22, { y: 1.6, e: "ease-in-out" }], [0.32, {}], [0.42, { y: 1.6, e: "ease-in-out" }], [0.52, {}], [1, {}]),
+      "fx-beatL": beat(0.12, 0.6, 2),
+      "fx-beatR": beat(0.12, 0.6, 2),
+    }),
+    [[0, "neutral"], [0.12, "focused"], [0.56, "happy"]], "happy", DRUM_A, "both", [[0.06, { L: "fist", R: "fist" }], [0.9, {}]]), ["beat"]),
+
+  /* ——— partly correct ×2 ——— */
+  own(r("partial", "rio-so-so", "Most of it", "A flat hand rocks — most of it, not bad — with a tip of the head at what's left. Never says how much.",
+    act("rio-so-so", 2.6, [[0, POCKET_HANDS], [0.16, SOSO_A], [0.26, SOSO_B, "line"], [0.36, SOSO_A, "line"], [0.46, SOSO_B, "line"], [0.56, SOSO_A, "line"], [0.84, SOSO_A], [1, POCKET_HANDS]], {
+      head: turn([0, 0], [0.16, 3], [0.56, 3], [0.66, 7], [0.86, 7], [1, 0]),
+    }),
+    [[0, "neutral"], [0.6, "curious"]], "curious", SOSO_A, "both", [[0.1, { R: "palm" }], [0.92, {}]])),
+  own(r("partial", "rio-chin-point", "Close. Fix the rest", "Points with his chin at what's left — hands staying in his pocket — and an eyebrow.",
+    act("rio-chin-point", 2.4, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.2, { e: EASE.settle }], [0.3, { r: 8, y: -1.2, e: EASE.snap }], [0.44, { r: 6, e: EASE.settle }], [0.84, { r: 6 }], [1, {}]),
+      torso: turn([0, 0], [0.3, 1.6], [0.84, 1.6], [1, 0]),
+    }),
+    [[0, "neutral"], [0.3, "curious"]], "curious", POCKET_HANDS)),
+
+  /* ——— incorrect ×3, plus the rich ending ——— */
+  own(r("incorrect", "rio-happens", "Eh, happens", "A small shrug, hands still in his pocket, head tipped — eh, happens — then a look at the key.",
+    act("rio-happens", 2.4, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      torso: keys([0, {}], [0.14, { y: -2, e: EASE.overshoot }], [0.44, { y: -2, e: EASE.settle }], [0.6, {}], [1, {}]),
+      head: turn([0, 0], [0.14, -6], [0.44, -6], [0.62, 6], [1, 6]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.6, "curious"]], "curious", POCKET_HANDS)),
+  own(r("incorrect", "rio-tricky", "Tricky one. Look.", "A hand out of his pocket, palm open toward the key, and a nod — tricky one; look.",
+    act("rio-tricky", 2.6, [[0, POCKET_HANDS], [0.24, LOOK], [0.84, LOOK], [1, POCKET_HANDS]], {
+      head: keys([0, {}], [0.24, { r: 7, e: EASE.settle }], [0.5, { r: 7 }], [0.6, { r: 7, y: 2, e: EASE.settle }], [0.7, { r: 7, e: EASE.settle }], [1, {}]),
+      torso: turn([0, 0], [0.24, 2.4], [0.84, 2.4], [1, 0]),
+    }),
+    [[0, "oops"], [0.24, "neutral"], [0.5, "curious"]], "curious", LOOK, "both", [[0.16, { R: "palm" }], [0.92, {}]])),
+  own(r("incorrect", "rio-stays", "Stays with you", "The kind one: he steps over beside the learner, leans to look at the key with them, and nods — no hurry; he'll wait.",
+    act("rio-stays", 3, [[0, POCKET_HANDS], [1, POCKET_HANDS]], {
+      root: keys([0, {}], [0.08, { e: EASE.settle }], [0.24, { x: 6, e: EASE.settle }], [0.86, { x: 6, e: EASE.settle }], [1, {}]),
+      hipL: turn([0, 0], [0.08, 0], [0.16, -6], [0.24, 0], [1, 0]),
+      kneeL: turn([0, 0], [0.08, 0], [0.16, -8], [0.24, 0], [1, 0]),
+      torso: turn([0, 0], [0.24, 0], [0.36, 3], [0.86, 3], [1, 0]),
+      head: keys([0, {}], [0.36, { r: 7, e: EASE.settle }], [0.6, { r: 7 }], [0.68, { r: 7, y: 2, e: EASE.settle }], [0.76, { r: 7, e: EASE.settle }], [0.86, { r: 7 }], [1, {}]),
+    }),
+    [[0, "oops"], [0.3, "neutral"], [0.6, "happy"], [0.76, "curious"]], "curious", POCKET_HANDS)),
+  own(r("incorrect", "rio-point", "Points at the key", "Rich only: one hand out of his pocket, pointing at the key beside him. Hands back in after.",
+    act("rio-point", 2.6, [[0, POCKET_HANDS], [0.22, { L: POCKET_HANDS.L, R: POINT.R }], [0.84, { L: POCKET_HANDS.L, R: POINT.R }], [1, POCKET_HANDS]], {
+      head: turn([0, 0], [0.14, -3], [0.26, 7], [0.84, 7], [1, 0]),
+      torso: turn([0, 0], [0.26, 3], [0.84, 3], [1, 0]),
+    }),
+    [[0, "oops"], [0.26, "curious"]], "curious", { L: POCKET_HANDS.L, R: POINT.R }, "rich", [[0.14, { R: "point" }], [0.92, {}]])),
+
+  /* ——— unlock ——— */
+  own(r("unlock", "rio-full-moonwalk", "The full moonwalk", "The whole thing: the beat kicks in, he moonwalks the long way back, stops dead and points at the learner. Once, with the unlock.",
+    act("rio-full-moonwalk", 3.6, [[0, POCKET_HANDS], [0.1, GLIDE], [0.66, GLIDE], [0.76, CALLED], [0.92, CALLED], [1, POCKET_HANDS]], [moonwalk(0.1, 0.62, 6, 34), {
+      head: turn([0, 0], [0.1, -4], [0.62, -4], [0.76, 5], [0.92, 5], [1, 0]),
+      "fx-streaks": streaks(0.1, 0.62, 34),
+      "fx-beatL": beat(0.04, 0.9, 6),
+      "fx-beatR": beat(0.04, 0.9, 6),
+    }]),
+    [[0, "focused"], [0.1, "happy"], [0.74, "delighted"]], "delighted", CALLED, "both", [[0.06, { L: "palm", R: "palm" }], [0.72, { R: "point" }], [0.96, {}]]), ["streaks", "beat"]),
+
+  /* ——— travel, minimal only ——— */
+  own(r("travel", "rio-glide-over", "Glides over", "Dock to verdict without walking: a moonwalk, of course — gliding the whole way, hands in his pocket.",
+    act("rio-glide-over", 2.8, [[0, POCKET_HANDS], [1, POCKET_HANDS]], [{
+      root: keys([0, { x: -28 }], [1, { x: -28 }]),
+    }, moonwalk(0.08, 0.76, 5, 56, false), {
+      "fx-streaks": streaks(0.08, 0.76, 56),
+    }]),
+    [[0, "neutral"]], "neutral", POCKET_HANDS, "minimal"), ["streaks"]),
+];
+
+/** Characters whose reactions are drawn so far (2026-10-03: Noor first; 2026-10-31: Haru, Margot, Nell, Otto;
+ *  2026-11-01: Rio). */
 const DRAWN: Partial<Record<CastSlug, Reaction[]>> = {
   noor: NOOR,
   haru: HARU,
   margot: MARGOT,
   nell: NELL,
   otto: OTTO,
+  rio: RIO,
 };
 
 /** What each drawn character's hands do at rest: Noor folds hers, right over left; Haru's right
