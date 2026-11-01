@@ -47,7 +47,7 @@ const REFINEMENTS: Partial<Record<CastSlug, readonly string[]>> = {
   ],
   otto: [
     "The only lab coat on the shortlist (Haru's went), longer and flared to the knee, his shins and shoes showing below it",
-    "Holds on a white ground: the coat in true white with a cool grey edge in its own tone, and the same edge round his halo of hair",
+    "A warm ivory coat — old and well worn — so he parts from a white ground by colour, with no outline; his halo of hair stays white",
     "A bow tie in the accent, chalk on one cuff",
     "His own eyes: small dark beads with no whites, under big bushy white brows; happy squeezes them shut",
     "Longer arms, so a finger can go up beside his head: at rest one finger is up, a thought arriving",
