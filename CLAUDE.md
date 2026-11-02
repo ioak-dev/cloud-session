@@ -62,7 +62,7 @@ npm start
 | `src/design/nix/side-rio.tsx` | Rio (drawn as Kai), refined for the product (`refineRio`: the fixed hoodie and his eyes on longer arms, hands in his pocket at rest) and his scene (`RioScene`: the beat from his headphones, streaks on the floor as he moonwalks) |
 | `src/design/nix/side-cleo.tsx` | Cleo (drawn as Sofia), refined for the product (`refineCleo`: the told-apart stripes, headband and eyes on Noor's longer arms) and her scene (`CleoScene`: the burst and rings of her clap, rings from her conducting hand) |
 | `src/design/nix/side-haru.tsx` | Haru, refined for the product (`refineHaru`: the told-apart vest and eyes on Noor's longer arms) and his scene (`HaruScene`: counted dots, a ring, a burst, a glint on his lens) |
-| `src/design/tessy/tessy-logo.tsx` | Four logo concepts for Tessy, a separate logical-reasoning app named for tessellations (`TESSY_CONCEPTS`: Pinwheel T, Missing piece, Tess the tile, Odd one out), each on its own palette, on the **Tessy · Logo** page (`#/tessy`) |
+| `src/design/tessy/tessy-logo.tsx` | Eight logo concepts for Tessy, a separate logical-reasoning app named for tessellations: round one (`TESSY_CONCEPTS`: Pinwheel T, Missing piece, Tess the tile, Odd one out) and round two (`TESSY_CONCEPTS_2`: Truchet trail, Penrose sun, Bright idea, Star and cross), each on its own palette, on the **Tessy · Logo** page (`#/tessy`) |
 | `src/App.tsx` | Routes the four pages by hash (and `#/ribbon` to the Wisp page); `#/side/<id>` is one side character's own page (`SideCharacterPage`), linked from the shortlist's names on `#/side` |
 | `src/styles/studio.css` | The surface colour tokens |
 | `docs/brief.md` | Audience, use case, why the characters exist, the bounds |

@@ -283,6 +283,230 @@ function CubeMark({ p, small, tile = true }: MarkProps) {
   );
 }
 
+
+/* ================================================================ round two */
+
+/* ---------------------------------------------------------------- 5. Truchet trail */
+
+/**
+ * Truchet tiles: each square holds two quarter-circle arcs, in one of two orientations. Sides are
+ * 0 top, 1 right, 2 bottom, 3 left; orientation 0 joins left–top and right–bottom, 1 joins
+ * left–bottom and right–top. This 4×4 grid was searched for the longest single trail that enters
+ * on the left and leaves on the right: it passes through 20 of the 32 arcs.
+ */
+const TRUCHET = [0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0];
+const TRUCHET_EXIT: Record<number, Record<number, number>> = {
+  0: { 3: 0, 0: 3, 1: 2, 2: 1 },
+  1: { 3: 2, 2: 3, 1: 0, 0: 1 },
+};
+const STEP: V[] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+
+/** The trail from the left side of row 1, as (column, row, in, out) steps. */
+function truchetTrail() {
+  const steps: [number, number, number, number][] = [];
+  let col = 0, row = 1, side = 3;
+  while (col >= 0 && col < 4 && row >= 0 && row < 4 && steps.length < 40) {
+    const out = TRUCHET_EXIT[TRUCHET[row * 4 + col]][side];
+    steps.push([col, row, side, out]);
+    col += STEP[out][0];
+    row += STEP[out][1];
+    side = (out + 2) % 4;
+  }
+  return steps;
+}
+const TRAIL = truchetTrail();
+
+/** A quarter circle inside one cell, centred on the corner shared by sides a and b. */
+function quarter(x: number, y: number, s: number, a: number, b: number) {
+  const mid = (k: number): V => [[x + s / 2, y], [x + s, y + s / 2], [x + s / 2, y + s], [x, y + s / 2]][k] as V;
+  const A = mid(a), B = mid(b);
+  const corner: V = [a === 1 || b === 1 ? x + s : x, a === 2 || b === 2 ? y + s : y];
+  const k = 0.5523;
+  const c1 = add(A, mul(sub(B, corner), k));
+  const c2 = add(B, mul(sub(A, corner), k));
+  return `M${A[0].toFixed(2)} ${A[1].toFixed(2)}C${c1[0].toFixed(2)} ${c1[1].toFixed(2)} ${c2[0].toFixed(2)} ${c2[1].toFixed(2)} ${B[0].toFixed(2)} ${B[1].toFixed(2)}`;
+}
+
+function TruchetMark({ p, small, tile = true }: MarkProps) {
+  const s = small ? 24 : 21;
+  const o = 64 - 2 * s;
+  const isMono = p.a === p.c;
+  const onTrail = new Set(TRAIL.map(([c, r, a, b]) => `${c},${r},${Math.min(a, b)},${Math.max(a, b)}`));
+  const rest: string[] = [];
+  if (!small)
+    for (let r = 0; r < 4; r++)
+      for (let c = 0; c < 4; c++) {
+        const pairs = TRUCHET[r * 4 + c] === 0 ? [[0, 3], [1, 2]] : [[2, 3], [0, 1]];
+        for (const [a, b] of pairs)
+          if (!onTrail.has(`${c},${r},${a},${b}`)) rest.push(quarter(o + c * s, o + r * s, s, a, b));
+      }
+  const trail = TRAIL.map(([c, r, a, b]) => quarter(o + c * s, o + r * s, s, a, b)).join(" ");
+  const start: V = [o, o + 1.5 * s];
+  const [ec, er, , eo] = TRAIL[TRAIL.length - 1];
+  const end: V = add([o + ec * s + s / 2, o + er * s + s / 2], mul(STEP[eo], s / 2));
+  return (
+    <>
+      {tile && <path d={TILE} fill={p.bg} />}
+      {!small && !isMono && (
+        <rect x={o} y={o} width={4 * s} height={4 * s} rx={6} fill={p.d} />
+      )}
+      {rest.map((d, i) => (
+        <path key={i} d={d} fill="none" stroke={p.c} strokeWidth={4} strokeLinecap="round" opacity={isMono ? 0.35 : 1} />
+      ))}
+      <path d={trail} fill="none" stroke={p.a} strokeWidth={small ? 10 : 7} strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={start[0]} cy={start[1]} r={small ? 9 : 7} fill={p.a} />
+      <circle cx={end[0]} cy={end[1]} r={small ? 9 : 7} fill={p.a} />
+      {!small && <circle cx={end[0]} cy={end[1]} r={3} fill={isMono ? p.bg : p.d} />}
+    </>
+  );
+}
+
+/* ---------------------------------------------------------------- 6. Penrose sun */
+
+/**
+ * Five Penrose kites round a point: the "sun" vertex of the kite-and-dart tiling, which covers the
+ * plane but never repeats. Each kite is O and three points on a circle at θ−36°, θ, θ+36°, so its
+ * sides are in the golden ratio and its angles 72°, 72°, 72°, 144°.
+ */
+function PenroseMark({ p, small, tile = true }: MarkProps) {
+  const rho = small ? 56 : 50;
+  const P = (deg: number): V => [64 + rho * Math.cos((deg * Math.PI) / 180), 64 + rho * Math.sin((deg * Math.PI) / 180)];
+  const fills = [p.a, p.b, p.c, p.b, p.d];
+  return (
+    <>
+      {tile && <path d={TILE} fill={p.bg} />}
+      {fills.map((fill, i) => {
+        const t = -90 + 72 * i;
+        return (
+          <polygon
+            key={i}
+            points={pts([[64, 64], P(t - 36), P(t), P(t + 36)])}
+            fill={fill}
+            stroke={p.bg}
+            strokeWidth={small ? 8 : 4.5}
+            strokeLinejoin="round"
+          />
+        );
+      })}
+      {!small && <circle cx={64} cy={64} r={5} fill={p.bg} />}
+    </>
+  );
+}
+
+/* ---------------------------------------------------------------- 7. Bright idea */
+
+/** A flat-top hexagon of 24 triangles from the triangular tiling, as a light bulb on a base. */
+function bulbTriangles(cx: number, cy: number, t: number) {
+  const h = (t * Math.sqrt(3)) / 2;
+  const top = cy - 2 * h;
+  const out: { pts: V[]; up: boolean; key: string }[] = [];
+  for (let k = 0; k < 4; k++) {
+    const y0 = top + k * h;
+    const off = k % 2 ? t / 2 : 0;
+    for (let m = -4; m <= 4; m++) {
+      const a = cx + off + m * t;
+      const tris: { pts: V[]; up: boolean }[] = [
+        { pts: [[a, y0], [a + t / 2, y0 + h], [a - t / 2, y0 + h]], up: true },
+        { pts: [[a, y0], [a + t, y0], [a + t / 2, y0 + h]], up: false },
+      ];
+      for (const tri of tris) {
+        const gx = (tri.pts[0][0] + tri.pts[1][0] + tri.pts[2][0]) / 3 - cx;
+        const gy = (tri.pts[0][1] + tri.pts[1][1] + tri.pts[2][1]) / 3 - cy;
+        if (Math.abs(gy) <= 2 * h && Math.sqrt(3) * Math.abs(gx) + Math.abs(gy) <= Math.sqrt(3) * 2 * t - 0.01)
+          out.push({ ...tri, key: `${k},${m},${tri.up ? "u" : "d"}` });
+      }
+    }
+  }
+  return out;
+}
+
+function BulbMark({ p, small, tile = true }: MarkProps) {
+  const t = small ? 21 : 19;
+  const cx = 64;
+  const cy = small ? 52 : 50;
+  const tris = bulbTriangles(cx, cy, t);
+  const lit = "1,0,u"; // the triangle that lights up: just right of centre
+  const h = (t * Math.sqrt(3)) / 2;
+  const base = cy + 2 * h + (small ? 5 : 5);
+  return (
+    <>
+      {tile && <path d={TILE} fill={p.bg} />}
+      {tris.map((tri) => {
+        const on = tri.key === lit;
+        return (
+          <polygon
+            key={tri.key}
+            points={pts(tri.pts)}
+            fill={on ? p.a : small ? p.b : tri.up ? p.b : p.c}
+            stroke={small && !on ? p.b : p.bg}
+            strokeWidth={small ? (on ? 5 : 1) : 2.5}
+            strokeLinejoin="round"
+          />
+        );
+      })}
+      <rect x={cx - 17} y={base} width={34} height={small ? 10 : 8} rx={4} fill={p.d} />
+      {small ? (
+        <rect x={cx - 10} y={base + 13} width={20} height={9} rx={4} fill={p.d} />
+      ) : (
+        <>
+          <rect x={cx - 14} y={base + 11} width={28} height={7} rx={3.5} fill={p.d} />
+          <rect x={cx - 8} y={base + 21} width={16} height={6} rx={3} fill={p.d} />
+        </>
+      )}
+    </>
+  );
+}
+
+/* ---------------------------------------------------------------- 8. Star and cross */
+
+/** An eight-pointed star (two squares) of outer radius R; its inner corners at 22.5° + 45°k. */
+function star8(cx: number, cy: number, R: number) {
+  const r = (R * Math.cos(Math.PI / 4)) / Math.cos(Math.PI / 8);
+  return pts(
+    Array.from({ length: 16 }, (_, i) => {
+      const a = (i * Math.PI) / 8;
+      const d = i % 2 ? r : R;
+      return [cx + d * Math.cos(a), cy + d * Math.sin(a)] as V;
+    }),
+  );
+}
+
+function StarMark({ p, small, tile = true }: MarkProps) {
+  const id = React.useId();
+  if (small) {
+    return (
+      <>
+        {tile && <path d={TILE} fill={p.bg} />}
+        <polygon points={star8(64, 64, 52)} fill={p.a} strokeLinejoin="round" stroke={p.a} strokeWidth={4} />
+        <circle cx={64} cy={64} r={13} fill={p.bg} />
+      </>
+    );
+  }
+  const L = 52;
+  const stars: React.ReactElement[] = [];
+  for (let j = -2; j <= 2; j++)
+    for (let i = -2; i <= 2; i++)
+      if (i || j)
+        stars.push(<polygon key={`${i},${j}`} points={star8(64 + i * L, 64 + j * L, L / 2)} fill={p.b} stroke={p.bg} strokeWidth={3} strokeLinejoin="round" />);
+  return (
+    <>
+      <defs>
+        <clipPath id={id}>
+          <path d={TILE} />
+        </clipPath>
+      </defs>
+      {tile && (
+        <g clipPath={`url(#${id})`}>
+          <path d={TILE} fill={p.c} />
+          {stars}
+        </g>
+      )}
+      <polygon points={star8(64, 64, L / 2)} fill={p.a} stroke={tile ? p.bg : "none"} strokeWidth={3} strokeLinejoin="round" />
+      <circle cx={64} cy={64} r={6} fill={tile ? p.c : p.bg} />
+    </>
+  );
+}
+
 /* ---------------------------------------------------------------- the four */
 
 export const TESSY_CONCEPTS: Concept[] = [
@@ -332,7 +556,58 @@ export const TESSY_CONCEPTS: Concept[] = [
   },
 ];
 
-const FONT_HREF = `https://fonts.googleapis.com/css2?${TESSY_CONCEPTS.map((c) => `family=${c.font.css}`).join("&")}&display=swap`;
+
+/** Round two: four more, each on a tiling round one did not use. */
+export const TESSY_CONCEPTS_2: Concept[] = [
+  {
+    id: "truchet",
+    name: "Truchet trail",
+    tiling: "Truchet tiles (quarter circles on squares)",
+    idea:
+      "Sixteen square tiles, each holding two quarter-circle arcs turned one of two ways. Turn them just right and a single trail winds from one side to the other through twenty of the arcs. Every logic puzzle is this: many small, simple choices that join into one path.",
+    puzzle: "Trace it: does the trail from the left dot really reach the right one? (It does, without lifting your finger.)",
+    palette: { bg: "#0d3b4c", a: "#ffcc33", b: "#ffcc33", c: "#2a7f96", d: "#134b5e", ink: "#0d3b4c" },
+    font: { family: "Outfit", css: "Outfit:wght@700", weight: 700, tracking: "-0.02em" },
+    Mark: TruchetMark,
+  },
+  {
+    id: "penrose",
+    name: "Penrose sun",
+    tiling: "Penrose kites (aperiodic)",
+    idea:
+      "Five Penrose kites meet at a point, the 'sun' of the kite-and-dart tiling: a pattern that covers the floor forever and never repeats. One kite is red. It promises what the app gives: endless puzzles, never the same twice.",
+    puzzle: "Every angle is 72° or 144°, every side in the golden ratio: the order is hidden in plain sight.",
+    palette: { bg: "#fff8f0", a: "#e63946", b: "#1d3557", c: "#457b9d", d: "#8ec5cf", ink: "#1d3557" },
+    font: { family: "Sora", css: "Sora:wght@700", weight: 700, tracking: "-0.03em" },
+    Mark: PenroseMark,
+  },
+  {
+    id: "bulb",
+    name: "Bright idea",
+    tiling: "Equilateral triangles",
+    idea:
+      "A light bulb built from 24 triangles of the triangular tiling, its glass a hexagon, on a three-step base. One triangle is lit. An idea arrives a piece at a time: the moment one piece clicks, the rest light up.",
+    puzzle: "Which piece lit first? The bright triangle is where the thinking started.",
+    palette: { bg: "#2b2d42", a: "#fffbe6", b: "#ffd23f", c: "#f4a300", d: "#8d99ae", ink: "#2b2d42" },
+    font: { family: "Baloo 2", css: "Baloo+2:wght@700", weight: 700, tracking: "-0.01em" },
+    Mark: BulbMark,
+  },
+  {
+    id: "star",
+    name: "Star and cross",
+    tiling: "Eight-pointed stars and crosses (girih)",
+    idea:
+      "The star-and-cross pattern of Islamic geometric tiling: eight-pointed stars touch point to point, and the space left between them is itself a tile, a cross. One star is red. A centuries-old proof that careful reasoning makes beauty.",
+    puzzle: "Look at the gold, not the stars: the leftover space is a shape of its own.",
+    palette: { bg: "#f6f1e7", a: "#d1495b", b: "#00798c", c: "#edae49", d: "#edae49", ink: "#30343f" },
+    font: { family: "DM Serif Display", css: "DM+Serif+Display", weight: 400, tracking: "0em" },
+    Mark: StarMark,
+  },
+];
+
+const ALL = [...TESSY_CONCEPTS, ...TESSY_CONCEPTS_2];
+
+const FONT_HREF = `https://fonts.googleapis.com/css2?${ALL.map((c) => `family=${c.font.css}`).join("&")}&display=swap`;
 
 function useTessyFonts() {
   React.useEffect(() => {
@@ -395,8 +670,16 @@ function Cap({ children }: { children: React.ReactNode }) {
   return <p className="spec-cap m-0 mt-2 text-center text-muted-foreground">{children}</p>;
 }
 
+/** Whether a hex colour is light enough to need dark text. */
+function isLight(hex: string) {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 160;
+}
+
 function ConceptCard({ c, n }: { c: Concept; n: number }) {
-  const lightText = c.palette.bg === "#fff6e8" ? c.palette.ink : c.palette.bg;
+  const light = isLight(c.palette.bg);
+  const lightText = light ? c.palette.ink : c.palette.bg;
   return (
     <section className="mt-8 rounded-[var(--radius)] border border-border bg-card p-6" aria-labelledby={`tessy-${c.id}`}>
       <p className="spec-cap m-0 text-muted-foreground">
@@ -438,7 +721,7 @@ function ConceptCard({ c, n }: { c: Concept; n: number }) {
               <div className="flex items-end gap-2">
                 <div className="rounded-xl border border-border bg-white p-2">
                   <Svg size={56}>
-                    <c.Mark p={mono(c.palette.bg === "#fff6e8" ? c.palette.ink : c.palette.bg, "#ffffff")} tile={false} />
+                    <c.Mark p={mono(lightText, "#ffffff")} tile={false} />
                   </Svg>
                 </div>
                 <div className="rounded-xl p-2" style={{ background: "#0b0b0f" }}>
@@ -456,7 +739,7 @@ function ConceptCard({ c, n }: { c: Concept; n: number }) {
       <div className="mt-6 flex flex-wrap gap-3">
         <Lockup c={c} ground="#ffffff" text={lightText} />
         <Lockup c={c} ground="#0e0f14" text="#ffffff" />
-        <Lockup c={c} ground={c.palette.bg} text={c.palette.bg === "#fff6e8" ? c.palette.ink : "#ffffff"} />
+        <Lockup c={c} ground={c.palette.bg} text={light ? c.palette.ink : "#ffffff"} />
       </div>
       <p className="spec-cap m-0 mt-2 text-muted-foreground">
         Wordmark: {c.font.family} {c.font.weight}, lowercase
@@ -465,36 +748,57 @@ function ConceptCard({ c, n }: { c: Concept; n: number }) {
   );
 }
 
+function Overview({ list, from }: { list: Concept[]; from: number }) {
+  return (
+    <div className="mt-4 flex flex-wrap gap-4">
+      {list.map((c, i) => (
+        <a
+          key={c.id}
+          href={`#tessy-${c.id}`}
+          className="no-underline"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById(`tessy-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        >
+          <Svg size={88} label={c.name}>
+            <c.Mark p={c.palette} />
+          </Svg>
+          <Cap>
+            {from + i}. {c.name}
+          </Cap>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export function TessyLogoPage() {
   useTessyFonts();
+  const n2 = TESSY_CONCEPTS.length + 1;
   return (
     <>
       <p className="spec-cap m-0 text-muted-foreground">Tessy / logo concepts</p>
       <h1 className="display mt-1">Tessy</h1>
       <p className="material mt-3 max-w-[64ch] text-muted-foreground">
-        Four logo concepts for Tessy, an app that helps students solve logical reasoning puzzles. The
-        name comes from tessellations, so each concept is built from a different real tiling, and
-        each hides one small puzzle: a reason to look twice. Shown as the app icon, at favicon sizes,
-        in one colour, and with a wordmark. Tessy is a separate product, so these keep their own
-        palettes and ignore the header&apos;s colour schemes.
+        Eight logo concepts, in two rounds of four, for Tessy, an app that helps students solve
+        logical reasoning puzzles. The name comes from tessellations, so each concept is built from a
+        different real tiling, and each hides one small puzzle: a reason to look twice. Shown as the
+        app icon, at favicon sizes, in one colour, and with a wordmark. Tessy is a separate product,
+        so these keep their own palettes and ignore the header&apos;s colour schemes.
       </p>
-      <div className="mt-6 flex flex-wrap gap-4">
-        {TESSY_CONCEPTS.map((c, i) => (
-          <a key={c.id} href={`#tessy-${c.id}`} className="no-underline" onClick={(e) => {
-            e.preventDefault();
-            document.getElementById(`tessy-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}>
-            <Svg size={88} label={c.name}>
-              <c.Mark p={c.palette} />
-            </Svg>
-            <Cap>
-              {i + 1}. {c.name}
-            </Cap>
-          </a>
-        ))}
-      </div>
+      <p className="spec-cap m-0 mt-6 text-muted-foreground">Round one</p>
+      <Overview list={TESSY_CONCEPTS} from={1} />
+      <p className="spec-cap m-0 mt-6 text-muted-foreground">Round two</p>
+      <Overview list={TESSY_CONCEPTS_2} from={n2} />
+
+      <h2 className="material-heading mt-12 text-lg text-foreground">Round one</h2>
       {TESSY_CONCEPTS.map((c, i) => (
         <ConceptCard key={c.id} c={c} n={i + 1} />
+      ))}
+      <h2 className="material-heading mt-12 text-lg text-foreground">Round two</h2>
+      {TESSY_CONCEPTS_2.map((c, i) => (
+        <ConceptCard key={c.id} c={c} n={n2 + i} />
       ))}
     </>
   );
