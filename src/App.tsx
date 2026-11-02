@@ -3,6 +3,7 @@ import * as React from "react";
 import { ReferencesPage, SIDE_IDS, SideCharacterPage, SideReferencesPage, SidePage, WispPage } from "@/design/nix/NixBenchView";
 import { CharacterPage } from "@/design/nix/side-character-page";
 import { castMember } from "@/design/nix/side-companion";
+import { TessyLogoPage } from "@/design/tessy/tessy-logo";
 import { Shell } from "@/studio/Shell";
 
 /** The studio's pages, by hash: the main character (Wisp, on its ribbon wings), the side
@@ -14,6 +15,7 @@ const PAGES = [
   { hash: "#/side-references", label: "Side characters · References", page: () => <SideReferencesPage /> },
   { hash: "#/references", label: "References", page: () => <ReferencesPage /> },
   { hash: "#/butterfly", label: "Wisp · Butterfly (reference)", page: () => <WispPage wings="pairs" /> },
+  { hash: "#/tessy", label: "Tessy · Logo", page: () => <TessyLogoPage /> },
 ] as const;
 
 /** Old links: the ribbon page is now the Wisp page. */
